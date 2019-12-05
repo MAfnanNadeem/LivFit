@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorDeviceColorLime">#CCDB38</color>
+    <color name="colorDeviceColorOrange">#FE5621</color>
+    <color name="colorDeviceColorPink">#FF69B4</color>
+    <color name="colorDeviceColorDeepPurple">#6639B6</color>
+    <color name="colorDeviceColorBrown">#A52A2A</color>
+    <color name="colorDeviceColorViolet">#E720ED</color>
+    <color name="colorDeviceColorAmber">#FEC006</color>
+    <color name="colorDeviceColorPurple">#800080</color>
+    <color name="colorDeviceColorCyan">#00BBD3</color>
+    <color name="colorDeviceColorYellow">#FFFF00</color>
+    <color name="colorDeviceColorWhite">#FFFFFF</color>
+    <color name="colorDeviceColorTeal">#009587</color>
+    <color name="colorDeviceColorGreen">#36AB37</color>
+    <color name="colorDeviceColorRed">#E5322D</color>
+</resources>

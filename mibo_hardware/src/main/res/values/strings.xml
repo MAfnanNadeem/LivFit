@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Mibo Hardware</string>
+    <!-- Alarms -->
+    <string name="txt_alarm_contact_group_1">Loss of contact at Front Legs</string>
+    <string name="txt_alarm_contact_group_2">Loss of contact at Back Legs</string>
+    <string name="txt_alarm_contact_group_3">Loss of contact at Glutes</string>
+    <string name="txt_alarm_contact_group_4">Loss of contact at Back</string>
+    <string name="txt_alarm_contact_group_5">Loss of contact at Neck</string>
+    <string name="txt_alarm_contact_group_6">Loss of contact at Shoulders</string>
+    <string name="txt_alarm_contact_group_7">Loss of contact at ABS</string>
+    <string name="txt_alarm_contact_group_8">Loss of contact at Pectorals</string>
+    <string name="txt_alarm_contact_group_9">Loss of contact at Arms</string>
+    <string name="txt_alarm_contact_group_10">Loss of contact at Calves</string>
+    <string name="txt_alarm_disconnection_device">Loss of Communication</string>
+
+    <string name="txt_color_lime">Lime</string>
+    <string name="txt_color_orange">Orange</string>
+    <string name="txt_color_pink">Pink</string>
+    <string name="txt_color_deeppurple">Deep Purple</string>
+    <string name="txt_color_brown">Brown</string>
+    <string name="txt_color_violet">Violet</string>
+    <string name="txt_color_amber">Amber</string>
+    <string name="txt_color_purple">Purple</string>
+    <string name="txt_color_cyan">Cyan</string>
+    <string name="txt_color_yellow">Yellow</string>
+    <string name="txt_color_white">White</string>
+    <string name="txt_color_teal">Teal</string>
+</resources>

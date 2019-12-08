@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import life.mibo.miboproapp.api.MCrypt;
+import life.mibo.hardware.encryption.MCrypt;
 
 public class ScheduledSession {
 

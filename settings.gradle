@@ -1,2 +1,2 @@
-include ':app', ':mibo_hardware'
+include ':app', ':mibo_hardware', ':ShapeImageView'
 rootProject.name='Mibo Hexa'

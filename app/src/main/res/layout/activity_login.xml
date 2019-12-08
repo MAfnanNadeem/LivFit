@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frame_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_bg" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/login_container_transparent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/grid_2x">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOGIN"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:background="@drawable/login_edittext"
+            android:ems="11"
+            android:hint="Username"
+            android:inputType="textEmailAddress"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/grey" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:background="@drawable/login_edittext"
+            android:ems="11"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/grey" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/grid_4x"
+            android:background="@drawable/login_button_green"
+            android:ems="13"
+            android:text="LOGIN"
+            android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_forget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:padding="@dimen/grid_1x"
+            android:text="Forgot Password?  Click Here"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

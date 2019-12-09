@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/login_container_transparent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/grid_3x">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OTP VERIFICATION"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_4x"
+        android:src="@drawable/ic_register_otp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:text="Enter your mobile number"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="We will send you a OTP message"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_small" />
+
+    <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ccp_otp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:padding="8dp"
+        android:background="@drawable/login_edittext"
+        android:ems="11"
+        app:ccp_clickable="true"
+        app:ccp_textColor="@color/textColor"
+        app:ccp_defaultNameCode="AE"
+        app:ccp_dialogTextColor="@color/white"
+        app:ccp_showFlag="true" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_number"
+        style="@style/login_edittext"
+        android:hint="Phone Number" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_send_otp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:background="@drawable/login_button_green"
+        android:ems="13"
+        android:text="SEND OTP"
+        android:textColor="@color/white" />
+
+
+</LinearLayout>

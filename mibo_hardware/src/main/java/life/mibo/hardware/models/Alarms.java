@@ -4,10 +4,8 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-
 import life.mibo.hardware.R;
 
-import static life.mibo.hardware.models.DeviceConstants.*;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_CHANNEL_10_ELECTRODE_CONTACT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_CHANNEL_1_ELECTRODE_CONTACT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_CHANNEL_2_ELECTRODE_CONTACT;

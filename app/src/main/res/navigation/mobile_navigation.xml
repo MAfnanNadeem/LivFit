@@ -14,12 +14,12 @@
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="life.mibo.hexa.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:label="Test 1"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="life.mibo.hexa.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:label="Test 2"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

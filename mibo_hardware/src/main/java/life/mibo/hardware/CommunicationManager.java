@@ -7,6 +7,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.onecoder.devicelib.scale.api.ScaleManager;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 
@@ -64,7 +66,7 @@ import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_ASYNC_
  */
 
 public class CommunicationManager {
-    private static CommunicationManager mCommMInstance;
+    private static CommunicationManager manager;
 
     public ArrayList<TCPClient> mTCPClients = new ArrayList<>();
 
@@ -72,7 +74,8 @@ public class CommunicationManager {
 
     public BluetoothManager mBluetooth;
 
-    //public ScaleManager scaleManager;
+    public ScaleManager scaleManager;
+
 
     public ArrayList<Device> mDiscoveredDevices = new ArrayList<>();
 
@@ -84,18 +87,37 @@ public class CommunicationManager {
 
     private CommunicationManager() {
         //EventBus.getDefault().register(this);
-        if (mCommMInstance != null) {
+        if (manager != null) {
             throw new RuntimeException("getInstance() to get the istance of this class");
         }
         pingThread = new Thread(new PingThread());
         pingThread.start();
     }
 
-    public static CommunicationManager getInstance() {
-        if (mCommMInstance == null) {
-            mCommMInstance = new CommunicationManager();
+    private CommunicationManager(Listener listener) {
+        //EventBus.getDefault().register(this);
+        if (manager != null) {
+            throw new RuntimeException("getInstance() to get the istance of this class");
         }
-        return mCommMInstance;
+        setListener(listener);
+        pingThread = new Thread(new PingThread());
+        pingThread.start();
+    }
+
+    public static CommunicationManager getInstance() {
+        if (manager == null) {
+            manager = new CommunicationManager();
+        }
+        return manager;
+    }
+
+    public static CommunicationManager getInstance(Listener listener) {
+        if (manager == null) {
+            manager = new CommunicationManager(listener);
+        }
+        if (manager.listener == null)
+            manager.listener = listener;
+        return manager;
     }
 
     public void setContext(Activity activity) {
@@ -195,8 +217,20 @@ public class CommunicationManager {
             mUDPServer = new UDPServer(new UDPServer.OnBroadcastReceived() {
                 @Override
                 public void broadcastReceived(byte[] msg, InetAddress ip) {
-                    if (SessionManager.getInstance().getSession().isBoosterMode())// true wifi mode
-                        broadcastConsumer(msg, ip);
+                    if(listener != null)
+                        listener.broadcastReceived(msg, ip);
+                    log("broadcastReceived " + msg + " IP " + ip);
+
+                    SessionManager manager = SessionManager.getInstance();
+                    if (manager.getSession() != null) {
+                        if (manager.getSession().isBoosterMode()) {// true wifi mode
+                            broadcastConsumer(msg, ip);
+                        } else {
+                            log("Session Manager No Boosted Mode " + manager);
+                        }
+                    } else {
+                        log("Session Manager getSession is NULL " + manager);
+                    }
                 }
             });
         }
@@ -207,12 +241,14 @@ public class CommunicationManager {
             mBluetooth = new BluetoothManager(activity, new BluetoothManager.OnBleDeviceDiscovered() {
                 @Override
                 public void bleHrDeviceDiscovered(String uid, String serial) {
+                    log("bleHrDeviceDiscovered " + uid + " IP " + serial);
                     bleHrDiscoverConsumer(uid, serial);
 
                 }
 
                 @Override
                 public void bleBoosterDeviceDiscovered(String uid, String serial) {
+                    log("bleBoosterDeviceDiscovered " + uid + " IP " + serial);
                     if (!SessionManager.getInstance().getSession().isBoosterMode())// true wifi mode, false ble mode
                         bleBoosterDiscoverConsumer(uid, serial);
 
@@ -220,18 +256,21 @@ public class CommunicationManager {
 
                 @Override
                 public void bleScaleDeviceDiscovered(String uid, String serial) {
+                    log("bleScaleDeviceDiscovered " + uid + " IP " + serial);
                     bleScaleDiscoverConsumer(uid, serial);
 
                 }
             }, new BluetoothManager.OnBleCharChanged() {
                 @Override
                 public void bleHrChanged(int hr, String serial) {
+                    log("bleHrChanged " + hr + " IP " + serial);
                     bleHrConsumer(hr, serial);
 
                 }
 
                 @Override
                 public void bleBoosterChanged(byte[] data, String serial) {
+                    log("bleBoosterChanged " + data + " IP " + serial);
                     // bleBoosterConsumer(data, serial);
                     messageConsumer(data, serial);
                     //Log.e("commManag","Char booster changed "+data);
@@ -242,6 +281,10 @@ public class CommunicationManager {
         }
 
         mBluetooth.scanDevice();
+    }
+
+    private void log(String s) {
+        Logger.e("CommunicationManager: " + s);
     }
 
     public void stopDiscoveryServers() {
@@ -263,6 +306,8 @@ public class CommunicationManager {
     }
 
     private void broadcastConsumer(byte[] message, InetAddress ip) {
+        Logger.e("Session Manager is NULL " + manager);
+
         Encryption.mbp_decrypt(message, message.length);
         //Encryption.mbp_encrypt(message, message.length);
         if (message.length >= MIN_COMMAND_LENGHT + 3) {
@@ -852,11 +897,12 @@ public class CommunicationManager {
         return listener;
     }
 
-    public void setListener(Listener listener) {
+    public CommunicationManager setListener(Listener listener) {
         this.listener = listener;
+        return this;
     }
 
-    interface Listener {
+    public interface Listener {
 
         void NewConnectionStatus(String getname);
 
@@ -874,8 +920,10 @@ public class CommunicationManager {
 
         void GetLevelsEvent(String uid);
 
-        void ProgramStatusEvent(int programStatusTime, int programStatusAction, int programStatusPause, int programStatusCurrentBlock, int programStatusCurrentProgram, String uid);
+        void ProgramStatusEvent(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
 
         void DevicePlayPauseEvent(String uid);
+
+        void broadcastReceived(byte[] msg, InetAddress ip);
     }
 }

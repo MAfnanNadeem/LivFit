@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frame_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:src="@drawable/login_bg" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.78"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_bg_gradient" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ViewAnimator
+            android:id="@+id/viewAnimator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inAnimation="@anim/enter_from_right"
+            android:outAnimation="@anim/exit_to_left">
+
+            <include layout="@layout/activity_register_page1" />
+
+            <include layout="@layout/activity_register_page2" />
+
+            <include layout="@layout/activity_register_page3" />
+        </ViewAnimator>
+
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

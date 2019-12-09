@@ -9,7 +9,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "life.mibo.hexa"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -55,4 +55,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':mibo_hardware')
     implementation project(path: ':ShapeImageView')
+    implementation 'com.google.code.gson:gson:2.8.6'
+    //implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
+    //mplementation 'com.github.GrenderG:Toasty:1.4.2'
+   // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
+    //implementation 'com.github.joielechong:countrycodepicker:master-SNAPSHOT'
+    implementation 'com.github.joielechong:CountryCodePicker:a2225694e5'
+    implementation 'com.github.swapnil1104:OtpEditText:0.1.6'
+
+
+
+
 }

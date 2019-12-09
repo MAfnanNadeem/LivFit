@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/login_container_transparent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/grid_3x">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CREATE YOUR PROFILE"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_first_name"
+        style="@style/login_edittext"
+        android:hint="First Name" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_last_name"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:hint="Last Name" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_email"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_password"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_confirm_password"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:hint="Confirm Password"
+        android:inputType="textPassword" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_gender"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:ems="11"
+        android:hint="Gender"
+        android:textSize="@dimen/text_size_medium" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_dob"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:ems="11"
+        android:hint="Date of Birth"
+        android:textSize="@dimen/text_size_medium" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_city"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:hint="City"
+        android:inputType="textAutoComplete" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_country"
+        style="@style/login_edittext"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:ems="11"
+        android:hint="Country"
+        android:textSize="@dimen/text_size_medium" />
+
+    <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ccp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="11"
+        android:visibility="invisible"
+        app:ccp_clickable="true"
+        app:ccp_defaultCode="971"
+        app:ccp_dialogTextColor="@color/white"
+        app:ccp_hidePhoneCode="true"
+        app:ccp_showFlag="true"
+        app:ccp_showFullName="true" />
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+        android:id="@+id/checkbox_terms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/colorPrimary"
+        android:text="I accept the terms of agreement"
+        android:textColor="@color/white" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_register"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:background="@drawable/login_button_green"
+        android:ems="13"
+        android:text="Register"
+        android:textColor="@color/white" />
+
+
+</LinearLayout>

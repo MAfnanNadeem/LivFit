@@ -1,4 +1,4 @@
-package life.mibo.hardware;
+package life.mibo.hardware.network;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

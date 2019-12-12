@@ -1,20 +1,24 @@
 package life.mibo.hexa.ui.home
 
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import c.tlgbltcn.library.BluetoothHelper
+import c.tlgbltcn.library.BluetoothHelperListener
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.ScanDeviceAdapter
+import life.mibo.hexa.utils.Toasty
+import java.net.InetAddress
 
 class HomeFragment : Fragment() {
 
@@ -29,37 +33,88 @@ class HomeFragment : Fragment() {
         homeViewModel =
             ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
+        // val textView: TextView = root.findViewById(R.id.text_home)
         recyclerView = root.findViewById(R.id.recyclerView)
         homeViewModel.text.observe(this, Observer {
-            textView.text = it
+            //  textView.text = it
         })
         setRecycler()
         getScanned()
+        //       getBlDevices()
+        val scan: View = root.findViewById(R.id.scan);
+        scan?.setOnClickListener {
+            if (bluetoothHelper != null) {
+                if (bluetoothHelper?.isBluetoothEnabled()!!)
+                    bluetoothHelper?.enableBluetooth()
+                bluetoothHelper?.startDiscovery()
+            }
+            communicationManager?.startDiscoveryServers(this@HomeFragment.activity)
+            Toasty.info(this@HomeFragment.context!!, "Bluetooth scanning").show()
+
+        }
         return root
     }
 
-    val devicesList = ArrayList<ScanDeviceAdapter.ScanItem>();
+    var bluetoothHelper: BluetoothHelper? = null
+    fun getBlDevices() {
+        bluetoothHelper =
+            BluetoothHelper(this@HomeFragment.context!!, object : BluetoothHelperListener {
+                override fun onStartDiscovery() {
+                    log("bluetoothHelper onStartDiscovery")
+                }
+
+                override fun onFinishDiscovery() {
+                    log("bluetoothHelper onFinishDiscovery")
+
+                }
+
+                override fun onEnabledBluetooth() {
+                    log("bluetoothHelper onEnabledBluetooth")
+
+                }
+
+                override fun onDisabledBluetooh() {
+                    log("bluetoothHelper onDisabledBluetooh")
+
+                }
+
+                override fun onDeviceFound(device: BluetoothDevice?) {
+                    log("bluetoothHelper onDeviceFound " + device)
+                    if (device != null) {
+                        devicesList.add(ScanDeviceAdapter.ScanItem(device.name, device.address))
+                        adapter?.notifyDataSetChanged()
+                    }
+                }
+
+            }).setPermissionRequired(true).create()
+    }
+
+    val devicesList = ArrayList<ScanDeviceAdapter.ScanItem>()
+    var adapter: ScanDeviceAdapter? = null
     fun setRecycler() {
         if (recyclerView == null)
             return
         devicesList.clear()
-        for (i in 1..50
+        for (i in 1..2
         ) {
             devicesList.add(ScanDeviceAdapter.ScanItem("test $i", "$i"))
         }
-        val adapter = ScanDeviceAdapter(devicesList)
+        adapter = ScanDeviceAdapter(devicesList)
         val manager = LinearLayoutManager(this@HomeFragment.activity)
         recyclerView?.layoutManager = manager
         recyclerView?.adapter = adapter
     }
 
-    val manager = CommunicationManager.getInstance()
+    var communicationManager: CommunicationManager? = null
 
     fun getScanned() {
         log("getScanning started")
-        val manager =
+        communicationManager =
             CommunicationManager.getInstance().setListener(object : CommunicationManager.Listener {
+                override fun broadcastReceived(msg: ByteArray?, ip: InetAddress?) {
+
+                }
+
                 override fun NewConnectionStatus(getname: String?) {
                     log("NewConnectionStatus $getname")
                 }
@@ -108,11 +163,22 @@ class HomeFragment : Fragment() {
                 }
 
             })
-        manager.startDiscoveryServers(this@HomeFragment.activity)
+//        communicationManager?.startDiscoveryServers(this@HomeFragment.activity)
         log("getScanning finished")
     }
 
     fun log(msg: String) {
         Logger.e("HomeFragment : $msg")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bluetoothHelper?.registerBluetoothStateChanged()
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        bluetoothHelper?.unregisterBluetoothStateChanged()
     }
 }

@@ -8,7 +8,6 @@
         android:id="@+id/test_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/login_bg"
         android:visibility="visible" />
 
 <!--    <com.github.siyamed.shapeimageview.HexagonImageView xmlns:app="http://schemas.android.com/apk/res-auto"-->

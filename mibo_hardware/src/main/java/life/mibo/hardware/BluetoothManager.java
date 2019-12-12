@@ -9,7 +9,6 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.os.Build;
-import android.os.Handler;
 
 import androidx.annotation.RequiresApi;
 
@@ -23,12 +22,11 @@ import java.util.UUID;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.CharacteristicChangeListener;
-import life.mibo.hardware.encryption.Encryption;
-import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.bluetooth.operations.GattCharacteristicWriteOperation;
 import life.mibo.hardware.bluetooth.operations.GattDisconnectOperation;
 import life.mibo.hardware.bluetooth.operations.GattSetNotificationOperation;
 import life.mibo.hardware.core.Logger;
+import life.mibo.hardware.encryption.Encryption;
 
 /**
  * Created by Fer on 08/04/2019.
@@ -42,13 +40,14 @@ public class BluetoothManager {
 
     private ArrayList<BluetoothDevice> devicesConnectedBle;
     private static final long SCAN_PERIOD = 5000;
-    private Handler mHandlerScan;
+    //private Handler mHandlerScan;
     private BluetoothLeScanner bluetoothLeScanner;
     private BluetoothAdapter mBluetoothAdapter;
     private OnBleDeviceDiscovered mDiscoverListener = null;
     private OnBleCharChanged mBleListener = null;
     private Activity activity;
     private BleGattManager mGattManager;
+
 
     public interface OnBleDeviceDiscovered {
         void bleHrDeviceDiscovered(String uid, String serial);
@@ -73,18 +72,34 @@ public class BluetoothManager {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void initBlueTooth() {
 
-
-        mHandlerScan = new Handler();
+//        if (mHandlerScan == null)
+//            mHandlerScan = new Handler();
 
 
         // Initializes a Bluetooth adapter.
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        if (mBluetoothAdapter == null)
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothLeScanner == null)
+            bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+
+        // if(!mBluetoothAdapter.isEnabled())
+        mBluetoothAdapter.enable();
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //scanDevice();
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void scanDevice(BleScanCallback callback) {
+        this.bleScanCallback = callback;
+        scanDevice();
+    }
     public void scanDevice() {
+
         //TODO: Check if only devices connected should be cleared o not lose the devices conected
         if (devicesHRBle == null) {
             devicesHRBle = new ArrayList<>();
@@ -98,7 +113,7 @@ public class BluetoothManager {
         if (devicesScaleBle == null) {
             devicesScaleBle = new ArrayList<>();
         }
-
+        // initBlueTooth();
 //
 //        // Stops scanning after a pre-defined scan period.
 //        mHandlerScan.postDelayed(new Runnable() {
@@ -110,6 +125,8 @@ public class BluetoothManager {
 //            }
 //        }, SCAN_PERIOD);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (bluetoothLeScanner == null)
+                initBlueTooth();
             bluetoothLeScanner.startScan(mLeHrSensorScanCallback);
         }
     }
@@ -123,6 +140,17 @@ public class BluetoothManager {
 
     public void clearDevicesboosterBle() {
         devicesBoosterBle.clear();
+    }
+
+    public void reset() {
+        if (devicesBoosterBle != null)
+            devicesBoosterBle.clear();
+        if (devicesHRBle != null)
+            devicesHRBle.clear();
+        if (devicesScaleBle != null)
+            devicesScaleBle.clear();
+        if (devicesConnectedBle != null)
+            devicesConnectedBle.clear();
     }
 
     //    private BluetoothAdapter.LeScanCallback mLeHrSensorScanCallback =
@@ -144,41 +172,54 @@ public class BluetoothManager {
 //                }
 //            };
 
+    interface BleScanCallback {
+        void onDevice(ScanResult result);
+    }
+
+    private BleScanCallback bleScanCallback;
+
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private ScanCallback mLeHrSensorScanCallback = new ScanCallback() {
 
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
+            if (bleScanCallback != null)
+                bleScanCallback.onDevice(result);
+            Logger.e("BluetoothManager onScanResult " + result);
             BluetoothDevice device = result.getDevice();
 
             if (!devicesHRBle.contains(device) && device.getName() != null && (device.getName().contains("HW") || device.getName().contains("Geonaute"))) {
                 devicesHRBle.add(device);
                 mDiscoverListener.bleHrDeviceDiscovered(device.toString(), device.getName());
-                Logger.e("BluetoothManager " + device.getName() + "   " + device.getClass());
+                Logger.e("BluetoothManager onScanResult " + device.getName() + "   " + device.getClass());
             }
+
             if (!devicesBoosterBle.contains(device) && !SessionManager.getInstance().getSession().isBoosterMode() && device.getName() != null && device.getName().contains("MIBO-")) {
                 devicesBoosterBle.add(device);
                 mDiscoverListener.bleBoosterDeviceDiscovered(device.getName().replace("MIBO-", ""), device.getName());
                 //  mDiscoverListener.bleBoosterDeviceDiscovered(device.toString(), device.getName());
-                Logger.e("BluetoothManager " + device.getName() + "   " + device.getClass());
+                Logger.e("BluetoothManager onScanResult2 " + device.getName() + "   " + device.getClass());
             }
 
             if (!devicesScaleBle.contains(device) && device.getName() != null && (device.getName().contains("WS806"))) {
                 devicesScaleBle.add(device);
                 mDiscoverListener.bleScaleDeviceDiscovered(device.toString(), device.getName());
-                Logger.e("BluetoothManager " + device.getName() + "   " + device.getClass());
+                Logger.e("BluetoothManager onScanResult3 " + device.getName() + "   " + device.getClass());
             }
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
+            Logger.e("BluetoothManager onBatchScanResults " + results);
         }
 
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
+            Logger.e("BluetoothManager onScanFailed " + errorCode);
         }
     };
 
@@ -194,7 +235,8 @@ public class BluetoothManager {
                 if (d.toString().equals(Id)) {
                     devicesConnectedBle.add(d);
 
-                    if (mGattManager == null) mGattManager = new BleGattManager(activity);
+                    if (mGattManager == null)
+                        mGattManager = new BleGattManager(activity);
                     mGattManager.queue(new GattSetNotificationOperation(d,
                             BleGattManager.HEART_RATE_SERVICE_UUID,
                             BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID,

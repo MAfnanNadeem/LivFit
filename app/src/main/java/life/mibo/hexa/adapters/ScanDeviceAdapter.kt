@@ -38,7 +38,7 @@ class ScanDeviceAdapter(var list: List<ScanItem>, val type: Int = 0) :
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item = getItem(position)
         holder.text1?.text = item?.text1
-        holder.text1?.text = item?.text2
+        holder.text2?.text = item?.text2
 
     }
 
@@ -53,5 +53,5 @@ class ScanDeviceAdapter(var list: List<ScanItem>, val type: Int = 0) :
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
     }
 
-    data class ScanItem(val text1: String, val text2: String = "")
+    data class ScanItem(val text1: String?, val text2: String? = "")
 }

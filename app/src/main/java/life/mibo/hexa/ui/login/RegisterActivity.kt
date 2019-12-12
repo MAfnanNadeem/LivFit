@@ -1,19 +1,31 @@
 package life.mibo.hexa.ui.login
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.PatternMatcher
+import android.util.Patterns
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.JsonObject
+import com.kaopiz.kprogresshud.KProgressHUD
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
 import kotlinx.android.synthetic.main.activity_register_page2.*
 import kotlinx.android.synthetic.main.activity_register_page3.*
-import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
+import life.mibo.hardware.core.Logger
 import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
+import life.mibo.hexa.core.API
+import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
+import life.mibo.hexa.models.register.Data
+import life.mibo.hexa.models.register.RegisterGuestMember
+import life.mibo.hexa.ui.dialog.Dialog
 import life.mibo.hexa.utils.Toasty
-import android.content.DialogInterface
-import android.widget.Toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.regex.Pattern
 
 
 class RegisterActivity : AppCompatActivity() {
@@ -45,10 +57,13 @@ class RegisterActivity : AppCompatActivity() {
             showCountry()
         }
         //ccp.registerPhoneNumberTextView(tv_country)
+        ccp.setDefaultCountryUsingPhoneCodeAndApply(971)
+        ccp.registerPhoneNumberTextView(et_phone_number)
         ccp.setOnCountryChangeListener { selectedCountry ->
             tv_country.text = selectedCountry.name
             isCountry = true
         }
+        ccp_otp.registerPhoneNumberTextView(et_number)
         ccp_otp.registerPhoneNumberTextView(et_number)
         ccp_otp.setOnCountryChangeListener { selectedCountry ->
             //tv_country.text = selectedCountry.name
@@ -60,6 +75,13 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
+    var mDialog: KProgressHUD? = null
+
+    fun getDialog(): KProgressHUD? {
+        if (mDialog == null)
+            mDialog = Dialog.get(this@RegisterActivity)
+        return mDialog
+    }
 
     fun validate() {
         if (et_first_name.text?.trim()?.isEmpty()!!) {
@@ -102,15 +124,56 @@ class RegisterActivity : AppCompatActivity() {
             Toasty.error(this, "Please select your Country of residence").show()
             return
         }
+        if (et_phone_number.text?.trim()?.isEmpty()!!) {
+            Toasty.error(this, "Please enter Number").show()
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(et_email.text).matches()) {
+            Toasty.warning(this, "Please enter a valid email address").show()
+            return
+        }
+
 
         if ((et_password.text?.trim()!! == et_confirm_password.text?.trim()!!)) {
-            Toasty.success(this, "Successfully registered").show()
-            viewAnimator.showNext()
+            val data = Data(
+                firstName = et_first_name?.text.toString(),
+                lastName = et_last_name?.text.toString(),
+                email = et_email?.text.toString(),
+                password = et_confirm_password.text.toString(),
+                city = et_city?.text.toString(),
+                phone = ccp.fullNumberWithPlus,
+                country = tv_country?.text.toString(),
+                gender = tv_gender.text.toString(),
+                dOB = tv_dob.text.toString()
+            )
+            register(data = RegisterGuestMember(data))
+            //Toasty.success(this, "Successfully registered").show()
+            //viewAnimator.showNext()
             //startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
             return
         } else {
             Toasty.error(this, "Confirm Password not matched").show()
         }
+    }
+
+    fun register(data: RegisterGuestMember) {
+        getDialog()?.show()
+        API.request.getApi().register(data).enqueue(object : Callback<JsonObject> {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                getDialog()?.dismiss()
+                Toasty.error(this@RegisterActivity, "Failed " + t.message).show()
+                t.printStackTrace()
+                Logger.e("RegisterActivity : register API ", t)
+
+            }
+
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                getDialog()?.dismiss()
+                Toasty.success(this@RegisterActivity, "Register: " + response.body()).show()
+            }
+
+        })
 
     }
 
@@ -160,7 +223,7 @@ class RegisterActivity : AppCompatActivity() {
             .context(this@RegisterActivity)
             .callback { view, year, monthOfYear, dayOfMonth ->
                 //tv_dob.setText("$dayOfMonth/$monthOfYear/$year")
-                tv_dob.setText(String.format("%02d/%02d/%d", dayOfMonth, monthOfYear.plus(1), year))
+                tv_dob.setText(String.format("%d-%02d-%02d", year, monthOfYear.plus(1), dayOfMonth))
                 isDob = true
             }
             .spinnerTheme(R.style.DatePickerSpinner)

@@ -1,11 +1,18 @@
 package life.mibo.hardware;
 
+import android.content.Context;
+
 public class MIBO {
 
     private static MIBO instance;
+    private static Context context;
 
     private MIBO() {
 
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     public static MIBO getInstance() {
@@ -14,7 +21,7 @@ public class MIBO {
         return instance;
     }
 
-    public void init(){
-
+    public static void init(Context c) {
+        MIBO.context = c;
     }
 }

@@ -17,7 +17,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/login_bg_gradient" />
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
@@ -36,5 +36,5 @@
             <include layout="@layout/activity_register_page3" />
         </ViewAnimator>
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 </RelativeLayout>

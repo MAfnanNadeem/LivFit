@@ -1,21 +1,19 @@
 package life.mibo.hexa.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import life.mibo.hexa.R
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import com.github.siyamed.shapeimageview.HexagonImageView
-import life.mibo.hexa.view.recycler.VerticallyAdaptableHexagonImageView
 import java.util.*
 
 
 class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     RecyclerView.Adapter<RecyclerAdapter.Holder>() {
+
     //var list: ArrayList<Item>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val id = if (type == 0) R.layout.list_item_test else R.layout.list_item_test_vertical
@@ -40,8 +38,13 @@ class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item = getItem(position)
         holder.text?.text = item?.title
+        holder.image?.load(R.drawable.login_bg)
+
+//        Coil.loader().load(holder.image?.context!!, R.drawable.login_bg) {
+//            this.target(holder.image!!).
+//        }
         //holder.view?.setBackgroundColor(getRandomColor())
-        holder.image
+        //holder.image
         //if (item?.image != 0)
         // holder.hexa?.setImageDrawable(ColorDrawable(getRandomColor()))
     }

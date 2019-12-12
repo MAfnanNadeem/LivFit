@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        getScanned()
+        //getScanned()
     }
 
     fun getScanned() {

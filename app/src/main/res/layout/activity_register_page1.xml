@@ -19,23 +19,29 @@
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_first_name"
         style="@style/login_edittext"
+        android:imeOptions="actionNext"
+        android:inputType="textPersonName"
         android:hint="First Name" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_last_name"
         style="@style/login_edittext"
+        android:imeOptions="actionNext"
+        android:inputType="textPersonName"
         android:layout_marginTop="@dimen/grid_1x"
         android:hint="Last Name" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_email"
         style="@style/login_edittext"
+        android:imeOptions="actionNext"
         android:layout_marginTop="@dimen/grid_1x"
         android:hint="Email"
         android:inputType="textEmailAddress" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_password"
+        android:imeOptions="actionNext"
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:hint="Password"
@@ -45,6 +51,7 @@
         android:id="@+id/et_confirm_password"
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
+        android:imeOptions="actionNext"
         android:hint="Confirm Password"
         android:inputType="textPassword" />
 
@@ -68,6 +75,7 @@
         android:id="@+id/et_city"
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
+        android:imeOptions="actionNext"
         android:hint="City"
         android:inputType="textAutoComplete" />
 
@@ -79,18 +87,37 @@
         android:hint="Country"
         android:textSize="@dimen/text_size_medium" />
 
-    <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/ccp"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="11"
-        android:visibility="invisible"
-        app:ccp_clickable="true"
-        app:ccp_defaultCode="971"
-        app:ccp_dialogTextColor="@color/white"
-        app:ccp_hidePhoneCode="true"
-        app:ccp_showFlag="true"
-        app:ccp_showFullName="true" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ccp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="11"
+            app:ccp_clickable="true"
+            app:ccp_defaultCode="971"
+            app:ccp_dialogTextColor="@color/white"
+            app:ccp_hideNameCode="true"
+            app:ccp_showFullName="false" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_phone_number"
+            style="@style/login_edittext"
+            android:layout_margin="0dp"
+            android:ems="7"
+            android:layout_weight="1"
+            android:hint="Phone Number"
+            android:imeOptions="actionSend"
+            android:inputType="number" />
+
+    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/checkbox_terms"
@@ -99,7 +126,6 @@
         android:buttonTint="@color/colorPrimary"
         android:text="I accept the terms of agreement"
         android:textColor="@color/white" />
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"

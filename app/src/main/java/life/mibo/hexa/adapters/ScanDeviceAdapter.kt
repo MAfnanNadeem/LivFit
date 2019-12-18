@@ -14,7 +14,7 @@ import life.mibo.hexa.view.recycler.VerticallyAdaptableHexagonImageView
 import java.util.*
 
 
-class ScanDeviceAdapter(var list: List<ScanItem>, val type: Int = 0) :
+class ScanDeviceAdapter(var list: List<ScanItem>?, val type: Int = 0) :
     RecyclerView.Adapter<ScanDeviceAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(

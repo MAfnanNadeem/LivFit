@@ -31,7 +31,7 @@ android {
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
-           // resValue "string", "app_name", "MiBo Hexa"
+            // resValue "string", "app_name", "MiBo Hexa"
             buildConfigField "String", "API_URL", "\"https://os.mibo.world/api/v1/\""
         }
         debug {
@@ -73,6 +73,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
     implementation 'com.kaopiz:kprogresshud:1.2.0'
 
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -81,7 +82,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     //implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
     //mplementation 'com.github.GrenderG:Toasty:1.4.2'
-   // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
+    // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
     //implementation 'com.github.joielechong:countrycodepicker:master-SNAPSHOT'
     implementation 'com.github.joielechong:CountryCodePicker:a2225694e5'
     implementation 'com.github.swapnil1104:OtpEditText:0.1.6'
@@ -92,8 +93,6 @@ dependencies {
     implementation 'com.github.ihsanbal:LoggingInterceptor:3.0.0'
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"
     releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:3.0.1"
-
-
 
 
 }

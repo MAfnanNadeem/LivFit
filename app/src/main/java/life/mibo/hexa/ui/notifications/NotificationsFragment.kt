@@ -4,14 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.RecyclerAdapter
-import life.mibo.hexa.ui.dashboard.DashboardViewModel
 import life.mibo.hexa.view.recycler.HexagonRecyclerView
 
 class NotificationsFragment : Fragment() {
@@ -43,7 +41,7 @@ class NotificationsFragment : Fragment() {
             list.add(RecyclerAdapter.Item(0, "$i"))
         }
         val adapter = RecyclerAdapter(list, 1)
-        // val manager = LinearLayoutManager(this@DashboardFragment.activity)
+        // val manager = LinearLayoutManager(this@Channel6Fragment.activity)
         //view.layoutManager = manager
 
         view.adapter = adapter

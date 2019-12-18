@@ -22,4 +22,10 @@
         android:name="life.mibo.hexa.ui.notifications.NotificationsFragment"
         android:label="Test 2"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_channels"
+        android:name="life.mibo.hexa.ui.ch6.Channel6Fragment"
+        android:label="Muscle Channels"
+        tools:layout="@layout/fragment_channel6" />
 </navigation>

@@ -1,12 +1,16 @@
 package life.mibo.hexa
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
@@ -14,21 +18,46 @@ import java.net.InetAddress
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        setSupportActionBar(findViewById(R.id.toolbar))
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val drawer: NavigationView = findViewById(R.id.nav_view)
 
+        val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        bottomNavView.setupWithNavController(navController)
+//        val drawerConfig = AppBarConfiguration(
+//            setOf(
+//                R.id.nav_home, R.id.nav_test1, R.id.nav_test2,
+//                R.id.nav_test3, R.id.nav_share, R.id.nav_send
+//            ), drawerLayout
+//        )
+        drawer.setNavigationItemSelectedListener {
+            Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
+            when (it.itemId) {
+                R.id.nav_test1 -> {
+                    navController.navigate(R.id.navigation_channels)
+                }
+                R.id.nav_test2 -> {
+
+                }
+
+            }
+            drawerLayout.closeDrawer(Gravity.START)
+            return@setNavigationItemSelectedListener true;
+        }
+//        drawer.setupWithNavController(navController)
+
         //getScanned()
     }
 

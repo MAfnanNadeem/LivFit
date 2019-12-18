@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@drawable/channel_6_item_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.87" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageView"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:background="@drawable/ic_channel_glutes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_perc_main_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:background="@drawable/channel_6_timer_bg"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="100%"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_start"
+        app:layout_constraintStart_toEndOf="@+id/tv_perc_main_channel"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_perc"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_ch6_plus_minus_bg"
+            android:maxLines="1"
+            android:padding="2dp"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="100%"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/button_minus"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_minus_hexa" />
+
+        <ImageButton
+            android:id="@+id/button_plus"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="48dp"
+            android:layout_toEndOf="@id/button_minus"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_plus_hexa" />
+
+
+    </RelativeLayout>
+
+    <life.mibo.views.PlayButton
+        android:id="@+id/button_start"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/img_play_hexa"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

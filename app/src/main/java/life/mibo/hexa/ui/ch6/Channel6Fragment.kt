@@ -17,8 +17,7 @@ import kotlinx.android.synthetic.main.fragment_channel6.*
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
-import life.mibo.hexa.ui.ch6.adapter.ChannelAdapter
-import life.mibo.hexa.ui.dashboard.Channel6ViewModel
+import life.mibo.hexa.ui.devices.adapter.ChannelAdapter
 
 
 class Channel6Fragment : BaseFragment() {
@@ -129,11 +128,11 @@ class Channel6Fragment : BaseFragment() {
             }
 
         })
-        //val manager = GridLayoutManager(this@Channel6Fragment.activity, 1)
+        //val manager = GridLayoutManager(this@DeviceScanFragment.activity, 1)
         //view.layoutManager = manager
         view.adapter = adapter
-        //Toasty.warning(this@Channel6Fragment.context, "")
-        //Toasty.warning(this@Channel6Fragment.context!!, "Configuration changes $isLand").show()
+        //Toasty.warning(this@DeviceScanFragment.context, "")
+        //Toasty.warning(this@DeviceScanFragment.context!!, "Configuration changes $isLand").show()
 
     }
 
@@ -142,7 +141,7 @@ class Channel6Fragment : BaseFragment() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         isLand = newConfig.orientation === Configuration.ORIENTATION_LANDSCAPE
-        //Toasty.warning(this@Channel6Fragment.context!!, "Configuration changes $isLand").show()
+        //Toasty.warning(this@DeviceScanFragment.context!!, "Configuration changes $isLand").show()
         setRecycler(recyclerView!!)
     }
 

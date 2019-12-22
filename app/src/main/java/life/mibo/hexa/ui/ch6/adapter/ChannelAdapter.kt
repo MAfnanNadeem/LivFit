@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
+import life.mibo.hexa.ui.devices.adapter.ChannelAdapter
 import life.mibo.views.PlayButton
 import java.util.*
 
@@ -18,9 +19,9 @@ class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
     //var list: ArrayList<Item>? = null
     private var listener: Listener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelAdapter.Holder {
         val id = if (type) R.layout.list_item_channels_grid else R.layout.list_item_channels
-        return Holder(LayoutInflater.from(parent.context).inflate(id, parent, false))
+        return ChannelAdapter.Holder(LayoutInflater.from(parent.context).inflate(id, parent, false))
     }
 
     fun setListener(listener: Listener) {
@@ -37,7 +38,7 @@ class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
         return list?.get(position)
     }
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
+    override fun onBindViewHolder(holder: ChannelAdapter.Holder, position: Int) {
         val item = getItem(position)
         holder.percent?.text = "${item?.percentMuscle}"
         holder.percentChannel?.text = "${item?.percentChannel}"
@@ -66,7 +67,7 @@ class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
         var percentChannel: TextView? = itemView.findViewById(R.id.tv_perc_main_channel)
         var percent: TextView? = itemView.findViewById(R.id.tv_perc)
         var view: View? = itemView.findViewById(R.id.view)
-        var image: View? = itemView.findViewById(R.id.imageView)
+        var image: View? = itemView.findViewById(R.id.iv_device)
         var plus: View = itemView.findViewById(R.id.button_plus)
         var minus: View = itemView.findViewById(R.id.button_minus)
         var play: PlayButton = itemView.findViewById(R.id.button_start)

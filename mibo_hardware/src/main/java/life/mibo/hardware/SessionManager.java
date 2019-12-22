@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceTypes;
+import life.mibo.hardware.models.LocationInfo;
 import life.mibo.hardware.models.Session;
 import life.mibo.hardware.models.Trainer;
 import life.mibo.hardware.models.User;
@@ -61,13 +62,14 @@ public class SessionManager {
         session = new Session();
             session.setTrainer(new Trainer());
             session.getTrainer().setId(1);
-            session.getTrainer().setFirstName("NameTest");
-            session.getTrainer().setLastName("LNameTest");
-            session.getTrainer().setDesignation("Trainer");
-            //session.getTrainer().setLocationInfo("");
+            session.getTrainer().setFirstName("Sumeet");
+            session.getTrainer().setLastName("Kumar");
+            session.getTrainer().setDesignation("MI.BO");
+            //session.getTrainer().setLocationInfo(new LocationInfo());
             session.getTrainer().setImageThumbnail("");
-            session.getTrainer().setAge(31);
-            session.getTrainer().setContact("91999999");
+            session.getTrainer().setAge(28);
+            session.getTrainer().setContact("058 552 4744");
+            session.setBoosterMode(true);
 
 
         //session.setCurrentSessionProgram(program);

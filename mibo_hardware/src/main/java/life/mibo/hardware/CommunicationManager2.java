@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
@@ -30,6 +30,7 @@ import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
 import life.mibo.hardware.network.TCPClient;
+import life.mibo.hardware.network.TCPClientNio;
 import life.mibo.hardware.network.UDPServer;
 
 import static java.lang.Thread.sleep;
@@ -62,13 +63,15 @@ import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 /**
- * Created by Fer on 18/03/2019.
+ * Created by Sumeet Gehi on 17/12/2019.
+ * <p>
+ * Trying to reimplement Fernando's API and Logic with Java Nio based thread driven socket channels and new Android APIs
  */
 
-public class CommunicationManager {
+public class CommunicationManager2 {
 
-    private static CommunicationManager manager;
-    public ArrayList<TCPClient> tcpClients = new ArrayList<>();
+    private static CommunicationManager2 manager;
+    //public ArrayList<TCPClient> tcpClients = new ArrayList<>();
     public UDPServer udpServer;
     public BluetoothManager bluetoothManager;
     //public ScaleManager scaleManager;
@@ -77,7 +80,7 @@ public class CommunicationManager {
     boolean commRunning = true;
     private Thread pingThread;
 
-    private CommunicationManager() {
+    private CommunicationManager2() {
         //EventBus.getDefault().register(this);
         if (manager != null) {
             throw new RuntimeException("getInstance() to get the instance of this class");
@@ -86,21 +89,21 @@ public class CommunicationManager {
         pingThread.start();
     }
 
-    private CommunicationManager(Listener listener) {
+    private CommunicationManager2(Listener listener) {
         this();
         setListener(listener);
     }
 
-    public static CommunicationManager getInstance() {
+    public static CommunicationManager2 getInstance() {
         if (manager == null) {
-            manager = new CommunicationManager();
+            manager = new CommunicationManager2();
         }
         return manager;
     }
 
-    public static CommunicationManager getInstance(Listener listener) {
+    public static CommunicationManager2 getInstance(Listener listener) {
         if (manager == null) {
-            manager = new CommunicationManager(listener);
+            manager = new CommunicationManager2(listener);
         }
         if (manager.listener == null)
             manager.listener = listener;
@@ -127,11 +130,18 @@ public class CommunicationManager {
             while (commRunning) {
                 try {
                     Thread.sleep(4000);
-                    for (TCPClient t : tcpClients) {
-                        t.sendMessage(DataParser.sendGetStatus());
-                        pingSentDevice(t.getUid());
-                        // Log.e("commManag", "send ping");
+                    HashMap<String, TCPClientNio.Client> map = TCPClientNio.get().getMap();
+                    for (HashMap.Entry<String, TCPClientNio.Client> client : map.entrySet()) {
+                        client.getValue().sendMessage(DataParser.sendGetStatus());
+                        pingSentDevice(client.getKey());
+                        //client.getValue().sendMessage(message);
                     }
+                    // TCPClientNio.get().sendMessage(DataParser.sendGetStatus());
+//                    for (TCPClient t : tcpClients) {
+//                        t.sendMessage(DataParser.sendGetStatus());
+//                        pingSentDevice(t.getUid());
+//                        // Log.e("commManag", "send ping");
+//                    }
                     if (bluetoothManager != null) {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
                             if (d.getName() != null) {
@@ -269,11 +279,10 @@ public class CommunicationManager {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public synchronized void startScanning(final Activity context) {
         if (udpServer == null) {
-            mDiscoveredDevices.clear();
             udpServer = new UDPServer(new UDPServer.OnBroadcastReceived() {
                 @Override
                 public void broadcastReceived(byte[] msg, InetAddress ip) {
-                    if(listener != null)
+                    if (listener != null)
                         listener.udpDeviceReceiver(msg, ip);
                     log("udpDeviceReceiver " + msg + " IP " + ip);
                     // TODO remove later
@@ -350,17 +359,8 @@ public class CommunicationManager {
         }
     };
 
-    private void log(String s) {
-        Logger.e("CommunicationManager: " + s);
-    }
-
     public void stopScanning() {
         log("Stopping scanning....");
-        stopUDPDiscoveryServer();
-        stopBleDiscoveryServer();
-    }
-
-    public void stopDiscoveryServers() {
         stopUDPDiscoveryServer();
         stopBleDiscoveryServer();
     }
@@ -466,35 +466,31 @@ public class CommunicationManager {
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
     }
 
+
     private void checkNewDevice(byte[] command, InetAddress ip) {
         boolean newDevice = true;
-        log("checkNewDevice --- " + true);
-        for (Device d : mDiscoveredDevices) {
-            if (d.getIp().equals(ip)) {
-                log("checkNewDevice --- found1 " + ip);
+
+        for (int i = 0; i < mDiscoveredDevices.size(); i++) {//Device d : mDiscoveredDevices
+            if (mDiscoveredDevices.get(i).getIp().equals(ip)) {
                 newDevice = false;
-                //return;
             }
-            if (newDevice && Device.convetrUiidToString(DataParser.getUID(command)).equals(d.getUid())) {
-                log("checkNewDevice --- found1  convetrUiidToString UID matched");
+            if (newDevice && Device.convetrUiidToString(DataParser.getUID(command)).equals(mDiscoveredDevices.get(i).getUid())) {
                 newDevice = false;
-                d.setIp(ip);
-                d.setStatusConnected(DEVICE_WARNING);
-                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(d.getUid()).setStatusConnected(DEVICE_WARNING);
+                mDiscoveredDevices.get(i).setIp(ip);
+                mDiscoveredDevices.get(i).setStatusConnected(DEVICE_WARNING);
+                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(mDiscoveredDevices.get(i).getUid()).setStatusConnected(DEVICE_WARNING);
                 if (listener != null)
                     listener.onDeviceDiscoveredEvent("");
                 //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
-                // connectDevice(d);
+                //    connectDevice(d);
             }
         }
         if (newDevice) {
-            log("checkNewDevice new device " + newDevice);
+            log("new device " + newDevice);
             addDeviceToDiscoveredDevices(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
             if (listener != null)
                 listener.onDeviceDiscoveredEvent("");
             //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
-        } else {
-            log("checkNewDevice --- " + newDevice);
         }
 
 
@@ -514,8 +510,16 @@ public class CommunicationManager {
         }
     }
 
+    public ArrayList<Device> getDiscoveredDevices() {
+        return mDiscoveredDevices;
+    }
+
+    public void resetDiscoveredDevices() {
+        mDiscoveredDevices.clear();
+        bluetoothManager.clearDevicesboosterBle();
+    }
+
     public void addDeviceToDiscoveredDevices(Device device) {
-        log("addDeviceToDiscoveredDevices --- " + device);
         boolean newDevice = true;
         for (Device d : mDiscoveredDevices) {
             if (d.getUid().equals(device.getUid())) {
@@ -527,14 +531,6 @@ public class CommunicationManager {
         }
     }
 
-    public ArrayList<Device> getDiscoveredDevices() {
-        return mDiscoveredDevices;
-    }
-
-    public void resetDiscoveredDevices() {
-        mDiscoveredDevices.clear();
-        bluetoothManager.clearDevicesboosterBle();
-    }
     public boolean isDiscoveredbyUid(String uid) {
         for (Device d : mDiscoveredDevices) {
             if (d.getUid().equals(uid)) {
@@ -573,7 +569,7 @@ public class CommunicationManager {
 
 
     private void connectTCPDevice(String ServerIP, String ServerPort, String Uid) {
-        TCPConnect(ServerIP, ServerPort, Uid);
+        TCPConnectNio(ServerIP, ServerPort, Uid);
 
     }
 
@@ -589,6 +585,10 @@ public class CommunicationManager {
         }
     }
 
+    public void TCPDisconnect() {
+        TCPClientNio.get().stopClient();
+    }
+
     public void TCPDisconnect(String Uid) {
 //        for(TCPClient t : tcpClients) {
 //            if(t.getUid().equals(Uid)){
@@ -596,50 +596,53 @@ public class CommunicationManager {
 //                this.tcpClients.remove(t);
 //            }
 //        }
-        if (tcpClients != null) {
-            int aux = -1;
-            for (TCPClient t : tcpClients) {
-                if (t.getUid().equals(Uid)) {
-                    aux = tcpClients.indexOf(t);
-                    t.stopClient();
-                }
-            }
-            if (aux != -1) {
-                tcpClients.remove(aux);
-            }
-        }
+//        if (tcpClients != null) {
+//            int aux = -1;
+//            for (TCPClient t : tcpClients) {
+//                if (t.getUid().equals(Uid)) {
+//                    aux = tcpClients.indexOf(t);
+//                    t.stopClient();
+//                }
+//            }
+//            if (aux != -1) {
+//                tcpClients.remove(aux);
+//            }
+//        }
+
+        TCPClientNio.get().stopClient(Uid);
     }
 
     private void TCPConnect(String ip, String port, String Uid) {
         //create a TCPClient object
-        Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port);
-        boolean newDevice = true;
-        for (TCPClient t : tcpClients) {
-            if (t.getServerIp().equals(ip)) {
-                newDevice = false;
-            }
-        }
-        if (newDevice) {
-            tcpClients.add(new TCPClient(ip, Integer.parseInt(port), Uid, new TCPClient.OnMessageReceived() {
-                @Override
-                public void messageReceived(byte[] message, String uid) {
-                    messageConsumer(message, uid);
-                }
-            }));
-            for (TCPClient t : tcpClients) {
-                if (t.getServerIp().equals(ip)) {
-                    Log.e("tcpcon", "run");
-                    t.run();
-                }
-            }
-        }
+//        Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port);
+//        boolean newDevice = true;
+//        for (TCPClient t : tcpClients) {
+//            if (t.getServerIp().equals(ip)) {
+//                newDevice = false;
+//            }
+//        }
+//        if (newDevice) {
+//            tcpClients.add(new TCPClient(ip, Integer.parseInt(port), Uid, new TCPClient.OnMessageReceived() {
+//                @Override
+//                public void messageReceived(byte[] message, String uid) {
+//                    messageConsumer(message, uid);
+//                }
+//            }));
+//
+//            for (TCPClient t : tcpClients) {
+//                if (t.getServerIp().equals(ip)) {
+//                    log("run");
+//                    t.run();
+//                }
+//            }
+//        }
 
     }
 
     private void messageConsumer(byte[] message, String uid) {//lento?
         Encryption.mbp_decrypt(message, message.length);
         if (message.length >= MIN_COMMAND_LENGHT) {
-            // Log.e("commManager", "consummer lenght "+message.length);
+            // log("consummer lenght "+message.length);
             try {
                 for (int i = 0; i < message.length; i++) {
                     if (message.length > i + 4) {
@@ -663,7 +666,7 @@ public class CommunicationManager {
 
 
     private void receiveCommandEventDispatcher(byte[] command, String uid) {
-        //Log.e("commManager", "consummer msg uid: " + uid);
+        //log("consummer msg uid: " + uid);
         switch (DataParser.getCommand(command)) {
             case COMMAND_PING_RESPONSE:
                 break;
@@ -707,27 +710,27 @@ public class CommunicationManager {
                             }
                         }
                         SessionManager.getInstance().getSession().checkDeviceStatus(DataParser.getStatusFlags(command), uid);
-                        // Log.e("commManager", "signal: " + DataParser.getStatusSignal(command)+" bat:"+DataParser.getStatusBattery(command));
+                        // log("signal: " + DataParser.getStatusSignal(command)+" bat:"+DataParser.getStatusBattery(command));
                     }
 
                 }
-                //  Log.e("commManager", "Receiver PING");
+                //  log("Receiver PING");
                 break;
             case COMMAND_FIRMWARE_REVISION_RESPONSE:
-                Log.e("commManager", "Receiver FIRMWARE");
+                log("Receiver FIRMWARE");
                 break;
             case COMMAND_SET_DEVICE_COLOR_RESPONSE:
-                Log.e("commManager", "Receiver COLOR");
+                log("Receiver COLOR");
                 break;
             case COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE:
-                Log.e("commManager", "Receiver PROGRAM");
+                log("Receiver PROGRAM");
                 break;
             case COMMAND_SET_MAIN_LEVEL_RESPONSE:
                 if (listener != null)
                     listener.GetMainLevelEvent(DataParser.getMainLevel(command), uid);
                 //EventBus.getDefault().postSticky(new GetMainLevelEvent(DataParser.getMainLevel(command), uid));
                 SessionManager.getInstance().getSession().getUserByBoosterUid(uid).setMainLevel(DataParser.getMainLevel(command));
-                Log.e("commManager", "Receiver MAINLEVEL" + uid);
+                log("Receiver MAINLEVEL" + uid);
                 //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
                 break;
             case COMMAND_SET_CHANNELS_LEVELS_RESPONSE:
@@ -735,24 +738,24 @@ public class CommunicationManager {
                     listener.GetLevelsEvent(uid);
 
                 //EventBus.getDefault().postSticky(new GetLevelsEvent(uid));
-                //  Log.e("commManager", "Receiver LEVELS");
+                //  log("Receiver LEVELS");
                 break;
             case COMMAND_START_CURRENT_CYCLE_RESPONSE:
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(true);
                 if (listener != null)
                     listener.GetLevelsEvent(uid);
                 //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                Log.e("commManager", "Receiver START");
+                log("Receiver START");
                 break;
             case COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE:
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
                 if (listener != null)
                     listener.GetLevelsEvent(uid);
                 //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                Log.e("commManager", "Receiver PAUSE");
+                log("Receiver PAUSE");
                 break;
             case COMMAND_RESET_CURRENT_CYCLE_RESPONSE:
-                Log.e("commManager", "Receiver RESET");
+                log("Receiver RESET");
                 break;
             case ASYNC_PROGRAM_STATUS:
                 if (listener != null)
@@ -764,14 +767,14 @@ public class CommunicationManager {
                 //    DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid));
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
 
-                //  Log.e("commManager", "Receiver ASYNC PROGRAM STATUS");
+                //  log("Receiver ASYNC PROGRAM STATUS");
                 break;
             case COMMAND_ASYNC_SET_MAIN_LEVEL:
                 if (listener != null)
                     listener.GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid);
                 //EventBus.getDefault().postSticky(new GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid));
                 SessionManager.getInstance().getSession().getUserByBoosterUid(uid).setMainLevel(DataParser.getMainLevelAsync(command));
-                Log.e("commManager", "Receiver ASYNC MAINLEVEL");
+                log("Receiver ASYNC MAINLEVEL");
                 break;
             case COMMAND_ASYNC_PAUSE:
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
@@ -779,14 +782,14 @@ public class CommunicationManager {
                     listener.DevicePlayPauseEvent(uid);
 
                 //  EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                Log.e("commManager", "Receiver ASYNC Pause");
+                log("Receiver ASYNC Pause");
                 break;
             case COMMAND_ASYNC_START:
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(true);
                 if (listener != null)
                     listener.DevicePlayPauseEvent(uid);
                 //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                Log.e("commManager", "Receiver ASYNC Pause");
+                log("Receiver ASYNC Pause");
                 break;
             default:
                 break;
@@ -796,47 +799,80 @@ public class CommunicationManager {
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onSendProgramEvent(SendProgramEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendProgram(1, 0, event.getProgram()));
-            }
+        try {
+            TCPClientNio.get().sendMessage(event.getUid(), DataParser.sendProgram(1, 0, event.getProgram()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("onSendProgramEvent error ");
         }
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendProgram(1, 0, event.getProgram()));
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendProgram(1, 0, event.getProgram()));
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onSendProgramChangesHotEvent(SendProgramChangesHotEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendProgramOnHot(1, 0, event.getProgram()));
-            }
+        try {
+            TCPClientNio.get().sendMessage(event.getUid(), DataParser.sendProgramOnHot(1, 0, event.getProgram()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("onSendProgramChangesHotEvent error ");
         }
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendProgramOnHot(1, 0, event.getProgram()));
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendProgramOnHot(1, 0, event.getProgram()));
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onSendCircuitEvent(SendCircuitEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                sendCircuitTCP(event.getCircuit(), t);
-            }
+        try {
+            sendCircuitTCP(event.getCircuit(), TCPClientNio.get().get(event.getUid()));
+            //TCPClientNio.get().sendMessage(event.getUid(), DataParser.sendProgramOnHot(1, 0, event.getProgram()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("onSendCircuitEvent error ");
         }
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                sendCircuitTCP(event.getCircuit(), t);
+//            }
+//        }
         sendCircuitGATT(event.getCircuit(), event.getUid());
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
+    }
+
+    private void sendCircuitTCP(Circuit circuit, TCPClientNio.Client client) {
+        int index = 0;
+        for (Program p : circuit.getPrograms()) {
+            if (client != null)
+                client.sendMessage(DataParser.sendProgram(circuit.getPrograms().length, index, p));
+            index++;
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void sendCircuitTCP(Circuit circuit, TCPClient TCPSocket) {
@@ -861,93 +897,109 @@ public class CommunicationManager {
         }
     }
 
+    private void send(String uid, byte[] msg) {
+        try {
+            TCPClientNio.get().sendMessage(uid, msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("send message error " + uid + " :: " + e.getMessage());
+        }
+    }
+
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onChangeColorEvent(ChangeColorEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-            }
-        }
+
+        send(event.getUid(), DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        Log.e("CommManager", "Color EVENT");
+        log("Color EVENT");
 
     }
 
     // @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDeviceSearchEvent(DeviceSearchEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendSearchCommand());
-            }
-        }
+        send(event.getUid(), DataParser.sendSearchCommand());
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendSearchCommand());
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendSearchCommand());
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        Log.e("CommManager", "Search EVENT");
+        log("Search EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onMainLevelEvent(SendMainLevelEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendMain(event.getLevel()));
-            }
-        }
+        send(event.getUid(), DataParser.sendMain(event.getLevel()));
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendMain(event.getLevel()));
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendMain(event.getLevel()));
         // tcpClients.get(0).sendMessage(DataParser.sendMain( event.getLevel()));
-        Log.e("CommManager", "MainLevel EVENT");
+        log("MainLevel EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onChannelsLevelEvent(SendChannelsLevelEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendLevels(event.getLevels()));
-            }
-        }
+        send(event.getUid(), DataParser.sendLevels(event.getLevels()));
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendLevels(event.getLevels()));
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendLevels(event.getLevels()));
         //tcpClients.get(0).sendMessage(DataParser.sendLevels( event.getLevels()));
-        Log.e("CommManager", "Channels EVENT");
+        log("Channels EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDevicePlayEvent(SendDevicePlayEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendStart());
-            }
-        }
+        send(event.getUid(), DataParser.sendStart());
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendStart());
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendStart());
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
-        Log.e("CommManager", "Play EVENT");
+        log("Play EVENT");
 
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDeviceStartEvent(SendDeviceStartEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendReStart());
-            }
-        }
+        send(event.getUid(), DataParser.sendReStart());
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendReStart());
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendReStart());
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
-        Log.e("CommManager", "Play EVENT");
+        log("Play EVENT");
 
     }
 
@@ -955,15 +1007,16 @@ public class CommunicationManager {
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDeviceStopEvent(SendDeviceStopEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendStop());
-            }
-        }
+        send(event.getUid(), DataParser.sendStop());
+//        for (TCPClient t : tcpClients) {
+//            if (t.getUid().equals(event.getUid())) {
+//                t.sendMessage(DataParser.sendStop());
+//            }
+//        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendStop());
         //tcpClients.get(0).sendMessage(DataParser.sendStop());
-        Log.e("CommManager", "Stop EVENT");
+        log("Stop EVENT");
 
     }
 
@@ -997,13 +1050,30 @@ public class CommunicationManager {
         }
     }
 
+    private void log(String s) {
+        Logger.e("CommunicationManager: " + s);
+    }
+
+    //private TCPClientNioTest tcpClientNio = null;
+    //public ArrayList<TCPClient> mTCPClients = new ArrayList<>();
+
+    private void TCPConnectNio(String ip, String port, String id) {
+        TCPClientNio.get().add(ip, Integer.parseInt(port), id, new TCPClientNio.OnMessageReceived() {
+            @Override
+            public void messageReceived(byte[] message, String uid) {
+                log("TCP Client Test Message Received " + message);
+                messageConsumer(message, uid);
+            }
+        });
+    }
+
     private Listener listener;
 
     public Listener getListener() {
         return listener;
     }
 
-    public CommunicationManager setListener(Listener listener) {
+    public CommunicationManager2 setListener(Listener listener) {
         this.listener = listener;
         return this;
     }

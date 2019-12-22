@@ -79,16 +79,20 @@ public class BluetoothManager {
         // Initializes a Bluetooth adapter.
         if (mBluetoothAdapter == null)
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothLeScanner == null)
-            bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
 
-        // if(!mBluetoothAdapter.isEnabled())
         mBluetoothAdapter.enable();
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        if (mBluetoothAdapter.enable()) {
+            if (bluetoothLeScanner == null)
+                bluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        }
+
+        // if(!mBluetoothAdapter.isEnabled())
+
         //scanDevice();
     }
 

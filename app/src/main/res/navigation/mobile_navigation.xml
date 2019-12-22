@@ -28,4 +28,10 @@
         android:name="life.mibo.hexa.ui.ch6.Channel6Fragment"
         android:label="Muscle Channels"
         tools:layout="@layout/fragment_channel6" />
+
+    <fragment
+        android:id="@+id/navigation_devices"
+        android:name="life.mibo.hexa.ui.devices.DeviceScanFragment"
+        android:label="Scan Devices"
+        tools:layout="@layout/fragment_channel6" />
 </navigation>

@@ -49,18 +49,18 @@ public class UDPServer {
             public void run() {
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
-                final byte[] lMsg = new byte[64];
+                final byte[] bytes = new byte[64];
                 try {
-                    DatagramSocket ReceiveSocket = new DatagramSocket(null);
-                    ReceiveSocket.setReuseAddress(true);
-                    ReceiveSocket.bind(new InetSocketAddress(PortReceive));
+                    DatagramSocket socket = new DatagramSocket(null);
+                    socket.setReuseAddress(true);
+                    socket.bind(new InetSocketAddress(PortReceive));
                     while (UDPRunning) {
-                        DatagramPacket msgPacket = new DatagramPacket(lMsg, lMsg.length);
-                        ReceiveSocket.receive(msgPacket);
+                        DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
+                        socket.receive(msgPacket);
 //                        String response = new String(lMsg, 0, lMsg.length);
 //                        Log.e("udpR","ReciveUDP");
-                        if (lMsg != null && mBroadcastListener != null) {
-                            mBroadcastListener.broadcastReceived(lMsg ,msgPacket.getAddress());
+                        if (bytes != null && mBroadcastListener != null) {
+                            mBroadcastListener.broadcastReceived(bytes ,msgPacket.getAddress());
                         }
                         Thread.sleep(20);
 

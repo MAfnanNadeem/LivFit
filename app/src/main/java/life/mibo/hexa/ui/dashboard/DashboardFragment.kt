@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.RecyclerAdapter
+import life.mibo.hexa.ui.ch6.Channel6ViewModel
 import life.mibo.hexa.view.recycler.HexagonRecyclerView
 
 class DashboardFragment : Fragment() {
@@ -40,7 +40,7 @@ class DashboardFragment : Fragment() {
             list.add(RecyclerAdapter.Item(0, "$i"))
         }
         val adapter = RecyclerAdapter(list)
-       // val manager = LinearLayoutManager(this@Channel6Fragment.activity)
+       // val manager = LinearLayoutManager(this@DeviceScanFragment.activity)
         //view.layoutManager = manager
         view.adapter = adapter
 

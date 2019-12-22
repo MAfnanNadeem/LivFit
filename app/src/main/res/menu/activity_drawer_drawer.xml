@@ -11,11 +11,11 @@
         <item
             android:id="@+id/nav_test1"
             android:icon="@drawable/ic_home_black_24dp"
-            android:title="Test" />
+            android:title="Six Channel" />
         <item
             android:id="@+id/nav_test2"
             android:icon="@drawable/ic_home_black_24dp"
-            android:title="Test" />
+            android:title="Scan Devices" />
         <item
             android:id="@+id/nav_test3"
             android:icon="@drawable/ic_menu_manage"

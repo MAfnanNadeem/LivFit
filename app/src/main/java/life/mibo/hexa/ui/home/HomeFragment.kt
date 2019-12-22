@@ -39,7 +39,6 @@ class HomeFragment : Fragment() {
             //  textView.text = it
         })
         setRecycler()
-        getScanned()
         //       getBlDevices()
         val scan: View = root.findViewById(R.id.scan);
         scan?.setOnClickListener {
@@ -48,7 +47,7 @@ class HomeFragment : Fragment() {
                     bluetoothHelper?.enableBluetooth()
                 bluetoothHelper?.startDiscovery()
             }
-            communicationManager?.startDiscoveryServers(this@HomeFragment.activity)
+            communicationManager?.startScanning(this@HomeFragment.activity)
             Toasty.info(this@HomeFragment.context!!, "Bluetooth scanning").show()
 
         }
@@ -107,65 +106,6 @@ class HomeFragment : Fragment() {
 
     var communicationManager: CommunicationManager? = null
 
-    fun getScanned() {
-        log("getScanning started")
-        communicationManager =
-            CommunicationManager.getInstance().setListener(object : CommunicationManager.Listener {
-                override fun broadcastReceived(msg: ByteArray?, ip: InetAddress?) {
-
-                }
-
-                override fun NewConnectionStatus(getname: String?) {
-                    log("NewConnectionStatus $getname")
-                }
-
-                override fun NewAlarmEvent() {
-                    log("NewAlarmEvent ")
-                }
-
-                override fun NewDeviceDiscoveredEvent(s: String?) {
-                    log("NewDeviceDiscoveredEvent $s")
-                }
-
-                override fun HrEvent(hr: Int, uid: String?) {
-                    log("HrEvent $hr : $uid")
-                }
-
-                override fun DeviceStatusEvent(uid: String?) {
-                    log("DeviceStatusEvent $uid")
-                }
-
-                override fun ChangeColorEvent(d: Device?, uid: String?) {
-                    log("DeviceStatusEvent $d : $uid")
-                }
-
-                override fun GetMainLevelEvent(mainLevel: Int, uid: String?) {
-                    log("GetMainLevelEvent $mainLevel : $uid")
-                }
-
-                override fun GetLevelsEvent(uid: String?) {
-                    log("GetLevelsEvent  $uid")
-                }
-
-                override fun ProgramStatusEvent(
-                    time: Int,
-                    action: Int,
-                    pause: Int,
-                    currentBlock: Int,
-                    currentProgram: Int,
-                    uid: String?
-                ) {
-
-                }
-
-                override fun DevicePlayPauseEvent(uid: String?) {
-                    log("GetLevelsEvent  $uid")
-                }
-
-            })
-//        communicationManager?.startDiscoveryServers(this@HomeFragment.activity)
-        log("getScanning finished")
-    }
 
     fun log(msg: String) {
         Logger.e("HomeFragment : $msg")

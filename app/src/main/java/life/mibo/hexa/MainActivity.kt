@@ -1,8 +1,15 @@
 package life.mibo.hexa
 
+import android.Manifest
+import android.bluetooth.le.ScanResult
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.net.wifi.WifiManager
+import android.os.BatteryManager
 import android.os.Bundle
-import android.view.Gravity
-import androidx.appcompat.app.AppCompatActivity
+import android.view.WindowManager
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,21 +18,40 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
 import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.core.Logger
+import life.mibo.hardware.CommunicationManager2
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.AppStatusEvent
 import life.mibo.hardware.models.Device
+import life.mibo.hexa.Callback.Companion.CONNECT
+import life.mibo.hexa.Callback.Companion.DISCONNECT
+import life.mibo.hexa.Callback.Companion.SCAN
+import life.mibo.hexa.models.ScanComplete
+import life.mibo.hexa.ui.base.BaseActivity
+import life.mibo.hexa.ui.base.FragmentHelper
+import life.mibo.hexa.ui.base.PermissionHelper
+import life.mibo.hexa.ui.base.ScreenNavigator
+import life.mibo.hexa.utils.Toasty
+import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
+import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : BaseActivity(), Callback {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var navigator: ScreenNavigator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val drawer: NavigationView = findViewById(R.id.nav_view)
+        navigator =
+            ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
         val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -49,36 +75,82 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.navigation_channels)
                 }
                 R.id.nav_test2 -> {
-
+                    startScanning()
+                    navController.navigate(R.id.navigation_devices)
                 }
 
             }
-            drawerLayout.closeDrawer(Gravity.START)
+            drawerLayout.closeDrawer(GravityCompat.START)
             return@setNavigationItemSelectedListener true;
         }
 //        drawer.setupWithNavController(navController)
 
         //getScanned()
+        checkPermissions()
+        //startManager()
     }
 
-    fun getScanned() {
+    val permissions = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN
+    )
+
+    fun checkPermissions() {
+
+        dummySession()
+        PermissionHelper.requestPermission(this@MainActivity, permissions) {
+            startManager()
+        }
+    }
+
+    fun dummySession() {
+        SessionManager.getInstance().createDummySession()
+    }
+
+    lateinit var manager: CommunicationManager2
+    fun startManager() {
         log("getScanning started")
-        val manager =
-            CommunicationManager.getInstance(object : CommunicationManager.Listener {
-                override fun broadcastReceived(msg: ByteArray?, ip: InetAddress?) {
-                    log("broadcastReceived " + msg)
+
+
+        val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifi?.isWifiEnabled = true
+        val lock = wifi.createMulticastLock("MulticastMibo")
+        lock.setReferenceCounted(true)
+        lock?.acquire()
+
+        manager = CommunicationManager2.getInstance(object : CommunicationManager2.Listener {
+            override fun onDeviceDiscoveredEvent(device: Device?) {
+                log("onDeviceDiscoveredEvent Device $device")
+                EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(device))
+            }
+
+            override fun onBluetoothDeviceFound(result: ScanResult?) {
+                log("onBluetoothDeviceFound " + result)
+                EventBus.getDefault()
+                    .post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(result?.device))
+            }
+
+            override fun udpDeviceReceiver(msg: ByteArray?, ip: InetAddress?) {
+                log("udpDeviceReceiver " + String(msg!!))
+                EventBus.getDefault()
+                    .post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(ip))
                 }
 
-                override fun NewConnectionStatus(getname: String?) {
-                    log("NewConnectionStatus $getname")
+            override fun onConnectionStatus(getname: String?) {
+                log("onConnectionStatus $getname")
                 }
 
-                override fun NewAlarmEvent() {
-                    log("NewAlarmEvent ")
-                }
+            override fun onAlarmEvent() {
+                log("onAlarmEvent ")
+            }
 
-                override fun NewDeviceDiscoveredEvent(s: String?) {
-                    log("NewDeviceDiscoveredEvent $s")
+            override fun onDeviceDiscoveredEvent(s: String?) {
+                log("onDeviceDiscoveredEvent String $s")
+               // EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(s))
+                //manager.discoveredDevices
+
                 }
 
                 override fun HrEvent(hr: Int, uid: String?) {
@@ -117,12 +189,124 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
-        manager.startDiscoveryServers(this)
 
         log("getScanning finished")
     }
 
-    fun log(msg: String) {
-        Logger.e("MainActivity : $msg")
+    fun startScanning() {
+        manager.startScanning(this)
+        Observable.timer(15, TimeUnit.SECONDS).doOnComplete { stopScanning() }.subscribe()
     }
+
+    fun stopScanning() {
+        manager.stopScanning()
+        EventBus.getDefault().post(ScanComplete())
+    }
+
+    private val batteryLevelReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+            val isCharging =
+                status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
+            val chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+            val usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB
+            val acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC
+
+            //int rawLevel = intent.getIntExtra("level", -1);
+            val rawLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            //int scale = intent.getIntExtra("scale", -1);
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            var level = -1
+            if (rawLevel >= 0 && scale > 0) {
+                level = rawLevel * 100 / scale
+            }
+            //Log.e("main","Battery Level Remaining  :" + level + "% "+isCharging);
+            SessionManager.getInstance().deviceBatteryLevel = level
+            SessionManager.getInstance().isDeviceCharging = isCharging
+            EventBus.getDefault().postSticky(
+                AppStatusEvent(
+                    SessionManager.getInstance().deviceWifiLevel,
+                    level,
+                    isCharging
+                )
+            )
+        }
+
+    }
+
+    private val wifiLevelReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            val wifiManager =
+                applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val state = wifiManager.wifiState
+            val numberOfLevels = 5
+            val wifiInfo = wifiManager.connectionInfo
+            val level = WifiManager.calculateSignalLevel(wifiInfo.rssi, numberOfLevels)
+
+
+
+            SessionManager.getInstance().deviceWifiLevel = level
+            SessionManager.getInstance().deviceWifiName =
+                wifiManager.connectionInfo.ssid.replace("\"", "")
+            SessionManager.getInstance().deviceWifiState = state
+            EventBus.getDefault().postSticky(
+                AppStatusEvent(
+                    level,
+                    SessionManager.getInstance().getDeviceBatteryLevel(),
+                    SessionManager.getInstance().isDeviceCharging()
+                )
+            )
+            //   Log.e("main","WIFI Level:" + level + " state:"+state);
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        PermissionHelper.permissionsResult(
+            this@MainActivity,
+            permissions as Array<String>,
+            requestCode,
+            grantResults,
+            {
+                startManager()
+            },
+            {
+                Toasty.error(this@MainActivity, "Permission Denied")
+            })
+    }
+
+    override fun onCall(type: Int, data: Any?) {
+        log("Call $type || $data")
+        when (type) {
+            CONNECT -> {
+                if (data is Device)
+                    manager.connectDevice(data)
+            }
+            DISCONNECT -> {
+                if (data is Device)
+                    manager.deviceDisconnect(data)
+            }
+            SCAN -> {
+                //stopScanning()
+                manager.stopScanning()
+                startScanning()
+            }
+        }
+    }
+
+
+    public override fun onStart() {
+        super.onStart()
+    }
+
+    public override fun onStop() {
+        super.onStop()
+    }
+
 }

@@ -41,7 +41,7 @@ class NotificationsFragment : Fragment() {
             list.add(RecyclerAdapter.Item(0, "$i"))
         }
         val adapter = RecyclerAdapter(list, 1)
-        // val manager = LinearLayoutManager(this@Channel6Fragment.activity)
+        // val manager = LinearLayoutManager(this@DeviceScanFragment.activity)
         //view.layoutManager = manager
 
         view.adapter = adapter

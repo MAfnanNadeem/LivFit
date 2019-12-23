@@ -1,6 +1,8 @@
 package life.mibo.hardware.models;
 
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
@@ -103,7 +105,7 @@ public class Device implements Serializable {
     }
 
     public Device(String name, String uid, String serial, DeviceTypes type) {
-        if(!name.equals(""))
+        if(!TextUtils.isEmpty(name))
             this.name = name;
         this.connectionType = BLE;
         try{

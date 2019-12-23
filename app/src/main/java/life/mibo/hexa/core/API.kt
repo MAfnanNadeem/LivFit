@@ -8,9 +8,7 @@ import life.mibo.hexa.models.register.RegisterGuestMember
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 
 class API {
@@ -64,5 +62,9 @@ class API {
         @Headers("Accept: application/json" , "Content-Type: application/json")
         @POST("registerGuestMember")
         fun register(@Body data: RegisterGuestMember): Call<JsonObject>
+
+        @Headers("Accept: application/json" , "Content-Type: application/json")
+        @POST("login")
+        fun login(@Field("username") name : String, @Field("password") pwd : String): Call<JsonObject>
     }
 }

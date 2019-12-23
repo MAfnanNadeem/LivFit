@@ -73,19 +73,21 @@
 
         <ImageButton
             android:id="@+id/button_minus"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/ch_6_list_item_button"
+            android:layout_height="@dimen/ch_6_list_item_button"
             android:background="@null"
+            android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_minus_hexa" />
 
         <ImageButton
             android:id="@+id/button_plus"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/ch_6_list_item_button"
+            android:layout_height="@dimen/ch_6_list_item_button"
             android:layout_marginStart="48dp"
             android:layout_toEndOf="@id/button_minus"
             android:background="@null"
+            android:layout_centerVertical="true"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_plus_hexa" />
 
@@ -94,8 +96,8 @@
 
     <life.mibo.views.PlayButton
         android:id="@+id/button_start"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/ch_6_list_item_button"
+        android:layout_height="@dimen/ch_6_list_item_button"
         android:background="@drawable/img_play_hexa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

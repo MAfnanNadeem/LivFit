@@ -20,10 +20,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.CommunicationManager2
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.events.AppStatusEvent
 import life.mibo.hardware.models.Device
+import life.mibo.hardware.network.CommunicationListener
 import life.mibo.hexa.Callback.Companion.CONNECT
 import life.mibo.hexa.Callback.Companion.DISCONNECT
 import life.mibo.hexa.Callback.Companion.SCAN
@@ -41,7 +41,9 @@ import java.util.concurrent.TimeUnit
 class MainActivity : BaseActivity(), Callback {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var commHandler: CommHandler
     private var navigator: ScreenNavigator? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,21 +64,18 @@ class MainActivity : BaseActivity(), Callback {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavView.setupWithNavController(navController)
-//        val drawerConfig = AppBarConfiguration(
-//            setOf(
-//                R.id.nav_home, R.id.nav_test1, R.id.nav_test2,
-//                R.id.nav_test3, R.id.nav_share, R.id.nav_send
-//            ), drawerLayout
-//        )
+
         drawer.setNavigationItemSelectedListener {
-            Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
             when (it.itemId) {
                 R.id.nav_test1 -> {
                     navController.navigate(R.id.navigation_channels)
                 }
                 R.id.nav_test2 -> {
-                    startScanning()
+                    startScanning(false)
                     navController.navigate(R.id.navigation_devices)
+                }
+                else -> {
+                    Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
                 }
 
             }
@@ -86,8 +85,10 @@ class MainActivity : BaseActivity(), Callback {
 //        drawer.setupWithNavController(navController)
 
         //getScanned()
+        commHandler = CommHandler()
         checkPermissions()
         //startManager()
+        commHandler.regisiter()
     }
 
     val permissions = arrayOf(
@@ -109,7 +110,7 @@ class MainActivity : BaseActivity(), Callback {
         SessionManager.getInstance().createDummySession()
     }
 
-    lateinit var manager: CommunicationManager2
+    lateinit var manager: CommunicationManager
     fun startManager() {
         log("getScanning started")
 
@@ -120,7 +121,7 @@ class MainActivity : BaseActivity(), Callback {
         lock.setReferenceCounted(true)
         lock?.acquire()
 
-        manager = CommunicationManager2.getInstance(object : CommunicationManager2.Listener {
+        manager = CommunicationManager.getInstance(object : CommunicationListener {
             override fun onDeviceDiscoveredEvent(device: Device?) {
                 log("onDeviceDiscoveredEvent Device $device")
                 EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(device))
@@ -193,8 +194,12 @@ class MainActivity : BaseActivity(), Callback {
         log("getScanning finished")
     }
 
-    fun startScanning() {
-        manager.startScanning(this)
+    fun startScanning(rescan: Boolean, wifi: Boolean = true) {
+        log("Scanning.......")
+        if (rescan)
+            manager.reScanning(this, wifi)
+        else
+            manager.startScanning(this, wifi)
         Observable.timer(15, TimeUnit.SECONDS).doOnComplete { stopScanning() }.subscribe()
     }
 
@@ -294,11 +299,13 @@ class MainActivity : BaseActivity(), Callback {
             }
             SCAN -> {
                 //stopScanning()
-                manager.stopScanning()
-                startScanning()
+                //manager.stopScanning()
+                if (data is Boolean)
+                    startScanning(true, data)
             }
         }
     }
+
 
 
     public override fun onStart() {
@@ -307,6 +314,12 @@ class MainActivity : BaseActivity(), Callback {
 
     public override fun onStop() {
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        commHandler.unregisiter()
+        super.onDestroy()
+        manager?.onDestroy()
     }
 
 }

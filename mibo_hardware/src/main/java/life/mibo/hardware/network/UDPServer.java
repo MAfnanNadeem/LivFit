@@ -31,15 +31,15 @@ public class UDPServer {
     private boolean UDPRunning = true;
 
 
-    private OnBroadcastReceived mBroadcastListener = null;
+    private OnBroadcastReceived broadcastReceived = null;
 
     public UDPServer(OnBroadcastReceived listener) {
-        mBroadcastListener = listener;
+        broadcastReceived = listener;
     }
 
 
     @SuppressLint("NewApi")
-    public void runUdpServer(final Activity context) {
+    public void start(final Activity context) {
         this.context = context;
 
         UDPRunning = true;
@@ -59,8 +59,8 @@ public class UDPServer {
                         socket.receive(msgPacket);
 //                        String response = new String(lMsg, 0, lMsg.length);
 //                        Log.e("udpR","ReciveUDP");
-                        if (bytes != null && mBroadcastListener != null) {
-                            mBroadcastListener.broadcastReceived(bytes ,msgPacket.getAddress());
+                        if (broadcastReceived != null) {
+                            broadcastReceived.broadcastReceived(bytes ,msgPacket.getAddress());
                         }
                         Thread.sleep(20);
 
@@ -76,10 +76,10 @@ public class UDPServer {
 
     }
 
-    public void stopUdpServer() {
+    public void stop() {
         if(UDPThread != null)
             UDPRunning = false;
-        mBroadcastListener = null;
+        broadcastReceived = null;
     }
 
     //uid 6 byte, type 1 byte, command 1 byte, lenght 1 byte, data n bytes(lenght)

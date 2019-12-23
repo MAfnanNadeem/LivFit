@@ -14,11 +14,9 @@ import c.tlgbltcn.library.BluetoothHelper
 import c.tlgbltcn.library.BluetoothHelperListener
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.core.Logger
-import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.ScanDeviceAdapter
 import life.mibo.hexa.utils.Toasty
-import java.net.InetAddress
 
 class HomeFragment : Fragment() {
 
@@ -47,7 +45,7 @@ class HomeFragment : Fragment() {
                     bluetoothHelper?.enableBluetooth()
                 bluetoothHelper?.startDiscovery()
             }
-            communicationManager?.startScanning(this@HomeFragment.activity)
+            communicationManager?.startScanning(this@HomeFragment.activity, true)
             Toasty.info(this@HomeFragment.context!!, "Bluetooth scanning").show()
 
         }

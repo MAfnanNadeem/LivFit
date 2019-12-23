@@ -2,29 +2,25 @@ package life.mibo.hexa.ui.ch6.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
-import life.mibo.hexa.ui.devices.adapter.ChannelAdapter
-import life.mibo.views.PlayButton
 import java.util.*
 
 
-class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
-    RecyclerView.Adapter<ChannelAdapter.Holder>() {
+class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = false) :
+    RecyclerView.Adapter<Channel6Holder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: Listener? = null
+    private var listener: Channel6Listener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelAdapter.Holder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Channel6Holder {
         val id = if (type) R.layout.list_item_channels_grid else R.layout.list_item_channels
-        return ChannelAdapter.Holder(LayoutInflater.from(parent.context).inflate(id, parent, false))
+        return Channel6Holder(LayoutInflater.from(parent.context).inflate(id, parent, false))
     }
 
-    fun setListener(listener: Listener) {
+    fun setListener(listener: Channel6Listener) {
         this.listener = listener
     }
 
@@ -34,53 +30,44 @@ class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
         return 0
     }
 
-    private fun getItem(position: Int): Item? {
+    private fun getItem(position: Int): Channel6Model? {
         return list?.get(position)
     }
 
-    override fun onBindViewHolder(holder: ChannelAdapter.Holder, position: Int) {
-        val item = getItem(position)
-        holder.percent?.text = "${item?.percentMuscle}"
-        holder.percentChannel?.text = "${item?.percentChannel}"
-        holder.image?.setBackgroundResource(item?.image!!)
-        holder.play?.isChecked = item?.isPlay!!
-
-        holder.play?.setOnClickListener {
-            listener?.onPlayPauseClicked(
-                getItem(holder.adapterPosition)!!.id,
-                (it as PlayButton).isPlay
-            )
-        }
-
-        holder.minus?.setOnClickListener {
-            listener?.onMinusClicked(getItem(holder.adapterPosition)!!.id)
-        }
-
-        holder.plus?.setOnClickListener {
-            listener?.onPlusClicked(getItem(holder.adapterPosition)!!.id)
-        }
-
+    override fun onBindViewHolder(holder: Channel6Holder, position: Int) {
+        holder.bind(getItem(position), listener)
     }
 
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // var text: TextView? = itemView.findViewById(R.id.test_text)
-        var percentChannel: TextView? = itemView.findViewById(R.id.tv_perc_main_channel)
-        var percent: TextView? = itemView.findViewById(R.id.tv_perc)
-        var view: View? = itemView.findViewById(R.id.view)
-        var image: View? = itemView.findViewById(R.id.iv_device)
-        var plus: View = itemView.findViewById(R.id.button_plus)
-        var minus: View = itemView.findViewById(R.id.button_minus)
-        var play: PlayButton = itemView.findViewById(R.id.button_start)
-        // var hexa: HexagonImageView? = itemView.findViewById(R.id.test_image_hexa)
-    }
 
     fun getRandomColor(): Int {
         val rnd = Random()
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
     }
 
-    fun update(newList: ArrayList<Item>) {
-        if (list == null) {
+    fun notify(id: Int) {
+//        Observable.fromArray(list).flatMapIterable { x -> x }.subscribeOn(Schedulers.computation())
+//            .observeOn(AndroidSchedulers.mainThread()).subscribe {
+//                if (it.id == id) {
+//                }
+//            }
+
+        list?.forEachIndexed { index, item ->
+            if (item.id == id) {
+                notifyItemChanged(index)
+                return@forEachIndexed
+            }
+        }
+    }
+
+    fun updateData(newList: ArrayList<Channel6Model>) {
+//        list?.observe(this, androidx.lifecycle.Observer {
+//            it.clear()
+//            it.addAll(newList)
+//        })
+    }
+
+    fun update(newList: ArrayList<Channel6Model>) {
+        if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()
             return
@@ -105,45 +92,8 @@ class ChannelAdapter(var list: List<Item>?, val type: Boolean = false) :
 
         })
         list = newList
-        result.dispatchUpdatesTo(this)
+               result.dispatchUpdatesTo(this)
+
     }
 
-    interface Listener {
-        fun onClick(id: Int)
-        fun onPlusClicked(id: Int)
-        fun onMinusClicked(id: Int)
-        fun onPlayPauseClicked(id: Int, isPlay: Boolean)
-    }
-
-    data class Item(
-        val id: Int,
-        var image: Int = 0,
-        var percentChannel: Int = 0,
-        var percentMuscle: Int = 0,
-        val title: String = ""
-    ) {
-
-        var isPlay = false
-
-
-        fun incChannelPercent() {
-            if (percentChannel < 100)
-                percentChannel++
-        }
-
-        fun decChannelPercent() {
-            if (percentChannel > 1)
-                percentChannel--
-        }
-
-        fun incMuslePercent() {
-            if (percentMuscle < 100)
-                percentMuscle++
-        }
-
-        fun decMusclePercent() {
-            if (percentMuscle > 1)
-                percentMuscle--
-        }
-    }
 }

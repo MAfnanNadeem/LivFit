@@ -65,7 +65,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             if (item == null)
                 return
             name?.text = item.name
-            address?.text = item.serial
+            address?.text = item.serial + " : " + item.id
             when {
                 item.type == DeviceTypes.WIFI_STIMULATOR -> {
                     wifi?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
@@ -116,19 +116,19 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
     }
 
-    fun addDevice(bluetoothDevice: BluetoothDevice) {
-//        Logger.e("ScanDevice addDevice ")
-//        var contain = false
-//        for (l in list!!) {
-//            if (l.address == bluetoothDevice.address) {
-//                contain = true
-//                break;
-//            }
-//        }
-//        if (!contain) {
-//            list!!.add(ScanItem(bluetoothDevice.name, bluetoothDevice.address, 1))
-//            notifyItemInserted(list!!.size)
-//        }
+    fun addDevice(ble: BluetoothDevice) {
+        Logger.e("ScanDevice addDevice ")
+        var contain = false
+        for (l in list!!) {
+            if (l.serial == ble.address) {
+                contain = true
+                break;
+            }
+        }
+        if (!contain) {
+            list!!.add(Device(ble.name, ble.address, ble.address, DeviceTypes.BLE_STIMULATOR))
+            notifyItemInserted(list!!.size)
+        }
     }
 
     fun addDevice(item: ScanItem) {

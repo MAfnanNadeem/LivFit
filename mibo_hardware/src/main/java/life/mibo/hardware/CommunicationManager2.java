@@ -29,6 +29,7 @@ import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
+import life.mibo.hardware.network.CommunicationListener;
 import life.mibo.hardware.network.TCPClient;
 import life.mibo.hardware.network.TCPClientNio;
 import life.mibo.hardware.network.UDPServer;
@@ -89,7 +90,7 @@ public class CommunicationManager2 {
         pingThread.start();
     }
 
-    private CommunicationManager2(Listener listener) {
+    private CommunicationManager2(CommunicationListener listener) {
         this();
         setListener(listener);
     }
@@ -101,7 +102,7 @@ public class CommunicationManager2 {
         return manager;
     }
 
-    public static CommunicationManager2 getInstance(Listener listener) {
+    public static CommunicationManager2 getInstance(CommunicationListener listener) {
         if (manager == null) {
             manager = new CommunicationManager2(listener);
         }
@@ -272,7 +273,7 @@ public class CommunicationManager2 {
                     }
                 });
             }
-            udpServer.runUdpServer(activity);
+            udpServer.start(activity);
         }
     }
 
@@ -300,7 +301,7 @@ public class CommunicationManager2 {
                 }
             });
         }
-        udpServer.runUdpServer(context);
+        udpServer.start(context);
 
         //TODO: Change to not overwrite the current one if its initialized and only start discovery
         if (bluetoothManager == null) {
@@ -367,7 +368,7 @@ public class CommunicationManager2 {
 
     public void stopUDPDiscoveryServer() {
         if (udpServer != null) {
-            udpServer.stopUdpServer();
+            udpServer.stop();
         }
         udpServer = null;
     }
@@ -1067,43 +1068,15 @@ public class CommunicationManager2 {
         });
     }
 
-    private Listener listener;
+    private CommunicationListener listener;
 
-    public Listener getListener() {
+    public CommunicationListener getListener() {
         return listener;
     }
 
-    public CommunicationManager2 setListener(Listener listener) {
+    public CommunicationManager2 setListener(CommunicationListener listener) {
         this.listener = listener;
         return this;
     }
 
-    public interface Listener {
-
-        void onBluetoothDeviceFound(ScanResult result);
-
-        void onConnectionStatus(String getname);
-
-        void onAlarmEvent();
-
-        void onDeviceDiscoveredEvent(String s);
-
-        void onDeviceDiscoveredEvent(Device s);
-
-        void HrEvent(int hr, String uid);
-
-        void DeviceStatusEvent(String uid);
-
-        void ChangeColorEvent(Device d, String uid);
-
-        void GetMainLevelEvent(int mainLevel, String uid);
-
-        void GetLevelsEvent(String uid);
-
-        void ProgramStatusEvent(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
-
-        void DevicePlayPauseEvent(String uid);
-
-        void udpDeviceReceiver(byte[] msg, InetAddress ip);
-    }
 }

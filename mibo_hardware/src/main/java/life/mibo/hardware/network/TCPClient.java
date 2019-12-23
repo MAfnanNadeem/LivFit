@@ -142,7 +142,7 @@ public class TCPClient {
                                 // Log.e("runtcp", "num "+bytesNum);
                                 serverMessage = new byte[bytesNum];
                                 int r = mBufferIn.read(serverMessage);
-                                Logger.e("TCPClient MessageReceived " + serverMessage + " : " + r);
+                                Logger.e("TCPClient MessageReceived " + new String(serverMessage) + " : " + r);
                                 if (serverMessage != null && listener != null) {
                                     listener.messageReceived(serverMessage, uid);
                                 }

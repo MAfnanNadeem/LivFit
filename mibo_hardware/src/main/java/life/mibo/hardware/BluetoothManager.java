@@ -3,12 +3,14 @@ package life.mibo.hardware;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 
@@ -90,7 +92,7 @@ public class BluetoothManager {
 
         mBluetoothAdapter.enable();
         try {
-            Thread.sleep(50);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -359,8 +361,8 @@ public class BluetoothManager {
     }
 
     public void sendToMIBOBoosterGattDevice(String Id, byte[] message) {
-        Encryption.mbp_encrypt(message, message.length);
-        if (!Id.equals(""))
+        if (!TextUtils.isEmpty(Id))
+            Encryption.mbp_encrypt(message, message.length);
             for (BluetoothDevice d : devicesBoosterBle) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
@@ -406,6 +408,24 @@ public class BluetoothManager {
 
             }
         });
+    }
+
+    public List<BluetoothDevice> getConnectedDevices() {
+        List<BluetoothDevice> devices = new ArrayList<>();
+        try {
+            android.bluetooth.BluetoothManager bluetoothManager = (android.bluetooth.BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+            devices.addAll(bluetoothManager.getConnectedDevices(BluetoothProfile.GATT));
+            for (BluetoothDevice device : devices) {
+                if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return devices;
+
     }
 
     private static double extractHeartRate(BluetoothGattCharacteristic characteristic) {

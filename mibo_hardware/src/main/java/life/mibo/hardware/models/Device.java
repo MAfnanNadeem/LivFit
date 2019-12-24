@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import static life.mibo.hardware.models.ConnectionTypes.BLE;
 import static life.mibo.hardware.models.ConnectionTypes.WIFI;
@@ -390,5 +391,33 @@ public class Device implements Serializable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public String print() {
+        return "Device{" +
+                "id='" + id + '\'' +
+                ", uid='" + uid + '\'' +
+                ", type=" + type +
+                ", connectionType=" + connectionType +
+                ", name='" + name + '\'' +
+                ", colorPalet=" + colorPalet +
+                ", modelNumber='" + modelNumber + '\'' +
+                ", serial='" + serial + '\'' +
+                ", friendlySerialNumber='" + friendlySerialNumber + '\'' +
+                ", ip=" + ip +
+                ", image='" + image + '\'' +
+                ", characteristics='" + characteristics + '\'' +
+                ", comments='" + comments + '\'' +
+                ", active=" + active +
+                ", deviceSessionTimer=" + deviceSessionTimer +
+                ", isStarted=" + isStarted +
+                ", selected=" + selected +
+                ", assigned=" + assigned +
+                ", userAsigned=" + userAsigned +
+                ", batteryLevel=" + batteryLevel +
+                ", signalLevel=" + signalLevel +
+                ", deviceChannelAlarms=" + Arrays.toString(deviceChannelAlarms) +
+                ", statusConnected=" + statusConnected +
+                '}';
     }
 }

@@ -9,7 +9,11 @@ import org.greenrobot.eventbus.Subscribe
 abstract class BaseActivity : AppCompatActivity() {
 
     fun log(msg: String) {
-        Logger.e("${BaseActivity::javaClass.name} : $msg")
+        Logger.e("${this.javaClass} : $msg")
+    }
+
+    fun logw(msg: String) {
+        Logger.i("${this.javaClass}", msg)
     }
 
     @Subscribe

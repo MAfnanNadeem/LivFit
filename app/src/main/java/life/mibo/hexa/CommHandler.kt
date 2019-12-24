@@ -1,6 +1,7 @@
 package life.mibo.hexa
 
 import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.program.Circuit
@@ -11,7 +12,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class CommHandler() {
+class CommHandler(val activity: MainActivity) {
 
     fun regisiter() {
         log("regisiter ")
@@ -83,7 +84,7 @@ class CommHandler() {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onDevicePlayEvent(event: SendDevicePlayEvent) {
-        log("onDevicePlayEvent $event")
+        log("onDevicePlayEvent ${event?.uid}")
         EventBus.getDefault().removeStickyEvent(event)
         CommunicationManager.getInstance().onDevicePlayEvent(event)
     }
@@ -115,6 +116,21 @@ class CommHandler() {
         log("onBleConnect $event")
         EventBus.getDefault().removeStickyEvent(event)
         CommunicationManager.getInstance().onBleConnect(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    private fun onGetMainLevelEvent(event: GetMainLevelEvent) {
+        log("onBleConnect $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        android.os.Handler(activity.mainLooper).postDelayed({
+            CommunicationManager.getInstance().onMainLevelEvent(
+                SendMainLevelEvent(
+                    SessionManager.getInstance().userSession.user.mainLevel,
+                    SessionManager.getInstance().userSession.device.uid
+                )
+            )
+        }, 200)
+
     }
 
     fun log(msg: String) {

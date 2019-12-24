@@ -64,7 +64,7 @@ public class LocationInfo {
         MCrypt mcrypt = new MCrypt();
         try {
         setLocationId(new String( mcrypt.decrypt(locationInfo.getString("locationId"))));
-        setGymId(new String( mcrypt.decrypt(locationInfo.getString("gymId"))));
+        setGymId(new String( mcrypt.decrypt(locationInfo.getString("userId"))));
         setLocationName(new String( mcrypt.decrypt(locationInfo.getString("locationName"))));
         setAddress(new String( mcrypt.decrypt(locationInfo.getString("address"))));
         setCity(new String( mcrypt.decrypt(locationInfo.getString("city"))));

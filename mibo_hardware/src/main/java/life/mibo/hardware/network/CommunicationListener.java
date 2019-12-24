@@ -30,6 +30,8 @@ public interface CommunicationListener {
 
     void ProgramStatusEvent(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
 
+    void onCommandReceived(int code, byte[] command, String uid);
+
     void DevicePlayPauseEvent(String uid);
 
     void udpDeviceReceiver(byte[] msg, InetAddress ip);

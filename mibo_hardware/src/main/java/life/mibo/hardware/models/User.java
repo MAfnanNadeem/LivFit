@@ -5,7 +5,9 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.encryption.MCrypt;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
@@ -100,45 +102,46 @@ public class User implements Serializable {
         this.id = id;
     }
 
+
     public User(String name, String id) {
         this.name = name;
         this.id = id;
     }
 
-    public User(User userToCopy) {
-        this.id = userToCopy.id;
-        this.name = userToCopy.name;
-        this.lastName = userToCopy.lastName;
-        this.image = userToCopy.image;
-        this.age = userToCopy.age;
-        this.birthdate = userToCopy.birthdate;
-        this.height = userToCopy.height;
-        this.contact = userToCopy.contact;
-        this.email = userToCopy.email;
-        this.address1 = userToCopy.address1;
-        this.address2 = userToCopy.address2;
-        this.zip = userToCopy.zip;
-        this.city = userToCopy.city;
-        this.country = userToCopy.country;
-        this.province = userToCopy.province;
-        this.idNumber = userToCopy.idNumber;
-        this.latitude = userToCopy.latitude;
-        this.longitude = userToCopy.longitude;
-        this.primaryContactName = userToCopy.primaryContactName;
-        this.primaryContactRelation = userToCopy.primaryContactRelation;
-        this.primaryPhone = userToCopy.primaryPhone;
-        this.primaryContactEmail = userToCopy.primaryContactEmail;
-        this.secondaryContactName = userToCopy.secondaryContactName;
-        this.secondaryContactRelation = userToCopy.secondaryContactRelation;
-        this.secondaryPhone = userToCopy.secondaryPhone;
-        this.secondaryContactEmail = userToCopy.secondaryContactEmail;
-        this.remainingSessions = userToCopy.remainingSessions;
-        this.missedSessions = userToCopy.missedSessions;
-        this.completedSessions = userToCopy.completedSessions;
-        this.isPresent = userToCopy.isPresent;
-        this.userChannelLevels = userToCopy.userChannelLevels;
-        this.currentChannelLevels = userToCopy.currentChannelLevels;
-        this.userChannelCaps = userToCopy.userChannelCaps;
+    public User(User copy) {
+        this.id = copy.id;
+        this.name = copy.name;
+        this.lastName = copy.lastName;
+        this.image = copy.image;
+        this.age = copy.age;
+        this.birthdate = copy.birthdate;
+        this.height = copy.height;
+        this.contact = copy.contact;
+        this.email = copy.email;
+        this.address1 = copy.address1;
+        this.address2 = copy.address2;
+        this.zip = copy.zip;
+        this.city = copy.city;
+        this.country = copy.country;
+        this.province = copy.province;
+        this.idNumber = copy.idNumber;
+        this.latitude = copy.latitude;
+        this.longitude = copy.longitude;
+        this.primaryContactName = copy.primaryContactName;
+        this.primaryContactRelation = copy.primaryContactRelation;
+        this.primaryPhone = copy.primaryPhone;
+        this.primaryContactEmail = copy.primaryContactEmail;
+        this.secondaryContactName = copy.secondaryContactName;
+        this.secondaryContactRelation = copy.secondaryContactRelation;
+        this.secondaryPhone = copy.secondaryPhone;
+        this.secondaryContactEmail = copy.secondaryContactEmail;
+        this.remainingSessions = copy.remainingSessions;
+        this.missedSessions = copy.missedSessions;
+        this.completedSessions = copy.completedSessions;
+        this.isPresent = copy.isPresent;
+        this.userChannelLevels = copy.userChannelLevels;
+        this.currentChannelLevels = copy.currentChannelLevels;
+        this.userChannelCaps = copy.userChannelCaps;
     }
 
     private boolean isSelected = false;
@@ -414,12 +417,7 @@ public class User implements Serializable {
     }
 
     public Device getUserBooster() {
-        for (Device t : userDevices) {
-            if (t.getType() == DeviceTypes.WIFI_STIMULATOR || t.getType() == DeviceTypes.BLE_STIMULATOR) {
-                return t;
-            }
-        }
-        return new Device("x", "", "x", DeviceTypes.WIFI_STIMULATOR);
+        return SessionManager.getInstance().getUserSession().getDevice();
     }
 
     public Device getUserHrMonitor() {
@@ -788,5 +786,92 @@ public class User implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String debugLevels() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userChannelLevels=" + Arrays.toString(userChannelLevels) +
+                ", userChannelCaps=" + Arrays.toString(userChannelCaps) +
+                ", currentChannelLevels=" + Arrays.toString(currentChannelLevels) +
+                ", stimulationState=" + stimulationState +
+                ", mainLevel=" + mainLevel +
+                ", userDevices=" + userDevices +
+                ", isPresent=" + isPresent +
+                ", isActive=" + isActive +
+                ", currentHeartRate=" + currentHeartRate +
+                ", peakHeartRate=" + peakHeartRate +
+                ", restHeartRate=" + restHeartRate +
+                ", currentCalories=" + currentCalories +
+                ", userSessionTimer=" + userSessionTimer +
+                ", userSessionNotes='" + userSessionNotes + '\'' +
+                ", tsLastHr=" + tsLastHr +
+                ", acumulatedHeartRate=" + acumulatedHeartRate +
+                ", tsLastStatus=" + tsLastStatus +
+                ", circuitProgram=" + circuitProgram +
+                ", Program=" + Program +
+                ", devices=" + devices +
+                ", isSelected=" + isSelected +
+                '}';
+    }
+
+    public String debug() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userChannelLevels=" + Arrays.toString(userChannelLevels) +
+                ", userChannelCaps=" + Arrays.toString(userChannelCaps) +
+                ", currentChannelLevels=" + Arrays.toString(currentChannelLevels) +
+                ", stimulationState=" + stimulationState +
+                ", mainLevel=" + mainLevel +
+                ", image='" + image + '\'' +
+                ", age=" + age +
+                ", birthdate='" + birthdate + '\'' +
+                ", height='" + height + '\'' +
+                ", contact='" + contact + '\'' +
+                ", email='" + email + '\'' +
+                ", address1='" + address1 + '\'' +
+                ", address2='" + address2 + '\'' +
+                ", zip='" + zip + '\'' +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                ", province='" + province + '\'' +
+                ", idNumber='" + idNumber + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", primaryContactName='" + primaryContactName + '\'' +
+                ", primaryContactRelation='" + primaryContactRelation + '\'' +
+                ", primaryPhone='" + primaryPhone + '\'' +
+                ", primaryContactEmail='" + primaryContactEmail + '\'' +
+                ", secondaryContactName='" + secondaryContactName + '\'' +
+                ", secondaryContactRelation='" + secondaryContactRelation + '\'' +
+                ", secondaryPhone='" + secondaryPhone + '\'' +
+                ", secondaryContactEmail='" + secondaryContactEmail + '\'' +
+                ", medicalHistory=" + medicalHistory +
+                ", trainingGoals=" + trainingGoals +
+                ", remainingSessions=" + remainingSessions +
+                ", missedSessions=" + missedSessions +
+                ", completedSessions=" + completedSessions +
+                ", userFriendlycolor=" + userFriendlycolor +
+                ", userDevices=" + userDevices +
+                ", isPresent=" + isPresent +
+                ", isActive=" + isActive +
+                ", currentHeartRate=" + currentHeartRate +
+                ", peakHeartRate=" + peakHeartRate +
+                ", restHeartRate=" + restHeartRate +
+                ", currentCalories=" + currentCalories +
+                ", userSessionTimer=" + userSessionTimer +
+                ", userSessionNotes='" + userSessionNotes + '\'' +
+                ", tsLastHr=" + tsLastHr +
+                ", acumulatedHeartRate=" + acumulatedHeartRate +
+                ", tsLastStatus=" + tsLastStatus +
+                ", circuitProgram=" + circuitProgram +
+                ", Program=" + Program +
+                ", devices=" + devices +
+                ", isSelected=" + isSelected +
+                '}';
     }
 }

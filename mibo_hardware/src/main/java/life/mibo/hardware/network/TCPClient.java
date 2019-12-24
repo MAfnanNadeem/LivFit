@@ -7,11 +7,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import life.mibo.hardware.encryption.Encryption;
 import life.mibo.hardware.core.Logger;
+import life.mibo.hardware.encryption.Encryption;
 
 import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGHT;
 
@@ -57,9 +58,11 @@ public class TCPClient {
     }
 
     public void sendMessage(byte[] message) {
-        Logger.i("TCPClient sendMessage " + new String(message));
+        Logger.i("TCPClient sendMessage " + Arrays.toString(new String(message).toCharArray()));
+        Logger.i("TCPClient sendMessage array " + Arrays.toString(message));
         Encryption.mbp_encrypt(message, message.length);
         Logger.i("TCPClient sendMessage encrypted " + message);
+
         // Encryption.mbp_decrypt(message, message.length);
         if (mBufferOut != null) {
             try {

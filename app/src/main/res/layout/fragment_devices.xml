@@ -68,15 +68,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewAvailable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/grid_1x"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardview_available" />
 
-
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_saved"
+            android:id="@+id/cardview_connected"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -92,6 +91,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:text="Connected Devices"
+                android:textSize="@dimen/text_size_medium" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewConnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            app:layout_constraintTop_toBottomOf="@+id/cardview_connected"
+            tools:layout_editor_absoluteX="8dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_saved"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewConnect">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 android:text="Saved Devices"
                 android:textSize="@dimen/text_size_medium" />
 
@@ -100,7 +129,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewPaired"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/grid_1x"
             app:layout_constraintTop_toBottomOf="@+id/cardview_saved"
             tools:layout_editor_absoluteX="8dp" />

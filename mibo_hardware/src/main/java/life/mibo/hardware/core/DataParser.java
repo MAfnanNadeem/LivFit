@@ -2,6 +2,7 @@ package life.mibo.hardware.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import life.mibo.hardware.models.program.Program;
 
@@ -251,7 +252,7 @@ public class DataParser {
         return aux;
     }
 
-    private static byte[] fullMessage(byte[] code, byte[] lenght, byte[] data) {
+    private static byte[] fullMessage(byte[] code, byte[] length, byte[] data) {
         byte[] header = new byte[5];
         header[0] = 'M';
         header[1] = 'I';
@@ -262,7 +263,7 @@ public class DataParser {
         try {
             outputStream.write(header);
             outputStream.write(code);
-            outputStream.write(lenght);
+            outputStream.write(length);
             outputStream.write(data);
         } catch (IOException e) {
             e.printStackTrace();
@@ -272,8 +273,12 @@ public class DataParser {
         outputStream.write((byte) (crc16(c) & 0xFF));
         outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
 
-        byte[] auxMsg = outputStream.toByteArray();
-        return auxMsg;
+        Logger.e("Writing Message1 " + Arrays.toString(header));
+        Logger.e("Writing Message2 " + Arrays.toString(code));
+        Logger.e("Writing Message3 " + Arrays.toString(length));
+        Logger.e("Writing Message4 " + Arrays.toString(data));
+
+        return outputStream.toByteArray();
     }
 
     static int crc16(final byte[] buffer) {

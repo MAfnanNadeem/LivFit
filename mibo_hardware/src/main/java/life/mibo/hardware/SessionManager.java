@@ -5,10 +5,10 @@ import java.util.Arrays;
 
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceTypes;
-import life.mibo.hardware.models.LocationInfo;
 import life.mibo.hardware.models.Session;
 import life.mibo.hardware.models.Trainer;
 import life.mibo.hardware.models.User;
+import life.mibo.hardware.models.UserSession;
 import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
@@ -27,6 +27,7 @@ public class SessionManager {
     private static SessionManager mSessionMInstance;
 
     private Session session;
+    private UserSession userSession;
 
     private int deviceBatteryLevel = 0;
     private boolean deviceCharging = false;
@@ -52,6 +53,14 @@ public class SessionManager {
 
     public Session getSession() {
         return session;
+    }
+
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
+    public UserSession getUserSession() {
+        return userSession;
     }
 
     public void setSession(Session session) {

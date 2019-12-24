@@ -14,7 +14,7 @@ class MiboApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         MIBO.init(this)
-        MiboApplication.context = this
+        context = this
         CoilLogger.setEnabled(true)
     }
 }

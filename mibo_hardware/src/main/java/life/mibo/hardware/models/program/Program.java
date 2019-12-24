@@ -52,18 +52,38 @@ public class Program {
 
     }
 
-    public Program(Program programToCopy){
-        this.id = programToCopy.id;
-        this.name = programToCopy.name;
-        this.description = programToCopy.description;
-        this.borgRating = programToCopy.borgRating;
-        this.category = programToCopy.category;
-        this.type = programToCopy.type;
-        this.accessType = programToCopy.accessType;
-        this.createdBy = programToCopy.createdBy;
-        this.duration = new Duration(programToCopy.duration);
+    public static Program getDummyProgram() {
+        Program program = new Program();
+        program.setDuration(900);
+        program.setId("1");
+        program.setName("Strength Training (Local)");
+        program.setDescription("Local-EMS-Muscle/strength building program(15min)");
+        program.setBorgRating(17);
+        Block block1 = new Block();
+        block1.setBlockDuration(8000);
+        block1.setPauseDuration(4000);
+        block1.setActionDuration(4000);
+        block1.setUpRampDuration(0);
+        block1.setDownRampDuration(0);
+        block1.setPulseWidth(350);
+        block1.setFrequency(85);
+        Block[] blocks = new Block[]{block1};
+        program.setBlocks(blocks);
+        return program;
+    }
+
+    public Program(Program copy) {
+        this.id = copy.id;
+        this.name = copy.name;
+        this.description = copy.description;
+        this.borgRating = copy.borgRating;
+        this.category = copy.category;
+        this.type = copy.type;
+        this.accessType = copy.accessType;
+        this.createdBy = copy.createdBy;
+        this.duration = new Duration(copy.duration);
         this.blocks = new ArrayList<Block>();
-        for(Block b : programToCopy.blocks){
+        for (Block b : copy.blocks) {
             this.blocks.add(new Block(b));
         }
     }

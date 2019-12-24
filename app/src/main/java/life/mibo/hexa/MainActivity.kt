@@ -19,10 +19,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
+import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
-import life.mibo.hardware.events.AppStatusEvent
+import life.mibo.hardware.constants.CommunicationConstants.*
+import life.mibo.hardware.core.DataParser
+import life.mibo.hardware.core.Logger
+import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.DeviceConstants.*
+import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
 import life.mibo.hexa.Callback.Companion.CONNECT
 import life.mibo.hexa.Callback.Companion.DISCONNECT
@@ -85,7 +91,7 @@ class MainActivity : BaseActivity(), Callback {
 //        drawer.setupWithNavController(navController)
 
         //getScanned()
-        commHandler = CommHandler()
+        commHandler = CommHandler(this)
         checkPermissions()
         //startManager()
         commHandler.regisiter()
@@ -111,7 +117,7 @@ class MainActivity : BaseActivity(), Callback {
     }
 
     lateinit var manager: CommunicationManager
-    fun startManager() {
+    private fun startManager() {
         log("getScanning started")
 
 
@@ -122,21 +128,25 @@ class MainActivity : BaseActivity(), Callback {
         lock?.acquire()
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
+            override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {
+                parseCommands(code, command, uid)
+            }
+
             override fun onDeviceDiscoveredEvent(device: Device?) {
                 log("onDeviceDiscoveredEvent Device $device")
-                EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(device))
+                EventBus.getDefault().post(NewDeviceDiscoveredEvent(device))
             }
 
             override fun onBluetoothDeviceFound(result: ScanResult?) {
                 log("onBluetoothDeviceFound " + result)
                 EventBus.getDefault()
-                    .post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(result?.device))
+                    .post(NewDeviceDiscoveredEvent(result?.device))
             }
 
             override fun udpDeviceReceiver(msg: ByteArray?, ip: InetAddress?) {
                 log("udpDeviceReceiver " + String(msg!!))
                 EventBus.getDefault()
-                    .post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(ip))
+                    .post(NewDeviceDiscoveredEvent(ip))
                 }
 
             override fun onConnectionStatus(getname: String?) {
@@ -168,10 +178,14 @@ class MainActivity : BaseActivity(), Callback {
 
                 override fun GetMainLevelEvent(mainLevel: Int, uid: String?) {
                     log("GetMainLevelEvent $mainLevel : $uid")
+                    EventBus.getDefault().postSticky(GetMainLevelEvent(mainLevel, uid))
+                    EventBus.getDefault().postSticky(SendMainLevelEvent(1, uid));
+
                 }
 
                 override fun GetLevelsEvent(uid: String?) {
                     log("GetLevelsEvent  $uid")
+                    EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
                 }
 
                 override fun ProgramStatusEvent(
@@ -182,16 +196,211 @@ class MainActivity : BaseActivity(), Callback {
                     currentProgram: Int,
                     uid: String?
                 ) {
+                    log("ProgramStatusEvent  $uid")
+                    EventBus.getDefault().postSticky(
+                        ProgramStatusEvent(time, action, pause, currentBlock, currentProgram, uid)
+                    )
 
                 }
 
                 override fun DevicePlayPauseEvent(uid: String?) {
                     log("GetLevelsEvent  $uid")
+                    EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
                 }
 
             })
 
         log("getScanning finished")
+    }
+
+    private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
+        logw("parseCommands $code : data " + command.contentToString())
+        when (code) {
+            COMMAND_PING_RESPONSE -> {
+                logw("parseCommands COMMAND_PING_RESPONSE")
+            }
+            COMMAND_DEVICE_STATUS_RESPONSE -> {
+                logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE")
+                val d = SessionManager.getInstance().userSession.device
+                if (d != null && d.uid == uid) {
+                    logw("COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED")
+                    d.batteryLevel = DataParser.getStatusBattery(command)
+                    d.signalLevel = DataParser.getStatusSignal(command)
+                    SessionManager.getInstance().userSession.device.batteryLevel =
+                        DataParser.getStatusBattery(command)
+                    SessionManager.getInstance().userSession.device.signalLevel =
+                        DataParser.getStatusSignal(command)
+                    // updated device status/line
+                    //EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
+                    if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
+                        if (d.statusConnected == DEVICE_DISCONNECTED) {
+                            EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                        }
+                        d.statusConnected = DEVICE_CONNECTED
+                        SessionManager.getInstance().userSession.device.statusConnected =
+                            DEVICE_CONNECTED
+
+                        EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+                    } else {
+                        d.statusConnected = DEVICE_CONNECTED
+                        SessionManager.getInstance().userSession.device.statusConnected =
+                            DEVICE_CONNECTED
+                    }
+                    if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
+                        if (SessionManager.getInstance().userSession.getRegisteredDevicebyUid(uid).setNewDeviceChannelAlarms(
+                                DataParser.getChannelAlarms(command)
+                            )
+                        ) {
+                            AlarmManager.getInstance().alarms.AddDeviceChannelAlarm(
+                                SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
+                                    uid
+                                ).deviceChannelAlarms, d.uid
+                            )
+                            EventBus.getDefault().postSticky(NewAlarmEvent())
+                        }
+                    }
+                    // TODO check later functionality remaining
+                    //SessionManager.getInstance().userSession.checkDeviceStatus(DataParser.getStatusFlags(command), uid)
+                    checkDeviceStatus(SessionManager.getInstance().userSession, DataParser.getStatusFlags(command), uid)
+                    logw(
+                        "signal:" + DataParser.getStatusSignal(command) + " bat:" + DataParser.getStatusBattery(
+                            command
+                        )
+                    )
+                } else {
+                    logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED")
+                }
+            }
+            COMMAND_FIRMWARE_REVISION_RESPONSE -> {
+                logw("parseCommands COMMAND_FIRMWARE_REVISION_RESPONSE")
+            }
+            COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
+                logw("parseCommands COMMAND_SET_DEVICE_COLOR_RESPONSE")
+            }
+            COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE -> {
+                logw("parseCommands COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE")
+            }
+            COMMAND_SET_MAIN_LEVEL_RESPONSE -> {
+                logw("parseCommands COMMAND_SET_MAIN_LEVEL_RESPONSE")
+                EventBus.getDefault()
+                    .postSticky(GetMainLevelEvent(DataParser.getMainLevel(command), uid))
+                SessionManager.getInstance().userSession.user.mainLevel =
+                    DataParser.getMainLevel(command)
+                //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
+            }
+            COMMAND_SET_CHANNELS_LEVELS_RESPONSE -> {
+                logw("parseCommands COMMAND_SET_CHANNELS_LEVELS_RESPONSE")
+                EventBus.getDefault().postSticky(GetLevelsEvent(uid))
+            }
+            COMMAND_START_CURRENT_CYCLE_RESPONSE -> {
+                logw("parseCommands COMMAND_START_CURRENT_CYCLE_RESPONSE")
+                SessionManager.getInstance().userSession.device.isStarted = true
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+            }
+            COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE -> {
+                logw("parseCommands COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE")
+                SessionManager.getInstance().userSession.device.isStarted = false
+                //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+            }
+            COMMAND_RESET_CURRENT_CYCLE_RESPONSE -> {
+                logw("parseCommands COMMAND_RESET_CURRENT_CYCLE_RESPONSE")
+            }
+            ASYNC_PROGRAM_STATUS -> {
+                logw("parseCommands ASYNC_PROGRAM_STATUS")
+                SessionManager.getInstance().userSession.device.deviceSessionTimer =
+                    DataParser.getProgramStatusTime(command)
+                EventBus.getDefault().postSticky(
+                    ProgramStatusEvent(
+                        DataParser.getProgramStatusTime(command),
+                        DataParser.getProgramStatusAction(command),
+                        DataParser.getProgramStatusPause(command),
+                        DataParser.getProgramStatusCurrentBlock(command),
+                        DataParser.getProgramStatusCurrentProgram(command),
+                        uid
+                    )
+                )
+                SessionManager.getInstance().userSession.getRegisteredDevicebyUid(uid)
+                    .deviceSessionTimer =
+                    DataParser.getProgramStatusTime(command)
+            }
+            COMMAND_ASYNC_SET_MAIN_LEVEL -> {
+                logw("parseCommands COMMAND_ASYNC_SET_MAIN_LEVEL")
+                EventBus.getDefault()
+                    .postSticky(GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid));
+                SessionManager.getInstance().userSession.user.mainLevel =
+                    DataParser.getMainLevelAsync(command)
+            }
+            COMMAND_ASYNC_PAUSE -> {
+                logw("parseCommands COMMAND_ASYNC_PAUSE")
+                SessionManager.getInstance().userSession.device.isStarted = false
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid));
+            }
+            COMMAND_ASYNC_START -> {
+                logw("parseCommands COMMAND_ASYNC_START")
+                SessionManager.getInstance().userSession.device.isStarted = true
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+
+            }
+            else -> {
+                logw("parseCommands DEFAULTS")
+            }
+        }
+
+        //  Log.e("commManager", "Receiver PING");
+        //Log.e("commManager", "Receiver PROGRAM");
+        //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
+        //EventBus.getDefault().postSticky(new GetLevelsEvent(uid));
+        //  Log.e("commManager", "Receiver LEVELS");
+        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
+        //Log.e("commManager", "Receiver START");
+        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
+        //Log.e("commManager", "Receiver PAUSE");
+        //Log.e("commManager", "Receiver RESET");
+        //  Log.e("commManager", "Receiver ASYNC PROGRAM STATUS");
+        //Log.e("commManager", "Receiver ASYNC MAINLEVEL");
+        //  EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
+        //Log.e("commManager", "Receiver ASYNC Pause");
+        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
+        //Log.e("commManager", "Receiver ASYNC Pause");
+    }
+
+    fun checkDeviceStatus(user: UserSession, status: BooleanArray, uid: String?) {
+        logw("checkDeviceStatus wifi " + status[0] + " ble " + status[1] + " program " + status[2] + " runn " + status[3] + " color " + status[4])
+
+        if (user.currentSessionStatus == 2 || user.currentSessionStatus == 1) {
+            if (user.device.uid == uid) {
+                logw("checkDeviceStatus UID MATCH")
+                if (!status[2]) {//check if program
+                    logw("checkDeviceStatus SendProgramEvent")
+                    EventBus.getDefault()
+                        .postSticky(SendProgramEvent(user.currentSessionProgram, uid));
+                }
+                if (!status[4]) {//check if color if (listener != null)
+                    Logger.w("checkDeviceStatus ChangeColorEvent")
+                    EventBus.getDefault().postSticky(ChangeColorEvent(user.device, uid));
+                }
+                if (status[3]) {//check if run
+
+                }
+                if (status.size >= 6) {
+                    if (!status[5]) {//check if channels are loaded
+                        EventBus.getDefault().postSticky(
+                            SendChannelsLevelEvent(
+                                user.user.currentChannelLevels,
+                                uid
+                            )
+                        );
+                        logw("checkDeviceStatus SendChannelsLevelEvent")
+                    }
+                }
+
+            } else {
+                logw("checkDeviceStatus UID NOT MATCH")
+            }
+        } else {
+            logw("checkDeviceStatus currentSessionStatus "+user.currentSessionStatus)
+        }
     }
 
     fun startScanning(rescan: Boolean, wifi: Boolean = true) {

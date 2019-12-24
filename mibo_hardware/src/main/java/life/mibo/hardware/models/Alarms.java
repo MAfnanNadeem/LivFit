@@ -94,9 +94,11 @@ public class Alarms {
         switch(alarmCode){
             case DEVICE_ALARM_DISCONNECTED:
                 if(isNewAlarm(alarmCode, uid)) {
-                    newAlarm = new Alarm(alarmCode, mContext.getResources().getString(R.string.txt_alarm_disconnection_device),uid);
-                    newAlarmCreated = true;
-                    addNewAlarm(newAlarm);
+                    if (mContext != null) {
+                        newAlarm = new Alarm(alarmCode, mContext.getResources().getString(R.string.txt_alarm_disconnection_device), uid);
+                        newAlarmCreated = true;
+                        addNewAlarm(newAlarm);
+                    }
                 }
                 break;
             case DEVICE_ALARM_CHANNEL_1_ELECTRODE_CONTACT:

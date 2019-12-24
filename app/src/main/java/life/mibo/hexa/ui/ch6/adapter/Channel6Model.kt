@@ -13,6 +13,7 @@ class Channel6Model() : ViewModel() {
         this.title = title
     }
 
+    var uid: String = ""
     var id: Int = 0
     var image: Int = 0
     var percentChannel: Int = 0

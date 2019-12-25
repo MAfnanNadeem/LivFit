@@ -5,8 +5,8 @@ import android.os.CountDownTimer;
 
 import java.util.ArrayList;
 
-import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.core.Logger;
+import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Program;
 
 /**
@@ -67,7 +67,26 @@ public class UserSession {
             session.device = device;
             session.userId = device.getUid();
             session.user = new User("Sumeet", "Kumar", session.userId);
-            session.currentSessionProgram = Program.getDummyProgram();
+
+            Program program = new Program();
+            program.setDuration(300);
+            program.setId("1");
+            program.setName("Strength Training (Local)");
+            program.setDescription("Local-EMS-Muscle/strength building program(15min)");
+            program.setBorgRating(17);
+
+            Block block1 = new Block();
+            block1.setBlockDuration(8000);
+            block1.setPauseDuration(4000);
+            block1.setActionDuration(4000);
+            block1.setUpRampDuration(0);
+            block1.setDownRampDuration(0);
+            block1.setPulseWidth(350);
+            block1.setFrequency(85);
+            Block[] blocks = new Block[]{block1};
+            program.setBlocks(blocks);
+
+            session.currentSessionProgram = program;
         }
         return session;
     }

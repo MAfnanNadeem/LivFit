@@ -88,7 +88,7 @@ class ChannelAdapterLive(var list: LiveData<ArrayList<Channel6Model>>?, val type
 //            }
 //
 //            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-//                return newList[newItem].percentMuscle == list!![oldItem].percentMuscle && newList[newItem].percentChannel == list!![oldItem].percentChannel
+//                return newList[newItem].percentMain == list!![oldItem].percentMain && newList[newItem].percentChannel == list!![oldItem].percentChannel
 //            }
 //
 //        })

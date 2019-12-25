@@ -1,19 +1,361 @@
 package life.mibo.hexa.ui.ch6
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Message
+import android.view.View
+import android.widget.ProgressBar
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.events.*
+import life.mibo.hardware.models.User
+import life.mibo.hardware.models.program.Circuit
+import life.mibo.hexa.R
 import life.mibo.hexa.ui.ch6.adapter.Channel6Listener
 import life.mibo.hexa.ui.ch6.adapter.Channel6Model
 import life.mibo.hexa.ui.ch6.adapter.ChannelAdapter
+import life.mibo.hexa.utils.Toasty
+import life.mibo.hexa.utils.Utils
+import org.greenrobot.eventbus.EventBus
+import java.util.concurrent.TimeUnit
 
 class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     Channel6Fragment.Listener {
 
     var list = ArrayList<Channel6Model>()
     var adapter: ChannelAdapter? = null
+    private lateinit var viewModel: Channel6ViewModel
+    private lateinit var userUid: String
+    var recyclerView: RecyclerView? = null
+    private var manager: CommunicationManager? = null
+    var isConnected = false
+
+    // TODO Overrides
+    override fun onViewCreated(view: View, uid: String?) {
+
+        viewModel = ViewModelProviders.of(this.fragment).get(Channel6ViewModel::class.java)
+        userUid = uid ?: SessionManager.getInstance().userSession.device.uid
+
+        setRecycler(view.findViewById(R.id.recyclerView))
+
+        //EventBus.getDefault().postSticky(SendProgramEvent(SessionManager.getInstance().userSession?.currentSessionProgram, uid))
+        if (SessionManager.getInstance().userSession != null) {
+            sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
+            if (SessionManager.getInstance().userSession.device != null)
+                isConnected = true
+        } else {
+            Toasty.error(this.fragment.context!!, "Device is not connected!").show()
+        }
+    }
+
+    override fun onStop() {
+
+    }
+
+    override fun onMainPlusClicked() {
+        if (isConnected)
+            onPlusClicked()
+    }
+
+    override fun onMainMinusClicked() {
+        if (isConnected)
+            onMinusClicked()
+    }
+
+    override fun onMainPlayClicked() {
+        if (isConnected)
+            startUserSession(userUid)
+    }
+
+    override fun onMainStopClicked() {
+        if (isConnected)
+            stopUserSession(userUid)
+    }
+
+    override fun onClick(data: Channel6Model) {
+
+    }
+
+    override fun onPlusClicked(data: Channel6Model) {
+        if (isConnected)
+            onMusclePlusClicked(data.id)
+    }
+
+    override fun onMinusClicked(data: Channel6Model) {
+        if (isConnected)
+            onMuscleMinusClicked(data.id)
+    }
+
+    override fun onPlayPauseClicked(data: Channel6Model, isPlay: Boolean) {
+        if (isConnected)
+            onMuscleStopClicked(data.id, isPlay)
+    }
+
+    // TODO Functions
+    // 6ch
+    // 1- Lower back  2- Shoulder  3- Upper back   4- Abs  5- Chest 6- Arms
+    private fun setRecycler(recycler: RecyclerView) {
+
+        if (list == null)
+            list = ArrayList()
+        list.clear()
+
+        //val c = Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2)
+        //c.percentChannel?.observe(this)
+        list.add(Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2))
+        list.add(Channel6Model(2, R.drawable.ic_channel_back_neck, 0, 0))
+        list.add(Channel6Model(3, R.drawable.ic_channel_biceps, 0, 0))
+        list.add(Channel6Model(4, R.drawable.ic_channel_chest, 0, 0))
+        list.add(Channel6Model(5, R.drawable.ic_channel_glutes, 0, 0))
+        list.add(Channel6Model(6, R.drawable.ic_channel_thighs, 0, 0))
+
+//        viewModel.list.observe(this, Observer {
+//            it.addAll(list)
+//        })
+
+        recycler.layoutManager = GridLayoutManager(fragment.context, 1)
+        adapter = ChannelAdapter(list, false)
+        adapter?.setListener(this)
+        //val manager = GridLayoutManager(this@DeviceScanFragment.activity, 1)
+        //recycler.layoutManager = manager
+        recycler.adapter = adapter
+        //Toasty.warning(this@DeviceScanFragment.context, "")
+        //Toasty.warning(this@DeviceScanFragment.context!!, "Configuration changes $isLand").show()
+//        viewModel.list.observe(this, Observer {
+//            log("data changed")
+//            adapter?.notifyDataSetChanged()
+//        })
+
+    }
+
+    // timer
+    private var cTimer: CountDownTimer? = null
+
+    internal fun startTimer(s: Int) {
+        cancelTimer()
+        cTimer = object : CountDownTimer(s * 1000L, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
+            }
+
+            override fun onFinish() {
+                cancelTimer()
+            }
+        }
+        cTimer?.start()
+    }
+
+    private fun updateTime(timer: Int) {
+
+    }
+
+    //cancel timer
+    internal fun cancelTimer() {
+        if (cTimer != null) {
+            cTimer?.cancel()
+            updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
+        }
+    }
+
+    fun startSession(u: User) {
+        log("startSession " + u.debugLevels())
+        sendChannelLevelsToAllBoosters(u)
+        try {
+            Thread.sleep(800)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+        log("startSession sendReStartToAllBoosters")
+        sendReStartToAllBoosters(u)
+        try {
+            Thread.sleep(600)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+        log("startSession sendStartToAllBoosters")
+        sendStartToAllBoosters(u)
+        SessionManager.getInstance().userSession.currentSessionStatus = 2
+        SessionManager.getInstance()
+            .userSession.startTimer(SessionManager.getInstance().userSession.currentSessionProgram.duration.value.toLong())
+        // startTimer(SessionManager.getInstance().session.currentSessionProgram.duration.valueInt)
+    }
+
+    private fun startUserSession(uid: String) {
+        if (SessionManager.getInstance().userSession.device == null) {
+            Toasty.warning(this.fragment.activity!!, "No Device Connected").show()
+        }
+
+        log("sendPlaySignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
+        Observable.timer(0, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+                log("starting SendChannelsLevelEvent")
+                sendChannelLevelsToAllBoosters(SessionManager.getInstance().userSession.user)
+            }.subscribe()
+
+        Observable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+                log("starting again device")
+                sendReStartToAllBoosters(SessionManager.getInstance().userSession.user)
+
+            }.subscribe()
+        Observable.timer(2, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+                log("starting again device")
+                sendStartToAllBoosters(SessionManager.getInstance().userSession.user)
+                SessionManager.getInstance()
+                    .userSession.startTimer(SessionManager.getInstance().userSession.currentSessionProgram.duration.value.toLong())
+
+                //EventBus.getDefault().postSticky(SendDevicePlayEvent(uid))
+            }.subscribe()
+
+        //EventBus.getDefault().postSticky(SendDevicePlayEvent(uid))
+
+        //SessionManager.getInstance().userSession.device.isStarted = true
+
+//        if (SessionManager.getInstance().userSession.currentSessionStatus != 1 && SessionManager.getInstance().userSession.user.isActive) {
+//            log("sendPlaySignals starting session ")
+//            //EventBus.getDefault().postSticky(SendDevicePlayEvent(SessionManager.getInstance().session.userSelected.userBooster.uid))
+//        }
+
+//        if (SessionManager.getInstance().session.currentSessionStatus == 0 || SessionManager.getInstance().session.currentSessionStatus == 3) {
+//            log("sendPlaySignals session not starting ")
+//        } else {
+//            if (SessionManager.getInstance().session.userSelected.userBooster.isStarted) {
+//                log("sendPlaySignals stopping session ")
+//                EventBus.getDefault()
+//                    .postSticky(SendDeviceStopEvent(SessionManager.getInstance().session.userSelected.userBooster.uid))
+//                SessionManager.getInstance().session.userSelected.mainLevel = 0
+//                SessionManager.getInstance()
+//                    .session.userSelected.userBooster.isStarted = false
+//            } else {
+//                if (SessionManager.getInstance().session.currentSessionStatus != 1 && SessionManager.getInstance().session.userSelected.isActive) {
+//                    log("sendPlaySignals starting session ")
+//                    EventBus.getDefault()
+//                        .postSticky(SendDevicePlayEvent(SessionManager.getInstance().session.userSelected.userBooster.uid))
+//                    SessionManager.getInstance()
+//                        .session.userSelected.userBooster.isStarted = true
+//                }
+//            }
+//            // SessionManager.getInstance().getSession().getUserSelected().setActive(true);
+//        }
+    }
+
+    private fun sendProgramToAllBoosters(u: User) {
+        if (SessionManager.getInstance().userSession.currentSessionStatus == 0) {
+            EventBus.getDefault().postSticky(
+                SendProgramEvent(
+                    SessionManager.getInstance().userSession.currentSessionProgram,
+                    userUid
+                )
+            )
+        }
+    }
+
+    // group control power clicked
+    private fun sendCircuitToAllBoosters(u: User) {
+        EventBus.getDefault().postSticky(SendCircuitEvent(Circuit(), userUid))
+    }
+
+    private fun sendStartToAllBoosters(u: User) {
+        if (u.isActive) {
+            SessionManager.getInstance().userSession.device.isStarted = true
+            EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
+            SessionManager.getInstance().userSession.currentSessionStatus = 2
+        }
+    }
+
+    private fun sendReStartToAllBoosters(u: User) {
+        if (u.isActive) {
+            SessionManager.getInstance().userSession.device.isStarted = true
+            EventBus.getDefault().postSticky(SendDeviceStartEvent(userUid))
+        }
+    }
+
+    private fun sendChannelLevelsToAllBoosters(user: User) {
+        log("startSession sendChannelLevelsToAllBoosters")
+        EventBus.getDefault()
+            .postSticky(SendChannelsLevelEvent(user.currentChannelLevels, userUid))
+    }
+
+    private fun sendStopToAllBoosters(u: User) {
+        SessionManager.getInstance().userSession.device.isStarted = false
+        EventBus.getDefault().postSticky(
+            SendDeviceStopEvent(
+                SessionManager.getInstance().userSession.device.uid
+            )
+        )
+    }
+
+
+    private fun stopUserSession(uid: String) {
+        if (SessionManager.getInstance().userSession.device == null) {
+            Toasty.warning(this.fragment.activity!!, "No Device Connected").show()
+        }
+        log("sendStopSignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
+        SessionManager.getInstance().userSession.device.isStarted = false
+        EventBus.getDefault().postSticky(SendDeviceStopEvent(uid))
+        SessionManager.getInstance().userSession.user.mainLevel = 0
+    }
+
+    private fun onMuscleMinusClicked(id: Int) {
+        SessionManager.getInstance().userSession.user.decrementChannelLevelUserSelected(id)
+        EventBus.getDefault().postSticky(
+            SendChannelsLevelEvent(
+                SessionManager.getInstance().userSession.user.currentChannelLevels,
+                userUid
+            )
+        )
+        //updateItem(id)
+        log("onMuscleMinusClicked Minus group $id")
+    }
+
+    private fun onMusclePlusClicked(id: Int) {
+        SessionManager.getInstance().userSession.user.incrementChannelLevelUserSelected(id)
+
+        EventBus.getDefault().postSticky(
+            SendChannelsLevelEvent(
+                SessionManager.getInstance().userSession.user.currentChannelLevels,
+                userUid
+            )
+        )
+        log("onMusclePlusClicked Plus group $id")
+        // updateItem(id)
+    }
+
+
+    private fun onMuscleStopClicked(id: Int, play: Boolean) {
+        log("onMuscleStopClicked $play $id")
+        if (SessionManager.getInstance().userSession.device.isStarted) {
+            SessionManager.getInstance().userSession.user.currentChannelLevels[id - 1] = 0
+            EventBus.getDefault().postSticky(
+                SendChannelsLevelEvent(
+                    SessionManager.getInstance().userSession.user.currentChannelLevels,
+                    userUid
+                )
+            )
+            //updateItem(id)
+            //sendStopToAllBoosters(SessionManager.getInstance().userSession.user)
+        } else {
+            sendStartToAllBoosters(SessionManager.getInstance().userSession.user)
+            //sendStopToAllBoosters(SessionManager.getInstance().userSession.user)
+        }
+    }
+
+    fun getManager(): CommunicationManager {
+        if (manager == null)
+            manager = CommunicationManager.getInstance()
+        return manager!!
+    }
 
     private fun onPlayClicked() {
         Observable.fromArray(list).flatMapIterable { x -> x }
@@ -62,35 +404,17 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     private fun onPlusClicked() {
-        Observable.fromArray(list).flatMapIterable { x -> x }
-            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.Observer<Channel6Model> {
-                override fun onSubscribe(d: Disposable) {
-                    log("iv_plus onSubscribe")
-                }
+        log("onPlusClicked")
+        onMainPlusMinusClicked(true)
 
-                override fun onNext(t: Channel6Model) {
-                    log("iv_plus onNext")
-//                        t.percentChannel?.observe(this@Channel6Fragment, Observer {
-//                            it.plus(1)
-//                        })
-                    t.incChannelPercent()
-                }
-
-                override fun onError(e: Throwable) {
-                    log("iv_plus onError", e)
-                    e.printStackTrace()
-                }
-
-                override fun onComplete() {
-                    log("iv_plus onComplete")
-                    adapter?.notifyDataSetChanged()
-
-                }
-            })
     }
 
     private fun onMinusClicked() {
+        log("onMinusClicked")
+        onMainPlusMinusClicked(false)
+    }
+
+    private fun onMinusClicked2() {
         Observable.fromArray(list).flatMapIterable { x -> x }
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : io.reactivex.Observer<Channel6Model> {
@@ -113,40 +437,241 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
             })
     }
 
-    override fun onMainPlusClicked() {
+    private fun onMainPlusMinusClicked(isPlus: Boolean) {
+        var sendMain = false
+        if (isPlus) {
+            if (Utils.checkLimitValues(SessionManager.getInstance().userSession.user.mainLevel)) {
+                SessionManager.getInstance().userSession.user.incrementMainLevelUser()
+                sendMain = true
+            }
+        } else {
+            SessionManager.getInstance().userSession.user.decrementMainLevelUser()
+            sendMain = true
+        }
+        if (sendMain) {
+            Handler().postDelayed({
+                EventBus.getDefault().postSticky(
+                    SendMainLevelEvent(
+                        SessionManager.getInstance().userSession.user.mainLevel,
+                        userUid
+                    )
+                )
+                log("onMainPlusMinusClicked level " + SessionManager.getInstance().userSession.user.mainLevel)
+            }, 200)
+        }
+    }
+
+    // TODO Event bus events
+
+    var isChannelClicked = false
+    // for main click
+    fun onDevicePlayPauseEvent(event: DevicePlayPauseEvent) {
+        log("onDevicePlayPauseEvent")
+        if (isChannelClicked) {
+            isChannelClicked = false
+            return
+        }
+//        EventBus.getDefault().postSticky(
+//            SendProgramEvent(
+//                SessionManager.getInstance().userSession.currentSessionProgram,
+//                SessionManager.getInstance().userSession.device.uid
+//            )
+//        )
+        if (SessionManager.getInstance().userSession.device.isStarted) {
+            log("onDevicePlayPauseEvent stopping")
+            Observable.fromArray(list).flatMapIterable { x -> x }
+                .subscribeOn(Schedulers.computation()).delay(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : io.reactivex.Observer<Channel6Model> {
+                    override fun onSubscribe(d: Disposable) {
+                    }
+
+                    override fun onNext(t: Channel6Model) {
+                        log("onPlayClicked " + SessionManager.getInstance().userSession)
+                        //mViewMvc.updatePlayPause(SessionManager.getInstance().getSession().getUserSelected().getUserBooster().getIsStarted())
+                        t.isPlay = false
+                    }
+
+                    override fun onError(e: Throwable) {
+                        log("iv_plus onError", e)
+                        e.printStackTrace()
+                    }
+
+                    override fun onComplete() {
+                        adapter?.notifyDataSetChanged()
+
+                    }
+                })
+        } else {
+            log("onDevicePlayPauseEvent starting")
+            Observable.fromArray(list).flatMapIterable { x -> x }
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : io.reactivex.Observer<Channel6Model> {
+                    override fun onSubscribe(d: Disposable) {
+
+                    }
+
+                    override fun onNext(t: Channel6Model) {
+                        t.isPlay = true
+                    }
+
+                    override fun onError(e: Throwable) {
+                        log("iv_plus onError", e)
+                        e.printStackTrace()
+                    }
+
+                    override fun onComplete() {
+                        adapter?.notifyDataSetChanged()
+                    }
+                })
+        }
+        if (event.uid == userUid) {
+
+        }
+    }
+
+    var buttonId = 0
+    fun onGetMainLevelEvent(event: GetMainLevelEvent) {
+        log("onGetMainLevelEvent $event")
+        updateMainLevel(event.level)
 
     }
 
-    override fun onMainMinusClicked() {
+    fun onGetLevelsEvent(event: GetLevelsEvent) {
+        log("onGetLevelsEvent ${event.uid}")
+        val items = ArrayList<Channel6Model>(this.list)
+        Observable.fromCallable {
+            val levels = SessionManager.getInstance().userSession.user.currentChannelLevels
+
+            log("onGetLevelsEvent $levels")
+            items.forEach { item ->
+                item.percentChannel = levels[item.id - 1]
+            }
+            Observable.just("complete")
+        }.doOnError {
+            log("onGetLevelsEvent onError ${it.message}")
+        }.subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+                log("onGetLevelsEvent doOnComplete")
+                adapter?.updateList(items)
+            }
+            .subscribe()
+    }
+
+    fun onGetProgramStatusEvent(event: ProgramStatusEvent) {
+        log("onGetProgramStatusEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        //        if(event.getUid().equals(SessionManager.getInstance().getSession().getUserSelected().getUserBooster().getUid())) {
+        //            if(tsLastStatus+100 < System.currentTimeMillis()) {// sepueden ejecutar varios antes de hacer esto?
+        //                tsLastStatus = System.currentTimeMillis();
+        //               // Log.e("GroupController","event status");
+        //                new Handler(Looper.getMainLooper()).post(new Runnable() {
+        //                    @Override
+        //                    public void run() {
+        //                        mViewMvc.updateStatus(event.getRemainingProgramTime(), event.getRemainingProgramAction(), event.getRemainingProgramPause(), event.getUid());
+        //                    }
+        //                });
+        //            }
+        //        }
+
+        if (SessionManager.getInstance().userSession.user.tsLastStatus + 100 < System.currentTimeMillis()) {// sepueden ejecutar varios antes de hacer esto?
+            SessionManager.getInstance().userSession.user.tsLastStatus = System.currentTimeMillis()
+            // Log.e("GroupController","event status");
+            updateStatus(
+                event.remainingProgramTime, event.remainingProgramAction,
+                event.remainingProgramPause, event.currentBlock, event.currentProgram, event.uid
+            )
+        }
 
     }
 
-    override fun onMainPlayClicked() {
 
+    // TODO Updates
+
+
+    fun updateMainLevel(level: Int) {
+        log("updateMainLevel $level")
+        Observable.fromArray(list).flatMapIterable { x -> x }
+            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : io.reactivex.Observer<Channel6Model> {
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onNext(t: Channel6Model) {
+                    t.percentMain = level
+                }
+
+                override fun onError(e: Throwable) {
+                    log("iv_plus onError", e)
+                    e.printStackTrace()
+                }
+
+                override fun onComplete() {
+                    adapter?.notifyDataSetChanged()
+                }
+            })
+
+        //txtMainLevel.setText("$level %")
+        //levelaux = level
+        //if (levels != null)
+        //   updateLevelsUI()
     }
 
-    override fun onMainStopClicked() {
-
+    private var levels: IntArray? = null
+    fun updateLevels(levels: IntArray?) {
+        log("updateLevels ${levels?.contentToString()}")
+        this.levels = levels
+        //updateLevelsUI()
+        if (levels != null) {
+            list.forEachIndexed { i, item ->
+                item.percentChannel = levels[i]
+            }
+            adapter?.notifyDataSetChanged()
+        }
     }
 
-    override fun onClick(data: Channel6Model) {
-
+    private fun updateItem(id: Int) {
+        list.forEachIndexed { i, item ->
+            if (item.id == id) {
+                item.percentChannel =
+                    SessionManager.getInstance().userSession.user.currentChannelLevels[i]
+                //if (inc) item.incChannelPercent()
+                //else item.decChannelPercent()
+                adapter?.notifyItemChanged(i)
+                return@forEachIndexed
+            }
+        }
     }
 
-    override fun onPlusClicked(data: Channel6Model) {
-
+    fun updateItem(id: Int, level: Int) {
+        list.forEachIndexed { i, item ->
+            if (item.id == id) {
+                item.percentMain = level
+                adapter?.notifyItemChanged(i)
+                return@forEachIndexed
+            }
+        }
     }
 
-    override fun onMinusClicked(data: Channel6Model) {
-
-    }
-
-    override fun onPlayPauseClicked(data: Channel6Model, isPlay: Boolean) {
-
+    fun rxQueue() {
+        //val b = PublishSubject
     }
 
     fun log(msg: String, throwable: Throwable? = null) {
-        Logger.e("${this::javaClass.name} : $msg", throwable)
+        Logger.e("${this.javaClass.canonicalName} : $msg", throwable)
+    }
+
+    // update progress/led here
+    private fun updateStatus(
+        remainingProgramTime: Int,
+        remainingProgramAction: Int,
+        remainingProgramPause: Int,
+        currentBlock: Int,
+        currentProgram: Int,
+        uid: String?
+    ) {
+        log("UpdateStatus.. time: $remainingProgramTime , pause: $remainingProgramPause , action: $remainingProgramAction , block: $currentBlock , program: $currentProgram")
     }
 
 }

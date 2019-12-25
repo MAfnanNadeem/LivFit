@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import java.util.*
 
@@ -87,13 +88,41 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
             }
 
             override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return newList[newItem].percentMuscle == list!![oldItem].percentMuscle && newList[newItem].percentChannel == list!![oldItem].percentChannel
+                return newList[newItem].percentMain == list!![oldItem].percentMain && newList[newItem].percentChannel == list!![oldItem].percentChannel
             }
 
         })
         list = newList
                result.dispatchUpdatesTo(this)
 
+    }
+
+    fun updateList(items: ArrayList<Channel6Model>?) {
+        Logger.e("updateList")
+        if (items == null || items.isEmpty()!!) {
+            return
+        }
+        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
+                return items[newItem].id == list!![oldItem].id
+            }
+
+            override fun getOldListSize(): Int {
+                return list!!.size
+            }
+
+            override fun getNewListSize(): Int {
+                return items.size
+            }
+
+            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
+                return items[newItem].percentMain == list!![oldItem].percentMain && items[newItem].percentChannel == list!![oldItem].percentChannel
+            }
+
+        })
+        list = items
+        result.dispatchUpdatesTo(this)
+        Logger.e("updateList dispatchUpdatesTo")
     }
 
 }

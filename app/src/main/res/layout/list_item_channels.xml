@@ -30,7 +30,7 @@
 
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_perc_main_channel"
+        android:id="@+id/tv_perc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -53,12 +53,12 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_start"
-        app:layout_constraintStart_toEndOf="@+id/tv_perc_main_channel"
+        app:layout_constraintStart_toEndOf="@+id/tv_perc"
         app:layout_constraintTop_toTopOf="parent">
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_perc"
+            android:id="@+id/tv_perc_main_channel"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

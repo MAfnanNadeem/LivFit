@@ -167,6 +167,12 @@ public class DataParser {
         return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, aux);
     }
 
+    public static byte[] sendMainLevel(int main) {
+        byte[] aux = new byte[1];
+        aux[0] = (byte) main;
+        return fullMessage(new byte[]{COMMAND_SET_MAIN_LEVEL}, new byte[]{1}, aux);
+    }
+
     public static byte[] sendLevels(int[] levels) {
         //stage = stage,freq,pulse,duration,rampup,stim,rdown,pause,freqrel,tpulserel;
         byte[] aux = new byte[10];

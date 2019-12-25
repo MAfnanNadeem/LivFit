@@ -9,7 +9,7 @@ class Channel6Model() : ViewModel() {
         this.id = id
         this.image = image
         this.percentChannel = percentChannel
-        this.percentMuscle = percentMuscle
+        this.percentMain = percentMuscle
         this.title = title
     }
 
@@ -17,9 +17,9 @@ class Channel6Model() : ViewModel() {
     var id: Int = 0
     var image: Int = 0
     var percentChannel: Int = 0
-    var percentMuscle: Int = 0
+    var percentMain: Int = 0
     //var percentChannel: LiveData<Int>? = null
-    //var percentMuscle: LiveData<Int>? = null
+    //var percentMain: LiveData<Int>? = null
     var title: String = ""
 
 
@@ -36,14 +36,14 @@ class Channel6Model() : ViewModel() {
             percentChannel--
     }
 
-    fun incMuslePercent() {
-        if (percentMuscle < 100)
-            percentMuscle++
+    fun incMainPercent() {
+        if (percentMain < 100)
+            percentMain++
     }
 
-    fun decMusclePercent() {
-        if (percentMuscle > 1)
-            percentMuscle--
+    fun decMainPercent() {
+        if (percentMain > 1)
+            percentMain--
     }
 
 }

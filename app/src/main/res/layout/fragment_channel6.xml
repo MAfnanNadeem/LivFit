@@ -49,15 +49,15 @@
     <com.github.siyamed.shapeimageview.HexagonImageView
         android:id="@+id/hexagonImageView"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="96dp"
         android:src="@drawable/login_bg"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toStartOf="@+id/iv_plus"
         app:layout_constraintStart_toEndOf="@+id/iv_play"
         app:layout_constraintTop_toTopOf="parent"
         app:siBorderColor="@color/colorAccent"
         app:siBorderWidth="4dp" />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -65,6 +65,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.25" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:max="100"
+        android:progress="50"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_stop" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -57,11 +57,35 @@ public class TCPClient {
         return uid;
     }
 
-    public void sendMessage(byte[] message) {
-        Logger.i("TCPClient sendMessage " + Arrays.toString(new String(message).toCharArray()));
-        Logger.i("TCPClient sendMessage array " + Arrays.toString(message));
+    public void sendMessage(byte[] message, String tag) {
+        Logger.e("TCPClient", tag+" sendMessage char: " + Arrays.toString(new String(message).toCharArray()));
+        Logger.e("TCPClient", tag+" sendMessage byte: " + Arrays.toString(message));
         Encryption.mbp_encrypt(message, message.length);
-        Logger.i("TCPClient sendMessage encrypted " + message);
+        Logger.e("TCPClient", tag+" sendMessage byte encrypted: " + Arrays.toString(message));
+
+        // Encryption.mbp_decrypt(message, message.length);
+        if (mBufferOut != null) {
+            try {
+                //Log.e("TCP Client", "send 1");
+                mBufferOut.write(message);
+                mBufferOut.flush();
+                //Log.e("TCP Client", "send 2");
+            } catch (IOException e) {
+                Logger.e("TCPClient sendMessage IOException", e);
+                stopClient();
+                run();
+                e.printStackTrace();
+            }
+        } else {
+            Logger.e("TCPClient mBufferOut is dead or connection not started");
+        }
+    }
+
+    public void sendMessage(byte[] message) {
+        Logger.e("TCPClient", " sendMessage char: " + Arrays.toString(new String(message).toCharArray()));
+        Logger.e("TCPClient", " sendMessage byte: " + Arrays.toString(message));
+        Encryption.mbp_encrypt(message, message.length);
+        Logger.e("TCPClient", " sendMessage byte encrypted: " + Arrays.toString(message));
 
         // Encryption.mbp_decrypt(message, message.length);
         if (mBufferOut != null) {

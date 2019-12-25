@@ -899,7 +899,7 @@ public class CommunicationManager {
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendMain(event.getLevel()));
+                t.sendMessage(DataParser.sendMain(event.getLevel()), "onMainLevelEvent");
             }
         }
         if (bluetoothManager != null)
@@ -913,9 +913,10 @@ public class CommunicationManager {
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onChannelsLevelEvent(SendChannelsLevelEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
+        log("onChannelsLevelEvent "+ Arrays.toString(event.getLevels()));
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendLevels(event.getLevels()));
+                t.sendMessage(DataParser.sendLevels(event.getLevels()), "onChannelsLevelEvent");
             }
         }
         if (bluetoothManager != null)
@@ -955,6 +956,9 @@ public class CommunicationManager {
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onDeviceRestartEvent(SendDeviceStartEvent event) {
+        onDeviceStartEvent(event);
+    }
     public void onDeviceStartEvent(SendDeviceStartEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
@@ -966,7 +970,7 @@ public class CommunicationManager {
             bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
                 DataParser.sendReStart());
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
-        Log.e("CommManager", "Play EVENT");
+        log("RESTART EVENT");
 
     }
 

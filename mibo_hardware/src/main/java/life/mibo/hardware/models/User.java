@@ -64,7 +64,8 @@ public class User implements Serializable {
 
     private int[] userChannelCaps = new int[]{100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
 
-    private int[] currentChannelLevels = new int[]{25, 25, 25, 25, 25, 25, 25, 25, 25, 25};//new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    //private int[] currentChannelLevels = new int[]{25, 25, 25, 25, 25, 25, 25, 25, 25, 25};//new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private int[] currentChannelLevels = new int[]{25, 25, 25, 25, 25, 25, 25, 25, 25, 25};// 6ch
 
     private int stimulationState = 0;
 

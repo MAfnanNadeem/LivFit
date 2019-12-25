@@ -49,25 +49,28 @@ public class Utils {
     }
 
     public static boolean checkLimitValues(int level) {
-        switch (level){
-            case 20:
-                return true;
-            case 40:
-                return true;
-            case 50:
-                return true;
-            case 60:
-                return true;
-            case 70:
-                return true;
-            case 80:
-                return true;
-            case 90:
-                return true;
-
-            default:
-                return false;
-        }
+        if (level < 50)
+            return true;
+        else return false;
+//        switch (level){
+//            case 20:
+//                return true;
+//            case 40:
+//                return true;
+//            case 50:
+//                return true;
+//            case 60:
+//                return true;
+//            case 70:
+//                return true;
+//            case 80:
+//                return true;
+//            case 90:
+//                return false;
+//
+//            default:
+//                return false;
+//        }
 
     }
     public static boolean checkLimitChannelsValues(int level) {

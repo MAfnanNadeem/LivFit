@@ -18,7 +18,13 @@ class ChannelAdapterLive(var list: LiveData<ArrayList<Channel6Model>>?, val type
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Channel6Holder {
         val id = if (type) R.layout.list_item_channels_grid else R.layout.list_item_channels
-        return Channel6Holder(LayoutInflater.from(parent.context).inflate(id, parent, false))
+        return Channel6Holder(
+            LayoutInflater.from(parent.context).inflate(
+                id,
+                parent,
+                false
+            )
+        )
     }
 
     fun setListener(listener: Channel6Listener) {

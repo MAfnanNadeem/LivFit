@@ -1,5 +1,7 @@
 package life.mibo.hexa.ui.ch6
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.CountDownTimer
@@ -19,7 +21,9 @@ import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.User
+import life.mibo.hardware.models.program.Block
 import life.mibo.hardware.models.program.Circuit
+import life.mibo.hardware.models.program.Program
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.ch6.adapter.Channel6Listener
 import life.mibo.hexa.ui.ch6.adapter.Channel6Model
@@ -32,13 +36,16 @@ import java.util.concurrent.TimeUnit
 class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     Channel6Fragment.Listener {
 
-    var list = ArrayList<Channel6Model>()
+    //var list = ArrayList<Channel6Model>()
+    var progressBar: ProgressBar? = null
     var adapter: ChannelAdapter? = null
     private lateinit var viewModel: Channel6ViewModel
     private lateinit var userUid: String
     var recyclerView: RecyclerView? = null
     private var manager: CommunicationManager? = null
     var isConnected = false
+    var pauseDuration: Int = 0
+    var actionDuration: Int = 0
 
     // TODO Overrides
     override fun onViewCreated(view: View, uid: String?) {
@@ -47,12 +54,17 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         userUid = uid ?: SessionManager.getInstance().userSession.device.uid
 
         setRecycler(view.findViewById(R.id.recyclerView))
+        progressBar = view.findViewById(R.id.progressBar)
 
         //EventBus.getDefault().postSticky(SendProgramEvent(SessionManager.getInstance().userSession?.currentSessionProgram, uid))
         if (SessionManager.getInstance().userSession != null) {
             sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
             if (SessionManager.getInstance().userSession.device != null)
                 isConnected = true
+            pauseDuration =
+                SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].pauseDuration.valueInteger
+            actionDuration =
+                SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].actionDuration.valueInteger
         } else {
             Toasty.error(this.fragment.context!!, "Device is not connected!").show()
         }
@@ -98,7 +110,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 
     override fun onPlayPauseClicked(data: Channel6Model, isPlay: Boolean) {
         if (isConnected)
-            onMuscleStopClicked(data.id, isPlay)
+            onMusclePlayStopClicked(data.id, isPlay)
     }
 
     // TODO Functions
@@ -106,14 +118,21 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     // 1- Lower back  2- Shoulder  3- Upper back   4- Abs  5- Chest 6- Arms
     private fun setRecycler(recycler: RecyclerView) {
 
-        if (list == null)
-            list = ArrayList()
-        list.clear()
-
+        // if (list == null)
+        //    list = ArrayList()
+        // list.clear()
+        var list = ArrayList<Channel6Model>()
         //val c = Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2)
         //c.percentChannel?.observe(this)
         list.add(Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2))
-        list.add(Channel6Model(2, R.drawable.ic_channel_back_neck, 0, 0))
+        list.add(
+            Channel6Model(
+                2,
+                R.drawable.ic_channel_back_neck,
+                0,
+                0
+            )
+        )
         list.add(Channel6Model(3, R.drawable.ic_channel_biceps, 0, 0))
         list.add(Channel6Model(4, R.drawable.ic_channel_chest, 0, 0))
         list.add(Channel6Model(5, R.drawable.ic_channel_glutes, 0, 0))
@@ -305,6 +324,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         SessionManager.getInstance().userSession.device.isStarted = false
         EventBus.getDefault().postSticky(SendDeviceStopEvent(uid))
         SessionManager.getInstance().userSession.user.mainLevel = 0
+        //progress(0, 0, 0)
     }
 
     private fun onMuscleMinusClicked(id: Int) {
@@ -333,8 +353,8 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
 
-    private fun onMuscleStopClicked(id: Int, play: Boolean) {
-        log("onMuscleStopClicked $play $id")
+    private fun onMusclePlayStopClicked(id: Int, play: Boolean) {
+        log("onMusclePlayStopClicked $play $id")
         if (SessionManager.getInstance().userSession.device.isStarted) {
             SessionManager.getInstance().userSession.user.currentChannelLevels[id - 1] = 0
             EventBus.getDefault().postSticky(
@@ -357,52 +377,6 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         return manager!!
     }
 
-    private fun onPlayClicked() {
-        Observable.fromArray(list).flatMapIterable { x -> x }
-            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.Observer<Channel6Model> {
-                override fun onSubscribe(d: Disposable) {
-                }
-
-                override fun onNext(t: Channel6Model) {
-                    t.isPlay = true
-                }
-
-                override fun onError(e: Throwable) {
-                    log("iv_plus onError", e)
-                    e.printStackTrace()
-                }
-
-                override fun onComplete() {
-                    adapter?.notifyDataSetChanged()
-
-                }
-            })
-    }
-
-    private fun onStopClicked() {
-        Observable.fromArray(list).flatMapIterable { x -> x }
-            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.Observer<Channel6Model> {
-                override fun onSubscribe(d: Disposable) {
-                }
-
-                override fun onNext(t: Channel6Model) {
-                    t.isPlay = false
-                }
-
-                override fun onError(e: Throwable) {
-                    log("iv_plus onError", e)
-                    e.printStackTrace()
-                }
-
-                override fun onComplete() {
-                    adapter?.notifyDataSetChanged()
-
-                }
-            })
-    }
-
     private fun onPlusClicked() {
         log("onPlusClicked")
         onMainPlusMinusClicked(true)
@@ -415,7 +389,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     private fun onMinusClicked2() {
-        Observable.fromArray(list).flatMapIterable { x -> x }
+        Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : io.reactivex.Observer<Channel6Model> {
                 override fun onSubscribe(d: Disposable) {
@@ -479,7 +453,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 //        )
         if (SessionManager.getInstance().userSession.device.isStarted) {
             log("onDevicePlayPauseEvent stopping")
-            Observable.fromArray(list).flatMapIterable { x -> x }
+            Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.computation()).delay(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : io.reactivex.Observer<Channel6Model> {
@@ -504,7 +478,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
                 })
         } else {
             log("onDevicePlayPauseEvent starting")
-            Observable.fromArray(list).flatMapIterable { x -> x }
+            Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : io.reactivex.Observer<Channel6Model> {
                     override fun onSubscribe(d: Disposable) {
@@ -533,20 +507,47 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     var buttonId = 0
     fun onGetMainLevelEvent(event: GetMainLevelEvent) {
         log("onGetMainLevelEvent $event")
-        updateMainLevel(event.level)
+        //val items = ArrayList<Channel6Model>()
+
+        Observable.fromArray(adapter?.list!!).flatMapIterable { x -> x }
+            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : io.reactivex.Observer<Channel6Model> {
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onNext(t: Channel6Model) {
+                    t.percentMain = event.level
+                }
+
+                override fun onError(e: Throwable) {
+                    log("iv_plus onError", e)
+                    e.printStackTrace()
+                }
+
+                override fun onComplete() {
+                    adapter?.notifyDataSetChanged()
+                }
+            })
+
+        //updateMainLevel(event.level)
 
     }
 
     fun onGetLevelsEvent(event: GetLevelsEvent) {
         log("onGetLevelsEvent ${event.uid}")
-        val items = ArrayList<Channel6Model>(this.list)
+        val items = ArrayList<Channel6Model>()
+
         Observable.fromCallable {
             val levels = SessionManager.getInstance().userSession.user.currentChannelLevels
 
             log("onGetLevelsEvent $levels")
-            items.forEach { item ->
-                item.percentChannel = levels[item.id - 1]
+            adapter!!.list!!.forEach {
+                items.add(it.from(levels[it.id - 1]))
             }
+//            items.forEach { item ->
+//                item.percentChannel = levels[item.id - 1]
+//            }
             Observable.just("complete")
         }.doOnError {
             log("onGetLevelsEvent onError ${it.message}")
@@ -577,10 +578,8 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         if (SessionManager.getInstance().userSession.user.tsLastStatus + 100 < System.currentTimeMillis()) {// sepueden ejecutar varios antes de hacer esto?
             SessionManager.getInstance().userSession.user.tsLastStatus = System.currentTimeMillis()
             // Log.e("GroupController","event status");
-            updateStatus(
-                event.remainingProgramTime, event.remainingProgramAction,
-                event.remainingProgramPause, event.currentBlock, event.currentProgram, event.uid
-            )
+            updateStatus(event.remainingProgramAction, event.remainingProgramPause)
+            //updateStatus(event.remainingProgramTime, event.remainingProgramAction, event.remainingProgramPause, event.currentBlock, event.currentProgram, event.uid)
         }
 
     }
@@ -591,7 +590,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 
     fun updateMainLevel(level: Int) {
         log("updateMainLevel $level")
-        Observable.fromArray(list).flatMapIterable { x -> x }
+        Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : io.reactivex.Observer<Channel6Model> {
                 override fun onSubscribe(d: Disposable) {
@@ -624,7 +623,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         this.levels = levels
         //updateLevelsUI()
         if (levels != null) {
-            list.forEachIndexed { i, item ->
+            adapter!!.list!!.forEachIndexed { i, item ->
                 item.percentChannel = levels[i]
             }
             adapter?.notifyDataSetChanged()
@@ -632,7 +631,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     private fun updateItem(id: Int) {
-        list.forEachIndexed { i, item ->
+        adapter!!.list!!.forEachIndexed { i, item ->
             if (item.id == id) {
                 item.percentChannel =
                     SessionManager.getInstance().userSession.user.currentChannelLevels[i]
@@ -645,7 +644,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     fun updateItem(id: Int, level: Int) {
-        list.forEachIndexed { i, item ->
+        adapter!!.list!!.forEachIndexed { i, item ->
             if (item.id == id) {
                 item.percentMain = level
                 adapter?.notifyItemChanged(i)
@@ -663,15 +662,111 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     // update progress/led here
+    var remainingProgramTime: Int = 0
+    var remainingProgramAction: Int = 0
+    var remainingProgramPause: Int = 0
+    var currentBlock: Int = 0
+    var currentProgram: Int = 0
+    var program: Program? = null
+
+
+    private var mCurrentBlock = 0
+    private var mCurrentTimerBlock: Long = 0
+
     private fun updateStatus(
-        remainingProgramTime: Int,
-        remainingProgramAction: Int,
-        remainingProgramPause: Int,
+        remainingTime: Int,
+        action: Int,
+        pause: Int,
         currentBlock: Int,
         currentProgram: Int,
         uid: String?
     ) {
-        log("UpdateStatus.. time: $remainingProgramTime , pause: $remainingProgramPause , action: $remainingProgramAction , block: $currentBlock , program: $currentProgram")
+        log("UpdateStatus.. time: $remainingTime , pause: $pause , action: $action , block: $currentBlock , program: $currentProgram")
+
+        if (pause > 0) {
+            progress(1, 100, pauseDuration)
+        } else if (action > 0) {
+            progress(100, 0, actionDuration)
+        }
+    }
+
+    private fun updateStatus(action: Int, pause: Int) {
+        log("UpdateStatus.. pause: $pause , action: $action")
+
+        if (pause > 0) {
+            progress(1, 99, pauseDuration)
+        } else if (action > 0) {
+            progress(100, 0, actionDuration)
+        }
+    }
+
+    var lastFrom = 0
+    fun progress(valueFrom: Int, valueTo: Int, duration: Int) {
+        if (lastFrom == valueFrom)
+            return
+        lastFrom = valueFrom
+        Observable.just(1).observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+            if (duration == 0)
+                progressBar!!.visibility = View.GONE
+            else
+                progressBar!!.visibility = View.VISIBLE
+            if (lastFrom > 1)
+                progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
+            else progressBar!!.progressTintList = ColorStateList.valueOf(Color.RED)
+            ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo)
+                .setDuration(duration.toLong())
+                .start()
+        }.subscribe()
+
+        //val animator = ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo).setDuration(duration);
+        //animator.start()
+    }
+
+    var mHandler: Handler? = @SuppressLint("HandlerLeak")
+    object : Handler() {
+        override fun handleMessage(msg: Message) {
+            val block: Block = program?.blocks?.get(mCurrentBlock) ?: return;
+            if (mCurrentTimerBlock > Integer.parseInt(program!!.blocks[mCurrentBlock].pauseDuration.value)) {
+                if (mCurrentTimerBlock >= Integer.parseInt(block.pauseDuration.value) +
+                    Integer.parseInt(block.actionDuration.value) +
+                    Integer.parseInt(block.downRampDuration.value) +
+                    Integer.parseInt(block.upRampDuration.value)
+                ) {
+                    mCurrentTimerBlock = mCurrentTimerBlock - 100
+                } else {
+                    progressBar!!.setProgressTintList(ColorStateList.valueOf(Color.RED))
+                    progressBar!!.setProgress(
+                        ((mCurrentTimerBlock.toDouble() - Integer.parseInt(
+                            block.pauseDuration.value
+                        ).toDouble()) / (Integer.parseInt(
+                            block.actionDuration.value
+                        ) +
+                                Integer.parseInt(block.downRampDuration.value) +
+                                Integer.parseInt(block.upRampDuration.value)).toDouble() * 100.0).toInt()
+                    )
+//                    txtBarValue.setTextColor(Color.RED)
+//                    txtBarValue.setText(
+//                        "" + ((mCurrentTimerBlock - Integer.parseInt(
+//                            mProgram.getBlocks().get(
+//                                mCurrentBlock
+//                            ).getPauseDuration().getValue()
+//                        )) / 1000 + 1)
+//                    )
+
+                }
+
+            } else if (mCurrentTimerBlock <= Integer.parseInt(block.pauseDuration.value)) {
+                progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
+                progressBar!!.progress =
+                    100 - (mCurrentTimerBlock.toDouble() / Integer.parseInt(
+                        block.pauseDuration.value
+                    ).toDouble() * 100.0).toInt()
+                // txtBarValue.setTextColor(Color.GREEN)
+                // txtBarValue.setText("" + ((Integer.parseInt(mProgram.getBlocks().get(mCurrentBlock).getPauseDuration().getValue()) - mCurrentTimerBlock) / 1000 + 1))
+
+            }
+
+        }
     }
 
 }

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:gravity="center_horizontal"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+    <ImageView
+        android:id="@+id/imageViewBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#888"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:minHeight="120dp">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.3"
+            android:scaleType="centerCrop"
+            android:src="@drawable/login_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <life.mibo.views.like.AndroidLikeButton
+            android:id="@+id/likeButton"
+            android:layout_width="@dimen/like_layout_size"
+            android:layout_height="@dimen/like_layout_size"
+            app:circle_endColor="#b00d0d"
+            app:circle_startColor="#FC1313"
+            app:dot_color_1="#fc4242"
+            app:dot_color_2="#FC1313"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:like_icon="@drawable/ic_rxl_heart_selected"
+            app:unlike_icon="@drawable/ic_rxl_heart_unselect" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            style="@style/textview_item_rxl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:gravity="center"
+            android:text="BATTLE ROPE LATERAL TAPOUT"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView">
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="tv_type,iv_time,tv_pods,iv_type,tv_time,iv_users,iv_pods,tv_users" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_type"
+                android:layout_width="@dimen/rxl_item_icon_size"
+                android:layout_height="@dimen/rxl_item_icon_size"
+                android:src="@drawable/ic_rxl_all"
+                app:layout_constraintBottom_toTopOf="@+id/tv_type"
+                app:layout_constraintEnd_toEndOf="@+id/tv_type"
+                app:layout_constraintStart_toStartOf="@id/tv_type" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_type"
+                style="@style/textview_item_rxl"
+                android:text="Random"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_users"
+                android:layout_width="@dimen/rxl_item_icon_size"
+                android:layout_height="@dimen/rxl_item_icon_size"
+                android:src="@drawable/ic_person_black_24dp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_users"
+                app:layout_constraintEnd_toEndOf="@+id/tv_users"
+                app:layout_constraintStart_toStartOf="@id/tv_users" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_users"
+                style="@style/textview_item_rxl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_type" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_time"
+                android:layout_width="@dimen/rxl_item_icon_size"
+                android:layout_height="@dimen/rxl_item_icon_size"
+                android:src="@drawable/ic_access_time_black_24dp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_time"
+                app:layout_constraintEnd_toEndOf="@+id/tv_time"
+                app:layout_constraintStart_toStartOf="@id/tv_time" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_time"
+                style="@style/textview_item_rxl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="30 Sec."
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_users" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_pods"
+                android:layout_width="@dimen/rxl_item_icon_size"
+                android:layout_height="@dimen/rxl_item_icon_size"
+                android:src="@drawable/ic_rxl_pods_icon"
+                app:layout_constraintBottom_toTopOf="@+id/tv_pods"
+                app:layout_constraintEnd_toEndOf="@+id/tv_pods"
+                app:layout_constraintStart_toStartOf="@id/tv_pods" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_pods"
+                style="@style/textview_item_rxl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="4"
+                app:layout_constraintStart_toEndOf="@id/tv_time"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+

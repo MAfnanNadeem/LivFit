@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.ch6.adapter
+package life.mibo.hexa.ui.rxl.model
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -10,24 +10,23 @@ import life.mibo.hexa.R
 import java.util.*
 
 
-class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = false) :
-    RecyclerView.Adapter<Channel6Holder>() {
+class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
+    RecyclerView.Adapter<ReflexHolder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: Channel6Listener? = null
+    private var listener: ReflexListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Channel6Holder {
-        val id = if (type) R.layout.list_item_channels_grid else R.layout.list_item_channels
-        return Channel6Holder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReflexHolder {
+        return ReflexHolder(
             LayoutInflater.from(parent.context).inflate(
-                id,
+                R.layout.list_item_reflex,
                 parent,
                 false
             )
         )
     }
 
-    fun setListener(listener: Channel6Listener) {
+    fun setListener(listener: ReflexListener) {
         this.listener = listener
     }
 
@@ -37,11 +36,11 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         return 0
     }
 
-    private fun getItem(position: Int): Channel6Model? {
+    private fun getItem(position: Int): ReflexModel? {
         return list?.get(position)
     }
 
-    override fun onBindViewHolder(holder: Channel6Holder, position: Int) {
+    override fun onBindViewHolder(holder: ReflexHolder, position: Int) {
         holder.bind(getItem(position), listener)
     }
 
@@ -66,14 +65,14 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         }
     }
 
-    fun updateData(newList: ArrayList<Channel6Model>) {
+    fun updateData(newList: ArrayList<ReflexModel>) {
 //        list?.observe(this, androidx.lifecycle.Observer {
 //            it.clear()
 //            it.addAll(newList)
 //        })
     }
 
-    fun update(newList: ArrayList<Channel6Model>) {
+    fun update(newList: ArrayList<ReflexModel>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()
@@ -94,16 +93,16 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
             }
 
             override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return newList[newItem].percentMain == list!![oldItem].percentMain && newList[newItem].percentChannel == list!![oldItem].percentChannel
+                return true
             }
 
         })
         list = newList
-               result.dispatchUpdatesTo(this)
+        result.dispatchUpdatesTo(this)
 
     }
 
-    fun updateList(items: ArrayList<Channel6Model>?) {
+    fun updateList(items: ArrayList<ReflexModel>?) {
         Logger.e("updateList")
         if (items == null || items.isEmpty()!!) {
             return
@@ -122,8 +121,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
             }
 
             override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                Logger.e("updateList ${items[newItem].percentChannel} == ${list!![oldItem].percentChannel} && ${items[newItem].percentMain} == ${list!![newItem].percentMain}")
-                return items[newItem].percentChannel == list!![oldItem].percentChannel && items[newItem].percentMain == list!![oldItem].percentMain
+                return true
             }
 
         })

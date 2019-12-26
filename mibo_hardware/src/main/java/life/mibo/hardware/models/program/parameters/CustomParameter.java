@@ -64,7 +64,13 @@ public class CustomParameter {
     }
 
     public int getValueInteger() {
-        return Integer.parseInt(value);
+        try {
+            return Integer.parseInt(value);
+        }
+        catch (Exception e){
+
+        }
+        return 0;
     }
 
     public void setValue(String value) {

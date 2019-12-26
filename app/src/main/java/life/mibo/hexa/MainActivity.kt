@@ -1,6 +1,7 @@
 package life.mibo.hexa
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -73,12 +74,16 @@ class MainActivity : BaseActivity(), Callback {
 
         drawer.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_test1 -> {
+                R.id.nav_ch6 -> {
                     navController.navigate(R.id.navigation_channels)
                 }
-                R.id.nav_test2 -> {
+                R.id.nav_scan -> {
                     startScanning(false)
                     navController.navigate(R.id.navigation_devices)
+                }
+                R.id.nav_rxl -> {
+                    startScanning(false)
+                    navController.navigate(R.id.navigation_reflex)
                 }
                 else -> {
                     Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
@@ -116,6 +121,7 @@ class MainActivity : BaseActivity(), Callback {
         SessionManager.getInstance().createDummySession()
     }
 
+    val REQUEST_ENABLE_BT = 1022
     lateinit var manager: CommunicationManager
     private fun startManager() {
         log("getScanning started")
@@ -126,6 +132,16 @@ class MainActivity : BaseActivity(), Callback {
         val lock = wifi.createMulticastLock("MulticastMibo")
         lock.setReferenceCounted(true)
         lock?.acquire()
+
+        val bl = BluetoothAdapter.getDefaultAdapter()
+        if (bl != null && !bl.isEnabled) {
+            startActivityForResult(
+                Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                REQUEST_ENABLE_BT
+            )
+        }
+
+
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
             override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {

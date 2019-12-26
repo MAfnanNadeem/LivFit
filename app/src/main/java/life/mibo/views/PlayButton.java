@@ -11,6 +11,7 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
@@ -143,7 +144,10 @@ public class PlayButton extends AppCompatImageButton {
 
         return handled;
     }
-
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+    }
     static class SavedState extends View.BaseSavedState {
         boolean checked;
 

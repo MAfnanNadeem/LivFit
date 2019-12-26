@@ -3,23 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single" >
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_test1"
+            android:id="@+id/nav_ch6"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="Six Channel" />
         <item
-            android:id="@+id/nav_test2"
+            android:id="@+id/nav_scan"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="Scan Devices" />
         <item
-            android:id="@+id/nav_test3"
+            android:id="@+id/nav_rxl"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="ReFlex" />
+        <item
+            android:id="@+id/nav_test2"
             android:icon="@drawable/ic_menu_manage"
             android:title="Test" />
+
+      <item
+            android:id="@+id/nav_test3"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Test 2" />
     </group>
 
     <item android:title="Communicate">

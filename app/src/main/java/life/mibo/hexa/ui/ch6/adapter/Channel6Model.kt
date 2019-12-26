@@ -1,6 +1,7 @@
 package life.mibo.hexa.ui.ch6.adapter
 
 import androidx.lifecycle.ViewModel
+import life.mibo.hardware.core.Logger
 
 class Channel6Model() : ViewModel() {
     constructor(
@@ -11,6 +12,19 @@ class Channel6Model() : ViewModel() {
         this.percentChannel = percentChannel
         this.percentMain = percentMuscle
         this.title = title
+    }
+
+    companion object {
+        fun from(chPerc: Int) {
+
+        }
+    }
+
+    fun from(chPerc: Int): Channel6Model {
+        Logger.e("Channel6Model "+toString())
+        val ch6 = Channel6Model(id, image, chPerc, percentMain, title)
+        Logger.e("Channel6Model Copy $ch6")
+        return ch6
     }
 
     var uid: String = ""
@@ -45,5 +59,10 @@ class Channel6Model() : ViewModel() {
         if (percentMain > 1)
             percentMain--
     }
+
+    override fun toString(): String {
+        return "Channel6Model(uid='$uid', id=$id, image=$image, percentChannel=$percentChannel, percentMain=$percentMain, title='$title', isPlay=$isPlay)"
+    }
+
 
 }

@@ -22,13 +22,14 @@ class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         if (item == null)
             return
         data = item
-        percent?.text = "${item.percentMain}"
-        percentChannel?.text = "${item.percentChannel}"
+        percent?.text = "${item.percentMain} %"
+        percentChannel?.text = "${item.percentChannel} %"
         image?.setBackgroundResource(item.image)
         play?.isChecked = item.isPlay
 
         play?.setOnClickListener {
             listener?.onPlayPauseClicked(item, (it as PlayButton).isPlay)
+            item.isPlay = !item.isPlay
         }
 
         minus?.setOnClickListener {

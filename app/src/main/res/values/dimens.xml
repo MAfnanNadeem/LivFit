@@ -14,4 +14,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="ch_6_button_size">72dp</dimen>
     <dimen name="ch_6_list_item_button">44dp</dimen>
+    <dimen name="rxl_item_icon_size">24dp</dimen>
+    <dimen name="like_layout_size">32dp</dimen>
 </resources>

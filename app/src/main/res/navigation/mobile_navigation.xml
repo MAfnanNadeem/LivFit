@@ -34,4 +34,9 @@
         android:name="life.mibo.hexa.ui.devices.DeviceScanFragment"
         android:label="Scan Devices"
         tools:layout="@layout/fragment_channel6" />
+    <fragment
+        android:id="@+id/navigation_reflex"
+        android:name="life.mibo.hexa.ui.rxl.ReactionLightFragment"
+        android:label="ReFlex"
+        tools:layout="@layout/fragment_channel6" />
 </navigation>

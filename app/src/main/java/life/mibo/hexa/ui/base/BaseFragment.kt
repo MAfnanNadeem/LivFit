@@ -1,8 +1,8 @@
 package life.mibo.hexa.ui.base
 
+import android.view.View
 import androidx.fragment.app.Fragment
 import life.mibo.hardware.core.Logger
-import org.greenrobot.eventbus.EventBus
 
 abstract class BaseFragment : Fragment() {
 
@@ -22,5 +22,10 @@ abstract class BaseFragment : Fragment() {
     override fun onStop() {
         super.onStop()
      //   EventBus.getDefault().unregister(this)
+    }
+
+    interface BaseListener {
+        fun onStop()
+        fun onViewCreated(view: View, uid: String?)
     }
 }

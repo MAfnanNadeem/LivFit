@@ -106,7 +106,15 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 callback?.onConnectClicked(item)
             }
             disconnect?.setOnClickListener {
+                item.statusConnected = 0
+                disconnect?.setColorFilter(Color.GRAY)
                 callback?.onCancelClicked(item)
+            }
+
+            if (item.statusConnected == 1) {
+                disconnect?.setColorFilter(Color.RED)
+            } else {
+                disconnect?.setColorFilter(Color.GRAY)
             }
         }
     }

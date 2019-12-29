@@ -39,4 +39,9 @@
         android:name="life.mibo.hexa.ui.rxl.ReactionLightFragment"
         android:label="ReFlex"
         tools:layout="@layout/fragment_channel6" />
+    <fragment
+        android:id="@+id/navigation_reflex2"
+        android:name="life.mibo.hexa.ui.rxl.ReactionLightFragment2"
+        android:label="ReFlex2"
+        tools:layout="@layout/fragment_channel6" />
 </navigation>

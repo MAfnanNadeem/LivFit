@@ -34,6 +34,11 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?) :
         return 0
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return getItem(position)!!.type
+        //return super.getItemViewType(position)
+    }
+
     private fun getItem(position: Int): ReflexFilterModel? {
         return list?.get(position)
     }
@@ -51,19 +56,41 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?) :
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var text: TextView? = itemView.findViewById(R.id.text_filter)
         var view: View? = itemView.findViewById(R.id.item_view)
+        var heart: View? = itemView.findViewById(R.id.image_filter)
+        var switch_: View? = itemView.findViewById(R.id.switch_filter)
         var data: ReflexModel? = null
 
         fun bind(item: ReflexFilterModel?, listener: Listener?) {
             if (item == null)
                 return
-            text?.text = item.title
-            if (item.isSelected)
-                view?.setBackgroundResource(R.drawable.item_rxl_filters_selected)
-            else
-                view?.setBackgroundResource(R.drawable.item_rxl_filters)
-            view?.setOnClickListener {
-                item.isSelected = !item.isSelected
-                listener?.onClick(item)
+            when (item.type) {
+                2 -> {
+                    heart?.visibility = View.VISIBLE
+                    switch_?.visibility = View.GONE
+                    view?.visibility = View.GONE
+                }
+
+                3 -> {
+                    heart?.visibility = View.GONE
+                    switch_?.visibility = View.VISIBLE
+                    view?.visibility = View.GONE
+
+                }
+                else -> {
+                    heart?.visibility = View.GONE
+                    switch_?.visibility = View.GONE
+                    view?.visibility = View.VISIBLE
+                    text?.text = item.title
+                    if (item.isSelected)
+                        view?.setBackgroundResource(R.drawable.item_rxl_filters_selected)
+                    else
+                        view?.setBackgroundResource(R.drawable.item_rxl_filters)
+                    view?.setOnClickListener {
+                        item.isSelected = !item.isSelected
+                        listener?.onClick(item)
+                    }
+
+                }
             }
         }
     }

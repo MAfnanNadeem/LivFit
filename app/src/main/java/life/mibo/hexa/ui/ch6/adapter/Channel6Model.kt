@@ -24,6 +24,8 @@ class Channel6Model() : ViewModel() {
         Logger.e("Channel6Model "+toString())
         val ch6 = Channel6Model(id, image, chPerc, percentMain, title)
         Logger.e("Channel6Model Copy $ch6")
+        if(chPerc == 0)
+            ch6.isPlay = true
         return ch6
     }
 

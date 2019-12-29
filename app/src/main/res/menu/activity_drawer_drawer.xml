@@ -28,7 +28,7 @@
       <item
             android:id="@+id/nav_test3"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Test 2" />
+            android:title="ReFlex2" />
     </group>
 
     <item android:title="Communicate">

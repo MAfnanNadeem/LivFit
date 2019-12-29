@@ -9,9 +9,11 @@ import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
+import android.view.Menu
 import android.view.WindowManager
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -20,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
@@ -48,6 +51,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : BaseActivity(), Callback {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
     private var navigator: ScreenNavigator? = null
 
@@ -63,8 +67,8 @@ class MainActivity : BaseActivity(), Callback {
             ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
         val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        val appBarConfiguration = AppBarConfiguration(
+        navController = findNavController(R.id.nav_host_fragment)
+        appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
@@ -83,7 +87,16 @@ class MainActivity : BaseActivity(), Callback {
                 }
                 R.id.nav_rxl -> {
                     startScanning(false)
+                    updateMenu()
                     navController.navigate(R.id.navigation_reflex)
+
+                }
+
+                R.id.nav_test3 -> {
+                    startScanning(false)
+                    updateMenu()
+                    navController.navigate(R.id.navigation_reflex2)
+
                 }
                 else -> {
                     Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
@@ -100,6 +113,34 @@ class MainActivity : BaseActivity(), Callback {
         checkPermissions()
         //startManager()
         commHandler.regisiter()
+    }
+
+    private fun updateMenu() {
+       // bottom_nav_view.menu.clear()
+        try {
+            Thread.sleep(100)
+        } catch (e: Exception) {
+        }
+        if (bottom_nav_view.maxItemCount < 5)
+            bottom_nav_view?.menu?.add(
+                Menu.NONE,
+                R.id.navigation_devices,
+                Menu.NONE,
+                "Home"
+            )?.setIcon(R.drawable.ic_home_black_24dp);
+        //bottom_nav_view?.inflateMenu(R.menu.bottom_nav_menu_rxl)
+        //val menu = bottom_nav_view.menu as BottomNavigationMenu
+
+//        appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.navigation_discover,
+//                R.id.navigation_create,
+//                R.id.navigation_analytic,
+//                R.id.navigation_more
+//            )
+//        )
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        bottom_nav_view.setupWithNavController(navController)
     }
 
     val permissions = arrayOf(

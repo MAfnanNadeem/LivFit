@@ -29,7 +29,7 @@ class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         play?.setOnClickListener {
             listener?.onPlayPauseClicked(item, (it as PlayButton).isPlay)
-            item.isPlay = !item.isPlay
+            //item.isPlay = !item.isPlay
         }
 
         minus?.setOnClickListener {

@@ -9,9 +9,12 @@ import android.os.Handler
 import android.os.Message
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -32,12 +35,14 @@ import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     Channel6Fragment.Listener {
 
     //var list = ArrayList<Channel6Model>()
     var progressBar: ProgressBar? = null
+    var tvTimer: TextView? = null
     var adapter: ChannelAdapter? = null
     private lateinit var viewModel: Channel6ViewModel
     private lateinit var userUid: String
@@ -46,6 +51,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     var isConnected = false
     var pauseDuration: Int = 0
     var actionDuration: Int = 0
+    val plays = BooleanArray(7)
 
     // TODO Overrides
     override fun onViewCreated(view: View, uid: String?) {
@@ -55,23 +61,29 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 
         setRecycler(view.findViewById(R.id.recyclerView))
         progressBar = view.findViewById(R.id.progressBar)
+        tvTimer = view.findViewById(R.id.tv_timer)
 
         //EventBus.getDefault().postSticky(SendProgramEvent(SessionManager.getInstance().userSession?.currentSessionProgram, uid))
         if (SessionManager.getInstance().userSession != null) {
-            sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
-            if (SessionManager.getInstance().userSession.device != null)
-                isConnected = true
-            pauseDuration =
-                SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].pauseDuration.valueInteger
-            actionDuration =
-                SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].actionDuration.valueInteger
-        } else {
-            Toasty.error(this.fragment.context!!, "Device is not connected!").show()
+            if (SessionManager.getInstance().userSession.user != null) {
+                sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
+                if (SessionManager.getInstance().userSession.device != null)
+                    isConnected = true
+                pauseDuration =
+                    SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].pauseDuration.valueInteger
+                actionDuration =
+                    SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].actionDuration.valueInteger
+            }
+
         }
+
+        if (!isConnected)
+            Toasty.error(this.fragment.context!!, "Device is not connected!").show()
+
     }
 
     override fun onStop() {
-
+        disposable?.dispose()
     }
 
     override fun onMainPlusClicked() {
@@ -124,19 +136,12 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         var list = ArrayList<Channel6Model>()
         //val c = Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2)
         //c.percentChannel?.observe(this)
-        list.add(Channel6Model(1, R.drawable.ic_channel_abdomen, 1, 2))
-        list.add(
-            Channel6Model(
-                2,
-                R.drawable.ic_channel_back_neck,
-                0,
-                0
-            )
-        )
-        list.add(Channel6Model(3, R.drawable.ic_channel_biceps, 0, 0))
-        list.add(Channel6Model(4, R.drawable.ic_channel_chest, 0, 0))
-        list.add(Channel6Model(5, R.drawable.ic_channel_glutes, 0, 0))
-        list.add(Channel6Model(6, R.drawable.ic_channel_thighs, 0, 0))
+        list.add(Channel6Model(1, R.drawable.ic_channel_back_neck, 0, 0))
+        list.add(Channel6Model(2, R.drawable.ic_channel_glutes, 0, 0))
+        list.add(Channel6Model(3, R.drawable.ic_channel_thighs, 0, 0))
+        list.add(Channel6Model(4, R.drawable.ic_channel_abdomen, 1, 2))
+        list.add(Channel6Model(5, R.drawable.ic_channel_chest, 0, 0))
+        list.add(Channel6Model(6, R.drawable.ic_channel_biceps, 0, 0))
 
 //        viewModel.list.observe(this, Observer {
 //            it.addAll(list)
@@ -174,16 +179,48 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         cTimer?.start()
     }
 
-    private fun updateTime(timer: Int) {
-
-    }
-
-    //cancel timer
     internal fun cancelTimer() {
         if (cTimer != null) {
             cTimer?.cancel()
             updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
         }
+    }
+
+    @MainThread
+    private fun updateTime(timer: Int) {
+
+    }
+
+    fun countDown(start: Long, end: Long): Observable<Long> {
+        return Observable.intervalRange(start, start + 2, 0, 1, TimeUnit.SECONDS)
+            .map { 2 * start - it }
+            .flatMap { if (it >= 0) Observable.just(it) else countDown(end, end) }
+
+    }
+
+    var disposable: Disposable? = null
+    @SuppressLint("SetTextI18n")
+    fun countDown(end: Long) {
+
+        disposable = Observable.interval(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext {
+                // tvTimer?.text = "${end.minus(it)} sec"
+                tvTimer?.text = String.format("%02d:%02d", end.minus(it) / 60, end.minus(it) % 60)
+            }.takeUntil { a ->
+                a == end
+            }.doOnComplete {
+                tvTimer?.text = "Completed"
+                disposable?.dispose()
+            }.subscribe()
+    }
+
+    fun countdownTimer(remainingTime: Long, interval: Int): Flowable<Int> {
+        return Flowable.range(0, interval + 1)
+            .map { interval - it }
+            .repeat()
+            .skip(interval - remainingTime)
+            .concatMap { Flowable.just(it).delay(1, TimeUnit.SECONDS) }
     }
 
     fun startSession(u: User) {
@@ -324,6 +361,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         SessionManager.getInstance().userSession.device.isStarted = false
         EventBus.getDefault().postSticky(SendDeviceStopEvent(uid))
         SessionManager.getInstance().userSession.user.mainLevel = 0
+        disposable?.dispose()
         //progress(0, 0, 0)
     }
 
@@ -363,12 +401,16 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
                     userUid
                 )
             )
+            plays[id] = false
             //updateItem(id)
             //sendStopToAllBoosters(SessionManager.getInstance().userSession.user)
         } else {
+            plays[id] = true
             sendStartToAllBoosters(SessionManager.getInstance().userSession.user)
             //sendStopToAllBoosters(SessionManager.getInstance().userSession.user)
         }
+
+        log("plays... " + plays.contentToString())
     }
 
     fun getManager(): CommunicationManager {
@@ -452,7 +494,10 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 //            )
 //        )
         if (SessionManager.getInstance().userSession.device.isStarted) {
-            log("onDevicePlayPauseEvent stopping")
+            disposable?.dispose()
+            disposable = null
+            countDown(300)
+            log("onDevicePlayPauseEvent play button enable")
             Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.computation()).delay(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -477,7 +522,8 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
                     }
                 })
         } else {
-            log("onDevicePlayPauseEvent starting")
+            disposable?.dispose()
+            log("onDevicePlayPauseEvent play button disable")
             Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : io.reactivex.Observer<Channel6Model> {
@@ -694,25 +740,29 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         log("UpdateStatus.. pause: $pause , action: $action")
 
         if (pause > 0) {
-            progress(1, 99, pauseDuration)
+            progress(100, 1, pauseDuration)
         } else if (action > 0) {
-            progress(100, 0, actionDuration)
+            progress(1, 99, actionDuration)
         }
     }
 
-    var lastFrom = 0
+    var lastFrom = -1
     fun progress(valueFrom: Int, valueTo: Int, duration: Int) {
         if (lastFrom == valueFrom)
             return
         lastFrom = valueFrom
+       // Observable.fromCallable {  }
         Observable.just(1).observeOn(AndroidSchedulers.mainThread()).doOnComplete {
             if (duration == 0)
                 progressBar!!.visibility = View.GONE
             else
                 progressBar!!.visibility = View.VISIBLE
-            if (lastFrom > 1)
+
+            if (valueFrom == 100)
                 progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
-            else progressBar!!.progressTintList = ColorStateList.valueOf(Color.RED)
+            else
+                progressBar!!.progressTintList = ColorStateList.valueOf(Color.RED)
+
             ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo)
                 .setDuration(duration.toLong())
                 .start()
@@ -768,5 +818,36 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
 
         }
     }
+
+    class TickHandler(val tvTimer: TextView?, val end: Long) {
+
+        val lastTick = AtomicLong(0L)
+        var disposable: Disposable? = null
+
+        fun start() {
+            disposable = Observable.interval(1, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    tvTimer?.text = "$it sec"
+                }.takeUntil { a ->
+                    lastTick.getAndIncrement()
+                    a == end
+                }.doOnComplete {
+                    tvTimer?.text = "Completed"
+                    disposable?.dispose()
+                }.subscribe()
+        }
+
+        fun resume() {
+
+
+        }
+
+        fun stop() {
+            disposable?.dispose()
+        }
+
+    }
+
 
 }

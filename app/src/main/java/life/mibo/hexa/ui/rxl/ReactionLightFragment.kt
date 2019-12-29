@@ -1,9 +1,7 @@
 package life.mibo.hexa.ui.rxl
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,11 +11,13 @@ import life.mibo.hexa.R
 import life.mibo.hexa.ui.rxl.model.ReflexAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexModel
-import ru.whalemare.sheetmenu.SheetMenu
+import life.mibo.hexa.utils.Toasty
+import life.mibo.hexa.view.dialog.SheetMenu
 
 class ReactionLightFragment : Fragment() {
 
     private lateinit var rxl: RxlViewModel
+    private lateinit var controller: ReactionLightController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,10 +38,15 @@ class ReactionLightFragment : Fragment() {
 
     fun setFilters(view: RecyclerView) {
         val list = ArrayList<ReflexFilterAdapter.ReflexFilterModel>();
-        for (i in 1..50
-        ) {
-            list.add(ReflexFilterAdapter.ReflexFilterModel(i, "Select $i"))
-        }
+
+        list.add(ReflexFilterAdapter.ReflexFilterModel(1, "Start", type = 2))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(1, "Switch", type = 3))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(1, "Pods", type = 1))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(2, "Light Logic", type = 1))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(3, "Players", type = 1))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(4, "Type", type = 1))
+        list.add(ReflexFilterAdapter.ReflexFilterModel(5, "Accessories", type = 1))
+
         val adapter = ReflexFilterAdapter(list)
         val manager = LinearLayoutManager(
             this@ReactionLightFragment.activity,
@@ -78,5 +83,17 @@ class ReactionLightFragment : Fragment() {
         SheetMenu(data.title, listOf("Item 1", "Item 2", "Item 2", "Item 2", "Item 2")).show(this@ReactionLightFragment.context!!)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_reactions_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_filter) {
+
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
 
 }

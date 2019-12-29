@@ -21,7 +21,7 @@ class CommHandler(val activity: MainActivity) {
 
     fun unregisiter() {
         log("unregisiter ")
-        EventBus.getDefault().register(this)
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

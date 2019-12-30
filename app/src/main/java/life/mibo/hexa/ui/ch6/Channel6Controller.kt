@@ -752,7 +752,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
             return
         lastFrom = valueFrom
        // Observable.fromCallable {  }
-        Observable.just(1).observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+        Observable.empty<String>().observeOn(AndroidSchedulers.mainThread()).doOnComplete {
             if (duration == 0)
                 progressBar!!.visibility = View.GONE
             else
@@ -767,6 +767,10 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
                 .setDuration(duration.toLong())
                 .start()
         }.subscribe()
+
+        //Functions.emptyConsumer(), Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION, Functions.emptyConsumer()
+        // Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_ACTION
+
 
         //val animator = ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo).setDuration(duration);
         //animator.start()

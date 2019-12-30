@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,9 +15,11 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
+import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.rxl.model.ReflexAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexModel
+import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.view.backdrop.BackdropBehavior
 import life.mibo.hexa.view.dialog.SheetMenu
 
@@ -29,7 +30,7 @@ fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.ru
         ?: throw IllegalArgumentException("Layout's behavior is not current behavior")
 }
 
-class ReactionLightFragment2 : Fragment() {
+class ReactionLightFragment2 : BaseFragment() {
 
     private lateinit var rxl: RxlViewModel
     private lateinit var controller: ReactionLightController
@@ -68,7 +69,18 @@ class ReactionLightFragment2 : Fragment() {
         root.findViewById<View?>(R.id.recyclerViewFilters)?.visibility = View.GONE
         setRecycler(recycler)
         setHasOptionsMenu(true)
+        backdropBehavior?.addOnDropListener(object : BackdropBehavior.OnDropListener {
+            override fun onDrop(dropState: BackdropBehavior.DropState, fromUser: Boolean) {
+                if (dropState == BackdropBehavior.DropState.CLOSE) {
+                    Toasty.warning(
+                        this@ReactionLightFragment2.context!!,
+                        "closed " + selectedItems.keys.toIntArray().contentToString()
+                    ).show()
+                    log("closed" + selectedItems.keys.toIntArray().contentToString())
+                }
+            }
 
+        })
         return root
     }
 
@@ -94,34 +106,34 @@ class ReactionLightFragment2 : Fragment() {
                 }
                 2 -> {
                     for (i in 1..16) {
-                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i"))
+                        list.add(ReflexFilterAdapter.ReflexFilterModel(i.plus(100), "$i"))
                     }
                 }
                 3 -> {
                     list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Random"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Sequence"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "All at once"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Focus"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Home Base"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(32, "Sequence"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(33, "All at once"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(34, "Focus"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(35, "Home Base"))
                 }
                 4 -> {
                     list.add(ReflexFilterAdapter.ReflexFilterModel(41, "1"))
                     list.add(ReflexFilterAdapter.ReflexFilterModel(42, "2"))
                     list.add(ReflexFilterAdapter.ReflexFilterModel(43, "3"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(43, "4"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(44, "4"))
                 }
                 5 -> {
                     list.add(ReflexFilterAdapter.ReflexFilterModel(51, "No Accessories"))
                     list.add(ReflexFilterAdapter.ReflexFilterModel(52, "Battle Rope"))
                     list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Laddar"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Medicine Ball"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Mirror"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Poll"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Pul Up Bar"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Rig"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Suspension Straps"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Tree"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Resistance Band"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(54, "Medicine Ball"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(55, "Mirror"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(56, "Poll"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(57, "Pul Up Bar"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(58, "Rig"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(59, "Suspension Straps"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(60, "Tree"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(61, "Resistance Band"))
                 }
                 else -> {
                     for (i in 1..50) {
@@ -158,7 +170,7 @@ class ReactionLightFragment2 : Fragment() {
     val selectedItems = HashMap<Int, ReflexFilterAdapter.ReflexFilterModel>()
 
 
-    val fliterListener = object : ReflexFilterAdapter.Listener {
+    private val fliterListener = object : ReflexFilterAdapter.Listener {
         override fun onClick(data: ReflexFilterAdapter.ReflexFilterModel?) {
             if (data != null)
                 selectedItems[data.id] = data
@@ -166,6 +178,17 @@ class ReactionLightFragment2 : Fragment() {
             //showFilterOptions(data)
 
         }
+    }
+
+    fun applyFilters() {
+        if (selectedItems.size == 0)
+            return
+        selectedItems.forEach {
+            if(it.value.isSelected){
+
+            }
+        }
+
     }
 
     @SuppressLint("CheckResult")

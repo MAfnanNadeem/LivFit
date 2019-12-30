@@ -16,11 +16,18 @@ import life.mibo.hexa.R
  * Ref Google Backdrop Example
  * */
 
+
+
 class BackdropBehavior : CoordinatorLayout.Behavior<View> {
 
     enum class DropState {
         OPEN,
         CLOSE
+    }
+
+    interface OnDropListener {
+
+        fun onDrop(dropState: DropState, fromUser: Boolean)
     }
 
     companion object {
@@ -45,6 +52,7 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
 
     private var needToInitializing = true
 
+    private var dropListeners: OnDropListener? = null
 
     constructor() : super()
 
@@ -96,7 +104,8 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
 
                 // TODO (next release): remove this conditional
                 if (toolbarId == null && toolbar == null) {
-                    throw IllegalArgumentException("AppBarLayout mast contain a Toolbar!")
+                    toolbar = findToolbar(backLayout!!)
+                        ?: throw IllegalArgumentException("AppBarLayout mast contain a Toolbar!")
                 }
             }
         }
@@ -108,6 +117,18 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
         return super.onDependentViewChanged(parent, child, dependency)
     }
 
+    fun findToolbar(viewGroup: ViewGroup): Toolbar? {
+        if (toolbar != null)
+            return toolbar
+        for (chileId in 0..viewGroup.childCount) {
+            val childView = viewGroup.getChildAt(chileId)
+            if (childView is Toolbar) {
+                return childView
+            }
+        }
+
+        return null
+    }
 
     fun setOpenedIcon(@IdRes iconRes: Int) {
         this.openedIconRes = iconRes
@@ -117,16 +138,26 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
         this.closedIconId = iconRes
     }
 
+    /**
+     * Attach back layout to Backdrop.
+     * BackDropLayout must contain a [Toolbar]
+     */
     fun attachBackLayout(@IdRes appBarLayoutId: Int) {
         this.backLayoutId = appBarLayoutId
     }
 
+    fun attachToolbar(@IdRes toolbarId: Int) {
+        this.toolbarId = toolbarId
+    }
 
     fun attachToolbar(t: Toolbar) {
         this.toolbar = t
     }
 
 
+    fun addOnDropListener(listener: OnDropListener) {
+        dropListeners = listener
+    }
 
     private fun initViews(
         parent: CoordinatorLayout,
@@ -150,6 +181,7 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
                     DropState.OPEN -> DropState.CLOSE
                 }
                 updateState(frontLayout, toolbar, backLayout)
+                notifyListeners(true)
             }
         }
 
@@ -184,11 +216,12 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
         false
     } else {
         dropState = DropState.OPEN
-        if ( toolbar != null && frontLayout != null) {
+        if (backLayout != null && toolbar != null && frontLayout != null) {
             updateState(frontLayout!!, toolbar!!, backLayout!!, withAnimation)
         } else {
            //null
         }
+        notifyListeners(false)
         true
     }
 
@@ -196,11 +229,12 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
         false
     } else {
         dropState = DropState.CLOSE
-        if (toolbar != null && frontLayout != null) {
+        if (backLayout != null && toolbar != null && frontLayout != null) {
             updateState(frontLayout!!, toolbar!!, backLayout!!, withAnimation)
         } else {
            // null
         }
+        notifyListeners(false)
         true
     }
 
@@ -237,5 +271,9 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
 
     private fun calculateBottomPosition(backLayout: View): Float {
         return backLayout.y + backLayout.height
+    }
+
+    private fun notifyListeners(fromUser: Boolean) {
+        dropListeners?.onDrop(dropState, fromUser)
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -14,9 +15,9 @@ import c.tlgbltcn.library.BluetoothHelper
 import c.tlgbltcn.library.BluetoothHelperListener
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.core.Logger
+import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.ScanDeviceAdapter
-import life.mibo.hexa.utils.Toasty
 
 class HomeFragment : Fragment() {
 
@@ -36,19 +37,11 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(this, Observer {
             //  textView.text = it
         })
-        setRecycler()
-        //       getBlDevices()
-        val scan: View = root.findViewById(R.id.scan);
-        scan?.setOnClickListener {
-            if (bluetoothHelper != null) {
-                if (bluetoothHelper?.isBluetoothEnabled()!!)
-                    bluetoothHelper?.enableBluetooth()
-                bluetoothHelper?.startDiscovery()
-            }
-            communicationManager?.startScanning(this@HomeFragment.activity, true)
-            Toasty.info(this@HomeFragment.context!!, "Bluetooth scanning").show()
 
-        }
+        //setRecycler()
+        //       getBlDevices()
+        //val scan: View = root.findViewById(R.id.scan);
+
         return root
     }
 

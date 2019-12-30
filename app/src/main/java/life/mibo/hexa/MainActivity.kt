@@ -6,11 +6,16 @@ import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.WindowManager
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -54,13 +59,16 @@ class MainActivity : BaseActivity(), Callback {
     private lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
     private var navigator: ScreenNavigator? = null
+    lateinit var drawerToggle: ActionBarDrawerToggle
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        val toolbar: Toolbar? = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val drawer: NavigationView = findViewById(R.id.nav_view)
         navigator =
@@ -75,6 +83,13 @@ class MainActivity : BaseActivity(), Callback {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavView.setupWithNavController(navController)
+        //supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //supportActionBar?.setDisplayShowHomeEnabled(true)
+        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name)
+        drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
+        drawerToggle.drawerArrowDrawable?.color = Color.WHITE
+        //drawerToggle.isDrawerIndicatorEnabled = true
 
         drawer.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -113,6 +128,16 @@ class MainActivity : BaseActivity(), Callback {
         checkPermissions()
         //startManager()
         commHandler.regisiter()
+    }
+
+    fun setToolbar(drawerLayout: DrawerLayout) {
+        val toolbar = supportActionBar
+        if (toolbar != null) {
+            toolbar.setDisplayHomeAsUpEnabled(true)
+            drawerToggle =
+                ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
+        }
+
     }
 
     private fun updateMenu() {
@@ -573,6 +598,12 @@ class MainActivity : BaseActivity(), Callback {
     }
 
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.home){
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     public override fun onStart() {
         super.onStart()

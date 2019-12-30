@@ -35,11 +35,13 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginEnd="@dimen/grid_1x"
             android:text="Filter One"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium" />
 
         <ImageView
+            android:id="@+id/image_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

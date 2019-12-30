@@ -1,5 +1,6 @@
 package life.mibo.hexa.ui.rxl
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -8,6 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
@@ -59,45 +64,83 @@ class ReactionLightFragment2 : Fragment() {
         setFilters(root.findViewById(R.id.recyclerViewPods), 2)
         setFilters(root.findViewById(R.id.recyclerViewLogic), 3)
         setFilters(root.findViewById(R.id.recyclerViewPlayers), 4)
+        setFilters(root.findViewById(R.id.recyclerViewAcces), 5)
         root.findViewById<View?>(R.id.recyclerViewFilters)?.visibility = View.GONE
         setRecycler(recycler)
         setHasOptionsMenu(true)
+
         return root
     }
 
+    @SuppressLint("CheckResult")
     private fun setFilters(view: RecyclerView?, type: Int = 0) {
         if (view == null)
             return
         val list = ArrayList<ReflexFilterAdapter.ReflexFilterModel>()
 
-        when (type) {
+        Observable.fromCallable {
+            when (type) {
 
-            1 -> {
-                list.add(ReflexFilterAdapter.ReflexFilterModel(21, "1"))
-            }
-            2 -> {
-                for (i in 1..16) {
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i"))
+                1 -> {
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(21, "Agility"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(22, "Balanced"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(23, "Core"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(24, "Flexibility"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(25, "Power"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(26, "Reaction Time"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(27, "Speed"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(28, "Stamina"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(29, "Strength"))
+                }
+                2 -> {
+                    for (i in 1..16) {
+                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i"))
+                    }
+                }
+                3 -> {
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Random"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Sequence"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "All at once"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Focus"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Home Base"))
+                }
+                4 -> {
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(41, "1"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(42, "2"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(43, "3"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(43, "4"))
+                }
+                5 -> {
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(51, "No Accessories"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(52, "Battle Rope"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Laddar"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Medicine Ball"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Mirror"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Poll"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Pul Up Bar"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Rig"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Suspension Straps"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Tree"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(53, "Resistance Band"))
+                }
+                else -> {
+                    for (i in 1..50) {
+                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "Option $i"))
+                    }
                 }
             }
-            3 -> {
-                list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Random"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Sequence"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(31, "All at once"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Focus"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Home Base"))
-            }
-            4 -> {
-                list.add(ReflexFilterAdapter.ReflexFilterModel(41, "1"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(42, "2"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(43, "3"))
-                list.add(ReflexFilterAdapter.ReflexFilterModel(43, "4"))
-            }
-            else -> {
-                for (i in 1..50) {
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(i, "Option $i"))
-                }
-            }
+        }.subscribe {
+            val adapter = ReflexFilterAdapter(list, 3)
+            val manager = LinearLayoutManager(
+                this@ReactionLightFragment2.activity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
+            adapter.setListener(fliterListener)
+            view.layoutManager = manager
+            view.adapter = adapter
+            view.isNestedScrollingEnabled = false
         }
 
 
@@ -109,36 +152,49 @@ class ReactionLightFragment2 : Fragment() {
 //        list.add(ReflexFilterAdapter.ReflexFilterModel(4, "Type", type = 1))
 //        list.add(ReflexFilterAdapter.ReflexFilterModel(5, "Accessories", type = 1))
 
-        val adapter = ReflexFilterAdapter(list)
-        val manager = LinearLayoutManager(
-            this@ReactionLightFragment2.activity,
-            LinearLayoutManager.HORIZONTAL,
-            false
-        )
 
-        adapter.setListener(object : ReflexFilterAdapter.Listener {
-            override fun onClick(data: ReflexFilterAdapter.ReflexFilterModel?) {
-                // backdropBehavior.open(true)
-                //showFilterOptions(data)
-                activity?.runOnUiThread {
-                    adapter?.notifyDataSetChanged()
-                }
-            }
-        })
-        view.layoutManager = manager
-        view.adapter = adapter
     }
 
-    fun setRecycler(view: RecyclerView) {
-        val list = ArrayList<ReflexModel>();
-        for (i in 1..50
-        ) {
-            list.add(ReflexModel(i))
+    val selectedItems = HashMap<Int, ReflexFilterAdapter.ReflexFilterModel>()
+
+
+    val fliterListener = object : ReflexFilterAdapter.Listener {
+        override fun onClick(data: ReflexFilterAdapter.ReflexFilterModel?) {
+            if (data != null)
+                selectedItems[data.id] = data
+            // backdropBehavior.open(true)
+            //showFilterOptions(data)
+
         }
-        val adapter = ReflexAdapter(list)
-        val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
-        view.layoutManager = manager
-        view.adapter = adapter
+    }
+
+    @SuppressLint("CheckResult")
+    private fun setRecycler(view: RecyclerView) {
+        Single.fromCallable<ArrayList<ReflexModel>> {
+            val list = ArrayList<ReflexModel>();
+            for (i in 1..50
+            ) {
+                list.add(ReflexModel(i))
+            }
+            list
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe { it ->
+            val adapter = ReflexAdapter(it)
+            val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
+            view.layoutManager = manager
+            view.adapter = adapter
+            view.isNestedScrollingEnabled = false
+        }
+//        val list = ArrayList<ReflexModel>();
+//        for (i in 1..50
+//        ) {
+//            list.add(ReflexModel(i))
+//        }
+//        val adapter = ReflexAdapter(list)
+//        val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
+//        view.layoutManager = manager
+//        view.adapter = adapter
+//        view.isNestedScrollingEnabled = false
+
     }
 
     fun showFilterOptions(data: ReflexFilterAdapter.ReflexFilterModel?) {

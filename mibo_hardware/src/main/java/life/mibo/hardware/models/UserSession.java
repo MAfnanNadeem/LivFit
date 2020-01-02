@@ -10,9 +10,9 @@ import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Program;
 
 /**
- * Created by Fer on 18/03/2019.
+ * Created by Sumeet on 18/12/2019.
  */
-
+// Copy of Session class for Consumer App (LivFit/Hexa)
 public class UserSession {
 
     public static final int NOT_STARTED = 0;
@@ -320,10 +320,8 @@ public class UserSession {
 
             public void onFinish() {
                 cancelTimer();
-                if (listener != null)
-                    listener.SessionFinishEvent();
                 //EventBus.getDefault().postSticky(new SessionFinishEvent());
-                setCurrentSessionStatus(3);
+                setCurrentSessionStatus(SESSION_FINISHED);
             }
         };
         cTimer.start();
@@ -340,39 +338,39 @@ public class UserSession {
     }
 
     public void checkDeviceStatus(boolean[] status, String uid) {
-        Logger.w("NOTHING................ checkStatus: wifi " + status[0] + " ble " + status[1] +
-                " program " + status[2] + " runn " + status[3] + " color " + status[4]);
-
-        if (getCurrentSessionStatus() == 2 || getCurrentSessionStatus() == 1) {
-            if (device.getUid().equals(uid)) {
-                if (!status[2]) {//check if program
-                    getRegisteredDevicebyUid(uid);
-                    if (listener != null)
-                        listener.SendProgramEvent(getCurrentSessionProgram(), uid);
-                    Logger.w("checkDeviceStatus SendProgramEvent");
-                    //EventBus.getDefault().postSticky(new SendProgramEvent(getCurrentSessionProgram(), uid));
-                }
-                if (!status[4]) {//check if color if (listener != null)
-                    if (listener != null)
-                        listener.ChangeColorEvent(device, uid);
-
-                    Logger.w("checkDeviceStatus ChangeColorEvent");
-                   // EventBus.getDefault().postSticky(new ChangeColorEvent(getUserByBoosterUid(uid).getUserBooster(), uid));
-                }
-                if (status[3]) {//check if run
-
-                }
-                if (status.length >= 6) {
-                    if (!status[5]) {//check if channels are loaded
-                        if (listener != null)
-                            listener.SendChannelsLevelEvent(user.getCurrentChannelLevels(), uid);
-                        //EventBus.getDefault().postSticky(new SendChannelsLevelEvent(getUserByBoosterUid(uid).getCurrentChannelLevels(), uid));
-                        Logger.w("checkDeviceStatus SendChannelsLevelEvent");
-                    }
-                }
-
-            }
-        }
+//        Logger.w("NOTHING................ checkStatus: wifi " + status[0] + " ble " + status[1] +
+//                " program " + status[2] + " runn " + status[3] + " color " + status[4]);
+//
+//        if (getCurrentSessionStatus() == 2 || getCurrentSessionStatus() == 1) {
+//            if (device.getUid().equals(uid)) {
+//                if (!status[2]) {//check if program
+//                    getRegisteredDevicebyUid(uid);
+//                    if (listener != null)
+//                        listener.SendProgramEvent(getCurrentSessionProgram(), uid);
+//                    Logger.w("checkDeviceStatus SendProgramEvent");
+//                    //EventBus.getDefault().postSticky(new SendProgramEvent(getCurrentSessionProgram(), uid));
+//                }
+//                if (!status[4]) {//check if color if (listener != null)
+//                    if (listener != null)
+//                        listener.ChangeColorEvent(device, uid);
+//
+//                    Logger.w("checkDeviceStatus ChangeColorEvent");
+//                   // EventBus.getDefault().postSticky(new ChangeColorEvent(getUserByBoosterUid(uid).getUserBooster(), uid));
+//                }
+//                if (status[3]) {//check if run
+//
+//                }
+//                if (status.length >= 6) {
+//                    if (!status[5]) {//check if channels are loaded
+//                        if (listener != null)
+//                            listener.SendChannelsLevelEvent(user.getCurrentChannelLevels(), uid);
+//                        //EventBus.getDefault().postSticky(new SendChannelsLevelEvent(getUserByBoosterUid(uid).getCurrentChannelLevels(), uid));
+//                        Logger.w("checkDeviceStatus SendChannelsLevelEvent");
+//                    }
+//                }
+//
+//            }
+//        }
     }
 
     public void checkDeviceStatus2(boolean[] status, String uid) {
@@ -436,26 +434,6 @@ public class UserSession {
         return report;
     }
 
-    private Sessionlistener listener;
-
-    public void setListener(Sessionlistener listener) {
-        this.listener = listener;
-    }
-
-    public Sessionlistener getListener() {
-        return listener;
-    }
-
-    public interface Sessionlistener {
-        void SendProgramEvent(Program program, String uid);
-
-        void SendChannelsLevelEvent(int[] channels, String uid);
-
-        void SessionFinishEvent();
-
-        void ChangeColorEvent(Device device, String uid);
-    }
-
     public String debug() {
         return "UserSession{" +
                 "locationId='" + locationId + '\'' +
@@ -476,7 +454,6 @@ public class UserSession {
                 ", boosterMode=" + boosterMode +
                 ", isStarted=" + isStarted +
                 ", userId='" + userId + '\'' +
-                ", listener=" + listener +
                 '}';
     }
 }

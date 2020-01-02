@@ -15,4 +15,7 @@
     <color name="warningColor">#FFA900</color>
     <color name="normalColor">#353A3E</color>
 
+    <color name="dialog_color">#b1202020</color>
+    <color name="dialog_grey_color">#449E9E9E</color>
+
 </resources>

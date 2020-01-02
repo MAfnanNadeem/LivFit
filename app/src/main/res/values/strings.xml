@@ -17,4 +17,19 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="enter_fname">Please enter First Name</string>
+    <string name="enter_lname">Please enter Last Name</string>
+    <string name="enter_email">Please enter Email</string>
+    <string name="enter_password">Please enter Password</string>
+    <string name="enter_confirm_password">Please enter Confirm Password</string>
+    <string name="enter_city">Please enter City</string>
+    <string name="accept_term_conditions">Please accept terms and conditions</string>
+    <string name="enter_dob">Please enter your Date of Birth</string>
+    <string name="select_gender">Please select your Gender</string>
+    <string name="select_your_country">Please select your Country of residence</string>
+    <string name="enter_number">Please enter Number</string>
+    <string name="email_not_valid">Please enter a valid email address</string>
+    <string name="confirm_password_not_matched">Confirm Password not matched</string>
+    <string name="password_requirement">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
+    <string name="error_occurred">An error occurred</string>
 </resources>

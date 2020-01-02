@@ -102,14 +102,14 @@ class MainActivity : BaseActivity(), Callback {
                 }
                 R.id.nav_rxl -> {
                     startScanning(false)
-                    updateMenu()
+                    //updateMenu()
                     navController.navigate(R.id.navigation_reflex)
 
                 }
 
                 R.id.nav_test3 -> {
                     startScanning(false)
-                    updateMenu()
+                    //updateMenu()
                     navController.navigate(R.id.navigation_reflex2)
 
                 }
@@ -119,7 +119,7 @@ class MainActivity : BaseActivity(), Callback {
 
             }
             drawerLayout.closeDrawer(GravityCompat.START)
-            return@setNavigationItemSelectedListener true;
+            return@setNavigationItemSelectedListener true
         }
 //        drawer.setupWithNavController(navController)
 

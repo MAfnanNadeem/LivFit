@@ -15,7 +15,7 @@ import life.mibo.hardware.MIBO;
 public class Logger {
     public static final boolean DEBUG = true;
     private static final String TAG = "MIBO-LIFE";
-    //Timber log =  Timber.pl;
+    //Timber Log =  Timber.d();
 
 
     public static void d(String msg) {

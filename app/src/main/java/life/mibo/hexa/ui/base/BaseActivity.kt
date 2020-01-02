@@ -2,6 +2,7 @@ package life.mibo.hexa.ui.base
 
 import androidx.appcompat.app.AppCompatActivity
 import life.mibo.hardware.core.Logger
+import life.mibo.hexa.ui.dialog.MyDialog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.NoSubscriberEvent
 import org.greenrobot.eventbus.Subscribe
@@ -31,4 +32,15 @@ abstract class BaseActivity : AppCompatActivity() {
         EventBus.getDefault().unregister(this)
     }
 
+    var mDialog: MyDialog? = null
+
+    fun getDialog(): MyDialog? {
+        if (mDialog == null)
+            mDialog = MyDialog.get(this)
+        return mDialog
+    }
+
+    fun dismisDialog() {
+        mDialog?.dismiss()
+    }
 }

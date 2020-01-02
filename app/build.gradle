@@ -59,7 +59,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    //androidX
+    //androidX support lib
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -73,28 +73,37 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    // Google
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
+    implementation 'com.google.android.gms:play-services-identity:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+
+    // networking and RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
-    //implementation 'com.kaopiz:kprogresshud:1.2.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
 
+    // image loading (picasso, glide, coil-kotlin)
+    implementation 'io.coil-kt:coil:0.8.0'
+
+    // Unit, Mock, Espresso Test..
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':mibo_hardware')
     implementation project(path: ':ShapeImageView')
-    implementation 'com.google.code.gson:gson:2.8.6'
+
     //implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
-    //mplementation 'com.github.GrenderG:Toasty:1.4.2'
     // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
     //implementation 'com.github.joielechong:countrycodepicker:master-SNAPSHOT'
     implementation 'com.github.joielechong:CountryCodePicker:a2225694e5'
     implementation 'com.github.swapnil1104:OtpEditText:0.1.6'
     implementation 'com.ringcaptcha.android:ringcaptcha:1.2.0'
-    // image loading (picasso, glide, coil-kotlin)
-    implementation 'io.coil-kt:coil:0.8.0'
+
     // later will be removed in final build
     implementation 'com.github.ihsanbal:LoggingInterceptor:3.0.0'
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"

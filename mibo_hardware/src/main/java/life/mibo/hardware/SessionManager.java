@@ -40,7 +40,7 @@ public class SessionManager {
 
     private SessionManager(){
         if (mSessionMInstance != null){
-            throw new RuntimeException("getInstance() to get the istance of this class");
+            throw new RuntimeException("getInstance() to get the instance of this class");
         }
     }
 

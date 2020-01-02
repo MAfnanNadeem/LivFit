@@ -23,6 +23,7 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     JsonReader jsonReader = gson.newJsonReader(value.charStream());
     try {
       T result = adapter.read(jsonReader);
+
       if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
         throw new JsonIOException("JSON document was not fully consumed.");
       }

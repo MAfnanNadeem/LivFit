@@ -4,11 +4,22 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.JsonObject
 import life.mibo.hexa.MiboApplication
 import life.mibo.hexa.core.gson.GsonConverterFactory
+import life.mibo.hexa.models.login.LoginData
+import life.mibo.hexa.models.login.LoginResponse
+import life.mibo.hexa.models.login.LoginUser
+import life.mibo.hexa.models.member.Member
+import life.mibo.hexa.models.member.MemberDetailsPOST
 import life.mibo.hexa.models.register.RegisterGuestMember
+import life.mibo.hexa.models.register.RegisterResponse
+import life.mibo.hexa.models.verify_number.VerifyNumber
+import life.mibo.hexa.models.verify_number.VerifyResponse
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.Headers
+import retrofit2.http.POST
 
 
 class API {
@@ -32,14 +43,14 @@ class API {
     }
 
 
-    var okhttp: OkHttpClient? = null
+    private var okhttp: OkHttpClient? = null
 
 
     companion object {
         val request: API by lazy { API() }
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
-        val baseUrl = "http://test.mibo.world/api/v1/"
+        const val baseUrl = "http://test.mibo.world/api/v1/"
     }
 
     fun getApi(): ApiService {
@@ -60,11 +71,23 @@ class API {
     interface ApiService {
 
         @Headers("Accept: application/json" , "Content-Type: application/json")
-        @POST("registerGuestMember")
-        fun register(@Body data: RegisterGuestMember): Call<JsonObject>
+        @POST("registerUser")
+        fun register(@Body data: RegisterGuestMember): Call<RegisterResponse>
 
-        @Headers("Accept: application/json" , "Content-Type: application/json")
-        @POST("login")
-        fun login(@Field("username") name : String, @Field("password") pwd : String): Call<JsonObject>
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("loginUser")
+        fun login(@Body login: LoginUser): Call<LoginResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("loginMember")
+        fun loginMember(@Body data: LoginData): Call<Member>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("verifyNumber")
+        fun verifyNumber(@Body data: VerifyNumber): Call<VerifyResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("memberDetails")
+        fun memberDetails(@Body data: MemberDetailsPOST): Call<Member>
     }
 }

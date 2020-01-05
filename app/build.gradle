@@ -74,11 +74,13 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // Google
-    implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.android.gms:play-services-base:17.1.0'
     implementation 'com.google.android.gms:play-services-identity:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
+    implementation 'com.twilio:verification:1.0.9'
+    //implementation 'com.twilio:verification:+'
 
     // networking and RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'

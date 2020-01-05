@@ -16,9 +16,12 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+
+import life.mibo.hardware.core.Logger;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class Prefs {
@@ -111,6 +114,7 @@ public class Prefs {
 
     public void set(String key, String value) {
         getEditor().putString(key, value).apply();
+        Logger.e("Prefs Saved " + key + " : " + value);
     }
 
     public void setList(String key, ArrayList<String> stringList) {
@@ -174,5 +178,27 @@ public class Prefs {
 
     }
 
+    public <T> void settJson(String key, T o) {
+        try {
+            String json = new Gson().toJson(o);
+            getEditor().putString(key, json).apply();
+            //Logger.e("settJson saved " + key);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //Logger.e("settJson error " + e.getMessage());
+        }
+    }
+
+    public <T> T getJson(String key, Type t) {
+        try {
+            String str = get(key);
+            return new Gson().fromJson(str, t);
+
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
 
 }

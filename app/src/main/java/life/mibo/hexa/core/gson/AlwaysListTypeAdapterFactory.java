@@ -61,7 +61,15 @@ public final class AlwaysListTypeAdapterFactory<E>
 
         @Override
         public void write(final JsonWriter out, final List<E> list) {
-            throw new UnsupportedOperationException();
+           // out.jsonValue(list.get(0))
+            //out.value(list.get(0));
+            try {
+                out.value(new Gson().toJson(list));
+              ///  if (list.size() > 1)
+              //     elementTypeAdapter.write(out, list.get(0));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

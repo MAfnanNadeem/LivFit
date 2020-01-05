@@ -7,7 +7,7 @@ package life.mibo.hexa.models.login
 
 import com.google.gson.annotations.SerializedName
 
-data class Response(
+data class Member(
     @SerializedName("access_token")
     var accessToken: String?,
     @SerializedName("city")

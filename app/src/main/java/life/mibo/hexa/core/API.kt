@@ -1,7 +1,6 @@
 package life.mibo.hexa.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.google.gson.JsonObject
 import life.mibo.hexa.MiboApplication
 import life.mibo.hexa.core.gson.GsonConverterFactory
 import life.mibo.hexa.models.login.LoginData
@@ -11,13 +10,16 @@ import life.mibo.hexa.models.member.Member
 import life.mibo.hexa.models.member.MemberDetailsPOST
 import life.mibo.hexa.models.register.RegisterGuestMember
 import life.mibo.hexa.models.register.RegisterResponse
+import life.mibo.hexa.models.send_otp.SendOTP
+import life.mibo.hexa.models.send_otp.SendOtpResponse
 import life.mibo.hexa.models.verify_number.VerifyNumber
+import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.verify_number.VerifyResponse
+import life.mibo.hexa.models.verify_otp.VerifyOTP
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.Body
-import retrofit2.http.Field
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
@@ -89,5 +91,15 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("memberDetails")
         fun memberDetails(@Body data: MemberDetailsPOST): Call<Member>
+
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("sentOTP")
+        fun sendOtp(@Body data: SendOTP): Call<SendOtpResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("verifyOtp")
+        fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
+
     }
 }

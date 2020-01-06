@@ -4,10 +4,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <life.mibo.hexa.view.recycler.VerticallyAdaptableHexagonImageView
-        android:id="@+id/test_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <life.mibo.views.recycler.VerticallyAdaptableHexagonImageView
+        android:id="@+id/hexa_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:src="@drawable/login_bg"
         android:visibility="visible" />
 
@@ -21,7 +21,7 @@
     <!--        app:siBorderWidth="8dp" />-->
 
     <TextView
-        android:id="@+id/test_text"
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

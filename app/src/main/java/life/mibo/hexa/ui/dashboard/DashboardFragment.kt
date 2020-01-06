@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.RecyclerAdapter
 import life.mibo.hexa.ui.ch6.Channel6ViewModel
-import life.mibo.hexa.view.recycler.HexagonRecyclerView
+import life.mibo.views.recycler.HexagonRecyclerView
 
 class DashboardFragment : Fragment() {
 

@@ -29,7 +29,7 @@ data class VerifyOTP(
         "Client1213",
         Data(userId, otp),
         "192.168.195.122",
-        "SentOTP",
+        "VerifyOTP",
         "2019-12-10T04:49:11.6570000",
         "1.0.0.0"
     )

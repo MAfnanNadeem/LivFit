@@ -8,9 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import life.mibo.hexa.R
 import life.mibo.hexa.adapters.RecyclerAdapter
-import life.mibo.hexa.view.recycler.HexagonRecyclerView
+import life.mibo.views.recycler.HexagonRecyclerView
+import java.util.concurrent.TimeUnit
 
 class NotificationsFragment : Fragment() {
 
@@ -31,6 +36,7 @@ class NotificationsFragment : Fragment() {
             //    textView.text = ""//it
         })
         setRecycler(recycler)
+        
         return root
     }
 

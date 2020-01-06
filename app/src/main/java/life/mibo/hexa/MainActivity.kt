@@ -92,32 +92,7 @@ class MainActivity : BaseActivity(), Callback {
         //drawerToggle.isDrawerIndicatorEnabled = true
 
         drawer.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_ch6 -> {
-                    navController.navigate(R.id.navigation_channels)
-                }
-                R.id.nav_scan -> {
-                    startScanning(false)
-                    navController.navigate(R.id.navigation_devices)
-                }
-                R.id.nav_rxl -> {
-                    startScanning(false)
-                    //updateMenu()
-                    navController.navigate(R.id.navigation_reflex)
-
-                }
-
-                R.id.nav_test3 -> {
-                    startScanning(false)
-                    //updateMenu()
-                    navController.navigate(R.id.navigation_reflex2)
-
-                }
-                else -> {
-                    Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
-                }
-
-            }
+            navigateTo(it.itemId)
             drawerLayout.closeDrawer(GravityCompat.START)
             return@setNavigationItemSelectedListener true
         }
@@ -128,6 +103,37 @@ class MainActivity : BaseActivity(), Callback {
         checkPermissions()
         //startManager()
         commHandler.regisiter()
+    }
+
+    private fun navigateTo(id: Int) {
+        when (id) {
+            R.id.nav_ch6 -> {
+                navController.navigate(R.id.navigation_channels)
+            }
+            R.id.nav_scan -> {
+                startScanning(false)
+                navController.navigate(R.id.navigation_devices)
+            }
+            R.id.nav_rxl -> {
+                startScanning(false)
+                //updateMenu()
+                navController.navigate(R.id.navigation_reflex)
+
+            }
+
+            R.id.nav_test3 -> {
+                startScanning(false)
+                //updateMenu()
+                navController.navigate(R.id.navigation_reflex2)
+
+            }
+            else -> {
+                //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
+            }
+
+        }
+        //drawerLayout.closeDrawer(GravityCompat.START)
+
     }
 
     fun setToolbar(drawerLayout: DrawerLayout) {

@@ -1,115 +1,60 @@
 package life.mibo.hexa.ui.home
 
-import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import c.tlgbltcn.library.BluetoothHelper
-import c.tlgbltcn.library.BluetoothHelperListener
-import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.core.Logger
-import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
-import life.mibo.hexa.adapters.ScanDeviceAdapter
+import life.mibo.hexa.ui.base.BaseFragment
 
-class HomeFragment : Fragment() {
+
+class HomeFragment : BaseFragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     var recyclerView: RecyclerView? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
+            View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         // val textView: TextView = root.findViewById(R.id.text_home)
-        recyclerView = root.findViewById(R.id.recyclerView)
         homeViewModel.text.observe(this, Observer {
             //  textView.text = it
         })
 
-        //setRecycler()
-        //       getBlDevices()
-        //val scan: View = root.findViewById(R.id.scan);
-
+        //recyclerView = root.findViewById(R.id.hexagonRecycler) as HexagonRecyclerView
+        recyclerView = root.findViewById(R.id.hexagonRecycler)
+        setRecycler(recyclerView!!)
         return root
     }
 
-    var bluetoothHelper: BluetoothHelper? = null
-    fun getBlDevices() {
-        bluetoothHelper =
-            BluetoothHelper(this@HomeFragment.context!!, object : BluetoothHelperListener {
-                override fun onStartDiscovery() {
-                    log("bluetoothHelper onStartDiscovery")
-                }
-
-                override fun onFinishDiscovery() {
-                    log("bluetoothHelper onFinishDiscovery")
-
-                }
-
-                override fun onEnabledBluetooth() {
-                    log("bluetoothHelper onEnabledBluetooth")
-
-                }
-
-                override fun onDisabledBluetooh() {
-                    log("bluetoothHelper onDisabledBluetooh")
-
-                }
-
-                override fun onDeviceFound(device: BluetoothDevice?) {
-                    log("bluetoothHelper onDeviceFound " + device)
-                    if (device != null) {
-                        devicesList.add(ScanDeviceAdapter.ScanItem(device.name, device.address))
-                        adapter?.notifyDataSetChanged()
-                    }
-                }
-
-            }).setPermissionRequired(true).create()
-    }
-
-    val devicesList = ArrayList<ScanDeviceAdapter.ScanItem>()
-    var adapter: ScanDeviceAdapter? = null
-    fun setRecycler() {
-        if (recyclerView == null)
-            return
-        devicesList.clear()
-        for (i in 1..2
+    private fun setRecycler(view: RecyclerView) {
+        val list = ArrayList<HomeItem>();
+        for (i in 1..20
         ) {
-            devicesList.add(ScanDeviceAdapter.ScanItem("test $i", "$i"))
+            list.add(HomeItem(0, "$i"))
         }
-        adapter = ScanDeviceAdapter(devicesList)
-        val manager = LinearLayoutManager(this@HomeFragment.activity)
-        recyclerView?.layoutManager = manager
-        recyclerView?.adapter = adapter
-    }
-
-    var communicationManager: CommunicationManager? = null
-
-
-    fun log(msg: String) {
-        Logger.e("HomeFragment : $msg")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        bluetoothHelper?.registerBluetoothStateChanged()
-    }
+        val adapter = HomeAdapter(list)
+        //val manager = LinearLayoutManager(this@HomeFragment.activity)
+        val grid = GridLayoutManager(this@HomeFragment.activity, 3)
+//        grid.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+//            override fun getSpanSize(position: Int): Int {
+//                var size = 1
+//                if ((position + 1) % 5 == 0) {
+//                    size = 2
+//                }
+//                return size
+//            }
+//        }
 
 
-    override fun onStop() {
-        super.onStop()
-        bluetoothHelper?.unregisterBluetoothStateChanged()
+        view.layoutManager = grid
+
+        view.adapter = adapter
+
     }
 }

@@ -1,4 +1,4 @@
-package life.mibo.hexa.view.dialog
+package life.mibo.views.dialog
 
 import android.annotation.SuppressLint
 import android.content.Context

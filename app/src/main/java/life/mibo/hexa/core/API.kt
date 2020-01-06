@@ -98,7 +98,7 @@ class API {
         fun sendOtp(@Body data: SendOTP): Call<SendOtpResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("verifyOtp")
+        @POST("verifyOTP")
         fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
 
     }

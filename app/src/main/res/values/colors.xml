@@ -18,4 +18,7 @@
     <color name="dialog_color">#b1202020</color>
     <color name="dialog_grey_color">#449E9E9E</color>
 
+    <color name="light_gray">#eeeeee</color>
+    <color name="underline_gray">#ECD0D0</color>
+
 </resources>

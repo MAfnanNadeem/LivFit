@@ -1,18 +1,26 @@
 package life.mibo.hexa.ui.login
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.View
+import android.widget.Chronometer
 import com.twilio.verification.TwilioVerification
 import com.twilio.verification.external.Via
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
 import kotlinx.android.synthetic.main.activity_register_page2.*
 import kotlinx.android.synthetic.main.activity_register_page3.*
+import kotlinx.coroutines.channels.ticker
 import life.mibo.hexa.R
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
 import life.mibo.hexa.ui.base.BaseActivity
-import java.util.regex.Pattern
+import java.util.concurrent.TimeUnit
 
 
 class RegisterActivity : BaseActivity() {
@@ -20,8 +28,13 @@ class RegisterActivity : BaseActivity() {
     //SID SK1a9a10e57385098b542fa54f4c6d3a3b
     //SECRET ekHtNKxLLF1yPeqWROHTw1CuCfPHHWUM
     interface Listener {
-        fun onRegisterClicked()
+        fun onRegisterClicked(
+            firstName: String?, lastName: String?, email: String?, password: String?,
+            cPassword: String?, city: String?, country: String?, dob: String?,
+            checkBox: Boolean, phoneNumber: String?
+        )
         fun onSendOtpClicked(number: String?)
+        fun onResendOtpClicked(number: String?)
         fun onVerifyOtpClicked(code: String?)
         fun onStop()
         fun onCreate(view: View)
@@ -36,8 +49,8 @@ class RegisterActivity : BaseActivity() {
 
         btn_register?.setOnClickListener {
             //viewAnimator?.showNext()
-            controller.onRegisterClicked()
-            controller.validate(
+
+            controller.onRegisterClicked(
                 et_first_name.text?.toString(),
                 et_last_name.text?.toString(),
                 et_email.text?.toString(),
@@ -53,6 +66,11 @@ class RegisterActivity : BaseActivity() {
         }
         btn_send_otp?.setOnClickListener {
             controller.onSendOtpClicked(et_number?.text?.toString())
+            // startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
+        }
+        tv_resend?.setOnClickListener {
+            if (isResend)
+                controller.onResendOtpClicked(et_number?.text?.toString())
             // startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
         }
         btn_otp_confirmed?.setOnClickListener {
@@ -107,6 +125,17 @@ class RegisterActivity : BaseActivity() {
     }
 
     val observer = object : RegisterController.RegisterObserver {
+        override fun onTimerUpdate(time: Long) {
+            log("startCountDown $time")
+            if (time == 0L) {
+                isResend = true
+                tv_resend?.text = "Resend OTP"
+                disposable?.dispose()
+            } else {
+                tv_resend?.text = String.format("Resend OTP in %02d", time / 1000)
+            }
+        }
+
         override fun otpReceived(otp: String?) {
             et_otp.setText(otp)
         }
@@ -129,22 +158,6 @@ class RegisterActivity : BaseActivity() {
 
     }
 
-    //    fun <T> stringToArray(s: String, clazz: Class<Array<T>>): List<T> {
-//        val arr = Gson().fromJson(s, clazz)
-//        return Arrays.asList(arr) //or return Arrays.asList(new Gson().fromJson(s, clazz)); for a one-liner
-//    }
-    private fun isValidPassword(s: String): Boolean {
-        //val PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
-        val pattern =
-            Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$&+=])(?=\\S+\$).{4,}$")
-        //val pattern2 = Pattern.compile("[a-zA-Z0-9!@#$]{8,24}")
-
-        return pattern.matcher(s).matches()
-    }
-
-    //var isOtp = false
-    // private val ringCaptchaController = RingcaptchaAPIController("i2ucy2y2y3any8u5i8uz")
-
     private fun updateNumberView(id: Int) {
         when (id) {
             0 -> {
@@ -153,10 +166,19 @@ class RegisterActivity : BaseActivity() {
             1 -> {
                 viewAnimator.showNext()
                 et_number.text = et_phone_number.text
+                et_number.isEnabled = false
                 ccp_otp.fullNumber = ccp.fullNumber
+                ccp_otp.isEnabled = false
+                ccp_otp.isClickable = false
             }
             2 -> {
                 viewAnimator.showNext()
+                //tv_resend?.visibility = View.INVISIBLE
+                //startResend(60)
+                controller.startCountDown(60)
+//                GlobalScope.async {
+//                    startTicker(60)
+//                }
             }
             3 -> {
                 controller.loginToHome()
@@ -165,6 +187,14 @@ class RegisterActivity : BaseActivity() {
 
         //isOtp = true
     }
+
+
+    var disposable: Disposable? = null
+    private var isResend = false
+
+
+    //var isOtp = false
+    // private val ringCaptchaController = RingcaptchaAPIController("i2ucy2y2y3any8u5i8uz")
 
 
     fun sendOtpTwilio(jwt: String?) {
@@ -186,6 +216,18 @@ class RegisterActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         controller.onStop()
+        disposable?.dispose()
+        //cancelTimer()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        controller.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        controller.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

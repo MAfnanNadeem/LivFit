@@ -3,14 +3,10 @@ package life.mibo.hexa.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import com.github.siyamed.shapeimageview.HexagonImageView
-import life.mibo.hexa.view.recycler.VerticallyAdaptableHexagonImageView
 import java.util.*
 
 

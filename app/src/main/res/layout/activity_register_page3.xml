@@ -38,7 +38,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_small" />
 
-    <com.broooapps.otpedittext2.OtpEditText
+    <life.mibo.views.OtpEditText
         android:id="@+id/et_otp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,15 +57,28 @@
         app:oev_primary_color="@color/colorPrimary"
         app:oev_secondary_color="@color/colorAccent" />
 
-    <TextView
-        android:id="@+id/tv_resend"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_1x"
-        android:padding="@dimen/grid_1x"
-        android:text="Resend OTP"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_small" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_resend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/grid_1x"
+            android:text="Resend OTP"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small" />
+
+<!--        <Chronometer-->
+<!--            android:id="@+id/chronometer"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            />-->
+    </LinearLayout>
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_otp_confirmed"

@@ -11,8 +11,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.ui.rxl.model.ReflexAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexModel
-import life.mibo.hexa.utils.Toasty
-import life.mibo.hexa.view.dialog.SheetMenu
+import life.mibo.views.dialog.SheetMenu
 
 class ReactionLightFragment : Fragment() {
 

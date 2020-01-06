@@ -8,9 +8,10 @@ package life.mibo.hexa.ui.login
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
@@ -41,7 +42,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.regex.Pattern
-import kotlin.math.log
 
 //import kotlinx.android.synthetic.main.activity_register.*
 //import kotlinx.android.synthetic.main.activity_register_page1.*
@@ -58,6 +58,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         fun onCountrySelect(country: String)
         fun updateNumber(id: Int)
         fun otpReceived(otp: String?)
+        fun onTimerUpdate(time: Long)
     }
 
     //lateinit var observer: RegisterObserver
@@ -70,17 +71,33 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 //            //tv_country.text = selectedCountry.name
 //        }
     }
-
     override fun onStop() {
         if (::smsBroadcast.isInitialized)
             context.unregisterReceiver(smsBroadcast)
+        cancelTimer()
     }
 
-    override fun onRegisterClicked() {
-        //validate()
+    override fun onRegisterClicked(
+        firstName: String?, lastName: String?, email: String?,
+        password: String?, cPassword: String?, city: String?, country: String?,
+        dob: String?, checkBox: Boolean, phoneNumber: String?
+    ) {
+        //context.log("onRegisterClicked $firstName, $lastName, $email, $password, $cPassword, $city, $dob, $gender, $phoneNumber")
+        //updateNumber(1)
+        validate(
+            firstName, lastName, email,
+            password, cPassword, city,
+            country, dob, checkBox, phoneNumber
+        )
+    }
+
+
+    override fun onResendOtpClicked(number: String?) {
+        sendOtp(number)
     }
 
     override fun onSendOtpClicked(number: String?) {
+        //updateNumber(2)
         sendOtp(number)
     }
 
@@ -122,10 +139,11 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         client.startSmsRetriever()
             .addOnSuccessListener {
                 // otpTxtView.text = "Waiting for OTP"
-                Toasty.info(context, "SMS Retriever starts ").show()
+                // Toasty.info(context, "SMS Retriever starts ").show()
             }.addOnFailureListener {
                 //  otpTxtView.text = "Cannot Start SMS Retriever"
-                Toasty.error(context, "Error " + it?.message, Toast.LENGTH_LONG).show()
+                Toasty.info(context, "SMSBroadcastReceiver Error " + it?.message, Toast.LENGTH_LONG)
+                    .show()
             }
 
 
@@ -163,8 +181,6 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 //  otpTxtView.text = "Cannot Start SMS Retriever"
                 Toasty.error(context, "Error " + it?.message, Toast.LENGTH_LONG).show()
             }
-
-
     }
 
     private fun requestHint() {
@@ -194,7 +210,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
     var selectedCountry: Country? = null
 
-    fun validate(
+    private fun validate(
         firstName: String?,
         lastName: String?,
         email: String?,
@@ -207,48 +223,45 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         phoneNumber: String?
     ) {
         if (firstName.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_fname)).show()
+            error(getString(R.string.enter_fname))
             return
         }
 
         if (lastName.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_lname)).show()
+            error(getString(R.string.enter_lname))
             return
         }
         if (email.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_email)).show()
+            error(getString(R.string.enter_email))
             return
         }
         if (password.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_password)).show()
+            error(getString(R.string.enter_password))
             return
         }
         if (cPassword.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_confirm_password)).show()
-            return
-        }
-        if (city.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_city)).show()
-            return
-        }
-        if (!checkBox) {
-            Toasty.error(context, getString(R.string.accept_term_conditions)).show()
-            return
-        }
-        if (!isDob) {
-            Toasty.error(context, getString(R.string.enter_dob)).show()
+            error(getString(R.string.enter_confirm_password))
             return
         }
         if (!isGender) {
-            Toasty.error(context, getString(R.string.select_gender)).show()
+            error(getString(R.string.select_gender))
             return
         }
+        if (!isDob) {
+            error(getString(R.string.enter_dob))
+            return
+        }
+        if (city.isNullOrEmpty()) {
+            error(getString(R.string.enter_city))
+            return
+        }
+
         if (!isCountry) {
-            Toasty.error(context, getString(R.string.select_your_country)).show()
+            error(getString(R.string.select_your_country))
             return
         }
         if (phoneNumber.isNullOrEmpty()) {
-            Toasty.error(context, getString(R.string.enter_number)).show()
+            error(getString(R.string.enter_number))
             return
         }
 
@@ -257,7 +270,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             return
         }
 
-
+        if (!checkBox) {
+            error(getString(R.string.accept_term_conditions))
+            return
+        }
 
         if ((password.trim() == cPassword.trim())) {
             if (!isValidPassword(password)) {
@@ -268,7 +284,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             val data = Data(
                 firstName, lastName, cPassword, email, gender,
-                city, country, dob, ccp!!.selectedCountryCode, ccp!!.number
+                city, country, dob, ccp!!.selectedCountryCodeWithPlus, phoneNumber
             )
             register(data = RegisterGuestMember(data))
             //Toasty.success(context, "Successfully registered").show()
@@ -278,7 +294,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             return
         } else {
             Logger.e("Password not matched $password == $cPassword")
-            Toasty.error(context, getString(R.string.confirm_password_not_matched)).show()
+            error(getString(R.string.confirm_password_not_matched))
         }
     }
 
@@ -307,14 +323,13 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
-                    Toasty.error(context, getString(R.string.error_occurred)).show()
+                    error(getString(R.string.error_occurred))
                     return
                 }
                 when {
                     data.status == "success" -> {
                         userId = data.member?.userId!!
-                        Toasty.success(context, "Successfully Registered $userId")
-                            .show()
+                        success("Successfully Registered $userId")
                         updateNumber(1)
                         isOtp = true
                     }
@@ -327,10 +342,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         //val el = JsonParser.parseString(data.errors.toString())
                         // val rr: Error? = Gson().fromJson(el, Error::class.java)
                         // log("RegisterGuestMember rr ${rr.toString()}")
-                        Toasty.error(
-                            context,
-                            "Error: ${data.errors?.get(0)?.message}"
-                        ).show()
+                        error("${data.errors?.get(0)?.message}")
 
                     }
                     else -> Toasty.warning(
@@ -388,20 +400,19 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
-                    Toasty.error(context, getString(R.string.error_occurred)).show()
+                    error(getString(R.string.error_occurred))
                     return
                 }
                 when {
                     data.status == "success" -> {
-                        Toasty.success(
-                            context, "OTP Code has been sent successfully", Toast.LENGTH_LONG
-                        ).show()
+                        success(
+                            msg = "OTP Code has been sent successfully",
+                            length = Toast.LENGTH_LONG
+                        )
                         updateNumber(2)
                     }
                     data.status == "error" -> {
-                        Toasty.error(
-                            context, "Error: ${data.errors?.get(0)?.message}"
-                        ).show()
+                        error("${data.errors?.get(0)?.message}")
 
                     }
                     else -> Toasty.warning(
@@ -415,8 +426,9 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     private fun validateOtp(otp: String?) {
-        if (otp == null)
+        if (otp == null || otp.length < 4)
             return
+        //userId = "139"
         context.log("validateOtp $otp")
         context.getDialog()?.show()
         val data = VerifyOTP(userId, otp)
@@ -424,7 +436,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             override fun onFailure(call: Call<VerifyOtpResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
-                Toasty.error(context, "Failed " + t.message).show()
+                error("Failed " + t.message)
                 t.printStackTrace()
                 Logger.e("RegisterActivity : register API ", t)
             }
@@ -435,18 +447,17 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
-                    Toasty.error(context, getString(R.string.error_occurred)).show()
+                    error(getString(R.string.error_occurred))
                     return
                 }
                 when {
                     data.status == "success" -> {
-                        Toasty.success(context, "OTP Verified").show()
+                        success("${data.data?.message}")
+                        //success("OTP Verified")
                         updateNumber(3)
                     }
                     data.status == "error" -> {
-                        Toasty.error(
-                            context, "Error: ${data.errors?.get(0)?.message}"
-                        ).show()
+                        error("${data.errors?.get(0)?.message}")
 
                     }
                     else -> Toasty.warning(
@@ -481,7 +492,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     fun showGender() {
         val animals = arrayOf("Male", "Female")
         AlertDialog.Builder(context).setTitle("Select Gender")
-            .setItems(animals, DialogInterface.OnClickListener { dialog, which ->
+            .setItems(animals) { _, which ->
                 if (which == 0)
                     gender = "MALE"
                 else if (which == 1)
@@ -489,7 +500,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 observer.onGenderSelect(gender)
                 //gender?.text = gender
                 isGender = true
-            }).create().show()
+            }.create().show()
     }
 
     fun showDobPicker() {
@@ -516,6 +527,50 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             .minDate(1980, 0, 1)
             .build()
             .show()
+    }
+
+    private var countTimer: CountDownTimer? = null
+
+    fun startCountDown(seconds: Int) {
+        cancelTimer()
+        countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
+            override fun onTick(it: Long) {
+                context.log("startCountDown $it")
+                observer?.onTimerUpdate(it)
+            }
+
+            override fun onFinish() {
+                observer?.onTimerUpdate(0L)
+                cancelTimer()
+            }
+        }
+        countTimer?.start()
+    }
+
+    internal fun cancelTimer() {
+        countTimer?.cancel()
+    }
+
+    fun error(msg: String? = "", resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
+        if (!msg.isNullOrEmpty())
+            Toasty.error(context, msg, length, true).show()
+        else if (resId != 0)
+            Toasty.error(context, getString(resId), length, true).show()
+    }
+
+    fun success(msg: String? = "", resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
+        if (!msg.isNullOrEmpty())
+            Toasty.success(context, msg, length, true).show()
+        else if (resId != 0)
+            Toasty.success(context, getString(resId), length, true).show()
+    }
+
+    fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        userId = savedInstanceState.getString("userId") ?: userId
+    }
+
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("userId", userId)
     }
 
 }

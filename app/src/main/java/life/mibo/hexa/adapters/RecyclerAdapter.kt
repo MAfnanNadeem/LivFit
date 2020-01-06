@@ -17,11 +17,10 @@ class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     //var list: ArrayList<Item>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val id = if (type == 0) R.layout.list_item_test else R.layout.list_item_test_vertical
-        return Holder(
-            LayoutInflater.from(parent.context).inflate(
-                id, parent, false
-            )
-        )
+        val w = parent.measuredWidth / 3
+        var item = LayoutInflater.from(parent.context).inflate(id, parent, false)
+        item.minimumWidth = w
+        return Holder(item)
 
     }
 
@@ -52,7 +51,7 @@ class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var text: TextView? = itemView.findViewById(R.id.test_text)
         var view: View? = itemView.findViewById(R.id.itemView)
-        var image: life.mibo.hexa.view.recycler.HexagonImageView? =
+        var image: life.mibo.views.recycler.HexagonImageView? =
             itemView.findViewById(R.id.test_image)
         // var hexa: HexagonImageView? = itemView.findViewById(R.id.test_image_hexa)
     }

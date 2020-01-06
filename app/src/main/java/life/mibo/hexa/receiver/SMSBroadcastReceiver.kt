@@ -24,16 +24,17 @@ public class SMSBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         Logger.e("SMSBroadcastReceiver onReceive : $intent")
+        Logger.e("SMSBroadcastReceiver Extras : ${intent.extras?.toString()}")
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
 
             val extras = intent.extras
-            val status = extras!!.get(SmsRetriever.EXTRA_STATUS) as Status
+            val status = extras?.get(SmsRetriever.EXTRA_STATUS) as Status? ?: return
 
             when (status.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
 
                     // Get SMS message contents
-                    val otp: String = extras.get(SmsRetriever.EXTRA_SMS_MESSAGE) as String
+                    val otp: String = extras!!.get(SmsRetriever.EXTRA_SMS_MESSAGE) as String
 
                     val pattern = Pattern.compile("(\\d{4})")
                     val matcher = pattern.matcher(otp)

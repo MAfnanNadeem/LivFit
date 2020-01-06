@@ -1,4 +1,4 @@
-package life.mibo.hexa.view.backdrop
+package life.mibo.views.backdrop
 
 import android.content.Context
 import android.os.Bundle

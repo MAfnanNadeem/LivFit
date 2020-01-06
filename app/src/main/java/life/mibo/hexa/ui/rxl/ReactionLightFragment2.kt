@@ -20,8 +20,8 @@ import life.mibo.hexa.ui.rxl.model.ReflexAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexModel
 import life.mibo.hexa.utils.Toasty
-import life.mibo.hexa.view.backdrop.BackdropBehavior
-import life.mibo.hexa.view.dialog.SheetMenu
+import life.mibo.views.backdrop.BackdropBehavior
+import life.mibo.views.dialog.SheetMenu
 
 fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.run {
     if (this !is CoordinatorLayout.LayoutParams) throw IllegalArgumentException("View's layout params should be CoordinatorLayout.LayoutParams")

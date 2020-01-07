@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
+import life.mibo.views.HexagonMaskView
 import java.util.*
 
 class HomeAdapter(var list: ArrayList<HomeItem>) :
@@ -22,11 +23,10 @@ class HomeAdapter(var list: ArrayList<HomeItem>) :
     private var listener: Listener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeHolder {
+        //val id =
         return HomeHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.list_item_home_hexa2,
-                parent,
-                false
+                R.layout.list_item_home_row, parent, false
             )
         )
     }
@@ -76,18 +76,27 @@ class HomeAdapter(var list: ArrayList<HomeItem>) :
     }
 
     class HomeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var title: TextView? = itemView.findViewById(R.id.tv_title)
+        var title: TextView? = itemView.findViewById(R.id.iv_dashboard_1_text)
         var view: View? = itemView.findViewById(R.id.itemView)
-        var image: View? = itemView.findViewById(R.id.hexa_image)
+        var image: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_1)
+        var image2: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_2)
+        var image3: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_3)
+        var image4: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_4)
+        var image5: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_5)
         var data: HomeItem? = null
 
         fun bind(item: HomeItem?, listener: Listener?) {
             if (item == null)
                 return
-            updateParams(adapterPosition)
+            //updateParams(adapterPosition)
             data = item
             title?.text = "${item.title}"
-            image?.setBackgroundResource(item.color)
+            image!!.setGradient(intArrayOf(Color.RED, Color.GREEN))
+            image2!!.setGradient(intArrayOf(Color.BLUE, Color.DKGRAY))
+            image3?.setGradient(intArrayOf(Color.BLUE, Color.DKGRAY))
+            image4?.setGradient(intArrayOf(Color.BLUE, Color.DKGRAY))
+            image5?.setGradient(intArrayOf(Color.BLUE, Color.DKGRAY))
+            // image?.setBackgroundResource(R.drawable.login_bg)
         }
 
         private fun updateParams(position: Int) {

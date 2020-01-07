@@ -12,6 +12,8 @@ import life.mibo.hexa.models.register.RegisterGuestMember
 import life.mibo.hexa.models.register.RegisterResponse
 import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
+import life.mibo.hexa.models.session.SessionDetails
+import life.mibo.hexa.models.session.SessionReport
 import life.mibo.hexa.models.verify_number.VerifyNumber
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.verify_number.VerifyResponse
@@ -20,6 +22,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
@@ -101,5 +104,8 @@ class API {
         @POST("verifyOTP")
         fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
 
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getLatestSessionDetails")
+        fun getSessionDetails(@Body data: SessionDetails): Call<SessionReport>
     }
 }

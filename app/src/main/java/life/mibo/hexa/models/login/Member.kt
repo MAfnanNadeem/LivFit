@@ -37,3 +37,8 @@ data class Member(
     @SerializedName("token_type")
     var tokenType: String?
 )
+{
+    fun id() : String{
+        return id.toString()
+    }
+}

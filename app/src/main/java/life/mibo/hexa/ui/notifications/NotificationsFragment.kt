@@ -36,7 +36,7 @@ class NotificationsFragment : Fragment() {
             //    textView.text = ""//it
         })
         setRecycler(recycler)
-        
+
         return root
     }
 

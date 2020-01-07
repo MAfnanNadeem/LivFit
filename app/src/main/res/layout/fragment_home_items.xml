@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ $Created by $Sumeet $Kumar 2020.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline2"
+        app:layout_constraintWidth_percent="0.66">
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_6_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_6"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_6"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_6" />
+
+
+        <TextView
+            android:id="@+id/iv_dashboard_6_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_6"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_6"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_6"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_6_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="iv_dashboard_6_text,iv_dashboard_6_icon,iv_dashboard_6" />
+
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@id/iv_dashboard_6"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_7_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_7"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_7"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_7" />
+
+
+        <TextView
+            android:id="@+id/iv_dashboard_7_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_7"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_7"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_7"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_7_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="iv_dashboard_7_text,iv_dashboard_7_icon,iv_dashboard_7" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:translationY="-32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout0">
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/iv_dashboard_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.33" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_1_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_1"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_1"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_1" />
+
+        <TextView
+            android:id="@+id/iv_dashboard_1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_1"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_1"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_1"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_1_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="iv_dashboard_1_text,iv_dashboard_1_icon,iv_dashboard_1" />
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/iv_dashboard_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.33" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_2_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_2"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_2"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_2" />
+
+        <TextView
+            android:id="@+id/iv_dashboard_2_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 2"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_2"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_2"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_2"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_2_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="iv_dashboard_2_text,iv_dashboard_2_icon,iv_dashboard_2"
+            app:layout_constraintStart_toEndOf="@id/group" />
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/iv_dashboard_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.33" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_3_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_3"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_3"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_3" />
+
+
+        <TextView
+            android:id="@+id/iv_dashboard_3_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_3"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_3"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_3"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_3_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="iv_dashboard_3_text,iv_dashboard_3_icon,iv_dashboard_3" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:translationY="-64dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout1"
+        app:layout_constraintWidth_percent="0.66">
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_4_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_4"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_4"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_4" />
+
+
+        <TextView
+            android:id="@+id/iv_dashboard_4_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_4"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_4"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_4"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_4_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="iv_dashboard_4_text,iv_dashboard_4_icon,iv_dashboard_4" />
+
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/iv_dashboard_5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/login_bg"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@id/iv_dashboard_4"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/iv_dashboard_5_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:src="@drawable/ic_heart_24dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_5"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_5"
+            app:layout_constraintTop_toTopOf="@+id/iv_dashboard_5" />
+
+
+        <TextView
+            android:id="@+id/iv_dashboard_5_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Name 3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_dashboard_5"
+            app:layout_constraintEnd_toEndOf="@+id/iv_dashboard_5"
+            app:layout_constraintStart_toStartOf="@+id/iv_dashboard_5"
+            app:layout_constraintTop_toBottomOf="@+id/iv_dashboard_5_icon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="iv_dashboard_5_text,iv_dashboard_5_icon,iv_dashboard_5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

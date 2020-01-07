@@ -40,7 +40,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         var usr = user;
         var pwd = password;
         if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
-            usr = "test@mibo.life"
+            //usr = "test@mibo.life"
+            usr = "alisher@mibo.life"
             pwd = "123456"
         }
 
@@ -60,7 +61,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                     if (data.status.equals("success", true)) {
                         Toasty.success(context, "Successfully logged").show()
                         isLogin = true
-                        Prefs.get(this@LoginController.context).settJson("user_member", data)
+                        Prefs.get(this@LoginController.context).setMember(data.data)
                         loginSucceed()
                     } else if (data.status.equals("error", true)) {
                         Toasty.error(context, "${data.error?.get(0)?.message}").show()

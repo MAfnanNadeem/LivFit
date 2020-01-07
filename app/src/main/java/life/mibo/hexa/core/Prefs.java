@@ -29,6 +29,7 @@ public class Prefs {
     private SharedPreferences preferences;
     private static Prefs instance;
     public static final String PREFS_NAME = "miboPrefs";
+    public static final String USER = "user_member";
 
     /**
      * initialize default SharedPreferences
@@ -52,7 +53,7 @@ public class Prefs {
 
     public SharedPreferences getPreferences() {
         if (preferences == null)
-            throw new RuntimeException("Oops you have forget to intialize Prefs class.. Prefs prefs = new Prefs(context)");
+            throw new RuntimeException("Oops you have forget to initialize Prefs class.. Prefs prefs = new Prefs(context)");
         return preferences;
     }
 
@@ -199,6 +200,27 @@ public class Prefs {
             return null;
         }
 
+    }
+
+    public void setMember(Object o) {
+        try {
+            String json = new Gson().toJson(o, o.getClass());
+            getEditor().putString(USER, json).apply();
+            Logger.e("setMember saved " + USER);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.e("setMember error " + USER);
+        }
+    }
+
+    public <T> T getMember(Type t) {
+        try {
+            String str = get(USER);
+            return new Gson().fromJson(str, t);
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

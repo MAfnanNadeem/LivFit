@@ -13,19 +13,20 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
@@ -39,26 +40,30 @@ import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
 import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
-import life.mibo.hexa.Callback.Companion.CONNECT
-import life.mibo.hexa.Callback.Companion.DISCONNECT
-import life.mibo.hexa.Callback.Companion.SCAN
+import life.mibo.hexa.Navigator.Companion.CONNECT
+import life.mibo.hexa.Navigator.Companion.DISCONNECT
+import life.mibo.hexa.Navigator.Companion.HOME
+import life.mibo.hexa.Navigator.Companion.SCAN
+import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
+import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseActivity
-import life.mibo.hexa.ui.base.FragmentHelper
+import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
-import life.mibo.hexa.ui.base.ScreenNavigator
+import life.mibo.hexa.ui.home.HomeItem
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 
-class MainActivity : BaseActivity(), Callback {
+class MainActivity : BaseActivity(), Navigator {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
-    private var navigator: ScreenNavigator? = null
+    private var bottomBarHelper = BottomBarHelper()
+    //private var navigator: ScreenNavigator? = null
     lateinit var drawerToggle: ActionBarDrawerToggle
 
 
@@ -71,8 +76,7 @@ class MainActivity : BaseActivity(), Callback {
         setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val drawer: NavigationView = findViewById(R.id.nav_view)
-        navigator =
-            ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
+        //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
         val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
         navController = findNavController(R.id.nav_host_fragment)
@@ -103,12 +107,39 @@ class MainActivity : BaseActivity(), Callback {
         checkPermissions()
         //startManager()
         commHandler.regisiter()
+
+        val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
+        //drawer_user_email?.text = member.imageThumbnail
+        drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
+            "${member.firstName} ${member.lastName}"
+        drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
+            "${member.email}"
+        bottomBarHelper.register(item1, item2, item3, item4)
+        bottomBarHelper.listener = object : ItemClickListener<Any> {
+            override fun onItemClicked(item: Any?, position: Int) {
+                Toasty.warning(this@MainActivity, "click $position")
+            }
+        }
     }
 
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+
+    }
+
+    var lastId: Int = -1
     private fun navigateTo(id: Int) {
+        if (lastId == id)
+            return
+        lastId = id
         when (id) {
+            R.id.nav_home -> {
+                navController.navigate(R.id.navigation_home)
+            }
+
             R.id.nav_ch6 -> {
-                navController.navigate(R.id.navigation_channels)
+                navController.navigate(R.id.navigation_channels, null, getNavOptiions())
             }
             R.id.nav_scan -> {
                 startScanning(false)
@@ -117,7 +148,7 @@ class MainActivity : BaseActivity(), Callback {
             R.id.nav_rxl -> {
                 startScanning(false)
                 //updateMenu()
-                navController.navigate(R.id.navigation_reflex)
+                navController.navigate(R.id.navigation_reflex, null, getNavOptiions())
 
             }
 
@@ -125,6 +156,18 @@ class MainActivity : BaseActivity(), Callback {
                 startScanning(false)
                 //updateMenu()
                 navController.navigate(R.id.navigation_reflex2)
+
+            }
+            R.id.navigation_add_product -> {
+                navController.navigate(R.id.navigation_add_product)
+
+            }
+            R.id.navigation_heart_rate -> {
+                navController.navigate(R.id.navigation_heart_rate)
+
+            }
+            R.id.navigation_weight -> {
+                navController.navigate(R.id.navigation_weight)
 
             }
             else -> {
@@ -135,6 +178,9 @@ class MainActivity : BaseActivity(), Callback {
         //drawerLayout.closeDrawer(GravityCompat.START)
 
     }
+
+    private fun getNavOptiions() =
+        NavOptions.Builder().setPopUpTo(R.id.navigation_home, true).build()
 
     fun setToolbar(drawerLayout: DrawerLayout) {
         val toolbar = supportActionBar
@@ -583,7 +629,7 @@ class MainActivity : BaseActivity(), Callback {
             })
     }
 
-    override fun onCall(type: Int, data: Any?) {
+    override fun navigateTo(type: Int, data: Any?) {
         log("Call $type || $data")
         when (type) {
             CONNECT -> {
@@ -600,9 +646,45 @@ class MainActivity : BaseActivity(), Callback {
                 if (data is Boolean)
                     startScanning(true, data)
             }
+            HOME -> {
+                if (data != null && data is HomeItem)
+                    homeItemClicked(data)
+            }
         }
     }
 
+    // TODO Dashboard click events
+    private fun homeItemClicked(item: HomeItem?) {
+        when (item?.type) {
+            HomeItem.Type.HEART -> {
+                navigateTo(R.id.navigation_heart_rate)
+            }
+            HomeItem.Type.WEIGHT -> {
+                navigateTo(R.id.navigation_weight)
+            }
+            HomeItem.Type.ADD -> {
+                navigateTo(R.id.navigation_add_product)
+            }
+            HomeItem.Type.CALENDAR -> {
+
+            }
+            HomeItem.Type.SCHEDULE -> {
+
+            }
+            HomeItem.Type.BOOSTER -> {
+
+            }
+            HomeItem.Type.PROGRAMS -> {
+
+            }
+            HomeItem.Type.CALORIES -> {
+
+            }
+            else -> {
+                Toasty.warning(this, "ItemClicked - $item").show()
+            }
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.home){

@@ -30,6 +30,7 @@ public class Prefs {
     private static Prefs instance;
     public static final String PREFS_NAME = "miboPrefs";
     public static final String USER = "user_member";
+    public static final String SESSION = "user_session_";
 
     /**
      * initialize default SharedPreferences

@@ -10,10 +10,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_home.*
+import life.mibo.hexa.Navigator
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.base.BaseListener
+import life.mibo.hexa.utils.Toasty
 
 
 class HomeFragment : BaseFragment(), HomeObserver {
@@ -48,7 +51,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
         val member: Member? = Prefs.get(this.context)?.getMember(Member::class.java)
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
-        iv_user_pic.setImageDrawable(ContextCompat.getDrawable(this@HomeFragment.context!!, R.drawable.ic_person_black_24dp))
+        iv_user_pic.setImageDrawable(
+            ContextCompat.getDrawable(
+                this@HomeFragment.context!!,
+                R.drawable.ic_person_black_24dp
+            )
+        )
         controller.getDashboard()
 
         //controller.setRecycler(recyclerView!!)
@@ -56,61 +64,81 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     override fun onDataRecieved(list: ArrayList<HomeItem>) {
         getDialog()?.dismiss()
-       list.forEachIndexed { i, item ->
-           when(i){
-               0 -> {
-                   constraintLayout2.visibility = View.VISIBLE
-                   group.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_1, iv_dashboard_1_icon, iv_dashboard_1_text)
-               }
-               1 -> {
-                   group2.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_2, iv_dashboard_2_icon, iv_dashboard_2_text)
-               }
-               2 -> {
-                   group3.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_3, iv_dashboard_3_icon, iv_dashboard_3_text)
-               }
-               3 -> {
-                   constraintLayout3.visibility = View.VISIBLE
-                   group4.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_4, iv_dashboard_4_icon, iv_dashboard_4_text)
-               }
-               4 -> {
-                   group5.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_5, iv_dashboard_5_icon, iv_dashboard_5_text)
-               }
-               5 -> {
-                   constraintLayout4.visibility = View.VISIBLE
-                   group6.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_6, iv_dashboard_6_icon, iv_dashboard_6_text)
-               }
-               6 -> {
-                   group7.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_7, iv_dashboard_7_icon, iv_dashboard_7_text)
-               }
-               7 -> {
-                   constraintLayout5.visibility = View.VISIBLE
-                   group8.visibility = View.VISIBLE
-                   item.bind(iv_dashboard_8, iv_dashboard_1_icon, iv_dashboard_1_text)
-               }
-               8 -> {
-                   item.bind(iv_dashboard_9, iv_dashboard_1_icon, iv_dashboard_1_text)
-                   group9.visibility = View.VISIBLE
-               }
-               8 -> {
-                   item.bind(iv_dashboard_10, iv_dashboard_10_icon, iv_dashboard_10_text)
-                   group10.visibility = View.VISIBLE
-               }
-           }
-       }
-
-
-
-
-
+        list.forEachIndexed { i, item ->
+            when (i) {
+                0 -> {
+                    constraintLayout2.visibility = View.VISIBLE
+                    group.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_1, iv_dashboard_1_icon, iv_dashboard_1_text, this)
+                }
+                1 -> {
+                    group2.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_2, iv_dashboard_2_icon, iv_dashboard_2_text, this)
+                }
+                2 -> {
+                    group3.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_3, iv_dashboard_3_icon, iv_dashboard_3_text, this)
+                }
+                3 -> {
+                    constraintLayout3.visibility = View.VISIBLE
+                    group4.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_4, iv_dashboard_4_icon, iv_dashboard_4_text, this)
+                }
+                4 -> {
+                    group5.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_5, iv_dashboard_5_icon, iv_dashboard_5_text, this)
+                }
+                5 -> {
+                    constraintLayout4.visibility = View.VISIBLE
+                    group6.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_6, iv_dashboard_6_icon, iv_dashboard_6_text, this)
+                }
+                6 -> {
+                    group7.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_7, iv_dashboard_7_icon, iv_dashboard_7_text, this)
+                }
+                7 -> {
+                    constraintLayout5.visibility = View.VISIBLE
+                    group8.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_8, iv_dashboard_8_icon, iv_dashboard_8_text, this)
+                }
+                8 -> {
+                    item.bind(iv_dashboard_9, iv_dashboard_9_icon, iv_dashboard_9_text, this)
+                    group9.visibility = View.VISIBLE
+                }
+                9 -> {
+                    item.bind(iv_dashboard_10, iv_dashboard_10_icon, iv_dashboard_10_text, this)
+                    group10.visibility = View.VISIBLE
+                }
+            }
+        }
 
     }
+
+    override fun onItemClicked(item: HomeItem?) {
+        navigate(Navigator.HOME, item)
+//        when (item?.type) {
+//            HomeItem.Type.HEART -> {
+//
+//            }
+//            HomeItem.Type.WEIGHT -> {
+//
+//            }
+//            HomeItem.Type.ADD -> {
+//
+//            }
+//            HomeItem.Type.CALENDAR -> {
+//
+//            }
+//            HomeItem.Type.SCHEDULE -> {
+//
+//            }
+//            else -> {
+//                Toasty.warning(context!!, "ItemClicked $item").show()
+//            }
+//        }
+    }
+
 
     override fun onStop() {
         super.onStop()

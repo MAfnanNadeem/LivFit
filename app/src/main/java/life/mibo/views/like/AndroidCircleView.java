@@ -65,7 +65,7 @@ public class AndroidCircleView extends View {
       maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
    }
 
-   // when this callback method call by android system the it initialize some values which is using in order the draw view
+   // when this navigator method call by android system the it initialize some values which is using in order the draw view
    @Override
    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
        super.onSizeChanged(w, h, oldw, oldh);

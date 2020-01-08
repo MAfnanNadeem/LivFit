@@ -82,6 +82,7 @@ class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
 
                 val data = response.body()
                 if (data != null && data.status.equals("success")) {
+                    Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
                     parseData(data)
                 } else {
 
@@ -101,50 +102,57 @@ class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Heart Rate " + data.peakHr,
-                intArrayOf(Color.RED, Color.BLUE, Color.GREEN),
-                HomeItem.Type.HEART, R.drawable.ic_rxl_heart_selected
+                intArrayOf(Color.parseColor("#FF0000"), Color.parseColor("#393939")),
+                HomeItem.Type.HEART, R.drawable.ic_rxl_heart_unselect
             )
         )
         list.add(
             HomeItem(
                 "Weight " + report.report?.weight,
-                intArrayOf(Color.RED, Color.BLUE, Color.GREEN),
-                HomeItem.Type.HEART
+                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
+                HomeItem.Type.WEIGHT
             )
         )
         list.add(
             HomeItem(
-                "Calendar ",
-                intArrayOf(Color.DKGRAY, Color.LTGRAY),
-                HomeItem.Type.HEART, R.drawable.ic_dashboard_calendar
+                "Calendar",
+                intArrayOf(Color.parseColor("#2A72D1"), Color.parseColor("#00FFF2")),
+                HomeItem.Type.CALENDAR, R.drawable.ic_dashboard_calendar
             )
         )
         list.add(
             HomeItem(
                 "Calories " + data.caloriesBurnt,
-                intArrayOf(Color.RED, Color.BLUE, Color.GREEN),
-                HomeItem.Type.HEART
+                intArrayOf(Color.parseColor("#065A2A"), Color.parseColor("#CCF9AE")),
+                HomeItem.Type.CALORIES
             )
         )
         list.add(
             HomeItem(
-                "Schedule " + data.peakHr,
-                intArrayOf(Color.GRAY, Color.LTGRAY),
-                HomeItem.Type.HEART, R.drawable.ic_dashboard_schedule
+                "Schedule",
+                intArrayOf(Color.parseColor("#C21F2A"), Color.parseColor("#FE9001")),
+                HomeItem.Type.SCHEDULE, R.drawable.ic_dashboard_schedule
             )
         )
         list.add(
             HomeItem(
-                "Programs " + data.peakHr,
-                intArrayOf(Color.RED, Color.BLUE, Color.GREEN),
-                HomeItem.Type.HEART
+                "Programs",
+                intArrayOf(Color.parseColor("#0084E9"), Color.parseColor("#0C1E51")),
+                HomeItem.Type.PROGRAMS
             )
         )
         list.add(
             HomeItem(
-                "Booster " + data.peakHr,
-                intArrayOf(Color.RED, Color.BLUE, Color.GREEN),
-                HomeItem.Type.HEART, R.drawable.ic_dashboard_booster
+                "Booster",
+                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
+                HomeItem.Type.BOOSTER, R.drawable.ic_dashboard_booster
+            )
+        )
+        list.add(
+            HomeItem(
+                "Add Product",
+                intArrayOf(Color.parseColor("#C9C8C8"), Color.parseColor("#393939")),
+                HomeItem.Type.ADD, R.drawable.ic_plus_main
             )
         )
         observer.onDataRecieved(list)

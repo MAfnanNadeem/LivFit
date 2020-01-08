@@ -24,6 +24,8 @@ data class Member(
     var firstName: String?,
     @SerializedName("gender")
     var gender: String?,
+    @SerializedName("email")
+    var email: String?,
     @SerializedName("id")
     var id: Int?,
     @SerializedName("imageThumbnail")

@@ -1,8 +1,10 @@
 package life.mibo.hexa.ui.base
 
-import android.view.View
+import android.content.Context
 import androidx.fragment.app.Fragment
 import life.mibo.hardware.core.Logger
+import life.mibo.hexa.Navigator
+import life.mibo.hexa.MainActivity
 import life.mibo.hexa.ui.dialog.MyDialog
 
 abstract class BaseFragment : Fragment() {
@@ -23,6 +25,18 @@ abstract class BaseFragment : Fragment() {
         return mDialog
     }
 
+    var navigator: Navigator? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        //if(context is Navigator)
+        navigator = context as MainActivity
+    }
+
+    open fun navigate(type: Int, data: Any?) {
+        navigator?.navigateTo(type, data)
+    }
+
     override fun onStart() {
         super.onStart()
 //        EventBus.getDefault().register(this)
@@ -31,11 +45,5 @@ abstract class BaseFragment : Fragment() {
     override fun onStop() {
         super.onStop()
      //   EventBus.getDefault().unregister(this)
-    }
-
-    interface BaseListener {
-        fun onCreate(view: View? = null, data: Any? = null)
-        fun onResume()
-        fun onStop()
     }
 }

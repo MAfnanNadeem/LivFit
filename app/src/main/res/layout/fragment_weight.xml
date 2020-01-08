@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/8/20 4:20 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/8/20 4:08 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_hr_tab_gradient">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/grid_3x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/tv_title_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_4x"
+            android:text="Select"
+            android:textColor="@color/textColor_weight"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@id/guideline1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:text="Current"
+            android:textColor="@color/textColor_weight"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="@id/guideline1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title_target"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_4x"
+            android:text="Target"
+            android:textColor="@color/textColor_weight"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <life.mibo.views.HexagonMaskView
+            android:id="@+id/hexaImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/grid_2x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="@+id/guideline1"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_current" />
+
+
+        <TextView
+            android:id="@+id/weight_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:text="56 Kg"
+            android:textColor="@color/textColor_weight"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/hexaImage"
+            app:layout_constraintEnd_toEndOf="@+id/hexaImage"
+            app:layout_constraintStart_toStartOf="@+id/hexaImage"
+            app:layout_constraintTop_toTopOf="@+id/hexaImage" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:src="@drawable/ic_weight_progressbar"
+            app:layout_constraintEnd_toEndOf="@+id/hexaImage"
+            app:layout_constraintStart_toStartOf="@+id/hexaImage"
+            app:layout_constraintTop_toBottomOf="@+id/weight_value" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_start">
+
+            <TextView
+                android:id="@+id/tv_start_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="56 Kg"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/tv_start_bmi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="BMI 36.0"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/tv_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="Jan, 01, 2020"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline2"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_target">
+
+            <TextView
+                android:id="@+id/tv_target_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="56 Kg"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/tv_target_bmi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="BMI 36.0"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/tv_target_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="Jan, 01, 2020"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
+
+        </LinearLayout>
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.33" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.66" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout1">
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingTop="@dimen/grid_2x"
+            android:text="Progress"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginEnd="@dimen/grid_1x"
+            android:backgroundTint="@color/colorPrimary"
+            android:progress="50"
+            android:progressTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/tv_progress"
+            app:layout_constraintEnd_toStartOf="@+id/tv_progress_value"
+            app:layout_constraintStart_toEndOf="@+id/tv_progress"
+            app:layout_constraintTop_toTopOf="@id/tv_progress"
+            app:layout_constraintWidth_percent="0.55" />
+
+        <TextView
+            android:id="@+id/tv_progress_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingTop="@dimen/grid_2x"
+            android:text="56.02%"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_progress_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:text="Time"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_progress" />
+
+        <ProgressBar
+            android:id="@+id/progress_time"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginEnd="@dimen/grid_1x"
+            android:backgroundTint="@color/colorPrimary"
+            android:progress="50"
+            android:progressTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/tv_progress_time"
+            app:layout_constraintEnd_toEndOf="@+id/progress_progress"
+            app:layout_constraintStart_toStartOf="@+id/progress_progress"
+            app:layout_constraintWidth_percent="0.55" />
+
+        <TextView
+            android:id="@+id/tv_progress_time_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingBottom="@dimen/grid_2x"
+            android:text="56.02%"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_progress_value" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout2">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_curren_statics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:text="Current Statistic"
+            android:textColor="@color/textColor_weight"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_body_fat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingTop="@dimen/grid_2x"
+            android:text="Body Fat"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_curren_statics" />
+
+        <TextView
+            android:id="@+id/tv_body_fat_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingBottom="@dimen/grid_2x"
+            android:text="28.01"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@+id/tv_body_fat"
+            app:layout_constraintStart_toStartOf="@id/tv_body_fat"
+            app:layout_constraintTop_toBottomOf="@id/tv_body_fat" />
+
+        <TextView
+            android:id="@+id/tv_body_fat_lost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingTop="@dimen/grid_2x"
+            android:text="You lost"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_curren_statics" />
+
+        <TextView
+            android:id="@+id/tv_body_fat_lost_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingBottom="@dimen/grid_2x"
+            android:text="3.25"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@+id/tv_body_fat_lost"
+            app:layout_constraintStart_toStartOf="@id/tv_body_fat_lost"
+            app:layout_constraintTop_toBottomOf="@id/tv_body_fat_lost" />
+
+        <TextView
+            android:id="@+id/tv_body_fat_remain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingTop="@dimen/grid_2x"
+            android:text="Remaining"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_curren_statics" />
+
+        <TextView
+            android:id="@+id/tv_body_fat_remai_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:paddingBottom="@dimen/grid_2x"
+            android:text="24.76"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="@+id/tv_body_fat_remain"
+            app:layout_constraintStart_toStartOf="@id/tv_body_fat_remain"
+            app:layout_constraintTop_toBottomOf="@id/tv_body_fat_remain" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="412dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout3">
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_bmi_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/grid_3x"
+            android:text="BMI : 36.0"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toStartOf="@+id/tv_bmi_class"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_bmi_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/grid_3x"
+            android:text="Obese Class I"
+            android:textColor="@color/colorDeviceColorRed"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_bmi_value"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

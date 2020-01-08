@@ -39,8 +39,14 @@ public class HexagonMaskView extends AppCompatImageView {
     }
 
     public void setGradient(int[] colors){
-        GradientDrawable gd = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM, colors);
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
+        gd.setCornerRadius(0f);
+        setImageDrawable(gd);
+    }
+
+    public void setGradient(int[] colors, int border) {
+        this.mBorderPaint.setColor(border);
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
         gd.setCornerRadius(0f);
         setImageDrawable(gd);
     }

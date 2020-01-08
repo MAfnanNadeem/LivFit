@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:defaultNavHost="true"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
@@ -49,12 +49,70 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginStart="0dp"
+            android:visibility="gone"
             android:layout_marginEnd="0dp"
             android:background="?android:attr/windowBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_nav_menu" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bottom_bar_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.95">
+
+            <ImageView
+                android:id="@+id/item1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bottom_bar_item_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/item2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/item2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bottom_bar_item_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/item3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/item1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/item3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bottom_bar_item_3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/item4"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/item2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/item4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/bottom_bar_item_4"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/item3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -62,8 +120,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:visibility="gone"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_drawer"
         app:menu="@menu/activity_drawer_drawer" />
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

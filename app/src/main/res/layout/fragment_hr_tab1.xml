@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/8/20 11:46 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/8/20 11:46 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/grid_3x"
+        android:background="@drawable/bg_hr_tab_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.75">
+
+        <TextView
+            android:id="@+id/hr_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:text="HEART BEATS PER MINUTE"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/hexaImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/grid_2x"
+            android:src="@drawable/hr_circle_ring"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/hr_title" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/hr_heart_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/grid_4x"
+            android:src="@drawable/ic_like_heart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/hexaImage"
+            app:layout_constraintWidth_percent="0.25" />
+
+        <TextView
+            android:id="@+id/hr_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:text="72"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/hr_heart_image"
+            app:layout_constraintTop_toBottomOf="@id/hr_heart_image" />
+
+        <TextView
+            android:id="@+id/hr_value_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:text="BPM"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="@+id/hr_value"
+            app:layout_constraintStart_toEndOf="@id/hr_value" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_1x"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout1" />
+
+    <TextView
+        android:id="@+id/lineChart_no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Heart Rate Data Available"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/lineChart"
+        app:layout_constraintEnd_toEndOf="@+id/lineChart"
+        app:layout_constraintStart_toStartOf="@+id/lineChart"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout1" />
+</androidx.constraintlayout.widget.ConstraintLayout>

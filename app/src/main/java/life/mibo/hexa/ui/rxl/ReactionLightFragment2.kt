@@ -71,7 +71,7 @@ class ReactionLightFragment2 : BaseFragment() {
         setHasOptionsMenu(true)
         backdropBehavior?.addOnDropListener(object : BackdropBehavior.OnDropListener {
             override fun onDrop(dropState: BackdropBehavior.DropState, fromUser: Boolean) {
-                if (dropState == BackdropBehavior.DropState.CLOSE) {
+                if (dropState == BackdropBehavior.DropState.CLOSE && isAdded) {
                     Toasty.warning(
                         this@ReactionLightFragment2.context!!,
                         "closed " + selectedItems.keys.toIntArray().contentToString()

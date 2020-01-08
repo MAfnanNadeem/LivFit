@@ -41,7 +41,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         var pwd = password;
         if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
             //usr = "test@mibo.life"
-            usr = "alisher@mibo.life"
+            usr = "bini.albert@mibo.life"
+           // usr = "alisher@mibo.life"
             pwd = "123456"
         }
 

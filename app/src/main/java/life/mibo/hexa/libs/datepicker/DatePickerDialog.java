@@ -33,7 +33,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     private boolean mIsTitleShown = true;
 
     /**
-     * The callback used to indicate the user is done filling in the date.
+     * The navigator used to indicate the user is done filling in the date.
      */
     public interface OnDateSetListener {
         /**
@@ -47,7 +47,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     /**
-     * Callback for when things are cancelled
+     * Navigator for when things are cancelled
      */
     public interface OnDateCancelListener {
         /**

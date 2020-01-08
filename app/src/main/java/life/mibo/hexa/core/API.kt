@@ -107,5 +107,9 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getLatestSessionDetails")
         fun getSessionDetails(@Body data: SessionDetails): Call<SessionReport>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getLatestSessionDetails")
+        fun getProducts(@Body data: SessionDetails): Call<SessionReport>
     }
 }

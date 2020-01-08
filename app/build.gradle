@@ -72,6 +72,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    //implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
 
     // Google
     implementation 'com.google.code.gson:gson:2.8.6'
@@ -81,6 +83,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
     implementation 'com.twilio:verification:1.0.9'
     //implementation 'com.twilio:verification:+'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 
     // networking and RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
@@ -91,7 +95,7 @@ dependencies {
 
     // image loading (picasso, glide, coil-kotlin)
     implementation 'io.coil-kt:coil:0.8.0'
-    implementation 'com.mindvalley.android:hexagonrecyclerview:1.0.1'
+    //implementation 'com.mindvalley.android:hexagonrecyclerview:1.0.1'
 
     // Unit, Mock, Espresso Test..
     testImplementation 'junit:junit:4.12'
@@ -104,7 +108,7 @@ dependencies {
     // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
     //implementation 'com.github.joielechong:countrycodepicker:master-SNAPSHOT'
     implementation 'com.github.joielechong:CountryCodePicker:a2225694e5'
-    implementation 'com.ringcaptcha.android:ringcaptcha:1.2.0'
+    //implementation 'com.ringcaptcha.android:ringcaptcha:1.2.0'
 
     // later will be removed in final build
     implementation 'com.github.ihsanbal:LoggingInterceptor:3.0.0'

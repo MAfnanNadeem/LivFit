@@ -80,7 +80,7 @@ class ChannelAdapterLive(var list: LiveData<ArrayList<Channel6Model>>?, val type
             return
         }
 
-//        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+//        val result = DiffUtil.calculateDiff(object : DiffUtil.Navigator() {
 //            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
 //                return newList[newItem].id == list!![oldItem].id
 //            }

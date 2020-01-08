@@ -34,7 +34,7 @@ data class HomeItem(
     private var iconRes: Int = 0
 
     enum class Type {
-        HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN
+        HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE
     }
 
     fun bind(view: ViewGroup) {
@@ -48,7 +48,12 @@ data class HomeItem(
         }
     }
 
-    fun bind(image: HexagonMaskView, icon: ImageView, text: TextView) {
+    fun bind(
+        image: HexagonMaskView,
+        icon: ImageView,
+        text: TextView,
+        listener: HomeObserver? = null
+    ) {
         if (colorArray == null || colorArray!!.isEmpty()) {
             colorArray = intArrayOf(Color.DKGRAY, Color.GRAY, Color.LTGRAY)
         }
@@ -61,6 +66,9 @@ data class HomeItem(
             icon.setImageDrawable(ContextCompat.getDrawable(icon.context, iconRes))
         }
         text.text = title
+        image.setOnClickListener {
+            listener?.onItemClicked(this)
+        }
 
     }
 

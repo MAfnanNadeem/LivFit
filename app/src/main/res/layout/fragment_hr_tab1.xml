@@ -18,6 +18,7 @@
         android:layout_marginTop="@dimen/grid_3x"
         android:background="@drawable/bg_hr_tab_gradient"
         app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         app:layout_constraintHeight_percent="0.35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

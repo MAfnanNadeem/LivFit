@@ -11,6 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.zxing.BarcodeFormat
+import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
+import kotlinx.android.synthetic.main.fragment_add_product.*
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
@@ -50,6 +53,9 @@ class AddProductFragment : BaseFragment(), ProductObserver {
         controller = AddProductController(this@AddProductFragment, this)
         //controller.setRecycler(recyclerView)
         controller.getProduct()
+        btn_qr_code?.setOnClickListener {
+           navigate(R.id.navigation_barcode, null)
+        }
     }
 
 

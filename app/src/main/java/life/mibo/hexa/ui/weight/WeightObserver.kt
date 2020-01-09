@@ -7,9 +7,11 @@
 
 package life.mibo.hexa.ui.weight
 
+import life.mibo.hexa.models.weight.Data
 import life.mibo.hexa.ui.home.HomeItem
 
 interface WeightObserver {
-    fun onDataRecieved(list: ArrayList<HomeItem>)
+    fun onChartDataReceived(list: List<Data?>?)
+    fun onUserDetailsReceived(list: life.mibo.hexa.models.user_details.Data?)
     fun onItemClicked(item: HomeItem?)
 }

@@ -27,7 +27,7 @@ class PageAdapter(val fragment: FragmentManager) :
     override fun getPageTitle(position: Int): CharSequence? {
         when (position) {
             0 -> {
-                return "TODAY"
+                return "LAST SESSION"
             }
             1 -> {
                 return "WEEKLY"

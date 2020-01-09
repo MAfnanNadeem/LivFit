@@ -15,12 +15,13 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
+import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
+class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     HomeFragment.Listener {
 
     override fun onCreate(view: View?, data: Any?) {
@@ -66,6 +67,12 @@ class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
 
 
     fun getDashboard() {
+        val s : SessionReport? = Prefs.get(fragment.context).getJson(Prefs.SESSION, SessionReport::class.java)
+        if(s != null){
+            parseData(s)
+            return
+        }
+
         val member =
             Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
                 ?: return
@@ -82,7 +89,7 @@ class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
 
                 val data = response.body()
                 if (data != null && data.status.equals("success")) {
-                    Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
+                    Prefs.get(fragment.context).settJson(Prefs.SESSION, data)
                     parseData(data)
                 } else {
 
@@ -97,6 +104,71 @@ class HomeController(val fragment: HomeFragment, val observer: HomeObserver) :
     }
 
     fun parseData(report: SessionReport) {
+        val list = ArrayList<HomeItem>()
+        val data = report.report?.sessionMemberReports!!
+        list.add(
+            HomeItem(
+                "Weight ", "" + report.report?.weight +" Kg",
+                HomeItem.Type.WEIGHT, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_4
+            )
+        )
+        list.add(
+            HomeItem(
+                "" + data.peakHr + " BPM", "",
+                HomeItem.Type.HEART,
+                R.drawable.ic_rxl_heart_unselect,
+                R.drawable.dashboard_item_bg_5
+            )
+        )
+        list.add(
+            HomeItem(
+                "Calendar",
+                "",
+                HomeItem.Type.CALENDAR,
+                R.drawable.ic_dashboard_calendar,
+                R.drawable.dashboard_item_bg_2
+            )
+        )
+        list.add(
+            HomeItem(
+                "Calories ", "" + data.caloriesBurnt,
+                HomeItem.Type.CALORIES, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_12
+            )
+        )
+        list.add(
+            HomeItem(
+                "Schedule",
+                "",
+                HomeItem.Type.SCHEDULE,
+                R.drawable.ic_dashboard_schedule,
+                R.drawable.dashboard_item_bg_1
+            )
+        )
+        list.add(
+            HomeItem(
+                "Programs", "",
+                HomeItem.Type.PROGRAMS, 0, R.drawable.dashboard_item_bg_6
+            )
+        )
+        list.add(
+            HomeItem(
+                "Booster",
+                "",
+                HomeItem.Type.BOOSTER,
+                R.drawable.ic_dashboard_booster,
+                R.drawable.dashboard_item_bg_3
+            )
+        )
+        list.add(
+            HomeItem(
+                "Add Product", "",
+                HomeItem.Type.ADD, R.drawable.ic_plus_main, R.drawable.dashboard_item_bg_8
+            )
+        )
+        observer.onDataRecieved(list)
+    }
+
+    fun parseData2(report: SessionReport) {
         val list = ArrayList<HomeItem>()
         val data = report.report?.sessionMemberReports!!
         list.add(

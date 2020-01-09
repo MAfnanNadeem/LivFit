@@ -73,6 +73,7 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     //implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.kroegerama:barcode-kaiteki:1.1.1'
 
 
     // Google

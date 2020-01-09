@@ -1,5 +1,13 @@
+/*
+ *  Created by Sumeet Kumar on 1/9/20 8:51 AM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 1/8/20 10:10 AM
+ *  Mibo Hexa - app
+ */
+
 package life.mibo.hexa.ui.home
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,16 +16,17 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home_backup.*
 import life.mibo.hexa.Navigator
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
+import life.mibo.hexa.utils.Toasty
 
 
-class HomeFragment : BaseFragment(), HomeObserver {
+class HomeFragmentBackup : BaseFragment(), HomeObserver {
 
     interface Listener : BaseListener {
         fun onHomeItemClicked(position: Int)
@@ -30,7 +39,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        val root = inflater.inflate(R.layout.fragment_home_backup, container, false)
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         // val textView: TextView = root.findViewById(R.id.text_home)
         homeViewModel.text.observe(this, Observer {
@@ -45,13 +54,13 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        controller = HomeController(this@HomeFragment, this)
-        //iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
+        controller = HomeController(this@HomeFragmentBackup, this)
+        iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
         val member: Member? = Prefs.get(this.context)?.getMember(Member::class.java)
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
         iv_user_pic.setImageDrawable(
             ContextCompat.getDrawable(
-                this@HomeFragment.context!!,
+                this@HomeFragmentBackup.context!!,
                 R.drawable.ic_person_black_24dp
             )
         )
@@ -66,49 +75,47 @@ class HomeFragment : BaseFragment(), HomeObserver {
             when (i) {
                 0 -> {
                     constraintLayout2.visibility = View.VISIBLE
-                    iv_dashboard_item_1.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_1, this)
+                    group.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_1, iv_dashboard_1_icon, iv_dashboard_1_text, this)
                 }
                 1 -> {
-                    iv_dashboard_item_2.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_2, this)
+                    group2.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_2, iv_dashboard_2_icon, iv_dashboard_2_text, this)
                 }
                 2 -> {
-                    iv_dashboard_item_3.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_3, this)
+                    group3.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_3, iv_dashboard_3_icon, iv_dashboard_3_text, this)
                 }
                 3 -> {
                     constraintLayout3.visibility = View.VISIBLE
-                    iv_dashboard_item_4.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_4, this)
+                    group4.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_4, iv_dashboard_4_icon, iv_dashboard_4_text, this)
                 }
                 4 -> {
-                    iv_dashboard_item_5.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_5, this)
+                    group5.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_5, iv_dashboard_5_icon, iv_dashboard_5_text, this)
                 }
                 5 -> {
                     constraintLayout4.visibility = View.VISIBLE
-                    iv_dashboard_item_6.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_6, this)
+                    group6.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_6, iv_dashboard_6_icon, iv_dashboard_6_text, this)
                 }
                 6 -> {
-                    iv_dashboard_item_7.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_7, this)
+                    group7.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_7, iv_dashboard_7_icon, iv_dashboard_7_text, this)
                 }
                 7 -> {
                     constraintLayout5.visibility = View.VISIBLE
-                    iv_dashboard_item_8.visibility = View.VISIBLE
-                    iv_dashboard_item_9.visibility = View.INVISIBLE
-                    iv_dashboard_item_10.visibility = View.INVISIBLE
-                    item.bind(iv_dashboard_item_8, this)
+                    group8.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_8, iv_dashboard_8_icon, iv_dashboard_8_text, this)
                 }
                 8 -> {
-                    item.bind(iv_dashboard_item_9, this)
-                    iv_dashboard_item_9.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_9, iv_dashboard_9_icon, iv_dashboard_9_text, this)
+                    group9.visibility = View.VISIBLE
                 }
                 9 -> {
-                    item.bind(iv_dashboard_item_10, this)
-                    iv_dashboard_item_10.visibility = View.VISIBLE
+                    item.bind(iv_dashboard_10, iv_dashboard_10_icon, iv_dashboard_10_text, this)
+                    group10.visibility = View.VISIBLE
                 }
             }
         }

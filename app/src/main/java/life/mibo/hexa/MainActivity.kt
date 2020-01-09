@@ -6,6 +6,7 @@ import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
@@ -22,11 +23,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.zxing.BarcodeFormat
+import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
@@ -59,7 +60,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseActivity(), Navigator {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
     private var bottomBarHelper = BottomBarHelper()
@@ -78,22 +79,17 @@ class MainActivity : BaseActivity(), Navigator {
         val drawer: NavigationView = findViewById(R.id.nav_view)
         //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
-        val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
+
         navController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        bottomNavView.setupWithNavController(navController)
-        //supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        //supportActionBar?.setDisplayShowHomeEnabled(true)
-        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name)
-        drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
-        drawerToggle.drawerArrowDrawable?.color = Color.WHITE
-        //drawerToggle.isDrawerIndicatorEnabled = true
+//        appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+//            )
+//        )
+        //val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
+        // bottomNavView.setupWithNavController(navController)
+        //setBottomBar()
+        setDrawerIcon(drawerLayout)
 
         drawer.setNavigationItemSelectedListener {
             navigateTo(it.itemId)
@@ -112,8 +108,9 @@ class MainActivity : BaseActivity(), Navigator {
         //drawer_user_email?.text = member.imageThumbnail
         drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
             "${member.firstName} ${member.lastName}"
+//        /drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text = "${member.email}"
         drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
-            "${member.email}"
+            Prefs.get(this@MainActivity).get("user_email")
         bottomBarHelper.register(item1, item2, item3, item4)
         bottomBarHelper.listener = object : ItemClickListener<Any> {
             override fun onItemClicked(item: Any?, position: Int) {
@@ -122,10 +119,41 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    private fun setDrawerIcon(drawer: DrawerLayout) {
+        //supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //supportActionBar?.setDisplayShowHomeEnabled(true)
+        drawerToggle =
+            ActionBarDrawerToggle(this, drawer, toolbar, R.string.app_name, R.string.app_name)
+//        drawerToggle = ActionBarDrawerToggle(this, toolbar, drawer, null, R.string.app_name, R.string.app_name){
+//        }
+        drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
+        drawerToggle.drawerArrowDrawable?.color = Color.WHITE
+        drawerToggle.setToolbarNavigationClickListener {
+            if (!drawer.isDrawerOpen(GravityCompat.START))
+                drawer.openDrawer(GravityCompat.START)
+        }
+        drawer.addDrawerListener(drawerToggle);
+        drawerToggle.isDrawerIndicatorEnabled = true;
+        drawerToggle.syncState();
+        //drawerToggle.isDrawerIndicatorEnabled = true
+        setupActionBarWithNavController(navController, drawer)
+        toolbar!!.setupWithNavController(navController, drawer)
+        //too.setupWithNavController(navController, config)
+        drawer.post {
+            drawerToggle.syncState()
+        }
+    }
+
+    fun setBottomBar(navController: NavController) {
+        //val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
+        // bottomNavView.setupWithNavController(navController)
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-
-
+        if (::drawerToggle.isInitialized)
+            drawerToggle.syncState()
     }
 
     var lastId: Int = -1
@@ -133,9 +161,11 @@ class MainActivity : BaseActivity(), Navigator {
         if (lastId == id)
             return
         lastId = id
+        isHome = false
         when (id) {
             R.id.nav_home -> {
-                navController.navigate(R.id.navigation_home)
+                navController.navigate(R.id.navigation_home, null, getNavOptiions())
+                isHome = true
             }
 
             R.id.nav_ch6 -> {
@@ -143,7 +173,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             R.id.nav_scan -> {
                 startScanning(false)
-                navController.navigate(R.id.navigation_devices)
+                navController.navigate(R.id.navigation_devices, null, getNavOptiions())
             }
             R.id.nav_rxl -> {
                 startScanning(false)
@@ -155,19 +185,39 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.nav_test3 -> {
                 startScanning(false)
                 //updateMenu()
-                navController.navigate(R.id.navigation_reflex2)
+                navController.navigate(R.id.navigation_reflex2, null, getNavOptiions())
 
             }
             R.id.navigation_add_product -> {
-                navController.navigate(R.id.navigation_add_product)
+                navController.navigate(R.id.navigation_add_product, null, getNavOptiions())
 
             }
             R.id.navigation_heart_rate -> {
-                navController.navigate(R.id.navigation_heart_rate)
+                navController.navigate(R.id.navigation_heart_rate, null, getNavOptiions())
 
             }
             R.id.navigation_weight -> {
-                navController.navigate(R.id.navigation_weight)
+                navController.navigate(R.id.navigation_weight, null, getNavOptiions())
+
+            }
+            R.id.navigation_program -> {
+                navController.navigate(R.id.navigation_program, null, getNavOptiions())
+
+            }
+            R.id.navigation_calories -> {
+                navController.navigate(R.id.navigation_calories, null, getNavOptiions())
+
+            }
+            R.id.navigation_schedule -> {
+                navController.navigate(R.id.navigation_schedule, null, getNavOptiions())
+
+            }
+            R.id.navigation_calendar -> {
+                navController.navigate(R.id.navigation_calendar, null, getNavOptiions())
+
+            }
+            R.id.navigation_barcode -> {
+                navController.navigate(R.id.navigation_barcode, null, getNavOptiions())
 
             }
             else -> {
@@ -176,11 +226,17 @@ class MainActivity : BaseActivity(), Navigator {
 
         }
         //drawerLayout.closeDrawer(GravityCompat.START)
-
     }
 
     private fun getNavOptiions() =
         NavOptions.Builder().setPopUpTo(R.id.navigation_home, true).build()
+
+    fun shoBarcode(){
+        val barcodeFragment = BarcodeFragment.makeInstance(
+            formats = listOf(BarcodeFormat.QR_CODE),
+            barcodeInverted = false
+        )
+    }
 
     fun setToolbar(drawerLayout: DrawerLayout) {
         val toolbar = supportActionBar
@@ -601,8 +657,8 @@ class MainActivity : BaseActivity(), Navigator {
             EventBus.getDefault().postSticky(
                 AppStatusEvent(
                     level,
-                    SessionManager.getInstance().getDeviceBatteryLevel(),
-                    SessionManager.getInstance().isDeviceCharging()
+                    SessionManager.getInstance().deviceBatteryLevel,
+                    SessionManager.getInstance().isDeviceCharging
                 )
             )
             //   Log.e("main","WIFI Level:" + level + " state:"+state);
@@ -650,6 +706,10 @@ class MainActivity : BaseActivity(), Navigator {
                 if (data != null && data is HomeItem)
                     homeItemClicked(data)
             }
+
+            R.id.navigation_barcode -> {
+                navigateTo(R.id.navigation_barcode)
+            }
         }
     }
 
@@ -666,19 +726,19 @@ class MainActivity : BaseActivity(), Navigator {
                 navigateTo(R.id.navigation_add_product)
             }
             HomeItem.Type.CALENDAR -> {
-
+                navigateTo(R.id.navigation_calendar)
             }
             HomeItem.Type.SCHEDULE -> {
-
+                navigateTo(R.id.navigation_schedule)
             }
             HomeItem.Type.BOOSTER -> {
-
+                navigateTo(R.id.nav_ch6)
             }
             HomeItem.Type.PROGRAMS -> {
-
+                navigateTo(R.id.navigation_program)
             }
             HomeItem.Type.CALORIES -> {
-
+                navigateTo(R.id.navigation_calories)
             }
             else -> {
                 Toasty.warning(this, "ItemClicked - $item").show()
@@ -686,10 +746,17 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //Toasty.info(this, "drawer clicked").show()
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         if(item.itemId == R.id.home){
 
         }
+        log("onOptionsItemSelected $item")
         return super.onOptionsItemSelected(item)
     }
 
@@ -705,6 +772,25 @@ class MainActivity : BaseActivity(), Navigator {
         commHandler.unregisiter()
         super.onDestroy()
         manager?.onDestroy()
+    }
+
+    var isHome = false
+    override fun onBackPressed() {
+        if (navController.navigateUp())
+            return
+//        if (navController.popBackStack(R.id.navigation_home, true))
+//            return;
+        if (isHome) {
+            super.onBackPressed()
+            return
+        }
+        navigateTo(R.id.nav_home)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (::drawerToggle.isInitialized)
+            drawerToggle.onConfigurationChanged(newConfig)
     }
 
 }

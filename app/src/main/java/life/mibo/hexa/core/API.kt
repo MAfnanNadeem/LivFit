@@ -14,10 +14,14 @@ import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
 import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
+import life.mibo.hexa.models.user_details.UserDetails
+import life.mibo.hexa.models.user_details.UserDetailsPost
 import life.mibo.hexa.models.verify_number.VerifyNumber
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.verify_number.VerifyResponse
 import life.mibo.hexa.models.verify_otp.VerifyOTP
+import life.mibo.hexa.models.weight.WeightAll
+import life.mibo.hexa.models.weight.WeightAllResponse
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -111,5 +115,13 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getLatestSessionDetails")
         fun getProducts(@Body data: SessionDetails): Call<SessionReport>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getAllWeight")
+        fun getAllWeight(@Body data: WeightAll): Call<WeightAllResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("userDetails")
+        fun userDetails(@Body data: UserDetailsPost): Call<UserDetails>
     }
 }

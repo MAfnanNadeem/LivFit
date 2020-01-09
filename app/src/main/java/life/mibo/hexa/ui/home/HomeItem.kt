@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import life.mibo.views.DashboardItem
 import life.mibo.views.HexagonMaskView
 
 data class HomeItem(
@@ -20,7 +21,7 @@ data class HomeItem(
     var type: Type = Type.UNKNOWN
 ) {
 
-    constructor(title: String, color: IntArray, type: Type, icon: Int = 0) : this(
+    constructor(title: String, color: IntArray, type: Type, icon: Int = 0, image: Int = 0) : this(
         0,
         title,
         0,
@@ -28,10 +29,24 @@ data class HomeItem(
     ) {
         colorArray = color
         iconRes = icon
+        imageRes = image
+    }
+
+    constructor(title: String, header: String = "",  type: Type, icon: Int = 0, image: Int = 0) : this(
+        0,
+        title,
+        0,
+        type
+    ) {
+        iconRes = icon
+        imageRes = image
+        headerText = header
     }
 
     private var colorArray: IntArray? = null
     private var iconRes: Int = 0
+    private var imageRes: Int = 0
+    private var headerText: String = ""
 
     enum class Type {
         HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE
@@ -67,6 +82,17 @@ data class HomeItem(
         }
         text.text = title
         image.setOnClickListener {
+            listener?.onItemClicked(this)
+        }
+
+    }
+
+    fun bind(
+        view: DashboardItem, listener: HomeObserver? = null
+    ) {
+        view.set(imageRes, iconRes, title, headerText)
+
+        view.setOnClickListener {
             listener?.onItemClicked(this)
         }
 

@@ -3,6 +3,7 @@ package life.mibo.hexa.ui.login
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_login.*
 import life.mibo.hexa.R
+import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.ui.base.BaseActivity
 
 
@@ -30,6 +31,7 @@ class LoginActivity : BaseActivity() {
         btn_register?.setOnClickListener {
             controller.onRegister()
         }
+        Prefs.get(this).clear()
     }
 
     //    {

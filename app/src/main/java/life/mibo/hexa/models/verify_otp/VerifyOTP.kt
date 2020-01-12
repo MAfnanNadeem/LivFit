@@ -10,6 +10,7 @@ package life.mibo.hexa.models.verify_otp
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class VerifyOTP(
     @SerializedName("ClientID")
@@ -24,7 +25,7 @@ data class VerifyOTP(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) {
+) : BaseModel(){
     constructor(userId: String, otp: String) : this(
         "Client1213",
         Data(userId, otp),

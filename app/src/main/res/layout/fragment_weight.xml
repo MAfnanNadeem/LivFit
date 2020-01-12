@@ -322,6 +322,7 @@
             android:layout_margin="@dimen/grid_1x"
             android:paddingTop="@dimen/grid_2x"
             android:text="Body Fat"
+            android:visibility="gone"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintStart_toStartOf="parent"
@@ -332,6 +333,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
+            android:visibility="gone"
             android:paddingBottom="@dimen/grid_2x"
             android:text="28.01"
             android:textColor="@color/white"
@@ -347,6 +349,7 @@
             android:layout_margin="@dimen/grid_1x"
             android:paddingTop="@dimen/grid_2x"
             android:text="You lost"
+            android:visibility="gone"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintEnd_toEndOf="parent"
@@ -357,6 +360,7 @@
             android:id="@+id/tv_body_fat_lost_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_margin="@dimen/grid_1x"
             android:paddingBottom="@dimen/grid_2x"
             android:text="3.25"
@@ -369,6 +373,7 @@
         <TextView
             android:id="@+id/tv_body_fat_remain"
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
             android:paddingTop="@dimen/grid_2x"
@@ -380,6 +385,7 @@
 
         <TextView
             android:id="@+id/tv_body_fat_remai_value"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
@@ -394,12 +400,25 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/tv_bmi_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/grid_3x"
+        android:text="BMI : 36.0"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout3" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
         android:layout_width="412dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/constraintLayout3">
 
@@ -413,7 +432,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_bmi_value"
+            android:id="@+id/tv_bmi_value2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/grid_3x"
@@ -433,7 +452,7 @@
             android:textColor="@color/colorDeviceColorRed"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_bmi_value"
+            app:layout_constraintStart_toEndOf="@+id/tv_bmi_value2"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

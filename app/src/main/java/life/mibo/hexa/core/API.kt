@@ -1,8 +1,11 @@
 package life.mibo.hexa.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.MiboApplication
 import life.mibo.hexa.core.gson.GsonConverterFactory
+import life.mibo.hexa.models.base.PostData
+import life.mibo.hexa.models.calories.Calories
 import life.mibo.hexa.models.login.LoginData
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
@@ -17,16 +20,15 @@ import life.mibo.hexa.models.session.SessionReport
 import life.mibo.hexa.models.user_details.UserDetails
 import life.mibo.hexa.models.user_details.UserDetailsPost
 import life.mibo.hexa.models.verify_number.VerifyNumber
-import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.verify_number.VerifyResponse
 import life.mibo.hexa.models.verify_otp.VerifyOTP
+import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.weight.WeightAll
 import life.mibo.hexa.models.weight.WeightAllResponse
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
@@ -46,9 +48,12 @@ class API {
 //                .addQueryParam("MIBO-Query", "0").build()
 //        ).build()
 
-        okhttp =
+        okhttp = if (BuildConfig.DEBUG) {
             OkHttpClient.Builder().addInterceptor(ChuckerInterceptor(MiboApplication.context!!))
                 .build()
+        } else {
+            OkHttpClient.Builder().build()
+        }
     }
 
 
@@ -123,5 +128,9 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("userDetails")
         fun userDetails(@Body data: UserDetailsPost): Call<UserDetails>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getAllCaloriesBurnt")
+        fun getAllCaloriesBurnt(@Body data: PostData): Call<Calories>
     }
 }

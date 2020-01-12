@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/navigation_discover"
-        android:icon="@drawable/chucker_ic_search_white_24dp"
+        android:icon="@drawable/bottom_bar_item_3"
         android:title="Discover" />
 
     <item

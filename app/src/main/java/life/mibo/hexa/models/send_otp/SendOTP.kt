@@ -6,6 +6,7 @@ package life.mibo.hexa.models.send_otp
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class SendOTP(
     @SerializedName("ClientID")
@@ -20,7 +21,7 @@ data class SendOTP(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) {
+) : BaseModel(){
     constructor(userId: String) : this (
         "Client1213",
         Data(userId),

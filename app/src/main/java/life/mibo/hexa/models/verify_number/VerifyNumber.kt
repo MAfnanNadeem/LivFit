@@ -6,6 +6,7 @@ package life.mibo.hexa.models.verify_number
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class VerifyNumber(
     @SerializedName("ClientID")
@@ -20,7 +21,7 @@ data class VerifyNumber(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) {
+): BaseModel(){
 
     constructor(userId: String) : this(
         "Client1213",

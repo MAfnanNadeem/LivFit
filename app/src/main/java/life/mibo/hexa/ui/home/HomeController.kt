@@ -13,6 +13,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
+import life.mibo.hexa.models.session.Report
 import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
 import life.mibo.hexa.ui.base.BaseFragment
@@ -48,7 +49,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         }
         val adapter = HomeAdapter(list)
         //val manager = LinearLayoutManager(this@HomeFragment.activity)
-        val grid = GridLayoutManager(fragment.activity, 1)
+       // val grid = GridLayoutManager(fragment.activity, 1)
 //        grid.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
 //            override fun getSpanSize(position: Int): Int {
 //                var size = 1
@@ -67,8 +68,8 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
 
     fun getDashboard() {
-        val s : SessionReport? = Prefs.get(fragment.context).getJson(Prefs.SESSION, SessionReport::class.java)
-        if(s != null){
+        val s: Report? = Prefs.get(fragment.context).getJson(Prefs.SESSION, Report::class.java)
+        if (s?.sessionMemberReports != null) {
             parseData(s)
             return
         }
@@ -89,8 +90,10 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
                 val data = response.body()
                 if (data != null && data.status.equals("success")) {
-                    Prefs.get(fragment.context).settJson(Prefs.SESSION, data)
-                    parseData(data)
+                    if (data.report != null) {
+                        Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
+                        parseData(data.report!!)
+                    }
                 } else {
 
                     val err = data?.error?.get(0)?.message
@@ -103,18 +106,18 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         })
     }
 
-    fun parseData(report: SessionReport) {
+    fun parseData(report: Report) {
         val list = ArrayList<HomeItem>()
-        val data = report.report?.sessionMemberReports!!
+        val data = report?.sessionMemberReports
         list.add(
             HomeItem(
-                "Weight ", "" + report.report?.weight +" Kg",
+                "Weight ", "" + report.weight + " Kg",
                 HomeItem.Type.WEIGHT, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_4
             )
         )
         list.add(
             HomeItem(
-                "" + data.peakHr + " BPM", "",
+                "" + data?.peakHr + " BPM", "",
                 HomeItem.Type.HEART,
                 R.drawable.ic_rxl_heart_unselect,
                 R.drawable.dashboard_item_bg_5
@@ -131,7 +134,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Calories ", "" + data.caloriesBurnt,
+                "Calories ", "" + data?.caloriesBurnt,
                 HomeItem.Type.CALORIES, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_12
             )
         )
@@ -147,7 +150,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Programs", "",
-                HomeItem.Type.PROGRAMS, 0, R.drawable.dashboard_item_bg_6
+                HomeItem.Type.PROGRAMS, R.drawable.ic_nfc_black_24dp, R.drawable.dashboard_item_bg_6
             )
         )
         list.add(
@@ -162,7 +165,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Add Product", "",
-                HomeItem.Type.ADD, R.drawable.ic_plus_main, R.drawable.dashboard_item_bg_8
+                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
         observer.onDataRecieved(list)
@@ -210,7 +213,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             HomeItem(
                 "Programs",
                 intArrayOf(Color.parseColor("#0084E9"), Color.parseColor("#0C1E51")),
-                HomeItem.Type.PROGRAMS
+                HomeItem.Type.PROGRAMS, R.drawable.ic_dashboard_booster
             )
         )
         list.add(
@@ -224,7 +227,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             HomeItem(
                 "Add Product",
                 intArrayOf(Color.parseColor("#C9C8C8"), Color.parseColor("#393939")),
-                HomeItem.Type.ADD, R.drawable.ic_plus_main
+                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp
             )
         )
         observer.onDataRecieved(list)

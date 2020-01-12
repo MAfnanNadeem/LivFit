@@ -19,10 +19,19 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import life.mibo.hardware.core.Logger
+import life.mibo.hexa.R
+import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.models.session.Report
+import life.mibo.hexa.models.session.SessionDetails
+import life.mibo.hexa.models.session.SessionReport
 import life.mibo.hexa.models.weight.Data
 import life.mibo.hexa.utils.Constants
+import life.mibo.hexa.utils.Toasty
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -86,6 +95,8 @@ class ChartData {
                 chart.setNoDataTextColor(Constants.PRIMARY)
                 chart.setNoDataText("No Heart Rate Data Available")
                 chart.invalidate()
+                fetchHeartRateData(chart, type)
+                //getHeartRate(chart, type)
                 //noDataText?.visibility = View.GONE
                 return
                 //fetchHeartRateData()
@@ -99,7 +110,7 @@ class ChartData {
         }
         when (type) {
             0 -> {
-                loadChart(entries, chart, type, text)
+                loadChart(entries, chart, text)
             }
             1 -> {
                 chart.setNoDataTextColor(Constants.PRIMARY)
@@ -155,13 +166,12 @@ class ChartData {
         for (i in 1..20) {
             list.add(Entry(i.toFloat(), r.nextInt().toFloat()))
         }
-        loadChart(list, chart, type)
+        loadChart(list, chart)
     }
 
     fun loadChart(
         entries: ArrayList<Entry>?,
         chart: LineChart?,
-        type: Int = 0,
         legendText: String = ""
     ) {
         if (chart == null || entries == null) {
@@ -171,7 +181,7 @@ class ChartData {
         Logger.e("loadChart " + entries.size)
         if (entries.size == 0) {
             chart.setNoDataTextColor(Color.DKGRAY)
-            chart.setNoDataText("No Heart Rate")
+            chart.setNoDataText("No Data Available")
         }
 
         chart.description.isEnabled = false
@@ -369,6 +379,91 @@ class ChartData {
         chart.data = data
         chart.invalidate()
         Logger.e("loadChart chart.invalidate() ")
+    }
+
+    fun fetchHeartRateData(chart: LineChart?, type: Int) {
+        val member =
+            Prefs.get(chart?.context).getMember<Member?>(Member::class.java)
+                ?: return
+        //chart.getDialog()?.show()
+        val session = SessionDetails("${member.id}", member.accessToken)
+        API.request.getApi().getSessionDetails(session).enqueue(object : Callback<SessionReport> {
+            override fun onFailure(call: Call<SessionReport>, t: Throwable) {
+                //fragment.getDialog()?.dismiss()
+                t.printStackTrace()
+                Toasty.error(chart?.context!!, "Unable to connect").show()
+            }
+
+            override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
+
+                val data = response.body()
+                if (data != null && data.status.equals("success")) {
+                    Prefs.get(chart?.context).settJson(Prefs.SESSION, data.report)
+                    //parseData(data)
+                    val report: Report? = data.report
+                    if (report != null) {
+                        val entries = ArrayList<Entry>()
+                        var text = ""
+                        startDate = parseDate(report.sessionReports?.startDatetime)
+                        val end = parseDate(report.sessionReports?.endDatetime)
+
+
+                        text =
+                            report.sessionReports?.startDatetime + " - " + report.sessionReports?.endDatetime?.split(
+                                " "
+                            )?.get(1)
+
+                        var duration = report.sessionReports?.duration
+                        val list = report.heartRate
+                        if (list != null && list.size > 1) {
+                            list?.forEachIndexed { index, s ->
+                                entries.add(Entry(index.toFloat(), getFloar(s)))
+                            }
+
+                            timeThreshold = duration?.div(list.size) ?: 10
+                        }
+                        if (entries.isEmpty()) {
+                            chart?.setNoDataTextColor(Constants.PRIMARY)
+                            chart?.setNoDataText("No Heart Rate Data Available")
+                            chart?.invalidate()
+                            //fetchHeartRateData(chart, type)
+                            //getHeartRate(chart, type)
+                            //noDataText?.visibility = View.GONE
+                            return
+                            //fetchHeartRateData()
+                        } else {
+                            when (type) {
+                                0 -> {
+                                    loadChart(entries, chart, text)
+                                }
+                                1 -> {
+                                    chart?.setNoDataTextColor(Constants.PRIMARY)
+                                    chart?.setNoDataText("No Heart Rate Data Available")
+                                    chart?.invalidate()
+                                    //loadChart(entries, chart, type)
+                                }
+                                2 -> {
+                                    chart?.setNoDataTextColor(Constants.PRIMARY)
+                                    chart?.setNoDataText("No Heart Rate Data Available")
+                                    chart?.invalidate()
+                                    //loadChart(entries, chart, type)
+                                }
+                            }
+                        }
+
+
+
+                    }
+                } else {
+
+                    val err = data?.error?.get(0)?.message
+                    if (err.isNullOrEmpty())
+                        Toasty.error(chart?.context!!, R.string.error_occurred).show()
+                    else Toasty.error(chart?.context!!, err, Toasty.LENGTH_LONG).show()
+                }
+                //fragment.getDialog()?.dismiss()
+            }
+        })
     }
 
 }

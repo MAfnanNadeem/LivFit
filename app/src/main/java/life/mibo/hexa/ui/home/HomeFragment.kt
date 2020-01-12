@@ -10,11 +10,15 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_home.*
 import life.mibo.hexa.Navigator
+import life.mibo.hexa.Navigator.Companion.HOME_VIEW
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class HomeFragment : BaseFragment(), HomeObserver {
@@ -56,8 +60,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
             )
         )
         controller.getDashboard()
-
+        navigate(HOME_VIEW, true)
+        val format = SimpleDateFormat("EEE, dd MMM, yyyy")
         //controller.setRecycler(recyclerView!!)
+        textView2?.text = format.format(Date())
     }
 
     override fun onDataRecieved(list: ArrayList<HomeItem>) {
@@ -143,6 +149,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
     override fun onStop() {
         super.onStop()
         controller.onStop()
+        navigate(HOME_VIEW, false)
+
     }
 
 }

@@ -29,6 +29,10 @@
             android:id="@+id/nav_test3"
             android:icon="@drawable/ic_menu_manage"
             android:title="ReFlex2" />
+        <item
+            android:id="@id/navigation_rxl_test"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="RXL Test" />
     </group>
 
     <item android:title="Communicate">

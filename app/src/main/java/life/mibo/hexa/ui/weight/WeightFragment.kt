@@ -62,9 +62,10 @@ class WeightFragment : BaseFragment(), WeightObserver {
             weight_value.text = "${medical.weight} ${medical.weightUnit}"
             val weight: Double? = medical.weight?.toDouble()
             try {
-                val bmi: Double? = medical.height?.toDouble()?.div(100)
+                var bmi: Double? = medical.height?.toDouble()?.div(100)
+                bmi = bmi!!.times(bmi)
                 //tv_start_bmi.text = String.format("%.2f", weight?.div(bmi!!))
-                tv_bmi_value.text = String.format("%.2f", weight?.div(bmi!!))
+                tv_bmi_value.text = String.format("BMI: %.2f", weight?.div(bmi))
             } catch (e: Exception) {
                // tv_start_bmi.text = "0.0"
                 tv_bmi_value.text = "0.0"

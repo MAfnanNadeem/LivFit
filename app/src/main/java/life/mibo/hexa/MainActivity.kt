@@ -44,6 +44,7 @@ import life.mibo.hardware.network.CommunicationListener
 import life.mibo.hexa.Navigator.Companion.CONNECT
 import life.mibo.hexa.Navigator.Companion.DISCONNECT
 import life.mibo.hexa.Navigator.Companion.HOME
+import life.mibo.hexa.Navigator.Companion.HOME_VIEW
 import life.mibo.hexa.Navigator.Companion.SCAN
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
@@ -117,6 +118,11 @@ class MainActivity : BaseActivity(), Navigator {
                 Toasty.warning(this@MainActivity, "click $position")
             }
         }
+
+        bottomBarHelper.bind(bottom_bar)
+
+        drawer.menu.clear()
+        drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
     }
 
     private fun setDrawerIcon(drawer: DrawerLayout) {
@@ -162,6 +168,8 @@ class MainActivity : BaseActivity(), Navigator {
             return
         lastId = id
         isHome = false
+
+
         when (id) {
             R.id.nav_home -> {
                 navController.navigate(R.id.navigation_home, null, getNavOptiions())
@@ -218,6 +226,10 @@ class MainActivity : BaseActivity(), Navigator {
             }
             R.id.navigation_barcode -> {
                 navController.navigate(R.id.navigation_barcode, null, getNavOptiions())
+
+            }
+            R.id.navigation_rxl_test -> {
+                navController.navigate(R.id.navigation_rxl_test, null, getNavOptiions())
 
             }
             else -> {
@@ -706,10 +718,22 @@ class MainActivity : BaseActivity(), Navigator {
                 if (data != null && data is HomeItem)
                     homeItemClicked(data)
             }
+            HOME_VIEW -> {
+                if (data != null && data is Boolean)
+                    updateBar(data)
+            }
 
             R.id.navigation_barcode -> {
                 navigateTo(R.id.navigation_barcode)
             }
+        }
+    }
+
+    private fun updateBar(data: Boolean) {
+        if (data) {
+            bottomBarHelper.hide()
+        } else {
+            bottomBarHelper.show()
         }
     }
 
@@ -729,13 +753,13 @@ class MainActivity : BaseActivity(), Navigator {
                 navigateTo(R.id.navigation_calendar)
             }
             HomeItem.Type.SCHEDULE -> {
-                navigateTo(R.id.navigation_schedule)
+                // navigateTo(R.id.navigation_schedule)
             }
             HomeItem.Type.BOOSTER -> {
                 navigateTo(R.id.nav_ch6)
             }
             HomeItem.Type.PROGRAMS -> {
-                navigateTo(R.id.navigation_program)
+                //  navigateTo(R.id.navigation_program)
             }
             HomeItem.Type.CALORIES -> {
                 navigateTo(R.id.navigation_calories)

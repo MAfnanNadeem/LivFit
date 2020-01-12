@@ -50,6 +50,24 @@ class BottomBarHelper() : View.OnClickListener {
         unselect()
     }
 
+    fun hide() {
+        if(::barView.isInitialized)
+            barView.visibility = View.INVISIBLE
+
+    }
+
+    fun show() {
+        if(::barView.isInitialized)
+            barView.visibility = View.VISIBLE
+
+    }
+
+    lateinit var barView: View
+    fun bind(view: View?) {
+        if (view != null)
+            barView = view
+    }
+
     private fun select(position: Int) {
         unselect()
         when (position) {
@@ -78,4 +96,6 @@ class BottomBarHelper() : View.OnClickListener {
         item3?.setColorFilter(Color.GRAY)
         item4?.setColorFilter(Color.GRAY)
     }
+
+
 }

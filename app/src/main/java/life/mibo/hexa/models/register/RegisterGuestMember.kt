@@ -3,6 +3,7 @@ package life.mibo.hexa.models.register
 
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class RegisterGuestMember(
     @SerializedName("Data")
@@ -17,4 +18,4 @@ data class RegisterGuestMember(
     var timeStamp: String = "2019-12-10T04:49:11.6570000",
     @SerializedName("Version")
     var version: String = "1.0.0.0"
-)
+): BaseModel()

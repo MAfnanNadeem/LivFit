@@ -9,6 +9,7 @@ package life.mibo.hexa.models.weight
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class WeightAll(
     @SerializedName("ClientID")
@@ -25,7 +26,7 @@ data class WeightAll(
     var token: String?,
     @SerializedName("Version")
     var version: String?
-)
+): BaseModel()
 {
     constructor(userId: String, token: String?) : this(
         "Client1213", DataX(userId), "192.168.195.122", "AllWeight",

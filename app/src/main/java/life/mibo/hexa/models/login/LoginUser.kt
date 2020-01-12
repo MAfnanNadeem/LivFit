@@ -6,6 +6,7 @@ package life.mibo.hexa.models.login
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class LoginUser(
     @SerializedName("ClientID")
@@ -20,7 +21,7 @@ data class LoginUser(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) {
+): BaseModel() {
     constructor(username: String, password: String) : this(
         "Client1213",
         Data(username, password),

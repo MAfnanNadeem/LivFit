@@ -6,6 +6,7 @@ package life.mibo.hexa.models.session
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 import life.mibo.hexa.models.base.Error
 
 data class SessionReport(
@@ -15,4 +16,4 @@ data class SessionReport(
     var error: List<Error?>?,
     @SerializedName("status")
     var status: String?
-)
+): BaseModel()

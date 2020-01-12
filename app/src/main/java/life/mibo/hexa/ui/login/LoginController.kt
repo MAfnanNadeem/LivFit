@@ -41,10 +41,21 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         var pwd = password;
         if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
             //usr = "test@mibo.life"
-           // usr = "bini.albert@mibo.life"
+            //usr = "christie.ffrench@gmail.com"
             usr = "diana@gmail.com"
            // usr = "alisher@mibo.life"
             pwd = "123456"
+        }
+
+        if(usr.isNullOrEmpty())
+        {
+            Toasty.info(context, "Please enter username").show()
+            return
+        }
+        if(pwd.isNullOrEmpty())
+        {
+            Toasty.info(context, "Please enter password").show()
+            return
         }
 
         context.getDialog()?.show()

@@ -9,6 +9,7 @@ package life.mibo.hexa.models.user_details
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 import life.mibo.hexa.models.base.Error
 
 data class UserDetails(
@@ -18,4 +19,4 @@ data class UserDetails(
     var error: List<Error?>?,
     @SerializedName("status")
     var status: String?
-)
+): BaseModel()

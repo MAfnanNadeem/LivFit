@@ -8,6 +8,7 @@ package life.mibo.hexa.models.register
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import life.mibo.hexa.core.gson.AlwaysListTypeAdapterFactory
+import life.mibo.hexa.models.base.BaseModel
 import life.mibo.hexa.models.base.Error
 
 data class RegisterResponse(
@@ -18,4 +19,4 @@ data class RegisterResponse(
     var errors: List<Error>?,
     @SerializedName("status")
     var status: String?
-)
+): BaseModel()

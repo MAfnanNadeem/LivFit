@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/12/20 4:19 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/12/20 8:24 AM
+  ~  Mibo Hexa - app
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_ch6"
+            android:icon="@drawable/ic_nfc_black_24dp"
+            android:title="Six Channel" />
+        <item
+            android:id="@id/navigation_calendar"
+            android:icon="@drawable/ic_dashboard_calendar"
+            android:title="Calendar" />
+        <item
+            android:id="@id/navigation_add_product"
+            android:icon="@drawable/ic_add_circle_24dp"
+            android:title="Scan Product" />
+
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/menu_share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/menu_send" />
+        </menu>
+    </item>
+
+</menu>

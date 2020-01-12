@@ -6,6 +6,7 @@ package life.mibo.hexa.models.verify_number
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class VerifyResponse(
     @SerializedName("data")
@@ -14,4 +15,4 @@ data class VerifyResponse(
     var errors: Any??,
     @SerializedName("status")
     var status: String?
-)
+): BaseModel()

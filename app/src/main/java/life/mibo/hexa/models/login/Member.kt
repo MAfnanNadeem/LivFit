@@ -6,6 +6,7 @@ package life.mibo.hexa.models.login
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.models.base.BaseModel
 
 data class Member(
     @SerializedName("access_token")
@@ -38,7 +39,7 @@ data class Member(
     var province: Any?,
     @SerializedName("token_type")
     var tokenType: String?
-)
+): BaseModel()
 {
     fun id() : String{
         return id.toString()

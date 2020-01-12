@@ -2,7 +2,7 @@ package life.mibo.hexa.models.base
 
 import com.google.gson.annotations.SerializedName
 
-open class PostModel(
+open class PostDataModel(
     @SerializedName("Data")
     var `data`: Any?,
     @SerializedName("ClientID")
@@ -18,8 +18,8 @@ open class PostModel(
 ) : BaseModel() {
 
     companion object {
-        fun create(any: Any): PostModel {
-            return PostModel(any)
+        fun create(any: Any): PostDataModel {
+            return PostDataModel(any)
         }
     }
 }

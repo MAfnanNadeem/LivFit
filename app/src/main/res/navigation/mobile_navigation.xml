@@ -84,6 +84,12 @@
         android:name="life.mibo.hexa.ui.barcode.BarcodeFragment"
         android:label="Scan Product"
         tools:layout="@layout/fragment_add_product" />
+
+    <fragment
+        android:id="@+id/navigation_rxl_test"
+        android:name="life.mibo.hexa.ui.rxl.RxlTestFragment"
+        android:label="Scan Product"
+        tools:layout="@layout/fragment_add_product" />
     <fragment
         android:id="@+id/navigation_heart_rate"
         android:name="life.mibo.hexa.ui.heart_rate.HeartRateFragment"

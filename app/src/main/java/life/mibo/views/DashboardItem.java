@@ -46,12 +46,14 @@ public class DashboardItem extends FrameLayout {
 
     private int imageRes, iconRes, textRes;
     private CharSequence text;
+    private int gravity_ = -1;
 
     private void init(Context context, @Nullable AttributeSet attrs) {
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.DashboardItem);
         imageRes = array.getResourceId(R.styleable.DashboardItem_item_image, 0);
         iconRes = array.getResourceId(R.styleable.DashboardItem_item_icon, 0);
         textRes = array.getResourceId(R.styleable.DashboardItem_item_text, 0);
+        gravity_ = array.getInteger(R.styleable.DashboardItem_item_gravity, -1);
         text = array.getText(R.styleable.DashboardItem_item_text);
         array.recycle();
 
@@ -67,6 +69,12 @@ public class DashboardItem extends FrameLayout {
             iconView.setImageResource(iconRes);
         if (text != null)
             textView.setText(text);
+
+//        if (gravity_ == 0) {
+//            imageView.setScaleType(ImageView.ScaleType.FIT_START);
+//        } else if (gravity_ == 1) {
+//            imageView.setScaleType(ImageView.ScaleType.FIT_END);
+//        }
     }
 
     public void set(int image, int icon, String title, String header) {

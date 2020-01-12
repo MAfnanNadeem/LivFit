@@ -6,7 +6,7 @@ abstract class BaseModel {
 //        create()
 //    }
 
-    open fun create(): PostModel {
-        return PostModel.create(this)
-    }
+//    open fun create(): PostDataModel {
+//        return PostDataModel.create(this)
+//    }
 }

@@ -277,7 +277,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
         if ((password.trim() == cPassword.trim())) {
             if (!isValidPassword(password)) {
-                Toasty.warning(context, getString(R.string.password_requirement), Toast.LENGTH_LONG)
+                Toasty.warning(context, getString(R.string.password_requirement), Toast.LENGTH_LONG, false)
                     .show()
                 return
             }

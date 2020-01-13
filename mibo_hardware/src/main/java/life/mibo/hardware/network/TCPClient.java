@@ -164,7 +164,7 @@ public class TCPClient {
                         while (isRunning) {
 
                             int bytesNum = mBufferIn.available();
-
+                            Logger.e("TCPClient MessageReceived bytesNum " +bytesNum);
                             if (bytesNum >= MIN_COMMAND_LENGHT) {
                                 // Log.e("runtcp", "num "+bytesNum);
                                 serverMessage = new byte[bytesNum];

@@ -33,6 +33,10 @@
             android:id="@id/navigation_rxl_test"
             android:icon="@drawable/ic_menu_manage"
             android:title="RXL Test" />
+        <item
+            android:id="@id/navigation_barcode"
+            android:icon="@drawable/ic_add_circle_24dp"
+            android:title="Scan Product" />
     </group>
 
     <item android:title="Communicate">

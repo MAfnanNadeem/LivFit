@@ -78,7 +78,7 @@
     <style name="dashboard_item">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:visibility">gone</item>
+        <item name="android:visibility">visible</item>
     </style>
 
 

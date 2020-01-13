@@ -32,4 +32,5 @@
     <string name="confirm_password_not_matched">Confirm Password not matched</string>
     <string name="password_requirement">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
     <string name="error_occurred">An error occurred</string>
+    <string name="scan_devices">Scan Devices</string>
 </resources>

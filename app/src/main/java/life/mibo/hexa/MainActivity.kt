@@ -15,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
@@ -53,6 +54,7 @@ import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
 import life.mibo.hexa.ui.home.HomeItem
+import life.mibo.hexa.ui.login.LoginActivity
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
@@ -62,7 +64,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : BaseActivity(), Navigator {
 
     //private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var navController: NavController
+    lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
     private var bottomBarHelper = BottomBarHelper()
     //private var navigator: ScreenNavigator? = null
@@ -121,8 +123,10 @@ class MainActivity : BaseActivity(), Navigator {
 
         bottomBarHelper.bind(bottom_bar)
 
-        drawer.menu.clear()
-        drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
+        if (!BuildConfig.DEBUG) {
+            drawer.menu.clear()
+            drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
+        }
     }
 
     private fun setDrawerIcon(drawer: DrawerLayout) {
@@ -231,6 +235,10 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_rxl_test -> {
                 navController.navigate(R.id.navigation_rxl_test, null, getNavOptiions())
 
+            }
+            R.id.nav_logout -> {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
             }
             else -> {
                 //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
@@ -347,8 +355,8 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun udpDeviceReceiver(msg: ByteArray?, ip: InetAddress?) {
                 log("udpDeviceReceiver " + String(msg!!))
-                EventBus.getDefault()
-                    .post(NewDeviceDiscoveredEvent(ip))
+                //EventBus.getDefault().post(NewDeviceDiscoveredEvent(ip))
+
                 }
 
             override fun onConnectionStatus(getname: String?) {
@@ -567,7 +575,7 @@ class MainActivity : BaseActivity(), Navigator {
         //Log.e("commManager", "Receiver ASYNC Pause");
     }
 
-    fun checkDeviceStatus(user: UserSession, status: BooleanArray, uid: String?) {
+    private fun checkDeviceStatus(user: UserSession, status: BooleanArray, uid: String?) {
         logw("checkDeviceStatus wifi " + status[0] + " ble " + status[1] + " program " + status[2] + " runn " + status[3] + " color " + status[4])
 
         if (user.currentSessionStatus == 2 || user.currentSessionStatus == 1) {
@@ -579,11 +587,11 @@ class MainActivity : BaseActivity(), Navigator {
                         .postSticky(SendProgramEvent(user.currentSessionProgram, uid));
                 }
                 if (!status[4]) {//check if color if (listener != null)
-                    Logger.w("checkDeviceStatus ChangeColorEvent")
+                    logw("checkDeviceStatus ChangeColorEvent")
                     EventBus.getDefault().postSticky(ChangeColorEvent(user.device, uid));
                 }
                 if (status[3]) {//check if run
-
+                    //logw("checkDeviceStatus status is 3")
                 }
                 if (status.size >= 6) {
                     if (!status[5]) {//check if channels are loaded
@@ -697,6 +705,7 @@ class MainActivity : BaseActivity(), Navigator {
             })
     }
 
+    // TODO Call
     override fun navigateTo(type: Int, data: Any?) {
         log("Call $type || $data")
         when (type) {
@@ -723,8 +732,8 @@ class MainActivity : BaseActivity(), Navigator {
                     updateBar(data)
             }
 
-            R.id.navigation_barcode -> {
-                navigateTo(R.id.navigation_barcode)
+            else -> {
+                navigateTo(type)
             }
         }
     }
@@ -798,17 +807,26 @@ class MainActivity : BaseActivity(), Navigator {
         manager?.onDestroy()
     }
 
+    val TIME_INTERVAL = 2000
+    var mBackPressed: Long = 0;
+
     var isHome = false
     override fun onBackPressed() {
         if (navController.navigateUp())
             return
 //        if (navController.popBackStack(R.id.navigation_home, true))
 //            return;
+        isHome = true
         if (isHome) {
-            super.onBackPressed()
+            if (mBackPressed + 2000 > System.currentTimeMillis()) {
+                super.onBackPressed()
+                return
+            }
+            Toasty.info(this, "Tap back again to exit", Toast.LENGTH_SHORT, false).show()
+            mBackPressed = System.currentTimeMillis();
             return
         }
-        navigateTo(R.id.nav_home)
+        //navigateTo(R.id.nav_home)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

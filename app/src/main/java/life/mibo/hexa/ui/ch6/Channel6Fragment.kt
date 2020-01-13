@@ -2,9 +2,7 @@ package life.mibo.hexa.ui.ch6
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +43,7 @@ class Channel6Fragment : BaseFragment() {
         //setRecycler(recyclerView!!)
         //retainInstance = true
         //SessionManager.getInstance().session = Session()
+        setHasOptionsMenu(true)
         return root
     }
 
@@ -134,6 +133,19 @@ class Channel6Fragment : BaseFragment() {
         EventBus.getDefault().unregister(this)
         controller.onStop()
         super.onStop()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_channel_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.item_scan){
+            navigate(R.id.nav_scan, null)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     interface Listener {

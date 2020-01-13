@@ -89,5 +89,6 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     private fun loginSucceed() {
         context.startActivity(Intent(context, MainActivity::class.java))
+        context.finish()
     }
 }

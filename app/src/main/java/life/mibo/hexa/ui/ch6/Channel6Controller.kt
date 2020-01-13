@@ -78,7 +78,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         }
 
         if (!isConnected)
-            Toasty.error(this.fragment.context!!, "Device is not connected!").show()
+            Toasty.info(this.fragment.context!!, "Device is not connected!", Toasty.LENGTH_SHORT, false).show()
 
     }
 
@@ -97,8 +97,11 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     override fun onMainPlayClicked() {
-        if (isConnected)
+        if (isConnected) {
             startUserSession(userUid)
+        } else {
+            Toasty.info(this.fragment.context!!, "No device found!", Toasty.LENGTH_SHORT, false).show()
+        }
     }
 
     override fun onMainStopClicked() {
@@ -139,7 +142,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         list.add(Channel6Model(1, R.drawable.ic_channel_back_neck, 0, 0))
         list.add(Channel6Model(2, R.drawable.ic_channel_glutes, 0, 0))
         list.add(Channel6Model(3, R.drawable.ic_channel_thighs, 0, 0))
-        list.add(Channel6Model(4, R.drawable.ic_channel_abdomen, 1, 2))
+        list.add(Channel6Model(4, R.drawable.ic_channel_abdomen, 0, 0))
         list.add(Channel6Model(5, R.drawable.ic_channel_chest, 0, 0))
         list.add(Channel6Model(6, R.drawable.ic_channel_biceps, 0, 0))
 

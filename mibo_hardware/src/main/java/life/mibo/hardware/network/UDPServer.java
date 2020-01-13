@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 import life.mibo.hardware.constants.CommunicationsConfig;
+import life.mibo.hardware.core.Logger;
 
 /**
  * Created by Fer on 19/03/2019.
@@ -54,6 +55,7 @@ public class UDPServer {
                     DatagramSocket socket = new DatagramSocket(null);
                     socket.setReuseAddress(true);
                     socket.bind(new InetSocketAddress(PortReceive));
+                    Logger.e("UDPServer " + socket);
                     while (UDPRunning) {
                         DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
                         socket.receive(msgPacket);
@@ -68,7 +70,8 @@ public class UDPServer {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } catch (Exception e) {
-                Log.e("udp", "Error", e);
+                    e.printStackTrace();
+                    Logger.e("udp", "Error", e);
                      }
             }
         };

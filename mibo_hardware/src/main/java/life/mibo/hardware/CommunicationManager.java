@@ -63,12 +63,13 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
+import static life.mibo.hardware.models.DeviceTypes.RXL;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 /**
  * Created by Fer on 18/03/2019.
- * @author by Sumeet Gehi on 17/12/2019.
+ * updated by Sumeet Kumar on 17/12/2019.
  *
  */
 
@@ -205,7 +206,7 @@ public class CommunicationManager {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public synchronized void startScanning(final Activity context, boolean isWifi) {
         this.isWifi = isWifi;
-
+        log("Starting scanning...." + isWifi);
         if (isWifi)
             scanWifi(context);
         else
@@ -220,13 +221,14 @@ public class CommunicationManager {
                 public void broadcastReceived(byte[] msg, InetAddress ip) {
                     if (listener != null)
                         listener.udpDeviceReceiver(msg, ip);
-                    log("udpDeviceReceiver " + msg + " IP " + ip);
+                    log("udpDeviceReceiver " + new String(msg) + " IP " + ip);
                     // TODO remove later broadcastConsumer
-                    broadcastConsumer(msg, ip);
+                    //broadcastConsumer(msg, ip);
                     SessionManager manager = SessionManager.getInstance();
                     if (manager.getSession() != null) {
                         if (manager.getSession().isBoosterMode()) {// true wifi mode
                             broadcastConsumer(msg, ip);
+                            log("Session Manager Boosted Mode");
                         } else {
                             log("Session Manager No Boosted Mode " + manager);
                         }
@@ -340,9 +342,11 @@ public class CommunicationManager {
     }
 
     private void broadcastConsumer(byte[] message, InetAddress ip) {
-        Logger.e("broadcastConsumer Manager is NULL " + manager);
-
+        Logger.e("broadcastConsumer encrypted " + Arrays.toString(message));
+        debugCommands("broadcastConsumer", message);
         Encryption.mbp_decrypt(message, message.length);
+        Logger.e("broadcastConsumer decrypted " + Arrays.toString(message));
+        debugCommands("broadcastConsumer", message);
         //Encryption.mbp_encrypt(message, message.length);
         if (message.length >= MIN_COMMAND_LENGHT + 3) {
             for (int i = 0; i < message.length; i++) {
@@ -360,6 +364,41 @@ public class CommunicationManager {
                 }
             }
         }
+        Logger.e("broadcastConsumer ended -------- ");
+    }
+
+    private void debugCommands(String tag, byte[] msg) {
+        if (msg == null)
+            return;
+        int count = msg.length - 1;
+        if (count == -1)
+            return;
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append((char) msg[i]);
+            if (i == count) {
+                b.append(']').toString();
+                break;
+            }
+            b.append(", ");
+        }
+
+        Logger.i("CommunicationManager", "debugCommands " + new String(msg));
+        Logger.i("CommunicationManager", "debugCommands2 " + tag + " : " + b);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            Arrays.stream(msg);
+//            StreamSupport.stream(Spliterators.spliterator(msg, Character.toLowerCase('a'), Character.toLowerCase('a'), Spliterator.ORDERED | Spliterator.IMMUTABLE))
+//
+//            StreamSupport.intStream(new Streams.RangeIntSpliterator(startInclusive, endInclusive, true), false);
+//        }
+//            char[] chars = IntStream.rangeClosed('a', 'z')
+//                   .mapToObj(c -> Character.toString((char) c))
+//                   .collect(Collectors.joining())
+//                   .toCharArray();
+//        }
     }
 
     private void bleHrDiscoverConsumer(String uid, String serial) {
@@ -460,7 +499,7 @@ public class CommunicationManager {
 
     }
 
-    public synchronized void add(Device device) {
+    private synchronized void add(Device device) {
         log("mDiscoveredDevices Add Device............. --- " + device);
         if (mDiscoveredDevices == null)
             mDiscoveredDevices = new ArrayList<>();
@@ -481,7 +520,7 @@ public class CommunicationManager {
         }
     }
 
-    public void addDeviceToDiscoveredDevices(Device device) {
+    private void addDeviceToDiscoveredDevices(Device device) {
         log("addDeviceToDiscoveredDevices --- " + device);
         boolean newDevice = true;
         for (Device d : mDiscoveredDevices) {
@@ -538,6 +577,11 @@ public class CommunicationManager {
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == SCALE) {
             SessionManager.getInstance().getSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+        } else if (device.getType() == RXL) {
+            log("device connect " + device.getIp());
+            connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid());
+            SessionManager.getInstance().getSession().addConnectedDevice(device);
+            device.setStatusConnected(DEVICE_CONNECTING);
         }
 
     }
@@ -872,7 +916,23 @@ public class CommunicationManager {
         }
         if (bluetoothManager != null)
             bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        Log.e("CommManager", "Color EVENT");
+
+    }
+
+
+    public void onChangeColorEventRxl(ChangeColorEvent event) {
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+            }
+        }
+        if (bluetoothManager != null)
+            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
+                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         Log.e("CommManager", "Color EVENT");
 

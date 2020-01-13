@@ -19,6 +19,7 @@ import life.mibo.hexa.core.hasCameraPermission
 import life.mibo.hexa.core.isPermissionGranted
 import life.mibo.hexa.core.requestCameraPermission
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.utils.Toasty
 
 class BarcodeFragment : BaseFragment(), BarcodeResultListener {
 
@@ -75,11 +76,12 @@ class BarcodeFragment : BaseFragment(), BarcodeResultListener {
     }
 
     override fun onBarcodeResult(result: com.google.zxing.Result): Boolean {
-        if ((parentFragment as? BarcodeResultListener)?.onBarcodeResult(result) == true) {
-            return true
-        } else if ((activity as? BarcodeResultListener)?.onBarcodeResult(result) == true) {
-            return true
-        }
+//        if ((parentFragment as? BarcodeResultListener)?.onBarcodeResult(result) == true) {
+//            return true
+//        } else if ((activity as? BarcodeResultListener)?.onBarcodeResult(result) == true) {
+//            return true
+//        }
+        Toasty.info(this.context!!, result.text, Toasty.LENGTH_LONG, false).show()
         return false
     }
 

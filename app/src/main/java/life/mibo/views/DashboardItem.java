@@ -70,11 +70,11 @@ public class DashboardItem extends FrameLayout {
         if (text != null)
             textView.setText(text);
 
-//        if (gravity_ == 0) {
-//            imageView.setScaleType(ImageView.ScaleType.FIT_START);
-//        } else if (gravity_ == 1) {
-//            imageView.setScaleType(ImageView.ScaleType.FIT_END);
-//        }
+        if (gravity_ == 0) {
+            imageView.setScaleType(ImageView.ScaleType.FIT_START);
+        } else if (gravity_ == 1) {
+            imageView.setScaleType(ImageView.ScaleType.FIT_END);
+        }
     }
 
     public void set(int image, int icon, String title, String header) {
@@ -110,8 +110,12 @@ public class DashboardItem extends FrameLayout {
         //int actualWidth = w / 2;
         //int actualHeight = h / 2;
         //setImageView(actualWidth, actualHeight);
-
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+       // setMeasuredDimension(width|MeasureSpec.EXACTLY, height|MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+    }
 }

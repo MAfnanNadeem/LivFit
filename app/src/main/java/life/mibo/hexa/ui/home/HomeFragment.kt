@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_home.*
 import life.mibo.hexa.Navigator
 import life.mibo.hexa.Navigator.Companion.HOME_VIEW
@@ -18,8 +17,9 @@ import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-
+import android.util.DisplayMetrics
+import androidx.recyclerview.widget.LinearLayoutManager
+import life.mibo.hexa.utils.Toasty
 
 class HomeFragment : BaseFragment(), HomeObserver {
 
@@ -29,7 +29,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private lateinit var controller: HomeController
     private lateinit var homeViewModel: HomeViewModel
-    var recyclerView: RecyclerView? = null
+    //var recyclerView: RecyclerView? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
@@ -41,6 +41,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
             //  textView.text = it
         })
 
+        log("onCreateView")
         //recyclerView = root.findViewById(R.id.hexagonRecycler) as HexagonRecyclerView
         //recyclerView = root.findViewById(R.id.hexagonRecycler)
         // setRecycler(recyclerView!!)
@@ -49,6 +50,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        log("onViewCreated")
         controller = HomeController(this@HomeFragment, this)
         //iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
         val member: Member? = Prefs.get(this.context)?.getMember(Member::class.java)
@@ -67,6 +69,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     override fun onDataRecieved(list: ArrayList<HomeItem>) {
+        log("onDataReceived $list")
         getDialog()?.dismiss()
         list.forEachIndexed { i, item ->
             when (i) {
@@ -76,8 +79,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
                     item.bind(iv_dashboard_item_1, this)
                 }
                 1 -> {
+                    log("onDataReceived when 2")
                     iv_dashboard_item_2.visibility = View.VISIBLE
                     item.bind(iv_dashboard_item_2, this)
+                    iv_dashboard_item_2.visibility = View.VISIBLE
                 }
                 2 -> {
                     iv_dashboard_item_3.visibility = View.VISIBLE
@@ -118,7 +123,24 @@ class HomeFragment : BaseFragment(), HomeObserver {
                 }
             }
         }
-
+        log("onDataReceived when again 2 "+iv_dashboard_item_2.visibility)
+//        log("onDataReceived when again 2 "+iv_dashboard_item_10.visibility)
+//        constraintLayout2.visibility = View.VISIBLE
+//        iv_dashboard_item_2.visibility = View.VISIBLE
+//
+//        val metrics = resources.displayMetrics
+//        val w = metrics.widthPixels
+//
+//        //val m = DisplayMetrics()
+//        //activity!!.windowManager.defaultDisplay.getMetrics(m)
+//
+//        Toasty.info(this@HomeFragment.context!!, "DPI ${metrics.density} - ${metrics.density.times(160f)}  $w ").show()
+//
+//        constraintLayout2.invalidate()
+//        parent_constraint.invalidate()
+//        //(activity as MainActivity).supportFragmentManager!!.beginTransaction().detach(this).attach(this).commit()
+//        //(activity as MainActivity).navController?.
+//        testHexa(metrics.widthPixels.div(3))
     }
 
     override fun onItemClicked(item: HomeItem?) {
@@ -145,12 +167,28 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //        }
     }
 
+    fun testHexa(size: Int) {
+        val list = ArrayList<HomeItem>();
+        for (i in 1..20
+        ) {
+            list.add(HomeItem(0, "$i"))
+        }
+        val adapter = HomeAdapter(list, size)
+
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
+    }
 
     override fun onStop() {
+        log("onStop")
         super.onStop()
         controller.onStop()
         navigate(HOME_VIEW, false)
+    }
 
+    override fun onStart() {
+        log("onStart")
+        super.onStart()
     }
 
 }

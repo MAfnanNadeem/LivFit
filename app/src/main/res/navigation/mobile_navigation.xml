@@ -83,7 +83,7 @@
         android:id="@+id/navigation_barcode"
         android:name="life.mibo.hexa.ui.barcode.BarcodeFragment"
         android:label="Scan Product"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_barcode" />
 
     <fragment
         android:id="@+id/navigation_rxl_test"

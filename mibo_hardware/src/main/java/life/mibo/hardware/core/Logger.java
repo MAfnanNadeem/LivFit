@@ -7,7 +7,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import life.mibo.hardware.MIBO;
@@ -72,6 +76,34 @@ public class Logger {
             Log.v(tag, msg);
     }
 
+    public static void save(Throwable throwable) {
+        try {
+            File logFile = new File(MIBO.getContext().getExternalFilesDir(null), "" + new SimpleDateFormat("yyyy-MM-dd").format(new Date() + ".txt"));
+            if (!logFile.exists()) {
+                try {
+                    logFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                throwable.printStackTrace(pw);
+
+                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+                buf.append("MIBO "+ DateFormat.getDateTimeInstance().format(new Date()));
+                buf.append(sw.getBuffer());
+                buf.newLine();
+                buf.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "error in save file ", e);
+            saveLogcatToFile(MIBO.getContext());
+        }
+    }
     public static void save(String tag, String msg) {
         try {
             File logFile = new File(MIBO.getContext().getExternalFilesDir(null), "" + new SimpleDateFormat("yyyy-MM-dd").format(new Date() + ".txt"));
@@ -107,7 +139,7 @@ public class Logger {
             Process process = Runtime.getRuntime().exec("logcat -df " + outputFile.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
-            android.util.Log.e(TAG, "error in saveLogcatToFile ", e);
+            //android.util.Log.e(TAG, "error in saveLogcatToFile ", e);
 
         }
     }

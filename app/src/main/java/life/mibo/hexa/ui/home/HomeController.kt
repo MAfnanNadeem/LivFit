@@ -49,7 +49,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         }
         val adapter = HomeAdapter(list)
         //val manager = LinearLayoutManager(this@HomeFragment.activity)
-       // val grid = GridLayoutManager(fragment.activity, 1)
+       //  val grid = GridLayoutManager(fragment.activity, 1)
 //        grid.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
 //            override fun getSpanSize(position: Int): Int {
 //                var size = 1
@@ -91,9 +91,11 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 val data = response.body()
                 if (data != null && data.status.equals("success")) {
                     if (data.report != null) {
+                        fragment.log("getDashboard onResponse data.report not null")
                         Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
                         parseData(data.report!!)
                     }
+                    fragment.log("getDashboard onResponse data.report")
                 } else {
 
                     val err = data?.error?.get(0)?.message
@@ -107,6 +109,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     }
 
     fun parseData(report: Report) {
+        fragment.log("parseData onDataReceived $report")
         val list = ArrayList<HomeItem>()
         val data = report?.sessionMemberReports
         list.add(

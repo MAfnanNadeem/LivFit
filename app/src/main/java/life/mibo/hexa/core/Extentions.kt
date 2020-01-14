@@ -6,9 +6,14 @@ import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
 import android.util.AttributeSet
+import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 import com.google.gson.Gson
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
@@ -71,5 +76,19 @@ internal class Debouncer(
         }
     } else {
         null
+    }
+}
+
+fun NavController.navigateSafe(
+    @IdRes actionId: Int, @IdRes fragmentId: Int, args: Bundle? = null,
+    navOptions: NavOptions? = null, navExtras: Navigator.Extras? = null
+) {
+    val action = currentDestination?.getAction(actionId) ?: graph.getAction(actionId)
+    if (action != null && currentDestination?.id != action.destinationId) {
+        navigate(actionId, args, navOptions, navExtras)
+    } else {
+       // navigateUp()
+        //popBackStack()
+        navigate(fragmentId, args, navOptions, navExtras)
     }
 }

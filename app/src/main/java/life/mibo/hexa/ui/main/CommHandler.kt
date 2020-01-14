@@ -1,4 +1,11 @@
-package life.mibo.hexa
+/*
+ *  Created by Sumeet Kumar on 1/14/20 4:45 PM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 12/29/19 12:18 PM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.hexa.ui.main
 
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager

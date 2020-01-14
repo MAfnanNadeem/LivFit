@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -284,6 +285,7 @@ public class Toasty {
     public static Toast custom(@NonNull Context context, @NonNull CharSequence message, Drawable icon,
                                @ColorInt int tintColor, @ColorInt int textColor, int duration,
                                boolean withIcon, boolean shouldTint) {
+
         final Toast currentToast = Toast.makeText(context, "", duration);
         final View toastLayout = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.toast_layout, null);

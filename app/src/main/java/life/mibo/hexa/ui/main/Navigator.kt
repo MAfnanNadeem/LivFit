@@ -1,6 +1,6 @@
-package life.mibo.hexa
+package life.mibo.hexa.ui.main
 
-interface Navigator {
+public interface Navigator {
     companion object {
         var CONNECT = 101;
         var DISCONNECT = 102;

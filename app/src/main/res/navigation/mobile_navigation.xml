@@ -8,8 +8,30 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="life.mibo.hexa.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:label="@string/title_home">
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_program"
+            app:destination="@id/navigation_program" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_calories"
+            app:destination="@id/navigation_calories" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_weight"
+            app:destination="@id/navigation_weight" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_heart_rate"
+            app:destination="@id/navigation_heart_rate" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_calendar"
+            app:destination="@id/navigation_calendar" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_add_product"
+            app:destination="@id/navigation_add_product" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_six_channel"
+            app:destination="@id/navigation_channels" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -51,13 +73,7 @@
         android:id="@+id/navigation_add_product"
         android:name="life.mibo.hexa.ui.add_product.AddProductFragment"
         android:label="Add Product"
-        tools:layout="@layout/fragment_add_product">
-        <action
-            android:id="@+id/action_navigation_heart_rate_to_navigation_home"
-            app:destination="@id/navigation_home"
-            app:popUpTo="@+id/navigation_home"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_add_product" />
     <fragment
         android:id="@+id/navigation_program"
         android:name="life.mibo.hexa.ui.programs.ProgramFragment"
@@ -67,17 +83,17 @@
         android:id="@+id/navigation_calories"
         android:name="life.mibo.hexa.ui.calories.CaloriesFragment"
         android:label="Calories"
-        tools:layout="@layout/fragment_programs" />
+        tools:layout="@layout/fragment_calories" />
     <fragment
         android:id="@+id/navigation_schedule"
         android:name="life.mibo.hexa.ui.schedule.ScheduleFragment"
         android:label="Schedule/Book"
-        tools:layout="@layout/fragment_programs" />
+        tools:layout="@layout/fragment_calendar" />
     <fragment
         android:id="@+id/navigation_calendar"
         android:name="life.mibo.hexa.ui.calendar.CalendarFragment"
         android:label="Calendar"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_calendar" />
 
     <fragment
         android:id="@+id/navigation_barcode"
@@ -101,11 +117,5 @@
         android:id="@+id/navigation_weight"
         android:name="life.mibo.hexa.ui.weight.WeightFragment"
         android:label="Weight"
-        tools:layout="@layout/fragment_hr_tab1">
-        <action
-            android:id="@+id/action_navigation_heart_rate_to_navigation_home"
-            app:destination="@id/navigation_home"
-            app:popUpTo="@+id/navigation_home"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_weight" />
 </navigation>

@@ -49,7 +49,7 @@ import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_CO
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_DEVICE_COLOR_RESPONSE;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_MAIN_LEVEL_RESPONSE;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_START_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGHT;
+import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGTH;
 import static life.mibo.hardware.constants.CommunicationsConfig.TCP_PORT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
@@ -385,7 +385,7 @@ public class CommunicationManager2 {
 
         Encryption.mbp_decrypt(message, message.length);
         //Encryption.mbp_encrypt(message, message.length);
-        if (message.length >= MIN_COMMAND_LENGHT + 3) {
+        if (message.length >= MIN_COMMAND_LENGTH + 3) {
             for (int i = 0; i < message.length; i++) {
                 if (message[i] == 77 && message[i + 1] == 73 &&
                         message[i + 2] == 66 && message[i + 3] == 79) {
@@ -642,7 +642,7 @@ public class CommunicationManager2 {
 
     private void messageConsumer(byte[] message, String uid) {//lento?
         Encryption.mbp_decrypt(message, message.length);
-        if (message.length >= MIN_COMMAND_LENGHT) {
+        if (message.length >= MIN_COMMAND_LENGTH) {
             // log("consummer lenght "+message.length);
             try {
                 for (int i = 0; i < message.length; i++) {

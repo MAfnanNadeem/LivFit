@@ -1,20 +1,18 @@
-package life.mibo.hexa
+/*
+ *  Created by Sumeet Kumar on 1/14/20 4:45 PM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 1/13/20 8:49 AM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.hexa.ui.main
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageInfo
 import coil.util.CoilLogger
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.hardware.MIBO
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.os.Build
-import android.os.Environment
 import life.mibo.hardware.core.Logger
-import java.io.File
-import java.io.FileWriter
-import java.io.InputStreamReader
-import java.lang.Exception
 
 
 class MiboApplication : Application() {

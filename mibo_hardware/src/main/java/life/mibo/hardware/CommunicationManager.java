@@ -52,7 +52,7 @@ import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_CO
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_DEVICE_COLOR_RESPONSE;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_MAIN_LEVEL_RESPONSE;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_START_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGHT;
+import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGTH;
 import static life.mibo.hardware.constants.CommunicationsConfig.TCP_PORT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
@@ -63,7 +63,7 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
-import static life.mibo.hardware.models.DeviceTypes.RXL;
+import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
@@ -308,6 +308,10 @@ public class CommunicationManager {
         Logger.e("CommunicationManager: " + s);
     }
 
+    private void logi(String s) {
+        Logger.e("CommunicationManager: " + s);
+    }
+
     public void stopScanning() {
         log("Stopping scanning....");
         stopUDPDiscoveryServer();
@@ -342,34 +346,47 @@ public class CommunicationManager {
     }
 
     private void broadcastConsumer(byte[] message, InetAddress ip) {
-        Logger.e("broadcastConsumer encrypted " + Arrays.toString(message));
+        log("broadcastConsumer encrypted " + Arrays.toString(message));
         debugCommands("broadcastConsumer", message);
         Encryption.mbp_decrypt(message, message.length);
-        Logger.e("broadcastConsumer decrypted " + Arrays.toString(message));
+        log("broadcastConsumer decrypted " + Arrays.toString(message));
         debugCommands("broadcastConsumer", message);
         //Encryption.mbp_encrypt(message, message.length);
-        if (message.length >= MIN_COMMAND_LENGHT + 3) {
+        logi("broadcastConsumer parse start ----------------- ");
+        if (message.length >= MIN_COMMAND_LENGTH + 3) {
+            logi("MIN_COMMAND_LENGTH passed");
             for (int i = 0; i < message.length; i++) {
-                if (message[i] == 77 && message[i + 1] == 73 &&
-                        message[i + 2] == 66 && message[i + 3] == 79) {
+                if (message[i] == 77 && message[i + 1] == 73 && message[i + 2] == 66 && message[i + 3] == 79) {
                     if (message.length > (i + message[i + 6] + 8)) {
                         byte[] command = new byte[message[i + 6] + 2];
                         for (int j = 0; j < message[i + 6] + 2; j++) {
                             command[j] = message[i + 5 + j];
                         }
 
-                        log("broadcastConsumer checkNewDevice " + ip);
-                        checkNewDevice2(command, ip);
+                        logi("broadcastConsumer checkBoosterDevice " + ip);
+                        checkBoosterDevice(command, ip);
+                    }
+                } else if (message[i] == 77 && message[i + 1] == 66 && message[i + 2] == 82 && message[i + 3] == 88 && message[i + 4] == 76) {
+                    if (message.length > (i + message[i + 6] + 8)) {
+                        byte[] command = new byte[message[i + 6] + 2];
+                        for (int j = 0; j < message[i + 6] + 2; j++) {
+                            command[j] = message[i + 5 + j];
+                        }
+
+                        logi("broadcastConsumer checkRxlDevice " + ip);
+                        checkRxlDevice(command, ip);
                     }
                 }
             }
         }
-        Logger.e("broadcastConsumer ended -------- ");
+        logi("broadcastConsumer parse ended ----------------- ");
     }
 
     private void debugCommands(String tag, byte[] msg) {
-        if (msg == null)
+        if (msg == null) {
+
             return;
+        }
         int count = msg.length - 1;
         if (count == -1)
             return;
@@ -385,8 +402,8 @@ public class CommunicationManager {
             b.append(", ");
         }
 
-        Logger.i("CommunicationManager", "debugCommands " + new String(msg));
-        Logger.i("CommunicationManager", "debugCommands2 " + tag + " : " + b);
+        logi("debugCommands " + tag + " - " + new String(msg));
+        logi("debugCommands2 " + tag + " : " + b);
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            Arrays.stream(msg);
@@ -454,7 +471,7 @@ public class CommunicationManager {
     }
 
 
-    private synchronized void checkNewDevice2(byte[] command, InetAddress ip) {
+    private synchronized void checkBoosterDevice(byte[] command, InetAddress ip) {
         log("checkNewDevice --- " + true);
         for (Device d : mDiscoveredDevices) {
             if (d.getIp().equals(ip)) {
@@ -463,6 +480,17 @@ public class CommunicationManager {
             }
         }
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
+    }
+
+    private synchronized void checkRxlDevice(byte[] command, InetAddress ip) {
+        log("checkNewDevice --- " + true);
+        for (Device d : mDiscoveredDevices) {
+            if (d.getIp().equals(ip)) {
+                log("checkNewDevice --- found1 " + ip);
+                return;
+            }
+        }
+        add(new Device("", DataParser.getUID(command), ip, RXL_WIFI));
     }
 
     private void checkNewDevice(byte[] command, InetAddress ip) {
@@ -577,7 +605,7 @@ public class CommunicationManager {
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == SCALE) {
             SessionManager.getInstance().getSession().addScale(bluetoothManager.devicesScaleBle.get(0));
-        } else if (device.getType() == RXL) {
+        } else if (device.getType() == RXL_WIFI) {
             log("device connect " + device.getIp());
             connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid());
             SessionManager.getInstance().getSession().addConnectedDevice(device);
@@ -659,7 +687,7 @@ public class CommunicationManager {
         Encryption.mbp_decrypt(message, message.length);
         log("receiveCommands msg " + Arrays.toString(message) + " : UID " + uid);
         log("receiveCommands char " + Arrays.toString(new String(message).toCharArray()) + " : UID " + uid);
-        if (message.length >= MIN_COMMAND_LENGHT) {
+        if (message.length >= MIN_COMMAND_LENGTH) {
             try {
                 for (int i = 0; i < message.length; i++) {
                     if (message.length > i + 4) {

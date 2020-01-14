@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 1/8/20 2:07 PM
+ *  Created by Sumeet Kumar on 1/14/20 4:46 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/8/20 2:07 PM
+ *  Last modified 1/14/20 4:45 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa
+package life.mibo.hexa.ui.main
 
 import android.graphics.Color
 import android.view.View
@@ -44,9 +44,9 @@ class BottomBarHelper() : View.OnClickListener {
         item4 = view4
 
         item1?.setOnClickListener(this)
-        item2?.setOnClickListener(this)
-        item3?.setOnClickListener(this)
-        item4?.setOnClickListener(this)
+        //item2?.setOnClickListener(this)
+        //item3?.setOnClickListener(this)
+        //item4?.setOnClickListener(this)
         unselect()
     }
 

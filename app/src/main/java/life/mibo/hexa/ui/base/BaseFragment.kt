@@ -3,8 +3,8 @@ package life.mibo.hexa.ui.base
 import android.content.Context
 import androidx.fragment.app.Fragment
 import life.mibo.hardware.core.Logger
-import life.mibo.hexa.Navigator
-import life.mibo.hexa.MainActivity
+import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.dialog.MyDialog
 
 abstract class BaseFragment : Fragment() {

@@ -118,7 +118,7 @@ class ScanController(val context: DeviceScanFragment, val observer: ScanObserver
                 "Test",
                 DataParser.getUID(b),
                 InetAddress.getByName(ip),
-                DeviceTypes.RXL
+                DeviceTypes.RXL_WIFI
             )
         )
     }

@@ -77,6 +77,7 @@ public class DataParser {
     }
 
     public static byte[] getUID(byte[] command) {
+        //if(command.length 6)
         byte[] aux = new byte[]{command[2], command[3], command[4], command[5], command[6], command[7]};
         return aux;
     }

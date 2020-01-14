@@ -49,7 +49,11 @@ class HomeAdapter(var list: ArrayList<HomeItem>, val size: Int = 0) :
 //        params.height = size
 //        params.width = size
 //        holder.itemView.layoutParams = params
-        holder.bind(getItem(position), listener, size)
+        holder.bind(getItem(position), listener, size, isOdd(position))
+    }
+
+    private fun isOdd(i: Int): Boolean {
+        return i and 0x01 != 0
     }
 
 
@@ -90,11 +94,12 @@ class HomeAdapter(var list: ArrayList<HomeItem>, val size: Int = 0) :
 //        var image5: HexagonMaskView? = itemView.findViewById(R.id.iv_dashboard_5)
         var data: HomeItem? = null
 
-        fun bind(item: HomeItem?, listener: Listener?, size: Int) {
+        fun bind(item: HomeItem?, listener: Listener?, size: Int, odd: Boolean) {
             if (item == null)
                 return
             //updateParams(adapterPosition)
             data = item
+
             val params = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -104,6 +109,13 @@ class HomeAdapter(var list: ArrayList<HomeItem>, val size: Int = 0) :
             item1!!.layoutParams = params
             item2!!.layoutParams = params
             item3!!.layoutParams = params
+
+            if (odd) {
+               item2?.visibility = View.GONE
+            } else {
+               item2?.visibility = View.VISIBLE
+               item2!!.layoutParams = params
+            }
 //            title?.text = "${item.title}"
 //            image!!.setGradient(intArrayOf(Color.RED, Color.GREEN))
 //            image2!!.setGradient(intArrayOf(Color.BLUE, Color.DKGRAY))

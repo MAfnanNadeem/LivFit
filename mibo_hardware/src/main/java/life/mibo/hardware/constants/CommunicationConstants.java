@@ -5,7 +5,7 @@ package life.mibo.hardware.constants;
  */
 
 public class CommunicationConstants {
-    public static final int MIN_COMMAND_LENGHT = 9;
+    public static final int MIN_COMMAND_LENGTH = 9;
 
     public static final int COMMAND_ADVERTISING = 0xFF;
     public static final int COMMAND_PING_STIMULATOR = 0x00;

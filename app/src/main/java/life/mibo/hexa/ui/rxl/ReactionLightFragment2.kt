@@ -13,9 +13,9 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import life.mibo.hexa.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.rxl.model.ReflexAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
 import life.mibo.hexa.ui.rxl.model.ReflexModel
@@ -75,6 +75,7 @@ class ReactionLightFragment2 : BaseFragment() {
                     Toasty.warning(
                         this@ReactionLightFragment2.context!!,
                         "closed " + selectedItems.keys.toIntArray().contentToString()
+                        , Toasty.LENGTH_SHORT, false
                     ).show()
                     log("closed" + selectedItems.keys.toIntArray().contentToString())
                 }

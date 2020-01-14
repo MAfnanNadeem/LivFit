@@ -174,16 +174,16 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
             parent.height - calculateTopPosition(backLayout, toolbar).toInt()
         updateState(frontLayout, toolbar, backLayout, false)
 
-        with(toolbar) {
-            setNavigationOnClickListener {
-                dropState = when (dropState) {
-                    DropState.CLOSE -> DropState.OPEN
-                    DropState.OPEN -> DropState.CLOSE
-                }
-                updateState(frontLayout, toolbar, backLayout)
-                notifyListeners(true)
-            }
-        }
+//        with(toolbar) {
+//            setNavigationOnClickListener {
+//                dropState = when (dropState) {
+//                    DropState.CLOSE -> DropState.OPEN
+//                    DropState.OPEN -> DropState.CLOSE
+//                }
+//                updateState(frontLayout, toolbar, backLayout)
+//                notifyListeners(true)
+//            }
+//        }
 
         needToInitializing = false
     }

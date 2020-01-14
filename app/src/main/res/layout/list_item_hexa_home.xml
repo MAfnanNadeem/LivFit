@@ -9,6 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
     android:orientation="horizontal">
 
 
@@ -28,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:visibility="visible"
         app:item_icon="@drawable/ic_dashboard_booster"
         app:item_image="@drawable/dashboard_item_bg_2"
         app:item_text="Title Here" />

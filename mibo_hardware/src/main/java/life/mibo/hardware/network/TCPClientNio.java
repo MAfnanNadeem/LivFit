@@ -177,7 +177,7 @@ public class TCPClientNio {
                             public void onDataAvailable(DataEmitter emitter, ByteBufferReader bb) {
                                 log("AsyncSocket onDataAvailable....");
                                 if (listener != null) {
-                                    //if (bb.getAllByteArray().length >= MIN_COMMAND_LENGHT)
+                                    //if (bb.getAllByteArray().length >= MIN_COMMAND_LENGTH)
                                     listener.messageReceived(bb.getAllByteArray(), uid);
                                 }
                             }

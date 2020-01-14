@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.encryption.Encryption;
 
-import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGHT;
+import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGTH;
 
 
 /**
@@ -164,8 +164,8 @@ public class TCPClient {
                         while (isRunning) {
 
                             int bytesNum = mBufferIn.available();
-                            Logger.e("TCPClient MessageReceived bytesNum " +bytesNum);
-                            if (bytesNum >= MIN_COMMAND_LENGHT) {
+                           // Logger.e("TCPClient MessageReceived bytesNum " +bytesNum);
+                            if (bytesNum >= MIN_COMMAND_LENGTH) {
                                 // Log.e("runtcp", "num "+bytesNum);
                                 serverMessage = new byte[bytesNum];
                                 int r = mBufferIn.read(serverMessage);
@@ -176,7 +176,7 @@ public class TCPClient {
                             } else {
                                 //   Logger.e("TCPClient Message Bytes  " + bytesNum);
                             }
-                            Thread.sleep(10);
+                            Thread.sleep(20);
                         }
 
                     } catch (Exception e) {

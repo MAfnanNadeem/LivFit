@@ -17,13 +17,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_home_backup.*
-import life.mibo.hexa.Navigator
+import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
-import life.mibo.hexa.utils.Toasty
 
 
 class HomeFragmentBackup : BaseFragment(), HomeObserver {

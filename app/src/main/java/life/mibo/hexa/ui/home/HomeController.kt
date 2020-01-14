@@ -114,7 +114,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         val data = report?.sessionMemberReports
         list.add(
             HomeItem(
-                "Weight ", "" + report.weight + " Kg",
+                "  Weight ", "" + report.weight + " Kg",
                 HomeItem.Type.WEIGHT, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_4
             )
         )
@@ -128,7 +128,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Calendar",
+                " Calendar",
                 "",
                 HomeItem.Type.CALENDAR,
                 R.drawable.ic_dashboard_calendar,
@@ -152,7 +152,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Programs", "",
+                " Programs", "",
                 HomeItem.Type.PROGRAMS, R.drawable.ic_nfc_black_24dp, R.drawable.dashboard_item_bg_6
             )
         )
@@ -167,7 +167,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Add Product", "",
+                "   Add Product", "",
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )

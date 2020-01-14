@@ -24,7 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.rilixtech.widget.countrycodepicker.Country
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker
 import life.mibo.hardware.core.Logger
-import life.mibo.hexa.MainActivity
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder

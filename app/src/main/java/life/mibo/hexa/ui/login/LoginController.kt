@@ -6,7 +6,7 @@ package life.mibo.hexa.ui.login
 
 import android.content.Intent
 import life.mibo.hexa.BuildConfig
-import life.mibo.hexa.MainActivity
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs

@@ -1,4 +1,11 @@
-package life.mibo.hexa
+/*
+ *  Created by Sumeet Kumar on 1/14/20 4:45 PM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 1/14/20 4:43 PM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.hexa.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -45,11 +52,8 @@ import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
 import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
-import life.mibo.hexa.Navigator.Companion.CONNECT
-import life.mibo.hexa.Navigator.Companion.DISCONNECT
-import life.mibo.hexa.Navigator.Companion.HOME
-import life.mibo.hexa.Navigator.Companion.HOME_VIEW
-import life.mibo.hexa.Navigator.Companion.SCAN
+import life.mibo.hexa.BuildConfig
+import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
 import life.mibo.hexa.models.login.Member
@@ -58,6 +62,11 @@ import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
 import life.mibo.hexa.ui.home.HomeItem
 import life.mibo.hexa.ui.login.LoginActivity
+import life.mibo.hexa.ui.main.Navigator.Companion.CONNECT
+import life.mibo.hexa.ui.main.Navigator.Companion.DISCONNECT
+import life.mibo.hexa.ui.main.Navigator.Companion.HOME
+import life.mibo.hexa.ui.main.Navigator.Companion.HOME_VIEW
+import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
@@ -71,7 +80,8 @@ class MainActivity : BaseActivity(), Navigator {
     private lateinit var commHandler: CommHandler
     private var bottomBarHelper = BottomBarHelper()
     //private var navigator: ScreenNavigator? = null
-    lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var drawerLayout: DrawerLayout
 
 
 
@@ -83,8 +93,8 @@ class MainActivity : BaseActivity(), Navigator {
         if (savedInstanceState == null) {
             val toolbar: Toolbar? = findViewById(R.id.toolbar)
             setSupportActionBar(toolbar)
-            val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-            val drawer: NavigationView = findViewById(R.id.nav_view)
+            drawerLayout = findViewById(R.id.drawer_layout)
+            val navigation: NavigationView = findViewById(R.id.nav_view)
             //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
 
@@ -99,11 +109,8 @@ class MainActivity : BaseActivity(), Navigator {
             //setBottomBar()
             setDrawerIcon(drawerLayout)
 
-            drawer.setNavigationItemSelectedListener {
-                drawerItemClicked(it.itemId)
-                drawerLayout.closeDrawer(GravityCompat.START)
-                return@setNavigationItemSelectedListener true
-            }
+            setNavigationView(navigation)
+
 //        drawer.setupWithNavController(navController)
 
             //getScanned()
@@ -112,26 +119,8 @@ class MainActivity : BaseActivity(), Navigator {
             //startManager()
             commHandler.regisiter()
 
-            val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
-            //drawer_user_email?.text = member.imageThumbnail
-            drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
-                "${member.firstName} ${member.lastName}"
-//        /drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text = "${member.email}"
-            drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
-                Prefs.get(this@MainActivity).get("user_email")
-            bottomBarHelper.register(item1, item2, item3, item4)
-            bottomBarHelper.listener = object : ItemClickListener<Any> {
-                override fun onItemClicked(item: Any?, position: Int) {
-                    Toasty.warning(this@MainActivity, "click $position")
-                }
-            }
+            setBottomBar()
 
-            bottomBarHelper.bind(bottom_bar)
-
-            if (!BuildConfig.DEBUG) {
-                drawer.menu.clear()
-                drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
-            }
             log("OnCreate end")
         } else {
             log("OnCreate savedInstanceState end")
@@ -140,12 +129,49 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
 
+    private fun setBottomBar() {
+        bottomBarHelper.register(item1, item2, item3, item4)
+        bottomBarHelper.listener = object : ItemClickListener<Any> {
+            override fun onItemClicked(item: Any?, position: Int) {
+                bottomBarClicked(position)
+            }
+        }
+
+        bottomBarHelper.bind(bottom_bar)
+    }
+
+    private fun setNavigationView(navigation: NavigationView) {
+        navigation.setNavigationItemSelectedListener {
+            drawerItemClicked(it.itemId)
+            if (::drawerLayout.isInitialized)
+                drawerLayout.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
+
+        val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
+        //drawer_user_email?.text = member.imageThumbnail
+        navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
+            "${member.firstName} ${member.lastName}"
+//        /drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text = "${member.email}"
+        navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
+            Prefs.get(this@MainActivity).get("user_email")
+
+        if (!BuildConfig.DEBUG) {
+            navigation.menu.clear()
+            navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
+        }
+    }
+
     private fun setDrawerIcon(drawer: DrawerLayout) {
         //supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         //supportActionBar?.setDisplayShowHomeEnabled(true)
         drawerToggle =
-            ActionBarDrawerToggle(this, drawer, toolbar, R.string.app_name, R.string.app_name)
+            ActionBarDrawerToggle(
+                this, drawer, toolbar,
+                R.string.app_name,
+                R.string.app_name
+            )
 //        drawerToggle = ActionBarDrawerToggle(this, toolbar, drawer, null, R.string.app_name, R.string.app_name){
 //        }
         drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
@@ -199,7 +225,11 @@ class MainActivity : BaseActivity(), Navigator {
         if (toolbar != null) {
             toolbar.setDisplayHomeAsUpEnabled(true)
             drawerToggle =
-                ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
+                ActionBarDrawerToggle(
+                    this, drawerLayout,
+                    R.string.app_name,
+                    R.string.app_name
+                )
         }
 
     }
@@ -751,6 +781,24 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    private fun bottomBarClicked(position: Int) {
+        //Toasty.warning(this@MainActivity, "click $position").show()
+        when (position) {
+            1 -> {
+                popup(R.id.navigation_home)
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+        }
+    }
+
     private fun navigate(type: HomeItem.Type) {
         when (type) {
             HomeItem.Type.HEART -> {
@@ -805,26 +853,25 @@ class MainActivity : BaseActivity(), Navigator {
 
     private fun navigate(actionId: Int, fragmentId: Int, args: Bundle? = null) {
         try {
-            if (actionId == 0) {
-                navController.navigate(fragmentId, args, getNavOptions(), null)
-                return
-            }
-            val action = navController.currentDestination?.getAction(actionId)
-                ?: navController.graph.getAction(actionId)
-            if (action != null && navController.currentDestination?.id != action.destinationId) {
-                navController.navigate(actionId, args, getNavOptions(), null)
-            } else {
-                // navigateUp()
-                //popBackStack()
-                if (fragmentId == 0)
+            if (actionId != 0) {
+                val action = navController.currentDestination?.getAction(actionId)
+                    ?: navController.graph.getAction(actionId)
+                if (action != null && navController.currentDestination?.id != action.destinationId) {
+                    navController.navigate(actionId, args, getNavOptions(), null)
                     return
-                navController.navigate(fragmentId, args, getNavOptions(), null)
+                }
             }
+
+            if (fragmentId != 0 && fragmentId != navController.currentDestination?.id)
+                navController.navigate(fragmentId, args, getNavOptions(), null)
         } catch (e: java.lang.Exception) {
             //IllegalAccessException when action id not match in fragment
             Toasty.info(this, R.string.error_occurred, Toasty.LENGTH_SHORT, false).show()
         }
+    }
 
+    private fun popup(fragmentId: Int, args: Bundle? = null) {
+        navController.popBackStack(fragmentId, false)
     }
 
 

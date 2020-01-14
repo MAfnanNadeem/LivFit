@@ -1,6 +1,7 @@
 package life.mibo.hexa
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
@@ -23,6 +24,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -30,13 +32,14 @@ import com.google.android.material.navigation.NavigationView
 import com.google.zxing.BarcodeFormat
 import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.constants.CommunicationConstants.*
 import life.mibo.hardware.core.DataParser
-import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
@@ -76,58 +79,66 @@ class MainActivity : BaseActivity(), Navigator {
         super.onCreate(savedInstanceState)
         window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar? = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val drawer: NavigationView = findViewById(R.id.nav_view)
-        //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
+
+        if (savedInstanceState == null) {
+            val toolbar: Toolbar? = findViewById(R.id.toolbar)
+            setSupportActionBar(toolbar)
+            val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+            val drawer: NavigationView = findViewById(R.id.nav_view)
+            //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
 
-        navController = findNavController(R.id.nav_host_fragment)
+            navController = findNavController(R.id.nav_host_fragment)
 //        appBarConfiguration = AppBarConfiguration(
 //            setOf(
 //                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
 //            )
 //        )
-        //val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
-        // bottomNavView.setupWithNavController(navController)
-        //setBottomBar()
-        setDrawerIcon(drawerLayout)
+            //val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
+            // bottomNavView.setupWithNavController(navController)
+            //setBottomBar()
+            setDrawerIcon(drawerLayout)
 
-        drawer.setNavigationItemSelectedListener {
-            navigateTo(it.itemId)
-            drawerLayout.closeDrawer(GravityCompat.START)
-            return@setNavigationItemSelectedListener true
-        }
+            drawer.setNavigationItemSelectedListener {
+                drawerItemClicked(it.itemId)
+                drawerLayout.closeDrawer(GravityCompat.START)
+                return@setNavigationItemSelectedListener true
+            }
 //        drawer.setupWithNavController(navController)
 
-        //getScanned()
-        commHandler = CommHandler(this)
-        checkPermissions()
-        //startManager()
-        commHandler.regisiter()
+            //getScanned()
+            commHandler = CommHandler(this)
+            checkPermissions()
+            //startManager()
+            commHandler.regisiter()
 
-        val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
-        //drawer_user_email?.text = member.imageThumbnail
-        drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
-            "${member.firstName} ${member.lastName}"
+            val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
+            //drawer_user_email?.text = member.imageThumbnail
+            drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
+                "${member.firstName} ${member.lastName}"
 //        /drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text = "${member.email}"
-        drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
-            Prefs.get(this@MainActivity).get("user_email")
-        bottomBarHelper.register(item1, item2, item3, item4)
-        bottomBarHelper.listener = object : ItemClickListener<Any> {
-            override fun onItemClicked(item: Any?, position: Int) {
-                Toasty.warning(this@MainActivity, "click $position")
+            drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
+                Prefs.get(this@MainActivity).get("user_email")
+            bottomBarHelper.register(item1, item2, item3, item4)
+            bottomBarHelper.listener = object : ItemClickListener<Any> {
+                override fun onItemClicked(item: Any?, position: Int) {
+                    Toasty.warning(this@MainActivity, "click $position")
+                }
             }
+
+            bottomBarHelper.bind(bottom_bar)
+
+            if (!BuildConfig.DEBUG) {
+                drawer.menu.clear()
+                drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
+            }
+            log("OnCreate end")
+        } else {
+            log("OnCreate savedInstanceState end")
         }
 
-        bottomBarHelper.bind(bottom_bar)
-
-        if (!BuildConfig.DEBUG) {
-            drawer.menu.clear()
-            drawer.inflateMenu(R.menu.activity_drawer_drawer_release)
-        }
     }
+
 
     private fun setDrawerIcon(drawer: DrawerLayout) {
         //supportActionBar?.setHomeButtonEnabled(true)
@@ -153,6 +164,7 @@ class MainActivity : BaseActivity(), Navigator {
         drawer.post {
             drawerToggle.syncState()
         }
+
     }
 
     fun setBottomBar(navController: NavController) {
@@ -160,96 +172,20 @@ class MainActivity : BaseActivity(), Navigator {
         // bottomNavView.setupWithNavController(navController)
     }
 
+    @SuppressLint("CheckResult")
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         if (::drawerToggle.isInitialized)
             drawerToggle.syncState()
+        log("PostCreate")
+        // Single.timer(1, TimeUnit.SECONDS)
+        Single.just(R.id.nav_home).delay(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { a ->
+                //EventBus.getDefault().postSticky(NotifyEvent(a, null))
+                //navigateFragment(a)
+            }
     }
 
-    var lastId: Int = -1
-    private fun navigateTo(id: Int) {
-        if (lastId == id)
-            return
-        lastId = id
-        isHome = false
-
-
-        when (id) {
-            R.id.nav_home -> {
-                navController.navigate(R.id.navigation_home, null, getNavOptiions())
-                isHome = true
-            }
-
-            R.id.nav_ch6 -> {
-                navController.navigate(R.id.navigation_channels, null, getNavOptiions())
-            }
-            R.id.nav_scan -> {
-                startScanning(false)
-                navController.navigate(R.id.navigation_devices, null, getNavOptiions())
-            }
-            R.id.nav_rxl -> {
-                startScanning(false)
-                //updateMenu()
-                navController.navigate(R.id.navigation_reflex, null, getNavOptiions())
-
-            }
-
-            R.id.nav_test3 -> {
-                startScanning(false)
-                //updateMenu()
-                navController.navigate(R.id.navigation_reflex2, null, getNavOptiions())
-
-            }
-            R.id.navigation_add_product -> {
-                navController.navigate(R.id.navigation_add_product, null, getNavOptiions())
-
-            }
-            R.id.navigation_heart_rate -> {
-                navController.navigate(R.id.navigation_heart_rate, null, getNavOptiions())
-
-            }
-            R.id.navigation_weight -> {
-                navController.navigate(R.id.navigation_weight, null, getNavOptiions())
-
-            }
-            R.id.navigation_program -> {
-                navController.navigate(R.id.navigation_program, null, getNavOptiions())
-
-            }
-            R.id.navigation_calories -> {
-                navController.navigate(R.id.navigation_calories, null, getNavOptiions())
-
-            }
-            R.id.navigation_schedule -> {
-                navController.navigate(R.id.navigation_schedule, null, getNavOptiions())
-
-            }
-            R.id.navigation_calendar -> {
-                navController.navigate(R.id.navigation_calendar, null, getNavOptiions())
-
-            }
-            R.id.navigation_barcode -> {
-                navController.navigate(R.id.navigation_barcode, null, getNavOptiions())
-
-            }
-            R.id.navigation_rxl_test -> {
-                navController.navigate(R.id.navigation_rxl_test, null, getNavOptiions())
-
-            }
-            R.id.nav_logout -> {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
-            }
-            else -> {
-                //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
-            }
-
-        }
-        //drawerLayout.closeDrawer(GravityCompat.START)
-    }
-
-    private fun getNavOptiions() =
-        NavOptions.Builder().setPopUpTo(R.id.navigation_home, true).build()
 
     fun shoBarcode(){
         val barcodeFragment = BarcodeFragment.makeInstance(
@@ -705,7 +641,7 @@ class MainActivity : BaseActivity(), Navigator {
             })
     }
 
-    // TODO Call
+    // TODO Navigations
     override fun navigateTo(type: Int, data: Any?) {
         log("Call $type || $data")
         when (type) {
@@ -733,7 +669,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             else -> {
-                navigateTo(type)
+                drawerItemClicked(type)
             }
         }
     }
@@ -746,37 +682,149 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    private fun getNavOptions(): NavOptions {
+
+        return NavOptions.Builder().setExitAnim(R.anim.exit_to_left)
+            .setEnterAnim(R.anim.enter_from_right).setPopEnterAnim(R.anim.slide_in_left)
+            .setPopExitAnim(R.anim.slide_out_right).build()
+
+    }
     // TODO Dashboard click events
     private fun homeItemClicked(item: HomeItem?) {
-        when (item?.type) {
-            HomeItem.Type.HEART -> {
-                navigateTo(R.id.navigation_heart_rate)
+        item?.let {
+            navigate(it.type)
+        }
+    }
+
+    var lastId: Int = -1
+    private fun drawerItemClicked(id: Int) {
+        if (lastId == id)
+            return
+        lastId = id
+        isHome = false
+        log("drawerItemClicked $id")
+
+        when (id) {
+            R.id.nav_home -> {
+                navigate(0, R.id.navigation_home)
+                isHome = true
             }
-            HomeItem.Type.WEIGHT -> {
-                navigateTo(R.id.navigation_weight)
+            R.id.nav_ch6 -> {
+                navigate(HomeItem.Type.BOOSTER)
             }
-            HomeItem.Type.ADD -> {
-                navigateTo(R.id.navigation_add_product)
+            R.id.nav_scan -> {
+                startScanning(false)
+                navigate(0, R.id.navigation_devices)
             }
-            HomeItem.Type.CALENDAR -> {
-                navigateTo(R.id.navigation_calendar)
+            R.id.nav_rxl -> {
+                startScanning(false)
+                //updateMenu()
+                navigate(0, R.id.navigation_reflex)
+
             }
-            HomeItem.Type.SCHEDULE -> {
-                // navigateTo(R.id.navigation_schedule)
+
+            R.id.nav_test3 -> {
+                startScanning(false)
+                //updateMenu()
+                navigate(0, R.id.navigation_reflex2)
+
             }
-            HomeItem.Type.BOOSTER -> {
-                navigateTo(R.id.nav_ch6)
+            R.id.navigation_add_product -> {
+                navigate(0, R.id.navigation_add_product)
+
             }
-            HomeItem.Type.PROGRAMS -> {
-                //  navigateTo(R.id.navigation_program)
+            R.id.navigation_barcode -> {
+                navigate(0, R.id.navigation_barcode)
+
             }
-            HomeItem.Type.CALORIES -> {
-                navigateTo(R.id.navigation_calories)
+            R.id.navigation_rxl_test -> {
+                navigate(0, R.id.navigation_rxl_test)
+
+            }
+            R.id.nav_logout -> {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
             }
             else -> {
-                Toasty.warning(this, "ItemClicked - $item").show()
+                //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun navigate(type: HomeItem.Type) {
+        when (type) {
+            HomeItem.Type.HEART -> {
+                navigate(R.id.action_navigation_home_to_navigation_heart_rate, 0)
+                //navigateFragment(R.id.navigation_heart_rate)
+            }
+            HomeItem.Type.WEIGHT -> {
+                navigate(R.id.action_navigation_home_to_navigation_weight, 0)
+                // navigateFragment(R.id.navigation_weight)
+            }
+            HomeItem.Type.ADD -> {
+                navigate(
+                    R.id.action_navigation_home_to_navigation_add_product,
+                    0
+                )
+                //navigateFragment(R.id.navigation_add_product)
+            }
+            HomeItem.Type.CALENDAR -> {
+                navigate(
+                    R.id.action_navigation_home_to_navigation_calendar,
+                    0
+                )
+                //navigateFragment(R.id.navigation_calendar)
+            }
+            HomeItem.Type.CALORIES -> {
+                navigate(R.id.action_navigation_home_to_navigation_calories, 0)
+                //navigateFragment(R.id.navigation_calories)
+            }
+
+            HomeItem.Type.BOOSTER -> {
+                //navController.navigate(R.id.action_navigation_home_pop)
+                //navController.navigate(R.id.navigation_home)
+                navigate(
+                    R.id.action_navigation_home_to_navigation_six_channel,
+                    R.id.navigation_channels
+                )
+                //navigateFragment(R.id.navigation_calories)
+            }
+            HomeItem.Type.SCHEDULE -> {
+                // navigateFragment(R.id.navigation_schedule)
+            }
+
+            HomeItem.Type.PROGRAMS -> {
+                //  navigateFragment(R.id.navigation_program)
+            }
+
+            else -> {
+                Toasty.warning(this, "ItemClicked - $type").show()
+            }
+        }
+    }
+
+    private fun navigate(actionId: Int, fragmentId: Int, args: Bundle? = null) {
+        try {
+            if (actionId == 0) {
+                navController.navigate(fragmentId, args, getNavOptions(), null)
+                return
+            }
+            val action = navController.currentDestination?.getAction(actionId)
+                ?: navController.graph.getAction(actionId)
+            if (action != null && navController.currentDestination?.id != action.destinationId) {
+                navController.navigate(actionId, args, getNavOptions(), null)
+            } else {
+                // navigateUp()
+                //popBackStack()
+                if (fragmentId == 0)
+                    return
+                navController.navigate(fragmentId, args, getNavOptions(), null)
+            }
+        } catch (e: java.lang.Exception) {
+            //IllegalAccessException when action id not match in fragment
+            Toasty.info(this, R.string.error_occurred, Toasty.LENGTH_SHORT, false).show()
+        }
+
     }
 
 
@@ -811,8 +859,20 @@ class MainActivity : BaseActivity(), Navigator {
     var mBackPressed: Long = 0;
 
     var isHome = false
+    override fun onNavigateUp(): Boolean {
+        log("onNavigateUp")
+        return super.onNavigateUp()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        log("onSupportNavigateUp")
+        return super.onSupportNavigateUp()
+    }
+
+
     override fun onBackPressed() {
-        if (navController.navigateUp())
+        log("onBackPressed")
+        if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp())
             return
 //        if (navController.popBackStack(R.id.navigation_home, true))
 //            return;
@@ -826,7 +886,7 @@ class MainActivity : BaseActivity(), Navigator {
             mBackPressed = System.currentTimeMillis();
             return
         }
-        //navigateTo(R.id.nav_home)
+        //navigateFragment(R.id.nav_home)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

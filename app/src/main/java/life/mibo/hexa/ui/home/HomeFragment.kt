@@ -10,15 +10,17 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home_new.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
+import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME_VIEW
+import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -34,12 +36,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private lateinit var controller: HomeController
     private lateinit var homeViewModel: HomeViewModel
-    //var recyclerView: RecyclerView? = null
+    var recyclerView: RecyclerView? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        val root = inflater.inflate(R.layout.fragment_home_new, container, false)
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         // val textView: TextView = root.findViewById(R.id.text_home)
         homeViewModel.text.observe(this, Observer {
@@ -48,8 +50,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
         log("onCreateView")
         //recyclerView = root.findViewById(R.id.hexagonRecycler) as HexagonRecyclerView
-        //recyclerView = root.findViewById(R.id.hexagonRecycler)
+        recyclerView = root.findViewById(R.id.recyclerView)
         // setRecycler(recyclerView!!)
+        //Crashlytics.getInstance().crash()
+        retainInstance = true
         return root
     }
 
@@ -73,62 +77,63 @@ class HomeFragment : BaseFragment(), HomeObserver {
         textView2?.text = format.format(Date())
     }
 
-    override fun onDataRecieved(list: ArrayList<HomeItem>) {
+    override fun onDataReceived(list: ArrayList<HomeItem>) {
         log("onDataReceived $list")
         getDialog()?.dismiss()
-        list.forEachIndexed { i, item ->
-            when (i) {
-                0 -> {
-                    constraintLayout2.visibility = View.VISIBLE
-                    iv_dashboard_item_1.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_1, this)
-                }
-                1 -> {
-                    log("onDataReceived when 2")
-                    iv_dashboard_item_2.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_2, this)
-                    iv_dashboard_item_2.visibility = View.VISIBLE
-                }
-                2 -> {
-                    iv_dashboard_item_3.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_3, this)
-                }
-                3 -> {
-                    constraintLayout3.visibility = View.VISIBLE
-                    iv_dashboard_item_4.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_4, this)
-                }
-                4 -> {
-                    iv_dashboard_item_5.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_5, this)
-                }
-                5 -> {
-                    constraintLayout4.visibility = View.VISIBLE
-                    iv_dashboard_item_6.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_6, this)
-                }
-                6 -> {
-                    iv_dashboard_item_7.visibility = View.VISIBLE
-                    item.bind(iv_dashboard_item_7, this)
-                }
-                7 -> {
-                    constraintLayout5.visibility = View.VISIBLE
-                    iv_dashboard_item_8.visibility = View.VISIBLE
-                    iv_dashboard_item_9.visibility = View.INVISIBLE
-                    iv_dashboard_item_10.visibility = View.INVISIBLE
-                    item.bind(iv_dashboard_item_8, this)
-                }
-                8 -> {
-                    item.bind(iv_dashboard_item_9, this)
-                    iv_dashboard_item_9.visibility = View.VISIBLE
-                }
-                9 -> {
-                    item.bind(iv_dashboard_item_10, this)
-                    iv_dashboard_item_10.visibility = View.VISIBLE
-                }
-            }
-        }
-        log("onDataReceived when again 2 "+iv_dashboard_item_2.visibility)
+
+//        list.forEachIndexed { i, item ->
+//            when (i) {
+//                0 -> {
+//                    constraintLayout2.visibility = View.VISIBLE
+//                    iv_dashboard_item_1.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_1, this)
+//                }
+//                1 -> {
+//                    log("onDataReceived when 2")
+//                    iv_dashboard_item_2.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_2, this)
+//                    iv_dashboard_item_2.visibility = View.VISIBLE
+//                }
+//                2 -> {
+//                    iv_dashboard_item_3.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_3, this)
+//                }
+//                3 -> {
+//                    constraintLayout3.visibility = View.VISIBLE
+//                    iv_dashboard_item_4.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_4, this)
+//                }
+//                4 -> {
+//                    iv_dashboard_item_5.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_5, this)
+//                }
+//                5 -> {
+//                    constraintLayout4.visibility = View.VISIBLE
+//                    iv_dashboard_item_6.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_6, this)
+//                }
+//                6 -> {
+//                    iv_dashboard_item_7.visibility = View.VISIBLE
+//                    item.bind(iv_dashboard_item_7, this)
+//                }
+//                7 -> {
+//                    constraintLayout5.visibility = View.VISIBLE
+//                    iv_dashboard_item_8.visibility = View.VISIBLE
+//                    iv_dashboard_item_9.visibility = View.INVISIBLE
+//                    iv_dashboard_item_10.visibility = View.INVISIBLE
+//                    item.bind(iv_dashboard_item_8, this)
+//                }
+//                8 -> {
+//                    item.bind(iv_dashboard_item_9, this)
+//                    iv_dashboard_item_9.visibility = View.VISIBLE
+//                }
+//                9 -> {
+//                    item.bind(iv_dashboard_item_10, this)
+//                    iv_dashboard_item_10.visibility = View.VISIBLE
+//                }
+//            }
+//        }
+//        log("onDataReceived when again 2 "+iv_dashboard_item_2.visibility)
 //        log("onDataReceived when again 2 "+iv_dashboard_item_10.visibility)
 //        constraintLayout2.visibility = View.VISIBLE
 //        iv_dashboard_item_2.visibility = View.VISIBLE
@@ -145,8 +150,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //        parent_constraint.invalidate()
 //        //(activity as MainActivity).supportFragmentManager!!.beginTransaction().detach(this).attach(this).commit()
 //        //(activity as MainActivity).navController?.
-        val metrics = resources.displayMetrics
-        testHexa(recyclerView.width.div(3).toInt())
+
+        updateData(list)
     }
 
 
@@ -174,6 +179,75 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //        }
     }
 
+    val data = ArrayList<Array<HomeItem>>()
+    var adapter: HomeAdapter? = null
+
+    private fun updateData(list: ArrayList<HomeItem>?) {
+        //log("updateData $list")
+        if (list == null)
+            return
+        // var odd = true
+        // var size = list.size
+        data.clear()
+        //TODO later i will do it dynamic, now skip
+//        list.forEachIndexed { i, item ->
+//            if (odd) {
+//                if (i + 1 < size)
+//                    data.add(arrayOf(list[i], list[i + 1]))
+//                else
+//                    data.add(arrayOf(list[i], list[i + 1]))
+//                odd = false
+//            } else {
+//                if (i + 1 < size)
+//                    data.add(arrayOf(list[i], list[i + 1]))
+//                else
+//                    data.add(arrayOf(list[i], list[i + 1]))
+//
+//                odd = true
+//            }
+//        }
+        if (list.size > 6) {
+            data.add(arrayOf(list[0], list[1]))
+            data.add(arrayOf(list[2], list[3], list[4]))
+            data.add(arrayOf(list[5], list[6]))
+            data.add(arrayOf(list[7]))
+           val metrics = resources.displayMetrics
+            setRecyclerView(metrics!!.widthPixels.div(3))
+
+        }
+    }
+
+    private fun setRecyclerView(width: Int) {
+        log("setRecyclerView $width")
+        if(width == 0){
+            Toasty.info(context!!, "Oops device width is zero (0)", Toasty.LENGTH_SHORT, false).show()
+        }
+        adapter = HomeAdapter(data, width)
+        val size = data.size - 1
+        val bottom = Utils.dpToPixel(-26, this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(context)
+        recyclerView?.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                rect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
+            ) {
+                val pos = parent.getChildAdapterPosition(view)
+                if (pos == size) {
+                    //rect.set(0, 0, 0, 0)
+                } else
+                    rect.set(0, 0, 0, bottom)
+
+                // log(" getItemOffsets2: r=$rect s=$width p=$pos")
+            }
+
+        })
+        adapter!!.setListener(object : ItemClickListener<HomeItem> {
+            override fun onItemClicked(item: HomeItem?, position: Int) {
+                onItemClicked(item)
+            }
+        })
+        recyclerView?.adapter = adapter
+    }
+
     //TODO
     // this is dynamic hexagon recyclerView for dashboard, due to short time I will implement in future, align translation x-y accordingly
     //usage: testHexa(resources.displayMetrics.metrics.widthPixels.div(3))
@@ -183,17 +257,18 @@ class HomeFragment : BaseFragment(), HomeObserver {
         ) {
             list.add(HomeItem(0, "$i"))
         }
-        val adapter = HomeAdapter(list, size)
-        val size = list.size - 1
+
+        //val adapter = HomeAdapter(list, size)
+        val items = list.size - 1
         val bottom = Utils.dpToPixel(-26, this.context)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+        recyclerView?.layoutManager = LinearLayoutManager(context)
+        recyclerView?.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
                 rect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
             ) {
                 val pos = parent.getChildAdapterPosition(view)
-                if (pos == size) {
-                    rect.set(0, 0, 0, 0)
+                if (pos == items) {
+                    //rect.set(0, 0, 0, 0)
                 } else
                     rect.set(0, 0, 0, bottom)
                 //rect.top = rect.top.minus(50)
@@ -201,14 +276,14 @@ class HomeFragment : BaseFragment(), HomeObserver {
                 //super.getItemOffsets(rect, view, parent, state)
                 //val smallRow_padding_top_bottom = parent.width / (mRowSize * 2);
 
-                log(" getItemOffsets2: $rect")
+                log(" getItemOffsets2: r=$rect s=$size p=$pos")
             }
 
 
         })
         //recyclerView.addItemDecoration(VerticalOverlapDecorator(2, 10f, 10f))
         //recyclerView.addItemDecoration(HorizontalOverlapDecorator(2, 10f, 10f))
-        recyclerView.adapter = adapter
+        //recyclerView.adapter = adapter
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -220,6 +295,11 @@ class HomeFragment : BaseFragment(), HomeObserver {
             log("onPostEvent $event")
             EventBus.getDefault().removeStickyEvent(event)
         }
+    }
+
+    override fun onResume() {
+        log("onResume")
+        super.onResume()
     }
 
     override fun onStop() {

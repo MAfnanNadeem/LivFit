@@ -20,9 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         app:item_gravity="right"
-        app:item_icon="@drawable/ic_dashboard_booster"
-        app:item_image="@drawable/dashboard_item_bg_2"
-        app:item_text="Title Here" />
+        android:visibility="invisible" />
 
 
     <life.mibo.views.DashboardItem
@@ -30,10 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:visibility="visible"
-        app:item_icon="@drawable/ic_dashboard_booster"
-        app:item_image="@drawable/dashboard_item_bg_2"
-        app:item_text="Title Here" />
+        android:visibility="invisible" />
 
     <life.mibo.views.DashboardItem
         android:id="@+id/item3"
@@ -41,8 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         app:item_gravity="left"
-        app:item_icon="@drawable/ic_dashboard_booster"
-        app:item_image="@drawable/dashboard_item_bg_2"
-        app:item_text="Title Here" />
+        android:visibility="invisible"/>
 
 </LinearLayout>

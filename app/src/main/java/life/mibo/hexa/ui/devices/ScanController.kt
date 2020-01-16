@@ -10,14 +10,11 @@ package life.mibo.hexa.ui.devices
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.core.DataParser
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.core.to
 import life.mibo.hexa.ui.devices.adapter.ScanDeviceAdapter
 import java.net.InetAddress
 
@@ -60,20 +57,25 @@ class ScanController(val context: DeviceScanFragment, val observer: ScanObserver
 
     }
 
+    fun getSavedDevices() {
+
+    }
     fun getConnectedDevices() {
         val list = CommunicationManager.getInstance().tcpClients
         if (list != null && list.isNotEmpty()) {
             for (i in list) {
                 var d: Device? = null
                 try {
-                    d = Prefs.get(context.context).get(i.uid).to(Device::class.java)
+                    d = Prefs.get(context.context).getJson(i.uid, Device::class.java)
                     context.log("getConnectedDevices device.........${d}")
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
                 context.log("Saved device found.........${d}")
-                if (d != null)
+                if (d != null) {
+                    //d.statusConnected = 1
                     connectedList.add(d)
+                }
                 else connectedList.add(
                     Device(
                         "Null",

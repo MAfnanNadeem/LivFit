@@ -383,7 +383,7 @@ class ChartData {
 
     fun fetchHeartRateData(chart: LineChart?, type: Int) {
         val member =
-            Prefs.get(chart?.context).getMember<Member?>(Member::class.java)
+            Prefs.get(chart?.context).member
                 ?: return
         //chart.getDialog()?.show()
         val session = SessionDetails("${member.id}", member.accessToken)

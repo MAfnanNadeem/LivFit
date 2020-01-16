@@ -87,7 +87,7 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
 
     fun fetchHeartRateData() {
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val session = SessionDetails("${member.id}", member.accessToken)

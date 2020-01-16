@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Random;
 
@@ -82,6 +83,9 @@ public class Utils {
         }
 
     }
+    public static boolean isEmpty(@Nullable CharSequence str) {
+        return str == null || str.length() == 0;
+    }
 
     private static float scale;
 
@@ -104,4 +108,18 @@ public class Utils {
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
+    public static int ofArgb(float fraction, int startColor, int endColor) {
+        int startA = (startColor >> 24) & 0xff;
+        int startR = (startColor >> 16) & 0xff;
+        int startG = (startColor >> 8) & 0xff;
+        int startB = startColor & 0xff;
+        int endA = (endColor >> 24) & 0xff;
+        int endR = (endColor >> 16) & 0xff;
+        int endG = (endColor >> 8) & 0xff;
+        int endB = endColor & 0xff;
+        return (startA + (int)(fraction * (endA - startA))) << 24 |
+                (startR + (int)(fraction * (endR - startR))) << 16 |
+                (startG + (int)(fraction * (endG - startG))) << 8 |
+                (startB + (int)(fraction * (endB - startB)));
+    }
 }

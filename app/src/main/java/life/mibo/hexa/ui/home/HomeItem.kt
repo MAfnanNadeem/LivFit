@@ -44,9 +44,9 @@ data class HomeItem(
     }
 
     private var colorArray: IntArray? = null
-    private var iconRes: Int = 0
-    private var imageRes: Int = 0
-    private var headerText: String = ""
+    var iconRes: Int = 0
+    var imageRes: Int = 0
+    var headerText: String = ""
 
     enum class Type {
         HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE

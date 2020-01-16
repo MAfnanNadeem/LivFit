@@ -61,6 +61,28 @@ public class UserSession {
         return isStarted;
     }
 
+    public static UserSession create() {
+        return new UserSession();
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+        if (device != null)
+            this.userId = device.getUid();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setProgram(Program program) {
+        this.currentSessionProgram = program;
+    }
+
+    public Program getProgram() {
+        return currentSessionProgram;
+    }
+
     public static UserSession from(Device device) {
         UserSession session = new UserSession();
         if (device != null) {
@@ -127,7 +149,7 @@ public class UserSession {
     }
 
     public Device getRegisteredDevicebyUid(String uid) {
-        boolean newDevice = true;
+        //boolean newDevice = true;
         for (Device d : registeredDevices) {
             if (d.getUid().equals(uid)) {
                 return d;

@@ -9,7 +9,10 @@ package life.mibo.hexa.ui.main
 
 import android.app.Application
 import android.content.Context
+import android.os.Bundle
 import coil.util.CoilLogger
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
@@ -21,18 +24,43 @@ class MiboApplication : Application() {
         var context : Context? = null
     }
 
+    private var mFirebaseAnalytics: FirebaseAnalytics? = null
+
     override fun onCreate() {
         super.onCreate()
         MIBO.init(this)
         context = this
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     fun setHandler(){
         Thread.setDefaultUncaughtExceptionHandler { thread, e ->
             Logger.save(e)
         }
+    }
+
+    fun pageEvent(userName: String, userId: String, pageName: String) {
+        val bundle = Bundle()
+        bundle.putString("user_id", userId)
+        bundle.putString("user_name", userName)
+        bundle.putString("page_name", pageName)
+        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+    }
+
+    fun loginEvent(userName: String, userId: String) {
+        val bundle = Bundle()
+        bundle.putString("user_id", userId)
+        bundle.putString("user_name", userName)
+        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
+    }
+
+    fun registerEvent(userName: String, userId: String) {
+        val bundle = Bundle()
+        bundle.putString("user_id", userId)
+        bundle.putString("user_name", userName)
+        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
     }
 
     fun extractLogToFile() : String {

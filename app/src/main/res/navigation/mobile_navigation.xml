@@ -118,4 +118,10 @@
         android:name="life.mibo.hexa.ui.weight.WeightFragment"
         android:label="Weight"
         tools:layout="@layout/fragment_weight" />
+
+    <fragment
+        android:id="@+id/navigation_select_program"
+        android:name="life.mibo.hexa.ui.select_program.SelectProgramFragment"
+        android:label="Select Program"
+        tools:layout="@layout/fragment_weight" />
 </navigation>

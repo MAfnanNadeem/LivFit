@@ -14,7 +14,6 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -37,7 +36,8 @@ import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
+class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelObserver) :
+    Channel6Listener,
     Channel6Fragment.Listener {
 
     //var list = ArrayList<Channel6Model>()
@@ -67,12 +67,13 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         if (SessionManager.getInstance().userSession != null) {
             if (SessionManager.getInstance().userSession.user != null) {
                 sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
-                if (SessionManager.getInstance().userSession.device != null)
+                if (SessionManager.getInstance().userSession.device != null && SessionManager.getInstance().userSession.program != null) {
                     isConnected = true
-                pauseDuration =
-                    SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].pauseDuration.valueInteger
-                actionDuration =
-                    SessionManager.getInstance().userSession.currentSessionProgram.blocks[0].actionDuration.valueInteger
+                    pauseDuration =
+                        SessionManager.getInstance().userSession.program.blocks[0].pauseDuration.valueInteger
+                    actionDuration =
+                        SessionManager.getInstance().userSession.program.blocks[0].actionDuration.valueInteger
+                }
             }
 
         }
@@ -83,6 +84,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     override fun onStop() {
+        cancelTimer()
         disposable?.dispose()
     }
 
@@ -128,6 +130,11 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
             onMusclePlayStopClicked(data.id, isPlay)
     }
 
+    // TODO hit session report API.
+    override fun exerciseCompleted() {
+        //API
+    }
+
     // TODO Functions
     // 6ch
     // 1- Lower back  2- Shoulder  3- Upper back   4- Abs  5- Chest 6- Arms
@@ -166,65 +173,56 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
     }
 
     // timer
-    private var cTimer: CountDownTimer? = null
-
-    internal fun startTimer(s: Int) {
+    private var totalDuration = 0
+    private var countTimer: CountDownTimer? = null
+    fun startTimer(seconds: Int) {
+        totalDuration = seconds
         cancelTimer()
-        cTimer = object : CountDownTimer(s * 1000L, 1000L) {
-            override fun onTick(millisUntilFinished: Long) {
-                updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
+        countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
+            override fun onTick(it: Long) {
+                //log("onTimerUpdate onTick $seconds : $it")
+                //observer?.onTimerUpdate(seconds.minus(it.div(1000)))
+                observer?.onTimerUpdate(it.div(1000))
             }
 
             override fun onFinish() {
+                observer?.onTimerUpdate(0L)
                 cancelTimer()
             }
         }
-        cTimer?.start()
+        countTimer?.start()
     }
 
     internal fun cancelTimer() {
-        if (cTimer != null) {
-            cTimer?.cancel()
+        if (countTimer != null) {
+            countTimer?.cancel()
             updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
         }
     }
+
 
     @MainThread
     private fun updateTime(timer: Int) {
 
     }
 
-    fun countDown(start: Long, end: Long): Observable<Long> {
-        return Observable.intervalRange(start, start + 2, 0, 1, TimeUnit.SECONDS)
-            .map { 2 * start - it }
-            .flatMap { if (it >= 0) Observable.just(it) else countDown(end, end) }
-
-    }
 
     var disposable: Disposable? = null
-    @SuppressLint("SetTextI18n")
-    fun countDown(end: Long) {
-
-        disposable = Observable.interval(1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext {
-                // tvTimer?.text = "${end.minus(it)} sec"
-                tvTimer?.text = String.format("%02d:%02d", end.minus(it) / 60, end.minus(it) % 60)
-            }.takeUntil { a ->
-                a == end
-            }.doOnComplete {
-                tvTimer?.text = "Completed"
-                disposable?.dispose()
-            }.subscribe()
-    }
-
-    fun countdownTimer(remainingTime: Long, interval: Int): Flowable<Int> {
-        return Flowable.range(0, interval + 1)
-            .map { interval - it }
-            .repeat()
-            .skip(interval - remainingTime)
-            .concatMap { Flowable.just(it).delay(1, TimeUnit.SECONDS) }
-    }
+//    @SuppressLint("SetTextI18n")
+//    fun countDown(end: Long) {
+//
+//        disposable = Observable.interval(1, TimeUnit.SECONDS)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnNext {
+//                // tvTimer?.text = "${end.minus(it)} sec"
+//                tvTimer?.text = String.format("%02d:%02d", end.minus(it) / 60, end.minus(it) % 60)
+//            }.takeUntil { a ->
+//                a == end
+//            }.doOnComplete {
+//                tvTimer?.text = "Completed"
+//                disposable?.dispose()
+//            }.subscribe()
+//    }
 
     fun startSession(u: User) {
         log("startSession " + u.debugLevels())
@@ -245,7 +243,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         sendStartToAllBoosters(u)
         SessionManager.getInstance().userSession.currentSessionStatus = 2
         SessionManager.getInstance()
-            .userSession.startTimer(SessionManager.getInstance().userSession.currentSessionProgram.duration.value.toLong())
+            .userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
         // startTimer(SessionManager.getInstance().session.currentSessionProgram.duration.valueInt)
     }
 
@@ -272,7 +270,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
                 log("starting again device")
                 sendStartToAllBoosters(SessionManager.getInstance().userSession.user)
                 SessionManager.getInstance()
-                    .userSession.startTimer(SessionManager.getInstance().userSession.currentSessionProgram.duration.value.toLong())
+                    .userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
 
                 //EventBus.getDefault().postSticky(SendDevicePlayEvent(uid))
             }.subscribe()
@@ -313,7 +311,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         if (SessionManager.getInstance().userSession.currentSessionStatus == 0) {
             EventBus.getDefault().postSticky(
                 SendProgramEvent(
-                    SessionManager.getInstance().userSession.currentSessionProgram,
+                    SessionManager.getInstance().userSession.program,
                     userUid
                 )
             )
@@ -499,7 +497,7 @@ class Channel6Controller(val fragment: Channel6Fragment) : Channel6Listener,
         if (SessionManager.getInstance().userSession.device.isStarted) {
             disposable?.dispose()
             disposable = null
-            countDown(300)
+            startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)
             log("onDevicePlayPauseEvent play button enable")
             Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.computation()).delay(300, TimeUnit.MILLISECONDS)

@@ -170,6 +170,13 @@ public class Program {
         this.blocks = new ArrayList<Block>(Arrays.asList(blocks));
     }
 
+    public void addBlocks(ArrayList<Block> list) {
+        if (this.blocks == null)
+            this.blocks = new ArrayList<>();
+        blocks.clear();
+        blocks.addAll(list);
+    }
+
     public void addBlock(Block block){
         if(block == null){
             blocks.add(initNewBlock());

@@ -103,7 +103,7 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
 
     fun getCalories() {
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val post = PostData("${member.id}", member.accessToken, "CaloriesBurnt")

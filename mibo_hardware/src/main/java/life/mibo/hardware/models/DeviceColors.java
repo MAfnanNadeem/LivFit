@@ -1,6 +1,13 @@
 package life.mibo.hardware.models;
 
 
+import android.graphics.Color;
+import android.graphics.ColorSpace;
+
+import androidx.annotation.ColorInt;
+
+import java.util.Random;
+
 import life.mibo.hardware.R;
 
 /**
@@ -63,6 +70,36 @@ public class DeviceColors {
         }
         return LIME_BYTES;
     }
+
+    public static byte[] getRandomColor() {
+        try {
+            Random rnd = new Random();
+            return new byte[]{(byte) rnd.nextInt(256), (byte) rnd.nextInt(256), (byte) rnd.nextInt(256)};
+        } catch (Exception e) {
+
+        }
+        return VIOLET_BYTES;
+    }
+
+    public static byte[] getColor(int color) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            return new byte[]{(byte) r, (byte) g, (byte) b};
+        } catch (Exception e) {
+           // Color c = Color.valueOf(color);
+        }
+        return VIOLET_BYTES;
+    }
+
+//    public static Color valueOf(@ColorInt int color) {
+//        float r = ((color >> 16) & 0xff) / 255.0f;
+//        float g = ((color >>  8) & 0xff) / 255.0f;
+//        float b = ((color      ) & 0xff) / 255.0f;
+//        float a = ((color >> 24) & 0xff) / 255.0f;
+//        return new Color.convert(a, r, g, b);
+//    }
 
     public static int getColorResourceById(int id) {
 

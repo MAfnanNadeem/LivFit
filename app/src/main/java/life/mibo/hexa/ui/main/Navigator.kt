@@ -7,6 +7,8 @@ public interface Navigator {
         var SCAN = 103;
         var HOME = 104;
         var HOME_VIEW = 105;
+        var SELECT_PROGRAM = 106;
+        var SESSION = 107;
     }
 
     fun navigateTo(type: Int, data: Any?)

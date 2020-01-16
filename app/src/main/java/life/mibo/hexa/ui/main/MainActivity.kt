@@ -56,7 +56,6 @@ import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
-import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
@@ -67,6 +66,8 @@ import life.mibo.hexa.ui.main.Navigator.Companion.DISCONNECT
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME_VIEW
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
+import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
+import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
@@ -148,7 +149,7 @@ class MainActivity : BaseActivity(), Navigator {
             return@setNavigationItemSelectedListener true
         }
 
-        val member = Prefs.get(this).getMember<Member?>(Member::class.java) ?: return
+        val member = Prefs.get(this).member ?: return
         //drawer_user_email?.text = member.imageThumbnail
         navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
             "${member.firstName} ${member.lastName}"
@@ -269,20 +270,16 @@ class MainActivity : BaseActivity(), Navigator {
         Manifest.permission.BLUETOOTH_ADMIN
     )
 
-    fun checkPermissions() {
+    private fun checkPermissions() {
 
-        dummySession()
+        SessionManager.initUser()
         PermissionHelper.requestPermission(this@MainActivity, permissions) {
             startManager()
         }
     }
 
-    fun dummySession() {
-        SessionManager.getInstance().createDummySession()
-    }
-
     val REQUEST_ENABLE_BT = 1022
-    lateinit var manager: CommunicationManager
+    var manager: CommunicationManager? = null
     private fun startManager() {
         log("getScanning started")
 
@@ -579,17 +576,19 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    fun startScanning(rescan: Boolean, wifi: Boolean = true) {
+    private fun startScanning(rescan: Boolean, wifi: Boolean = true) {
         log("Scanning.......")
+        if (manager == null)
+            startManager()
         if (rescan)
-            manager.reScanning(this, wifi)
+            manager?.reScanning(this, wifi)
         else
-            manager.startScanning(this, wifi)
+            manager?.startScanning(this, wifi)
         Observable.timer(15, TimeUnit.SECONDS).doOnComplete { stopScanning() }.subscribe()
     }
 
     fun stopScanning() {
-        manager.stopScanning()
+        manager?.stopScanning()
         EventBus.getDefault().post(ScanComplete())
     }
 
@@ -677,11 +676,11 @@ class MainActivity : BaseActivity(), Navigator {
         when (type) {
             CONNECT -> {
                 if (data is Device)
-                    manager.connectDevice(data)
+                    manager?.connectDevice(data)
             }
             DISCONNECT -> {
                 if (data is Device)
-                    manager.deviceDisconnect(data)
+                    manager?.deviceDisconnect(data)
             }
             SCAN -> {
                 //stopScanning()
@@ -696,6 +695,12 @@ class MainActivity : BaseActivity(), Navigator {
             HOME_VIEW -> {
                 if (data != null && data is Boolean)
                     updateBar(data)
+            }
+            SELECT_PROGRAM -> {
+                navigate(0, R.id.navigation_select_program)
+            }
+            SESSION -> {
+                navigate(0, R.id.navigation_channels)
             }
 
             else -> {
@@ -740,6 +745,9 @@ class MainActivity : BaseActivity(), Navigator {
                 isHome = true
             }
             R.id.nav_ch6 -> {
+                navigate(HomeItem.Type.BOOSTER)
+            }
+            R.id.navigation_channels -> {
                 navigate(HomeItem.Type.BOOSTER)
             }
             R.id.nav_scan -> {
@@ -861,7 +869,6 @@ class MainActivity : BaseActivity(), Navigator {
                     return
                 }
             }
-
             if (fragmentId != 0 && fragmentId != navController.currentDestination?.id)
                 navController.navigate(fragmentId, args, getNavOptions(), null)
         } catch (e: java.lang.Exception) {
@@ -872,6 +879,7 @@ class MainActivity : BaseActivity(), Navigator {
 
     private fun popup(fragmentId: Int, args: Bundle? = null) {
         navController.popBackStack(fragmentId, false)
+        lastId = -1
     }
 
 
@@ -919,8 +927,14 @@ class MainActivity : BaseActivity(), Navigator {
 
     override fun onBackPressed() {
         log("onBackPressed")
-        if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp())
+        if (drawerLayout?.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
             return
+        }
+        if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()) {
+            lastId = -1
+            return
+        }
 //        if (navController.popBackStack(R.id.navigation_home, true))
 //            return;
         isHome = true

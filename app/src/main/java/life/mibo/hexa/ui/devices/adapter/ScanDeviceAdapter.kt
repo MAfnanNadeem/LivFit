@@ -10,11 +10,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.R
+import java.lang.Exception
 import java.util.*
 
 
@@ -64,15 +66,23 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         fun bind(item: Device?, callback: Listener?) {
             if (item == null)
                 return
-            name?.text = item.name
+            val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
+
+            try {
+                name?.text = item.name?.split("-")!![0]
+            }
+            catch (e: Exception)
+            {
+                name?.text = item.name
+            }
             address?.text = item.serial + " : " + item.id
             when {
                 item.type == DeviceTypes.WIFI_STIMULATOR -> {
                     wifi?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
-                    bluetooth?.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN)
+                    bluetooth?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
                 }
                 item.type == DeviceTypes.BLE_STIMULATOR -> {
-                    wifi?.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN)
+                    wifi?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
                     bluetooth?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
                 }
                 item.type == DeviceTypes.SCALE -> {
@@ -80,41 +90,43 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     bluetooth?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                 }
                 else -> {
-                    wifi?.setColorFilter(Color.GRAY)
-                    bluetooth?.setColorFilter(Color.GRAY)
+                    wifi?.setColorFilter(grey)
+                    bluetooth?.setColorFilter(grey)
                 }
             }
             if (item.isStarted) {
 //                if (item.isWifi) {
 //                    //wifi?.setColorFilter(Color.GREEN)
-//                    //bluetooth?.setColorFilter(Color.GRAY)
+//                    //bluetooth?.setColorFilter(grey)
 //                    disconnect?.setColorFilter(Color.RED)
 //                    connect?.setColorFilter(Color.GREEN)
 //                } else {
-//                    //wifi?.setColorFilter(Color.GRAY)
+//                    //wifi?.setColorFilter(grey)
 //                    //bluetooth?.setColorFilter(Color.BLUE)
 //                    disconnect?.setColorFilter(Color.RED)
 //                    connect?.setColorFilter(Color.GREEN)
 //                }
             } else {
-                //wifi?.setColorFilter(Color.GRAY)
-                //bluetooth?.setColorFilter(Color.GRAY)
-                disconnect?.setColorFilter(Color.GRAY)
-                connect?.setColorFilter(Color.GRAY)
+                //wifi?.setColorFilter(grey)
+                //bluetooth?.setColorFilter(grey)
+                disconnect?.setColorFilter(grey)
+                connect?.setColorFilter(grey)
             }
             connect?.setOnClickListener {
                 callback?.onConnectClicked(item)
             }
             disconnect?.setOnClickListener {
                 item.statusConnected = 0
-                disconnect?.setColorFilter(Color.GRAY)
+                disconnect?.setColorFilter(grey)
                 callback?.onCancelClicked(item)
             }
 
             if (item.statusConnected == 1) {
                 disconnect?.setColorFilter(Color.RED)
+                connect?.setColorFilter(grey)
             } else {
-                disconnect?.setColorFilter(Color.GRAY)
+                disconnect?.setColorFilter(grey)
+                connect?.setColorFilter(Color.GREEN)
             }
         }
     }

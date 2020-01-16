@@ -22,13 +22,15 @@ import java.io.Serializable
 
 @Throws(JsonIOException::class)
 fun Serializable.toJson(): String {
-    return Gson().toJson(this)
+    return Gson().toJson(this, javaClass)
 }
 
 @Throws(JsonSyntaxException::class)
 fun <T> String.to(type: Class<T>): T where T : Serializable? {
     return Gson().fromJson(this, type)
 }
+
+fun String.toIntOrZero(): Int = if (this.isEmpty()) 0 else this.toInt()
 
 fun Color.PRIMARY():Int {
     return Color.parseColor("#09B189")

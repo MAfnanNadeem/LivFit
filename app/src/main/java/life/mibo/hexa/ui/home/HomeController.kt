@@ -6,7 +6,6 @@ package life.mibo.hexa.ui.home
 
 import android.graphics.Color
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
@@ -47,7 +46,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         ) {
             list.add(HomeItem(0, "$i"))
         }
-        val adapter = HomeAdapter(list)
+        //val adapter = HomeAdapter(list)
         //val manager = LinearLayoutManager(this@HomeFragment.activity)
        //  val grid = GridLayoutManager(fragment.activity, 1)
 //        grid.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -63,7 +62,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         view.layoutManager = LinearLayoutManager(fragment.context)
 
-        view.adapter = adapter
+        //view.adapter = adapter
     }
 
 
@@ -75,7 +74,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         }
 
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val session = SessionDetails("${member.id}", member.accessToken)
@@ -115,7 +114,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "  Weight ", "" + report.weight + " Kg",
-                HomeItem.Type.WEIGHT, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_4
+                HomeItem.Type.WEIGHT, 0, R.drawable.dashboard_item_bg_4
             )
         )
         list.add(
@@ -138,7 +137,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Calories ", "" + data?.caloriesBurnt,
-                HomeItem.Type.CALORIES, R.drawable.ic_rxl_all, R.drawable.dashboard_item_bg_12
+                HomeItem.Type.CALORIES, 0, R.drawable.dashboard_item_bg_12
             )
         )
         list.add(
@@ -171,7 +170,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
-        observer.onDataRecieved(list)
+        observer.onDataReceived(list)
     }
 
     fun parseData2(report: SessionReport) {
@@ -233,7 +232,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp
             )
         )
-        observer.onDataRecieved(list)
+        observer.onDataReceived(list)
     }
 
 }

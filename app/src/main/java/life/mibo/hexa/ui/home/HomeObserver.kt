@@ -5,6 +5,6 @@
 package life.mibo.hexa.ui.home
 
 interface HomeObserver {
-    fun onDataRecieved(list: ArrayList<HomeItem>)
+    fun onDataReceived(list: ArrayList<HomeItem>)
     fun onItemClicked(item: HomeItem?)
 }

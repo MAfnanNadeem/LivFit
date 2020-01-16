@@ -11,6 +11,7 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -148,7 +149,8 @@ public class BluetoothManager {
     public void stopScanDevice() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            bluetoothLeScanner.stopScan(mLeHrSensorScanCallback);
+            if (bluetoothLeScanner != null)
+                bluetoothLeScanner.stopScan(mLeHrSensorScanCallback);
         }
     }
 
@@ -275,6 +277,7 @@ public class BluetoothManager {
     }
 
     public void connectMIBOBoosterGattDevice(String Id) {
+        Logger.e("connectMIBOBoosterGattDevice "+Id);
         boolean newDevice = true;
         for (BluetoothDevice t : devicesConnectedBle) {
             if (t.getName() != null)
@@ -307,6 +310,8 @@ public class BluetoothManager {
     }
 
     public void disconnectMIBOBoosterGattDevice(String Id) {
+        Logger.e("disconnectMIBOBoosterGattDevice "+Id);
+
         int aux = -1;
         for (BluetoothDevice d : devicesConnectedBle) {
             if (d.getName().contains(Id)) {

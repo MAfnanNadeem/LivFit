@@ -13,6 +13,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 
 import java.io.Serializable;
@@ -214,7 +216,8 @@ public class Prefs {
         }
     }
 
-    public Member getMember() {
+    public @Nullable
+    Member getMember() {
         try {
             String str = get(USER);
             return new Gson().fromJson(str, Member.class);

@@ -20,7 +20,7 @@ import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
 
 
-class Channel6Fragment : BaseFragment() {
+class Channel6Fragment : BaseFragment(), ChannelObserver {
 
     private lateinit var viewModel: Channel6ViewModel
     private lateinit var controller: Channel6Controller
@@ -38,7 +38,7 @@ class Channel6Fragment : BaseFragment() {
         })
 
         this.activity?.actionBar?.hide()
-        controller = Channel6Controller(this@Channel6Fragment)
+        controller = Channel6Controller(this@Channel6Fragment, this)
 
         //setRecycler(recyclerView!!)
         //retainInstance = true
@@ -82,6 +82,20 @@ class Channel6Fragment : BaseFragment() {
         }
 
     }
+
+
+    override fun onTimerUpdate(time: Long) {
+        //log("onTimerUpdate $time")
+        if (time == 0L) {
+            tv_timer?.text = "Completed"
+            controller.exerciseCompleted()
+        } else {
+            // tvTimer?.text = "${end.minus(it)} sec"
+            tv_timer?.text = String.format("%02d:%02d", time / 60, time % 60)
+        }
+    }
+
+
 
     private var isLand = false
     override fun onConfigurationChanged(newConfig: Configuration) {

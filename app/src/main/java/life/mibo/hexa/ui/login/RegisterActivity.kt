@@ -126,7 +126,7 @@ class RegisterActivity : BaseActivity() {
 
     val observer = object : RegisterController.RegisterObserver {
         override fun onTimerUpdate(time: Long) {
-            log("startCountDown $time")
+            log("startTimer $time")
             if (time == 0L) {
                 isResend = true
                 tv_resend?.text = "Resend OTP"

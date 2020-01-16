@@ -24,7 +24,6 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.rilixtech.widget.countrycodepicker.Country
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker
 import life.mibo.hardware.core.Logger
-import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
@@ -37,6 +36,8 @@ import life.mibo.hexa.models.verify_otp.VerifyOTP
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.receiver.AppSignatureHelper
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
+import life.mibo.hexa.ui.main.FirebaseEvent
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
@@ -287,6 +288,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 city, country, dob, ccp!!.selectedCountryCodeWithPlus, phoneNumber
             )
             register(data = RegisterGuestMember(data))
+
             //Toasty.success(context, "Successfully registered").show()
             //viewAnimator.showNext()
             //updateNumber()
@@ -305,6 +307,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     private var userId: String = ""
 
     private fun register(data: RegisterGuestMember) {
+        FirebaseEvent.registerEvent(
+            "${data.data?.firstName} - ${data.data?.lastName}",
+            "${data.data?.email}"
+        )
         context.getDialog()?.show()
         API.request.getApi().register(data).enqueue(object : Callback<RegisterResponse> {
 
@@ -332,6 +338,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         success("Successfully Registered $userId")
                         updateNumber(1)
                         isOtp = true
+
+                        FirebaseEvent.registerSuccess("${data.member?.userId}")
                     }
                     data.status == "error" -> {
                         //val er = data.errors;
@@ -343,7 +351,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         // val rr: Error? = Gson().fromJson(el, Error::class.java)
                         // log("RegisterGuestMember rr ${rr.toString()}")
                         error("${data.errors?.get(0)?.message}")
-
+                        FirebaseEvent.registerError("${data.member?.userId}", "$data")
                     }
                     else -> Toasty.warning(
                         context,
@@ -431,8 +439,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         //userId = "139"
         context.log("validateOtp $otp")
         context.getDialog()?.show()
-        val data = VerifyOTP(userId, otp)
-        API.request.getApi().verifyOtp(data).enqueue(object : Callback<VerifyOtpResponse> {
+        val otpData = VerifyOTP(userId, otp)
+        API.request.getApi().verifyOtp(otpData).enqueue(object : Callback<VerifyOtpResponse> {
 
             override fun onFailure(call: Call<VerifyOtpResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
@@ -455,6 +463,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         success("${data.data?.message}")
                         //success("OTP Verified")
                         updateNumber(3)
+                        FirebaseEvent.otpSuccess("$userId", "$otp")
                     }
                     data.status == "error" -> {
                         error("${data.errors?.get(0)?.message}")
@@ -535,7 +544,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         cancelTimer()
         countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
             override fun onTick(it: Long) {
-                context.log("startCountDown $it")
+                context.log("startTimer $it")
                 observer?.onTimerUpdate(it)
             }
 

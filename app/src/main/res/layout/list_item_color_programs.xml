@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/16/20 1:43 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/16/20 12:37 PM
+  ~  Mibo Hexa - app
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:padding="@dimen/grid_1x">
+
+
+    <life.mibo.views.CircleView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/circleImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:cv_border="false"
+        app:cv_shadow="false"
+        app:cv_shadow_color="@color/colorPrimary"
+        app:cv_shadow_radius="8" />
+
+
+</LinearLayout>

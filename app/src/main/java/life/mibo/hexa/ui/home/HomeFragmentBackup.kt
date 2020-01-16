@@ -55,7 +55,7 @@ class HomeFragmentBackup : BaseFragment(), HomeObserver {
         super.onViewCreated(view, savedInstanceState)
         controller = HomeController(this@HomeFragmentBackup, this)
         iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
-        val member: Member? = Prefs.get(this.context)?.getMember(Member::class.java)
+        val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
         iv_user_pic.setImageDrawable(
             ContextCompat.getDrawable(
@@ -68,7 +68,7 @@ class HomeFragmentBackup : BaseFragment(), HomeObserver {
         //controller.setRecycler(recyclerView!!)
     }
 
-    override fun onDataRecieved(list: ArrayList<HomeItem>) {
+    override fun onDataReceived(list: ArrayList<HomeItem>) {
         getDialog()?.dismiss()
         list.forEachIndexed { i, item ->
             when (i) {

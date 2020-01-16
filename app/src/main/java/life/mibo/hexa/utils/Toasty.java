@@ -137,7 +137,7 @@ public class Toasty {
 
     @CheckResult
     public static Toast info(@NonNull Context context, @NonNull CharSequence message) {
-        return info(context, message, Toast.LENGTH_SHORT, true);
+        return info(context, message, Toast.LENGTH_SHORT, false);
     }
 
     @CheckResult

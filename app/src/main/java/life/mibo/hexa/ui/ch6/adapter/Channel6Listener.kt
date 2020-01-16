@@ -6,4 +6,5 @@ interface Channel6Listener {
         fun onPlusClicked(data: Channel6Model)
         fun onMinusClicked(data: Channel6Model)
         fun onPlayPauseClicked(data: Channel6Model, isPlay: Boolean)
-    }
+    fun exerciseCompleted()
+}

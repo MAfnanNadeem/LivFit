@@ -62,7 +62,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         log("onViewCreated")
         controller = HomeController(this@HomeFragment, this)
         //iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
-        val member: Member? = Prefs.get(this.context)?.getMember(Member::class.java)
+        val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
         iv_user_pic.setImageDrawable(
             ContextCompat.getDrawable(
@@ -189,7 +189,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         // var odd = true
         // var size = list.size
         data.clear()
-        //TODO later i will do it dynamic, now skip
+        //TODO later i will do it dynamic list mapping, now skip
 //        list.forEachIndexed { i, item ->
 //            if (odd) {
 //                if (i + 1 < size)
@@ -211,9 +211,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
             data.add(arrayOf(list[2], list[3], list[4]))
             data.add(arrayOf(list[5], list[6]))
             data.add(arrayOf(list[7]))
-           val metrics = resources.displayMetrics
+            val metrics = resources.displayMetrics
             setRecyclerView(metrics!!.widthPixels.div(3))
-
         }
     }
 
@@ -224,7 +223,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
         adapter = HomeAdapter(data, width)
         val size = data.size - 1
-        val bottom = Utils.dpToPixel(-26, this.context)
+        //val bottom = Utils.dpToPixel(-26, this.context)
+        val bottom = -width.div(5)
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
@@ -236,7 +236,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
                 } else
                     rect.set(0, 0, 0, bottom)
 
-                // log(" getItemOffsets2: r=$rect s=$width p=$pos")
+                log(" getItemOffsets2: r=$rect s=$width p=$pos")
+                //r=Rect(0, 0 - 0, -68) s=360
             }
 
         })

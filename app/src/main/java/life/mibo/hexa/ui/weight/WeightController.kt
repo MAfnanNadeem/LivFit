@@ -11,7 +11,6 @@ import android.view.View
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.models.user_details.UserDetails
 import life.mibo.hexa.models.user_details.UserDetailsPost
 import life.mibo.hexa.models.weight.WeightAll
@@ -43,7 +42,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
 
     fun getUserDetails() {
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val session = UserDetailsPost("${member.id}", member.accessToken)
@@ -73,7 +72,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
 
     fun getAllWeight() {
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val session = WeightAll("${member.id}", member.accessToken)

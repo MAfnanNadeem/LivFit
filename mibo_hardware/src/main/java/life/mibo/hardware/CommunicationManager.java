@@ -149,27 +149,27 @@ public class CommunicationManager {
     }
 
     private void pingSentDevice(String uid) {
-        for (Device d : SessionManager.getInstance().getSession().getConnectedDevices()) {//for(Device d : mDiscoveredDevices) {
+        for (Device d : SessionManager.getInstance().getUserSession().getConnectedDevices()) {//for(Device d : mDiscoveredDevices) {
             if (d.getUid().equals(uid)) {
                 switch (d.getStatusConnected()) {
                     case DEVICE_NEUTRAL:
                         d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
+                        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
                         break;
                     case DEVICE_CONNECTED:
                         d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
+                        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
                         break;
                     case DEVICE_WAITING:
                         d.setStatusConnected(DEVICE_WARNING);
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
+                        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
                         if (listener != null)
                             listener.onConnectionStatus(d.getUid());
                         //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
                         break;
                     case DEVICE_WARNING:
                         d.setStatusConnected(DEVICE_DISCONNECTED);
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_DISCONNECTED);
+                        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_DISCONNECTED);
                         if (listener != null)
                             listener.onConnectionStatus(d.getUid());
                         //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
@@ -187,7 +187,7 @@ public class CommunicationManager {
                         break;
                     default:
                         d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
+                        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WAITING);
                 }
             }
         }
@@ -225,8 +225,8 @@ public class CommunicationManager {
                     // TODO remove later broadcastConsumer
                     //broadcastConsumer(msg, ip);
                     SessionManager manager = SessionManager.getInstance();
-                    if (manager.getSession() != null) {
-                        if (manager.getSession().isBoosterMode()) {// true wifi mode
+                    if (manager.getUserSession() != null) {
+                        if (manager.getUserSession().isBoosterMode()) {// true wifi mode
                             broadcastConsumer(msg, ip);
                             log("Session Manager Boosted Mode");
                         } else {
@@ -256,7 +256,7 @@ public class CommunicationManager {
                 @Override
                 public void bleBoosterDeviceDiscovered(String uid, String serial) {
                     log("BluetoothManager bleBoosterDeviceDiscovered " + uid + " IP " + serial);
-                    //if (!SessionManager.getInstance().getSession().isBoosterMode())// true wifi mode, false ble mode
+                    //if (!SessionManager.getInstance().getUserSession().isBoosterMode())// true wifi mode, false ble mode
                     bleBoosterDiscoverConsumer(uid, serial);
 
                 }
@@ -420,7 +420,7 @@ public class CommunicationManager {
 
     private void bleHrDiscoverConsumer(String uid, String serial) {
         add(new Device("", uid, serial, HR_MONITOR));
-        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
+        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
         // if (listener != null)
         //     listener.onDeviceDiscoveredEvent("");
         //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
@@ -428,7 +428,7 @@ public class CommunicationManager {
 
     private void bleScaleDiscoverConsumer(String uid, String serial) {
         add(new Device("", uid, serial, SCALE));
-        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
+        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
         //  if (listener != null)
         //     listener.onDeviceDiscoveredEvent("");
         //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
@@ -436,7 +436,7 @@ public class CommunicationManager {
 
     private void bleBoosterDiscoverConsumer(String uid, String serial) {
         add(new Device("", uid, serial.replace("MIBO-", ""), BLE_STIMULATOR));
-        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
+        SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_WARNING);
         // if (listener != null)
         //   listener.onDeviceDiscoveredEvent("");
 
@@ -451,7 +451,7 @@ public class CommunicationManager {
 //                        EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
 //                    }
                     d.setStatusConnected(DEVICE_CONNECTED);
-                    SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_CONNECTED);
+                    SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_CONNECTED);
 
                     if (listener != null)
                         listener.onConnectionStatus(uid);
@@ -461,9 +461,9 @@ public class CommunicationManager {
                 }
             }
         }
-        if (SessionManager.getInstance().getSession().getCurrentSessionStatus() == 1 ||
-                SessionManager.getInstance().getSession().getCurrentSessionStatus() == 2) {
-            SessionManager.getInstance().getSession().getUserByHrUid(uid).setHr(hr);
+        if (SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 1 ||
+                SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 2) {
+            SessionManager.getInstance().getUserSession().getUserByHrUid(uid).setHr(hr);
         }
         if (listener != null)
             listener.HrEvent(hr, uid);
@@ -507,7 +507,7 @@ public class CommunicationManager {
                 newDevice = false;
                 d.setIp(ip);
                 d.setStatusConnected(DEVICE_WARNING);
-                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(d.getUid()).setStatusConnected(DEVICE_WARNING);
+                SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(d.getUid()).setStatusConnected(DEVICE_WARNING);
                 //if (listener != null)
                 //    listener.onDeviceDiscoveredEvent("");
                 //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
@@ -581,13 +581,14 @@ public class CommunicationManager {
 
 
     public void connectDevice(Device device) {
+        log("connectDevice " + device);
         if (device == null)
             return;
         if (device.getType() == WIFI_STIMULATOR) {
             for (Device d : mDiscoveredDevices) {
                 if (d.getUid().equals(device.getUid()) && (d.getType() == WIFI_STIMULATOR)) {
                     connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid());
-                    SessionManager.getInstance().getSession().addConnectedDevice(device);
+                    SessionManager.getInstance().getUserSession().addConnectedDevice(device);
                     device.setStatusConnected(DEVICE_CONNECTING);
                 }
             }
@@ -595,20 +596,28 @@ public class CommunicationManager {
             //stopDiscoveryServers();
             if (bluetoothManager != null)
                 bluetoothManager.connectHrGattDevice(device.getUid());
-            SessionManager.getInstance().getSession().addConnectedDevice(device);
+            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == BLE_STIMULATOR) {
             //stopDiscoveryServers();
-            if (bluetoothManager != null)
-                bluetoothManager.connectMIBOBoosterGattDevice(device.getUid());
-            SessionManager.getInstance().getSession().addConnectedDevice(device);
+            log("connectDevice BLE_STIMULATOR " + device.getType());
+            if (bluetoothManager != null) {
+                String id = device.getUid();
+                if(id.contains(":")){
+                    id = device.getName().substring("MIBO-".length());
+                }
+                bluetoothManager.connectMIBOBoosterGattDevice(id);
+            }
+            //if (bluetoothManager != null)
+              //  bluetoothManager.connectMIBOBoosterGattDevice(device.getUid());
+            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == SCALE) {
-            SessionManager.getInstance().getSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+            SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
         } else if (device.getType() == RXL_WIFI) {
             log("device connect " + device.getIp());
             connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid());
-            SessionManager.getInstance().getSession().addConnectedDevice(device);
+            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         }
 
@@ -621,6 +630,7 @@ public class CommunicationManager {
     }
 
     public void deviceDisconnect(Device device) {
+        log("deviceDisconnect " + device);
         if (device == null)
             return;
         if (device.getType() == WIFI_STIMULATOR) {
@@ -631,8 +641,14 @@ public class CommunicationManager {
             if (bluetoothManager != null)
                 bluetoothManager.disconnectHrGattDevice(device.getUid());
         } else if (device.getType() == BLE_STIMULATOR) {
-            if (bluetoothManager != null)
-                bluetoothManager.disconnectMIBOBoosterGattDevice(device.getUid());
+            log("deviceDisconnect BLE_STIMULATOR");
+            if (bluetoothManager != null) {
+                String id = device.getUid();
+                if(id.contains(":")){
+                    id = device.getName().substring("MIBO-".length());
+                }
+                bluetoothManager.disconnectMIBOBoosterGattDevice(id);
+            }
         }
     }
 
@@ -936,15 +952,16 @@ public class CommunicationManager {
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onChangeColorEvent(ChangeColorEvent event) {
+        log("onChangeColorEvent "+event);
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                t.sendMessage(DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet())), "onChangeColorEvent");
             }
         }
         if (bluetoothManager != null)
             bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                    DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet())));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         Log.e("CommManager", "Color EVENT");
 
@@ -1100,7 +1117,7 @@ public class CommunicationManager {
             if (d.getUid().equals(event.getname())) {
 
                 d.setStatusConnected(DEVICE_CONNECTED);
-                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(event.getname()).setStatusConnected(DEVICE_CONNECTED);
+                SessionManager.getInstance().getUserSession().getRegisteredDevicebyUid(event.getname()).setStatusConnected(DEVICE_CONNECTED);
                 if (listener != null)
                     listener.onConnectionStatus(event.getname());
                 //EventBus.getDefault().postSticky(new onConnectionStatus(event.getname()));

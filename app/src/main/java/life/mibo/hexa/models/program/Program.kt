@@ -9,6 +9,7 @@ package life.mibo.hexa.models.program
 
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.hardware.core.Logger
 
 data class Program(
     @SerializedName("AccessType")
@@ -35,4 +36,50 @@ data class Program(
     var name: String?,
     @SerializedName("Type")
     var type: String?
-)
+) {
+
+    // a wrapper to convert user program to hardware library program compatible
+    fun create(): life.mibo.hardware.models.program.Program {
+        val program = life.mibo.hardware.models.program.Program()
+        program.setDuration(duration!!.valueInt())
+        program.id = "$id"
+        program.name = "$name"
+        program.description = "$description"
+        program.borgRating = borgRating!!
+
+        if (blocks != null) {
+            //val list = Array<life.mibo.hardware.models.program.Block>()[blocks!!.size];
+            val list = ArrayList<life.mibo.hardware.models.program.Block>()
+
+            blocks?.forEach {
+                it?.create()?.let { it1 ->
+                    list.add(it1)
+                }
+            }
+
+            program.addBlocks(list)
+        }
+
+//        val block1 = life.mibo.hardware.models.program.Block()
+//        block1.setBlockDuration(8000)
+//        block1.setPauseDuration(4000)
+//        block1.setActionDuration(4000)
+//        block1.setUpRampDuration(0)
+//        block1.setDownRampDuration(0)
+//        block1.setPulseWidth(350)
+//        block1.setFrequency(85)
+//        val blocks = arrayOf(block1);
+//        program.setBlocks(blocks)
+
+        Logger.e("SelectProgramFragment program created $program")
+        return program
+    }
+
+    constructor(color: Int) : this(
+        null, null, null, null,
+        null, null, null, null,
+        color, null, null, null
+    ) {
+
+    }
+}

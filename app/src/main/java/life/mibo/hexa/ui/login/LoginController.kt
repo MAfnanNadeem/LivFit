@@ -6,12 +6,13 @@ package life.mibo.hexa.ui.login
 
 import android.content.Intent
 import life.mibo.hexa.BuildConfig
-import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
+import life.mibo.hexa.ui.main.FirebaseEvent
+import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
@@ -74,8 +75,11 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                     if (data.status.equals("success", true)) {
                         Toasty.success(context, "Successfully logged").show()
                         isLogin = true
-                        Prefs.get(this@LoginController.context).setMember(data.data)
+                        Prefs.get(this@LoginController.context).member = data.data
                         Prefs.get(this@LoginController.context).set("user_email",usr)
+                        FirebaseEvent.loginSuccess(
+                            "${data.data?.firstName} - ${data.data?.lastName}", "$usr"
+                        )
                         loginSucceed()
                     } else if (data.status.equals("error", true)) {
                         Toasty.error(context, "${data.error?.get(0)?.message}").show()

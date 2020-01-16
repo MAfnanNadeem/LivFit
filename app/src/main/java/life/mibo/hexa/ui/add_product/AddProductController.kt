@@ -45,7 +45,7 @@ class AddProductController(val fragment: AddProductFragment, val observer: Produ
             return
         }
         val member =
-            Prefs.get(this.fragment.context).getMember<Member?>(Member::class.java)
+            Prefs.get(this.fragment.context).member
                 ?: return
         fragment.getDialog()?.show()
         val session = SessionDetails("${member.id}", member.accessToken)

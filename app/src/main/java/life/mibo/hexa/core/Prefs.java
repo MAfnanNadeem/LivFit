@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import life.mibo.hardware.core.Logger;
+import life.mibo.hexa.models.login.Member;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class Prefs {
@@ -30,6 +31,7 @@ public class Prefs {
     private static Prefs instance;
     public static final String PREFS_NAME = "miboPrefs";
     public static final String USER = "user_member";
+    public static final String MEMBER = "user_member_";
     public static final String SESSION = "user_session_";
 
     /**
@@ -203,25 +205,22 @@ public class Prefs {
 
     }
 
-    public void setMember(Object o) {
+    public void setMember(Member member) {
         try {
-            String json = new Gson().toJson(o, o.getClass());
+            String json = new Gson().toJson(member, member.getClass());
             getEditor().putString(USER, json).apply();
-            Logger.e("setMember saved " + USER);
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.e("setMember error " + USER);
         }
     }
 
-    public <T> T getMember(Type t) {
+    public Member getMember() {
         try {
             String str = get(USER);
-            return new Gson().fromJson(str, t);
+            return new Gson().fromJson(str, Member.class);
 
         } catch (Exception e) {
             return null;
         }
     }
-
 }

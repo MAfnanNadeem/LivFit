@@ -2,7 +2,6 @@ package life.mibo.hexa.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import life.mibo.hexa.BuildConfig
-import life.mibo.hexa.MiboApplication
 import life.mibo.hexa.core.gson.GsonConverterFactory
 import life.mibo.hexa.models.base.PostData
 import life.mibo.hexa.models.calories.Calories
@@ -11,6 +10,8 @@ import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.member.Member
 import life.mibo.hexa.models.member.MemberDetailsPOST
+import life.mibo.hexa.models.program.ProgramPost
+import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.models.register.RegisterGuestMember
 import life.mibo.hexa.models.register.RegisterResponse
 import life.mibo.hexa.models.send_otp.SendOTP
@@ -25,6 +26,7 @@ import life.mibo.hexa.models.verify_otp.VerifyOTP
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.weight.WeightAll
 import life.mibo.hexa.models.weight.WeightAllResponse
+import life.mibo.hexa.ui.main.MiboApplication
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -132,5 +134,13 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getAllCaloriesBurnt")
         fun getAllCaloriesBurnt(@Body data: PostData): Call<Calories>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getProgram")
+        fun getProgram(@Body data: PostData): Call<Calories>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchPrograms")
+        fun searchPrograms(@Body data: ProgramPost): Call<SearchPrograms>
     }
 }

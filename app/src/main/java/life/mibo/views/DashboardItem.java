@@ -174,7 +174,7 @@ public class DashboardItem extends FrameLayout {
             tv2.setTextColor(Color.WHITE);
             tv2.setTypeface(null, Typeface.BOLD);
             //tv2.setPadding(0,getDp(8),0,0);
-            tv2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            tv2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
             layout.addView(tv2);
         }
 

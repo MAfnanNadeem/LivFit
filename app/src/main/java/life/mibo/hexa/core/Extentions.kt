@@ -83,12 +83,13 @@ fun NavController.navigateSafe(
     @IdRes actionId: Int, @IdRes fragmentId: Int, args: Bundle? = null,
     navOptions: NavOptions? = null, navExtras: Navigator.Extras? = null
 ) {
-    val action = currentDestination?.getAction(actionId) ?: graph.getAction(actionId)
-    if (action != null && currentDestination?.id != action.destinationId) {
-        navigate(actionId, args, navOptions, navExtras)
-    } else {
-       // navigateUp()
-        //popBackStack()
+    if (actionId != 0) {
+        val action = currentDestination?.getAction(actionId) ?: graph.getAction(actionId)
+        if (action != null && currentDestination?.id != action.destinationId) {
+            navigate(actionId, args, navOptions, navExtras)
+            return
+        }
+    } else if (fragmentId != 0 && fragmentId != currentDestination?.id)
         navigate(fragmentId, args, navOptions, navExtras)
-    }
 }
+

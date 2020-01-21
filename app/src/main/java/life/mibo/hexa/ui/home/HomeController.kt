@@ -65,6 +65,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         //view.adapter = adapter
     }
 
+    var isMember = false
 
     fun getDashboard() {
         val s: Report? = Prefs.get(fragment.context).getJson(Prefs.SESSION, Report::class.java)
@@ -100,7 +101,11 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                     val err = data?.error?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
-                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                    else {
+                        Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                        if(err.contains("No Schedules Found"))
+                            parseDefaults()
+                    }
                 }
                 fragment.getDialog()?.dismiss()
             }
@@ -170,6 +175,72 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
+        isMember = true
+        observer.onDataReceived(list)
+    }
+
+    fun parseDefaults() {
+        val list = ArrayList<HomeItem>()
+        list.add(
+            HomeItem(
+                "  Weight ",  "0 Kg",
+                HomeItem.Type.WEIGHT, 0, R.drawable.dashboard_item_bg_4
+            )
+        )
+        list.add(
+            HomeItem(
+                "0 BPM", "",
+                HomeItem.Type.HEART,
+                R.drawable.ic_rxl_heart_unselect,
+                R.drawable.dashboard_item_bg_5
+            )
+        )
+        list.add(
+            HomeItem(
+                " Calendar",
+                "",
+                HomeItem.Type.CALENDAR,
+                R.drawable.ic_dashboard_calendar,
+                R.drawable.dashboard_item_bg_2
+            )
+        )
+        list.add(
+            HomeItem(
+                "Calories ", "0",
+                HomeItem.Type.CALORIES, 0, R.drawable.dashboard_item_bg_12
+            )
+        )
+        list.add(
+            HomeItem(
+                "Schedule",
+                "",
+                HomeItem.Type.SCHEDULE,
+                R.drawable.ic_dashboard_schedule,
+                R.drawable.dashboard_item_bg_1
+            )
+        )
+        list.add(
+            HomeItem(
+                " Programs", "",
+                HomeItem.Type.PROGRAMS, R.drawable.ic_nfc_black_24dp, R.drawable.dashboard_item_bg_6
+            )
+        )
+        list.add(
+            HomeItem(
+                "Booster",
+                "",
+                HomeItem.Type.BOOSTER,
+                R.drawable.ic_dashboard_booster,
+                R.drawable.dashboard_item_bg_3
+            )
+        )
+        list.add(
+            HomeItem(
+                "   Add Product", "",
+                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
+            )
+        )
+        isMember = true
         observer.onDataReceived(list)
     }
 

@@ -17,4 +17,16 @@
     <dimen name="rxl_item_icon_size">24dp</dimen>
     <dimen name="like_layout_size">32dp</dimen>
     <integer name="nav_anim_time">400</integer>
+
+
+
+    <!-- Calendar Day View -->
+    <dimen name="dayHeight">64dp</dimen>
+    <dimen name="cdv_extra_dimen">3dp</dimen>
+    <dimen name="event_header_padding_bottom">8dp</dimen>
+    <!-- Calendar Popup View -->
+    <dimen name="popup_quote_width">150dp</dimen>
+    <dimen name="popup_quote_height">40dp</dimen>
+    <dimen name="popup_quote_margin_top">-30dp</dimen>
+
 </resources>

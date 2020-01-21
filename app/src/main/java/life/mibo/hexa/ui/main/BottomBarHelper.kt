@@ -52,7 +52,7 @@ class BottomBarHelper() : View.OnClickListener {
 
     fun hide() {
         if(::barView.isInitialized)
-            barView.visibility = View.INVISIBLE
+            barView.visibility = View.GONE
 
     }
 

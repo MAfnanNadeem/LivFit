@@ -259,13 +259,47 @@ public class DataParser {
         return aux;
     }
 
+    public static boolean isRxl = true;
+
     private static byte[] fullMessage(byte[] code, byte[] length, byte[] data) {
+        if (isRxl)
+            return fullMessageRxl(code, length, data);
         byte[] header = new byte[5];
         header[0] = 'M';
         header[1] = 'I';
         header[2] = 'B';
         header[3] = 'O';
         header[4] = '\0';
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            outputStream.write(header);
+            outputStream.write(code);
+            outputStream.write(length);
+            outputStream.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] c = outputStream.toByteArray();
+
+        outputStream.write((byte) (crc16(c) & 0xFF));
+        outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
+
+        Logger.e("Writing Message1 " + Arrays.toString(header));
+        Logger.e("Writing Message2 " + Arrays.toString(code));
+        Logger.e("Writing Message3 " + Arrays.toString(length));
+        Logger.e("Writing Message4 " + Arrays.toString(data));
+
+        return outputStream.toByteArray();
+    }
+
+    private static byte[] fullMessageRxl(byte[] code, byte[] length, byte[] data) {
+        byte[] header = new byte[6];
+        header[0] = 'M';
+        header[1] = 'B';
+        header[2] = 'R';
+        header[3] = 'X';
+        header[4] = 'L';
+        header[5] = '\0';
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(header);

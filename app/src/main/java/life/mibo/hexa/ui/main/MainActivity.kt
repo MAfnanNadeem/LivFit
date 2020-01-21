@@ -38,9 +38,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.zxing.BarcodeFormat
 import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
@@ -57,10 +57,12 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
 import life.mibo.hexa.ui.base.BaseActivity
+import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
 import life.mibo.hexa.ui.home.HomeItem
 import life.mibo.hexa.ui.login.LoginActivity
+import life.mibo.hexa.ui.main.Navigator.Companion.CLEAR_HOME
 import life.mibo.hexa.ui.main.Navigator.Companion.CONNECT
 import life.mibo.hexa.ui.main.Navigator.Companion.DISCONNECT
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME
@@ -396,7 +398,11 @@ class MainActivity : BaseActivity(), Navigator {
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE")
                 val d = SessionManager.getInstance().userSession.device
                 if (d != null && d.uid == uid) {
-                    logw("COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED")
+                    logw(
+                        "COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED battery " + DataParser.getStatusBattery(
+                            command
+                        )
+                    )
                     d.batteryLevel = DataParser.getStatusBattery(command)
                     d.signalLevel = DataParser.getStatusSignal(command)
                     SessionManager.getInstance().userSession.device.batteryLevel =
@@ -404,7 +410,7 @@ class MainActivity : BaseActivity(), Navigator {
                     SessionManager.getInstance().userSession.device.signalLevel =
                         DataParser.getStatusSignal(command)
                     // updated device status/line
-                    //EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
+                    EventBus.getDefault().postSticky(DeviceStatusEvent(d))
                     if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
                         if (d.statusConnected == DEVICE_DISCONNECTED) {
                             EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
@@ -576,15 +582,19 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    var scanDisposable: Disposable? = null
     private fun startScanning(rescan: Boolean, wifi: Boolean = true) {
         log("Scanning.......")
+        scanDisposable?.dispose()
         if (manager == null)
             startManager()
         if (rescan)
             manager?.reScanning(this, wifi)
         else
             manager?.startScanning(this, wifi)
-        Observable.timer(15, TimeUnit.SECONDS).doOnComplete { stopScanning() }.subscribe()
+        scanDisposable =
+            Single.just("").delay(15, TimeUnit.SECONDS).subscribe { i -> stopScanning() }
+
     }
 
     fun stopScanning() {
@@ -670,7 +680,7 @@ class MainActivity : BaseActivity(), Navigator {
             })
     }
 
-    // TODO Navigations
+    // TODO Navigation
     override fun navigateTo(type: Int, data: Any?) {
         log("Call $type || $data")
         when (type) {
@@ -692,6 +702,10 @@ class MainActivity : BaseActivity(), Navigator {
                 if (data != null && data is HomeItem)
                     homeItemClicked(data)
             }
+            CLEAR_HOME -> {
+                popup(R.id.navigation_home)
+                isHome = true
+            }
             HOME_VIEW -> {
                 if (data != null && data is Boolean)
                     updateBar(data)
@@ -701,6 +715,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             SESSION -> {
                 navigate(0, R.id.navigation_channels)
+                updateBar(true)
             }
 
             else -> {
@@ -709,8 +724,8 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    private fun updateBar(data: Boolean) {
-        if (data) {
+    private fun updateBar(hide: Boolean) {
+        if (hide) {
             bottomBarHelper.hide()
         } else {
             bottomBarHelper.show()
@@ -751,18 +766,18 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(HomeItem.Type.BOOSTER)
             }
             R.id.nav_scan -> {
-                startScanning(false)
+                //startScanning(false)
                 navigate(0, R.id.navigation_devices)
             }
             R.id.nav_rxl -> {
-                startScanning(false)
+                //startScanning(false)
                 //updateMenu()
                 navigate(0, R.id.navigation_reflex)
 
             }
 
             R.id.nav_test3 -> {
-                startScanning(false)
+                //startScanning(false)
                 //updateMenu()
                 navigate(0, R.id.navigation_reflex2)
 
@@ -779,6 +794,10 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_rxl_test)
 
             }
+            R.id.nav_send -> {
+                navigateTo(CLEAR_HOME, null)
+
+            }
             R.id.nav_logout -> {
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                 finish()
@@ -791,9 +810,10 @@ class MainActivity : BaseActivity(), Navigator {
 
     private fun bottomBarClicked(position: Int) {
         //Toasty.warning(this@MainActivity, "click $position").show()
+        lastId = position
         when (position) {
             1 -> {
-                popup(R.id.navigation_home)
+                navigateTo(CLEAR_HOME, null)
             }
             2 -> {
 
@@ -808,6 +828,7 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     private fun navigate(type: HomeItem.Type) {
+        lastId = -1
         when (type) {
             HomeItem.Type.HEART -> {
                 navigate(R.id.action_navigation_home_to_navigation_heart_rate, 0)
@@ -840,17 +861,26 @@ class MainActivity : BaseActivity(), Navigator {
                 //navController.navigate(R.id.action_navigation_home_pop)
                 //navController.navigate(R.id.navigation_home)
                 navigate(
-                    R.id.action_navigation_home_to_navigation_six_channel,
-                    R.id.navigation_channels
+                    R.id.action_navigation_home_to_navigation_scan,
+                    R.id.navigation_devices
                 )
+                // navigate(0, R.id.navigation_devices)
                 //navigateFragment(R.id.navigation_calories)
             }
             HomeItem.Type.SCHEDULE -> {
-                // navigateFragment(R.id.navigation_schedule)
+                navigate(
+                    R.id.action_navigation_home_to_schedule,
+                    R.id.navigation_select_program
+                )
+                //navigateFragment(R.id.navigation_schedule)
             }
 
             HomeItem.Type.PROGRAMS -> {
                 //  navigateFragment(R.id.navigation_program)
+            }
+
+            HomeItem.Type.RXL_TEST -> {
+                drawerItemClicked(R.id.navigation_rxl_test)
             }
 
             else -> {
@@ -872,8 +902,13 @@ class MainActivity : BaseActivity(), Navigator {
             if (fragmentId != 0 && fragmentId != navController.currentDestination?.id)
                 navController.navigate(fragmentId, args, getNavOptions(), null)
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             //IllegalAccessException when action id not match in fragment
-            Toasty.info(this, R.string.error_occurred, Toasty.LENGTH_SHORT, false).show()
+            try {
+                Toasty.info(this, R.string.error_occurred, Toasty.LENGTH_SHORT, false).show()
+            } catch (ex2: java.lang.Exception) {
+                ex2.printStackTrace()
+            }
         }
     }
 
@@ -931,6 +966,15 @@ class MainActivity : BaseActivity(), Navigator {
             drawerLayout.closeDrawer(GravityCompat.START)
             return
         }
+        val base =
+            supportFragmentManager?.primaryNavigationFragment?.childFragmentManager?.fragments?.get(
+                0
+            )
+        if (base is BaseFragment) {
+            if (!base.onBackPressed())
+                return
+        }
+        Navigation.findNavController(this, R.id.nav_host_fragment)
         if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()) {
             lastId = -1
             return

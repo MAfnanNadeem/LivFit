@@ -12,9 +12,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_rxl_test.*
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.main.Navigator
 import life.mibo.views.ColorSeekBar
+import org.greenrobot.eventbus.EventBus
 
 class RxlTestFragment : BaseFragment() {
 
@@ -32,6 +36,11 @@ class RxlTestFragment : BaseFragment() {
         seekBar.setOnColorChangeListener(object : ColorSeekBar.OnColorChangeListener {
             override fun onColorSelectListener(color: Int) {
                 tv_device_color?.setTextColor(color)
+                val d = SessionManager.getInstance().userSession.device
+                if (d != null) {
+                    d.colorPalet = color
+                    EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                }
             }
 
             override fun onColorChangeListener(color: Int) {
@@ -39,6 +48,22 @@ class RxlTestFragment : BaseFragment() {
             }
 
         })
+
+        button_lights_on.setOnClickListener {
+
+        }
+
+        button_lights_off.setOnClickListener {
+
+        }
+
+        button_commands.setOnClickListener {
+
+        }
+
+        button_disconnect.setOnClickListener {
+            navigate(Navigator.DISCONNECT, SessionManager.getInstance().userSession.device)
+        }
     }
 
 }

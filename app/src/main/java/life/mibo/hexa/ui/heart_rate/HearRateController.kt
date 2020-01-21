@@ -142,4 +142,6 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
 
         observer.onDataReceived(list)
     }
+
+
 }

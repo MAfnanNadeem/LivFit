@@ -1,5 +1,6 @@
 package life.mibo.hexa.ui.devices.adapter
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -16,8 +17,8 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.R
-import java.lang.Exception
 import java.util.*
+import kotlin.math.log
 
 
 class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
@@ -58,11 +59,13 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         var name: TextView? = itemView.findViewById(R.id.tv_deviceName)
         var address: TextView? = itemView.findViewById(R.id.tv_deviceMac)
         var image: ImageView? = itemView.findViewById(R.id.iv_device)
+        var battery: ImageView? = itemView.findViewById(R.id.iv_battery)
         var connect: ImageButton? = itemView.findViewById(R.id.button_connect)
         var disconnect: ImageButton? = itemView.findViewById(R.id.button_disconnect)
         var bluetooth: ImageView? = itemView.findViewById(R.id.iv_bl)
         var wifi: AppCompatImageView? = itemView.findViewById(R.id.iv_wifi)
 
+        @SuppressLint("SetTextI18n")
         fun bind(item: Device?, callback: Listener?) {
             if (item == null)
                 return
@@ -70,12 +73,13 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 
             try {
                 name?.text = item.name?.split("-")!![0]
-            }
-            catch (e: Exception)
-            {
+            } catch (e: Exception) {
                 name?.text = item.name
             }
-            address?.text = item.serial + " : " + item.id
+            var txt = item.id
+            if (txt.isNullOrBlank())
+                txt = item.ip.hostAddress
+            address?.text = item.serial + " : $txt"
             when {
                 item.type == DeviceTypes.WIFI_STIMULATOR -> {
                     wifi?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
@@ -128,6 +132,23 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(Color.GREEN)
             }
+            image?.background = null
+            battery?.background = null
+            if (item.type == DeviceTypes.RXL_WIFI) {
+                image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
+            } else if (item.type == DeviceTypes.WIFI_STIMULATOR) {
+                image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
+            }
+
+            when {
+                item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
+                item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
+                item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
+                item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
+               // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+            }
+
+            Logger.e("DeviceStatusEvent batteryLevel ${item.batteryLevel}")
         }
     }
 
@@ -181,6 +202,18 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         Logger.e("ScanDevice addDevices list $l")
         this.list?.addAll(l)
         notifyDataSetChanged()
+    }
+
+    fun updateDevice(device: Device?) {
+        device?.let {
+            list?.forEachIndexed { index, device ->
+                if(device.uid == it.uid)
+                {
+                    list!![index] = it
+                    notifyItemChanged(index, it)
+                }
+            }
+        }
     }
 
     data class ScanItem(

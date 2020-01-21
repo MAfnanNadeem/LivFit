@@ -9,63 +9,72 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_scan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/tv_scan"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <life.mibo.views.wifi_switch.IconSwitch
+                android:id="@+id/wifi_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="@dimen/grid_1x"
+                app:isw_active_tint_icon_left="#00F"
+                app:isw_active_tint_icon_right="#0F0"
+                app:isw_background_color="@color/grey"
+                app:isw_default_selection="right"
+                app:isw_icon_left="@drawable/ic_bluetooth_black_24dp"
+                app:isw_icon_right="@drawable/ic_wifi_black_24dp"
+                app:isw_inactive_tint_icon_left="@color/white"
+                app:isw_inactive_tint_icon_right="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@color/transparent"
-            android:paddingStart="12dp"
-            android:text="Scan"
+                android:text="WI-FI"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintBottom_toBottomOf="@+id/wifi_switch"
+                app:layout_constraintStart_toEndOf="@+id/wifi_switch"
+                app:layout_constraintTop_toTopOf="@+id/wifi_switch" />
+
+            <Button
+                android:id="@+id/tv_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@color/transparent"
+                android:paddingEnd="@dimen/grid_1x"
+                android:text="Scan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:textSize="@dimen/text_size_medium" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <ProgressBar
+                android:id="@+id/progress_circular"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_gravity="bottom"
+                android:indeterminate="true"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/checkbox_wifi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="@color/colorAccent"
-                    android:visibility="gone"
-                    android:text="wifi" />
-
-
-                <life.mibo.views.wifi_switch.IconSwitch
-                    android:id="@+id/wifi_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_margin="@dimen/grid_1x"
-                    app:isw_active_tint_icon_left="#00F"
-                    app:isw_active_tint_icon_right="#0F0"
-                    app:isw_background_color="@color/grey"
-                    app:isw_default_selection="right"
-                    app:isw_icon_left="@drawable/ic_bluetooth_black_24dp"
-                    app:isw_icon_right="@drawable/ic_wifi_black_24dp"
-                    app:isw_inactive_tint_icon_left="@color/white"
-                    app:isw_inactive_tint_icon_right="@color/white" />
-            </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progress_circular"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_gravity="bottom"
-            android:indeterminate="true"
-            android:visibility="visible" />
 
     </androidx.cardview.widget.CardView>
 
@@ -81,14 +90,14 @@
         app:layout_constraintTop_toBottomOf="@id/cardview_scan" />
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewAvailable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/grid_1x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_available" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewAvailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_1x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_available" />
 
     <TextView
         android:id="@+id/tv_no_available"
@@ -114,73 +123,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recyclerViewAvailable" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewConnect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/grid_1x"
-            app:layout_constraintTop_toBottomOf="@+id/cardview_connected"
-            tools:layout_editor_absoluteX="8dp" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewConnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_1x"
+        app:layout_constraintTop_toBottomOf="@+id/cardview_connected"
+        tools:layout_editor_absoluteX="8dp" />
 
 
     <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_saved"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="8dp"
+        android:id="@+id/cardview_saved"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recyclerViewConnect">
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewConnect">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="Saved Devices"
-                android:textSize="@dimen/text_size_medium" />
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewPaired"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="@dimen/grid_1x"
-            app:layout_constraintTop_toBottomOf="@+id/cardview_saved"
-            tools:layout_editor_absoluteX="8dp" />
+            android:layout_margin="8dp"
+            android:text="Saved Devices"
+            android:textSize="@dimen/text_size_medium" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPaired"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/cardview_saved"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardview_saved">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_ip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_1x"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardview_saved"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:ems="10"
+            android:text="192.168.1.105" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="192.168.1.105" />
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect"
+            android:textColor="@color/textColor" />
 
-            <Button
-                android:id="@+id/btn_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
-                android:text="Connect" />
-
-        </LinearLayout>
+    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_next"

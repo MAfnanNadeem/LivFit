@@ -43,13 +43,15 @@ data class HomeItem(
         headerText = header
     }
 
+    constructor(type: Type) : this(0, "", 0, type)
+
     private var colorArray: IntArray? = null
     var iconRes: Int = 0
     var imageRes: Int = 0
     var headerText: String = ""
 
     enum class Type {
-        HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE
+        HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER, ReFlex, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE, RXL_TEST
     }
 
     fun bind(view: ViewGroup) {

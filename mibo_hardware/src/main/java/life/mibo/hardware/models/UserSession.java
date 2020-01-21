@@ -330,6 +330,7 @@ public class UserSession {
 
         cTimer = new CountDownTimer(s * 1000, 1000) {
             public void onTick(long millisUntilFinished) {
+                Logger.e("UserSession CountDownTimer "+millisUntilFinished);
                 setCurrentSessionTimer((int) (millisUntilFinished / 1000));
 //                for (int i = 0; i < currentSessionParticipants.size(); i++) {
 //                    if (currentSessionParticipants.get(i).isActive()) {

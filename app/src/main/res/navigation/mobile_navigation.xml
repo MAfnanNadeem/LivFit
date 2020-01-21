@@ -31,6 +31,13 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_six_channel"
             app:destination="@id/navigation_channels" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_scan"
+            app:destination="@id/navigation_devices" />
+        <action
+            android:id="@+id/action_navigation_home_to_schedule"
+            app:destination="@id/navigation_schedule" />
     </fragment>
 
     <fragment
@@ -124,4 +131,5 @@
         android:name="life.mibo.hexa.ui.select_program.SelectProgramFragment"
         android:label="Select Program"
         tools:layout="@layout/fragment_weight" />
+
 </navigation>

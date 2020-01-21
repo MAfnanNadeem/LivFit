@@ -7,21 +7,27 @@
 
 package life.mibo.hexa.ui.heart_rate
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_hr_tab1.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.session.Report
+import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.heart_rate.chart.ChartData
+import java.util.concurrent.TimeUnit
 
 
-class HeartRateTabFragment : Fragment() {
+class HeartRateTabFragment : BaseFragment() {
 
     companion object {
         fun create(type: Int): HeartRateTabFragment {
@@ -78,7 +84,30 @@ class HeartRateTabFragment : Fragment() {
 
             }
         }
-        chartData.getHeartRate(chart, type)
+
+        val d = Single.just(type).delay(300, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { t_ ->
+                chartData.getHeartRate(chart, type)
+            }
+
+        animate(hr_heart_image)
+    }
+
+    fun animate(iv: ImageView?) {
+        if(iv == null)
+            return
+        val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+            iv,
+            PropertyValuesHolder.ofFloat("scaleX", 1.2f),
+            PropertyValuesHolder.ofFloat("scaleY", 1.2f)
+        )
+        scaleDown.duration = 310
+
+        scaleDown.repeatCount = ObjectAnimator.INFINITE
+       // scaleDown.repeatCount = 10
+        scaleDown.repeatMode = ObjectAnimator.REVERSE
+
+        scaleDown.start()
     }
 
 

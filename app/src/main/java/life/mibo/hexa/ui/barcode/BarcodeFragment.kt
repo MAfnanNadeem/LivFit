@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.zxing.BarcodeFormat
-import com.kroegerama.kaiteki.bcode.BarcodeResultListener
+import life.mibo.views.barcode.BarcodeResultListener
 import kotlinx.android.synthetic.main.fragment_barcode.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.hasCameraPermission

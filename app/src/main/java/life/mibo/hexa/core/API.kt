@@ -66,7 +66,7 @@ class API {
         val request: API by lazy { API() }
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
-        const val baseUrl = "http://test.mibo.world/api/v1/"
+        const val baseUrl = "http://test.mibo.world/api/consumer/"
     }
 
     fun getApi(): ApiService {
@@ -116,7 +116,7 @@ class API {
         fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("getLatestSessionDetails")
+        @POST("getLatestSessionReports")
         fun getSessionDetails(@Body data: SessionDetails): Call<SessionReport>
 
         @Headers("Accept: application/json", "Content-Type: application/json")

@@ -76,8 +76,8 @@ class AddProductController(val fragment: AddProductFragment, val observer: Produ
     fun parseData(report: SessionReport?) {
         val list = ArrayList<ProductItem>()
         if (report == null) {
-            list.add(ProductItem(1, "10 Channel Booster", R.drawable.ic_dashboard_booster, true))
-            list.add(ProductItem(1, "6 Channel Booster", R.drawable.ic_dashboard_booster))
+            list.add(ProductItem(1, "10 Channel Booster", R.drawable.ic_dashboard_booster, false))
+            list.add(ProductItem(1, "6 Channel Booster", R.drawable.ic_dashboard_booster, true))
             list.add(ProductItem(1, "4 Channel Booster", R.drawable.ic_dashboard_booster))
             list.add(ProductItem(1, "Heart Rate Sensor", R.drawable.ic_dashboard_booster))
             list.add(ProductItem(1, "Reaction Lights (RXL)", R.drawable.ic_dashboard_booster, true))

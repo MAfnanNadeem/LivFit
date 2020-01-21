@@ -81,7 +81,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     //implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.kroegerama:barcode-kaiteki:1.1.1'
-
+    //    implementation 'com.journeyapps:zxing-android-embedded:4.0.2'
 
     // Google
     implementation 'com.google.code.gson:gson:2.8.6'
@@ -99,6 +99,7 @@ dependencies {
     //implementation 'com.twilio:verification:+'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.kizitonwose:CalendarView:0.3.1'
+    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
 
 
     // networking and RxJava

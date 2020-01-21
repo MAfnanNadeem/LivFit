@@ -26,4 +26,9 @@
     <color name="light_gray">#eeeeee</color>
     <color name="underline_gray">#ECD0D0</color>
     <color name="default_icon">#302F31</color>
+
+    <color name="eventColor">#553fa9eb</color>
+    <color name="eventColorSelected">#aab2c99a</color>
+    <color name="qr_code_reader_square">#09B189</color>
+
 </resources>

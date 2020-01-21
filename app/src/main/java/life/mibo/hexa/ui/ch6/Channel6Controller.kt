@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.MainThread
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +24,7 @@ import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.User
+import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.models.program.Block
 import life.mibo.hardware.models.program.Circuit
 import life.mibo.hardware.models.program.Program
@@ -30,6 +32,8 @@ import life.mibo.hexa.R
 import life.mibo.hexa.ui.ch6.adapter.Channel6Listener
 import life.mibo.hexa.ui.ch6.adapter.Channel6Model
 import life.mibo.hexa.ui.ch6.adapter.ChannelAdapter
+import life.mibo.hexa.ui.main.MiboDialog
+import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
@@ -40,7 +44,52 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     Channel6Listener,
     Channel6Fragment.Listener {
 
+
+    override fun onBackPressed(): Boolean {
+        if (isSessionActive) {
+            MiboDialog(fragment.context!!,
+                "Stop Session?",
+                "Are you sure to want stop current session?",
+                "Continue",
+                "Stop Session",
+                object : MiboDialog.Listener {
+                    override fun onClick(button: Int) {
+                        if (button == MiboDialog.POSITIVE)
+                            exerciseCompleted(true)
+                    }
+
+                }).show()
+            return false
+        }
+        return true
+    }
+
+    fun sessionCompleteDialog() {
+        MiboDialog(fragment.context!!,
+            "Session Completed!",
+            "Congrats you have completed session",
+            "",
+            "close",
+            object : MiboDialog.Listener {
+                override fun onClick(button: Int) {
+
+                }
+
+            }).show()
+    }
+
+    fun closeDialog() {
+        AlertDialog.Builder(fragment.context!!).setTitle("Stop Session?")
+            .setMessage("Are you sure to want stop current session?")
+            .setNeutralButton("Continue", null)
+            .setPositiveButton("Stop Session") { i, j ->
+
+
+            }.create().show()
+    }
+
     //var list = ArrayList<Channel6Model>()
+    var isSessionActive = false
     var progressBar: ProgressBar? = null
     var tvTimer: TextView? = null
     var adapter: ChannelAdapter? = null
@@ -84,7 +133,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     override fun onStop() {
-        cancelTimer()
+        //cancelTimer()
         disposable?.dispose()
     }
 
@@ -108,7 +157,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     override fun onMainStopClicked() {
         if (isConnected)
-            stopUserSession(userUid)
+            onBackPressed()
+        //stopUserSession(userUid)
     }
 
     override fun onClick(data: Channel6Model) {
@@ -131,8 +181,21 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     // TODO hit session report API.
-    override fun exerciseCompleted() {
+    override fun exerciseCompleted(userStopped: Boolean) {
         //API
+        if (userStopped)
+            stopUserSession(userUid)
+
+        isSessionActive = false
+        //then
+        fragment.navigate(Navigator.CLEAR_HOME, null)
+        cancelTimer()
+    }
+
+    //Calories Calculate
+    //(((BORG RATING+17%)*weight(kg))*2(equal to 2 hours workout in a gym))+10%(afterburn)=total calories burned during a 20 minute session
+    fun caclculateCalories() {
+
     }
 
     // TODO Functions
@@ -172,39 +235,6 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     }
 
-    // timer
-    private var totalDuration = 0
-    private var countTimer: CountDownTimer? = null
-    fun startTimer(seconds: Int) {
-        totalDuration = seconds
-        cancelTimer()
-        countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
-            override fun onTick(it: Long) {
-                //log("onTimerUpdate onTick $seconds : $it")
-                //observer?.onTimerUpdate(seconds.minus(it.div(1000)))
-                observer?.onTimerUpdate(it.div(1000))
-            }
-
-            override fun onFinish() {
-                observer?.onTimerUpdate(0L)
-                cancelTimer()
-            }
-        }
-        countTimer?.start()
-    }
-
-    internal fun cancelTimer() {
-        if (countTimer != null) {
-            countTimer?.cancel()
-            updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
-        }
-    }
-
-
-    @MainThread
-    private fun updateTime(timer: Int) {
-
-    }
 
 
     var disposable: Disposable? = null
@@ -269,8 +299,6 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
                 log("starting again device")
                 sendStartToAllBoosters(SessionManager.getInstance().userSession.user)
-                SessionManager.getInstance()
-                    .userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
 
                 //EventBus.getDefault().postSticky(SendDevicePlayEvent(uid))
             }.subscribe()
@@ -498,6 +526,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             disposable?.dispose()
             disposable = null
             startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)
+            isSessionActive = true
             log("onDevicePlayPauseEvent play button enable")
             Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
                 .subscribeOn(Schedulers.computation()).delay(300, TimeUnit.MILLISECONDS)
@@ -626,6 +655,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             SessionManager.getInstance().userSession.user.tsLastStatus = System.currentTimeMillis()
             // Log.e("GroupController","event status");
             updateStatus(event.remainingProgramAction, event.remainingProgramPause)
+            // log("onGetProgramStatusEvent session time " + SessionManager.getInstance().userSession.currentSessionTimer)
             //updateStatus(event.remainingProgramTime, event.remainingProgramAction, event.remainingProgramPause, event.currentBlock, event.currentProgram, event.uid)
         }
 
@@ -634,6 +664,53 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     // TODO Updates
 
+    // timer
+    private var totalDuration = 0
+    private var countTimer: CountDownTimer? = null
+    private fun startTimer(seconds: Int) {
+        // SessionManager.getInstance().userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
+        totalDuration = seconds
+        cancelTimer()
+        countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
+            override fun onTick(it: Long) {
+                log("onTimerUpdate onTick $seconds : $it")
+                onTimerUpdate(it.div(1000))
+            }
+
+            override fun onFinish() {
+                onTimerUpdate(0L)
+                cancelTimer()
+            }
+        }
+        countTimer?.start()
+    }
+
+    internal fun cancelTimer() {
+        if (countTimer != null) {
+            countTimer?.cancel()
+            updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
+        }
+    }
+
+    fun onTimerUpdate(time: Long) {
+        log("onTimerUpdate $time")
+        if (time == 0L) {
+            tvTimer?.text = "Completed"
+            //exerciseCompleted(false)
+            SessionManager.getInstance().userSession.currentSessionStatus =
+                UserSession.SESSION_FINISHED;
+            isSessionActive = false
+            sessionCompleteDialog()
+        } else {
+            // tvTimer?.text = "${end.minus(it)} sec"
+            tvTimer?.text = String.format("%02d:%02d", time / 60, time % 60)
+        }
+    }
+
+    @MainThread
+    private fun updateTime(timer: Int) {
+        log("updateTime currentSessionTimer  $timer")
+    }
 
     fun updateMainLevel(level: Int) {
         log("updateMainLevel $level")

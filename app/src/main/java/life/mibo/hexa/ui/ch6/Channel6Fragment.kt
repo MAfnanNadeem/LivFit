@@ -14,6 +14,7 @@ import life.mibo.hardware.events.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -43,7 +44,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         //setRecycler(recyclerView!!)
         //retainInstance = true
         //SessionManager.getInstance().session = Session()
-        setHasOptionsMenu(true)
+       // setHasOptionsMenu(true)
         return root
     }
 
@@ -86,13 +87,13 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
 
     override fun onTimerUpdate(time: Long) {
         //log("onTimerUpdate $time")
-        if (time == 0L) {
-            tv_timer?.text = "Completed"
-            controller.exerciseCompleted()
-        } else {
-            // tvTimer?.text = "${end.minus(it)} sec"
-            tv_timer?.text = String.format("%02d:%02d", time / 60, time % 60)
-        }
+//        if (time == 0L) {
+//            tv_timer?.text = "Completed"
+//            controller.exerciseCompleted()
+//        } else {
+//            // tvTimer?.text = "${end.minus(it)} sec"
+//            tv_timer?.text = String.format("%02d:%02d", time / 60, time % 60)
+//        }
     }
 
 
@@ -129,7 +130,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         controller.onGetLevelsEvent(event)
     }
 
-
+    // Update progress time
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onGetProgramStatusEvent(event: ProgramStatusEvent) {
         controller.onGetProgramStatusEvent(event)
@@ -150,17 +151,17 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_channel_fragment, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.item_scan){
-            navigate(R.id.nav_scan, null)
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_channel_fragment, menu)
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if(item.itemId == R.id.item_scan){
+//            navigate(R.id.nav_scan, null)
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     interface Listener {
         fun onMainPlusClicked()
@@ -169,5 +170,10 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         fun onMainStopClicked()
         fun onStop()
         fun onViewCreated(view: View, uid: String?)
+    }
+
+    override fun onBackPressed(): Boolean {
+        //Toasty.info(context!!, "onBackPressed").show()
+        return controller.onBackPressed()
     }
 }

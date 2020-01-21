@@ -24,7 +24,7 @@ class MiboApplication : Application() {
         var context : Context? = null
     }
 
-    private var mFirebaseAnalytics: FirebaseAnalytics? = null
+   // private var mFirebaseAnalytics: FirebaseAnalytics? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -32,7 +32,7 @@ class MiboApplication : Application() {
         context = this
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        FirebaseEvent.init(applicationContext)
     }
 
     fun setHandler(){
@@ -41,27 +41,27 @@ class MiboApplication : Application() {
         }
     }
 
-    fun pageEvent(userName: String, userId: String, pageName: String) {
-        val bundle = Bundle()
-        bundle.putString("user_id", userId)
-        bundle.putString("user_name", userName)
-        bundle.putString("page_name", pageName)
-        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
-    }
-
-    fun loginEvent(userName: String, userId: String) {
-        val bundle = Bundle()
-        bundle.putString("user_id", userId)
-        bundle.putString("user_name", userName)
-        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
-    }
-
-    fun registerEvent(userName: String, userId: String) {
-        val bundle = Bundle()
-        bundle.putString("user_id", userId)
-        bundle.putString("user_name", userName)
-        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
-    }
+//    fun pageEvent(userName: String, userId: String, pageName: String) {
+//        val bundle = Bundle()
+//        bundle.putString("user_id", userId)
+//        bundle.putString("user_name", userName)
+//        bundle.putString("page_name", pageName)
+//       // mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+//    }
+//
+//    fun loginEvent(userName: String, userId: String) {
+//        val bundle = Bundle()
+//        bundle.putString("user_id", userId)
+//        bundle.putString("user_name", userName)
+//        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.LOGIN, bundle)
+//    }
+//
+//    fun registerEvent(userName: String, userId: String) {
+//        val bundle = Bundle()
+//        bundle.putString("user_id", userId)
+//        bundle.putString("user_name", userName)
+//        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
+//    }
 
     fun extractLogToFile() : String {
 

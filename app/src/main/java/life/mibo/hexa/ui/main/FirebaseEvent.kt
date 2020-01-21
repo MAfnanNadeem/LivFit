@@ -12,7 +12,7 @@ import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 
 object FirebaseEvent {
-    private var firebase: FirebaseAnalytics? = null
+    private lateinit var firebase: FirebaseAnalytics
 
     fun init(context: Context) {
         firebase = FirebaseAnalytics.getInstance(context)
@@ -68,8 +68,9 @@ object FirebaseEvent {
 
     private fun post(type: String, bundle: Bundle?) {
         try {
-            firebase?.logEvent(type, bundle)
+            firebase.logEvent(type, bundle)
         } catch (e: Exception) {
+
         }
     }
 

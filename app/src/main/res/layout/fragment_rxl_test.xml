@@ -19,17 +19,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/button_lights_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lights On" />
+
+        <Button
+            android:id="@+id/button_lights_off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="Lights Off" />
+
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edittext_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:hint="Commands Type"
+            android:textColor="@color/textColor" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edittext_cmd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:hint="Commands Code"
+            android:textColor="@color/textColor" />
+
+        <Button
+            android:id="@+id/button_commands"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="Send Commands" />
+
+        <Button
+            android:id="@+id/button_disconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="Disconnect" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_device_color"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="Device Color"
         android:textColor="@color/colorAccent"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@id/linearLayout" />
 
     <life.mibo.views.ColorSeekBar
         android:id="@+id/seekBar"

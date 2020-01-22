@@ -419,7 +419,7 @@ public class User implements Serializable {
     }
 
     public Device getUserBooster() {
-        return SessionManager.getInstance().getUserSession().getDevice();
+        return SessionManager.getInstance().getUserSession().getBooster();
     }
 
     public Device getUserHrMonitor() {

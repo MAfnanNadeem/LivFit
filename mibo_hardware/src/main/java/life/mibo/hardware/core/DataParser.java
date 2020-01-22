@@ -77,9 +77,17 @@ public class DataParser {
     }
 
     public static byte[] getUID(byte[] command) {
+        Logger.e("DataParser", "getUID " + Arrays.toString(command));
         if (command.length > 6)
             return new byte[]{command[2], command[3], command[4], command[5], command[6], command[7]};
         return new byte[]{0,1,2,3,4,5};
+    }
+
+    public static byte[] getUIDRxl(byte[] command) {
+        Logger.e("DataParser", "getUID " + Arrays.toString(command));
+        if (command.length > 2)
+            return new byte[]{1, 2, command[0], command[1], command[2], command[3]};
+        return new byte[]{0, 1, 2, 3, 4, 5};
     }
 
     public static boolean[] getChannelAlarms(byte[] command) {
@@ -138,8 +146,10 @@ public class DataParser {
         return fullMessage(new byte[]{COMMAND_GET_FIRMWARE_REVISION}, new byte[]{0}, aux);
     }
 
-    public static byte[] sendGetStatus() {
+    public static byte[] sendGetStatus(boolean isRxl) {
         byte[] aux = new byte[0];
+        if (isRxl)
+            return fullMessageRxl(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, aux);
         return fullMessage(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, aux);
     }
 
@@ -314,10 +324,10 @@ public class DataParser {
         outputStream.write((byte) (crc16(c) & 0xFF));
         outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
 
-        Logger.e("Writing Message1 " + Arrays.toString(header));
-        Logger.e("Writing Message2 " + Arrays.toString(code));
-        Logger.e("Writing Message3 " + Arrays.toString(length));
-        Logger.e("Writing Message4 " + Arrays.toString(data));
+        Logger.e("Writing Message5 " + Arrays.toString(header));
+        Logger.e("Writing Message6 " + Arrays.toString(code));
+        Logger.e("Writing Message7 " + Arrays.toString(length));
+        Logger.e("Writing Message8 " + Arrays.toString(data));
 
         return outputStream.toByteArray();
     }

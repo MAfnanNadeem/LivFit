@@ -123,21 +123,29 @@ public class CommunicationManager {
                 try {
                     Thread.sleep(4000);
                     for (TCPClient t : tcpClients) {
-                        t.sendMessage(DataParser.sendGetStatus(), "PingThread");
+                        t.sendMessage(DataParser.sendGetStatus(t.isRxl()), "PingThread");
                         pingSentDevice(t.getUid());
                         // log("PingThread tcpClients sendMessage");
                         // Log.e("commManag", "send ping");
                     }
                     if (bluetoothManager != null) {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
+                            log("PingThread bluetoothManager sendMessage");
                             if (d.getName() != null) {
                                 if (d.getName().contains("MIBO-")) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
                                     pingSentDevice(d.getName().replace("MIBO-", ""));
+                                    log("PingThread bluetoothManager to MIBO-");
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
                                     pingSentDevice(d.toString());
+                                    log("PingThread bluetoothManager to Geonaute-");
+                                }
+                                if (d.getName().contains("MBRXL-")) {
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(true), d);
+                                    pingSentDevice(d.getName().replace("MIBO-", ""));
+                                    log("PingThread bluetoothManager to MIBO-");
                                 }
                             }
                         }
@@ -150,7 +158,7 @@ public class CommunicationManager {
     }
 
     private void pingSentDevice(String uid) {
-        for (Device d : SessionManager.getInstance().getUserSession().getConnectedDevices()) {//for(Device d : mDiscoveredDevices) {
+        for (Device d : SessionManager.getInstance().getUserSession().getDevices()) {//for(Device d : mDiscoveredDevices) {
             if (d.getUid().equals(uid)) {
                 switch (d.getStatusConnected()) {
                     case DEVICE_NEUTRAL:
@@ -305,7 +313,7 @@ public class CommunicationManager {
         }
     };
 
-    private void log(String s) {
+    public static void log(String s) {
         Logger.e("CommunicationManager: " + s);
     }
 
@@ -346,6 +354,14 @@ public class CommunicationManager {
         // bluetoothManager = null;
     }
 
+    private boolean isBooster(byte[] message) {
+        return message.length > 3 && message[0] == 77 && message[1] == 73 && message[2] == 66 && message[3] == 79;
+    }
+
+    private boolean isRxl(byte[] message) {
+        return message.length > 4 && message[0] == 77 && message[1] == 66 && message[2] == 82 && message[3] == 88 && message[4] == 76;
+    }
+
     private void broadcastConsumer(byte[] message, InetAddress ip) {
         log("broadcastConsumer encrypted " + Arrays.toString(message));
         debugCommands("broadcastConsumer", message);
@@ -376,7 +392,7 @@ public class CommunicationManager {
                         }
 
                         logi("broadcastConsumer checkRxlDevice " + ip);
-                        checkRxlDevice(command, ip);
+                        checkRxlDevice(ip);
                         break;
                     }
                 }
@@ -478,22 +494,22 @@ public class CommunicationManager {
         log("checkNewDevice --- " + true);
         for (Device d : mDiscoveredDevices) {
             if (d.getIp().equals(ip)) {
-                log("checkNewDevice --- found1 " + ip);
+                log("checkBoosterDevice --- found1 " + ip);
                 return;
             }
         }
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
     }
 
-    private synchronized void checkRxlDevice(byte[] command, InetAddress ip) {
-        log("checkNewDevice --- " + true);
+    private synchronized void checkRxlDevice(InetAddress ip) {
+        log("checkRxlDevice --- " + ip);
         for (Device d : mDiscoveredDevices) {
             if (d.getIp().equals(ip)) {
-                log("checkNewDevice --- found1 " + ip);
+                log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
                 return;
             }
         }
-        add(new Device("", DataParser.getUID(command), ip, RXL_WIFI));
+        add(new Device("", DataParser.getUIDRxl(ip.getAddress()), ip, RXL_WIFI));
     }
 
     private void checkNewDevice(byte[] command, InetAddress ip) {
@@ -531,7 +547,7 @@ public class CommunicationManager {
     }
 
     private synchronized void add(Device device) {
-        log("mDiscoveredDevices Add Device............. --- " + device);
+        log("mDiscoveredDevices add Device............. --- " + device);
         if (mDiscoveredDevices == null)
             mDiscoveredDevices = new ArrayList<>();
         for (Device d : mDiscoveredDevices) {
@@ -542,6 +558,27 @@ public class CommunicationManager {
             }
         }
         mDiscoveredDevices.add(device);
+        log("mDiscoveredDevices Device adeed............. --- " + device);
+        if (listener != null)
+            listener.onDeviceDiscoveredEvent(device);
+        try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void addRxl(Device device) {
+        log("mDiscoveredDevices Device check............. --- " + device);
+        if (mDiscoveredDevices == null)
+            mDiscoveredDevices = new ArrayList<>();
+        for (Device d : mDiscoveredDevices) {
+            if (d.getIp().equals(device.getIp())) {
+                return;
+            }
+        }
+        mDiscoveredDevices.add(device);
+        log("mDiscoveredDevices Device added............. --- " + device);
         if (listener != null)
             listener.onDeviceDiscoveredEvent(device);
         try {
@@ -592,8 +629,8 @@ public class CommunicationManager {
 
             for (Device d : mDiscoveredDevices) {
                 if (d.getUid().equals(device.getUid()) && (d.getType() == WIFI_STIMULATOR)) {
-                    connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid());
-                    SessionManager.getInstance().getUserSession().addConnectedDevice(device);
+                    connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid(), false);
+                    SessionManager.getInstance().getUserSession().addDevice(device);
                     device.setStatusConnected(DEVICE_CONNECTING);
                 }
             }
@@ -601,52 +638,54 @@ public class CommunicationManager {
             //stopDiscoveryServers();
             if (bluetoothManager != null)
                 bluetoothManager.connectHrGattDevice(device.getUid());
-            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
+            SessionManager.getInstance().getUserSession().addDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == BLE_STIMULATOR) {
             //stopDiscoveryServers();
-            log("connectDevice BLE_STIMULATOR " + device.getType());
+            log("connectDevice BLE_STIMULATOR " + bluetoothManager);
             if (bluetoothManager != null) {
                 String id = device.getUid();
-                if(id.contains(":")){
+                if(id.startsWith("MIBO-")){
                     id = device.getName().substring("MIBO-".length());
                 }
                 bluetoothManager.connectMIBOBoosterGattDevice(id);
             }
             //if (bluetoothManager != null)
               //  bluetoothManager.connectMIBOBoosterGattDevice(device.getUid());
-            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
+            SessionManager.getInstance().getUserSession().addDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == SCALE) {
             SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
         } else if (device.getType() == RXL_WIFI) {
             log("device connect " + device.getIp());
             DataParser.isRxl = true;
-            connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid());
-            SessionManager.getInstance().getUserSession().addConnectedDevice(device);
+            connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), true);
+            SessionManager.getInstance().getUserSession().addDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         }
 
     }
 
 
-    private void connectTCPDevice(String ServerIP, String ServerPort, String Uid) {
-        TCPConnect(ServerIP, ServerPort, Uid);
+    private void connectTCPDevice(String ServerIP, String ServerPort, String Uid, boolean rxl) {
+        TCPConnect(ServerIP, ServerPort, Uid, rxl);
 
     }
 
     public void deviceDisconnect(Device device) {
         log("deviceDisconnect " + device);
+        int pos = -1;
         if (device == null)
             return;
         if (device.getType() == WIFI_STIMULATOR) {
             if (device.getIp() != null) {
-                TCPDisconnect(device.getUid());
+                pos = TCPDisconnect(device.getUid(), false);
             }
         } else if (device.getType() == RXL_WIFI) {
             if (device.getIp() != null) {
-                TCPDisconnect(device.getUid());
+                pos = TCPDisconnect(device.getUid(), true);
             }
+
         } else if (device.getType() == HR_MONITOR) {
             if (bluetoothManager != null)
                 bluetoothManager.disconnectHrGattDevice(device.getUid());
@@ -657,45 +696,52 @@ public class CommunicationManager {
                 if(id.contains(":")){
                     id = device.getName().substring("MIBO-".length());
                 }
-                bluetoothManager.disconnectMIBOBoosterGattDevice(id);
+                pos = bluetoothManager.disconnectMIBOBoosterGattDevice(id);
             }
+        }
+
+        if (pos != -1) {
+            SessionManager.getInstance().getUserSession().removeDevice(device);
         }
     }
 
-    public void TCPDisconnect(String Uid) {
+    public int TCPDisconnect(String uid, boolean rxl) {
 //        for(TCPClient t : tcpClients) {
 //            if(t.getUid().equals(Uid)){
 //                t.stopClient();
 //                this.tcpClients.remove(t);
 //            }
 //        }
-
+        int aux = -1;
         if (tcpClients != null) {
-            int aux = -1;
+
             for (TCPClient t : tcpClients) {
-                if (t.getUid().equals(Uid)) {
+                if (t.getUid().equals(uid)) {
                     aux = tcpClients.indexOf(t);
                     t.stopClient();
+                    break;
                 }
             }
             if (aux != -1) {
                 tcpClients.remove(aux);
             }
-            log("TCPDisconnect "+Uid + " : "+aux);
+            log("TCPDisconnect " + uid + " : " + aux);
         }
+        return aux;
     }
 
-    private void TCPConnect(String ip, String port, String Uid) {
+    private void TCPConnect(String ip, String port, String Uid, boolean rxl) {
         //create a TCPClient object
         Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port);
         boolean newDevice = true;
         for (TCPClient t : tcpClients) {
             if (t.getServerIp().equals(ip)) {
                 newDevice = false;
+                break;
             }
         }
         if (newDevice) {
-            tcpClients.add(new TCPClient(ip, Integer.parseInt(port), Uid, new TCPClient.OnMessageReceived() {
+            tcpClients.add(new TCPClient(ip, Integer.parseInt(port), Uid, rxl, new TCPClient.OnMessageReceived() {
                 @Override
                 public void messageReceived(byte[] message, String uid) {
                     receiveCommands(message, uid, false);
@@ -705,6 +751,7 @@ public class CommunicationManager {
                 if (t.getServerIp().equals(ip)) {
                     Log.e("tcpcon", "run");
                     t.run();
+                    break;
                 }
             }
         }
@@ -848,7 +895,7 @@ public class CommunicationManager {
                 break;
             case COMMAND_START_CURRENT_CYCLE_RESPONSE:
                 log("parseCommands COMMAND_START_CURRENT_CYCLE_RESPONSE");
-                SessionManager.getInstance().getUserSession().getDevice().setIsStarted(true);
+                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(true);
                 if (listener != null)
                     listener.GetLevelsEvent(uid);
                 //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
@@ -856,7 +903,7 @@ public class CommunicationManager {
                 break;
             case COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE:
                 log("parseCommands COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE");
-                SessionManager.getInstance().getUserSession().getDevice().setIsStarted(false);
+                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(false);
                 //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
                 if (listener != null)
                     listener.GetLevelsEvent(uid);
@@ -890,7 +937,7 @@ public class CommunicationManager {
                 break;
             case COMMAND_ASYNC_PAUSE:
                 log("parseCommands COMMAND_ASYNC_PAUSE");
-                SessionManager.getInstance().getUserSession().getDevice().setIsStarted(false);
+                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(false);
                 if (listener != null)
                     listener.DevicePlayPauseEvent(uid);
 
@@ -899,7 +946,7 @@ public class CommunicationManager {
                 break;
             case COMMAND_ASYNC_START:
                 log("parseCommands COMMAND_ASYNC_START");
-                SessionManager.getInstance().getUserSession().getDevice().setIsStarted(true);
+                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(true);
                 if (listener != null)
                     listener.DevicePlayPauseEvent(uid);
                 //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));

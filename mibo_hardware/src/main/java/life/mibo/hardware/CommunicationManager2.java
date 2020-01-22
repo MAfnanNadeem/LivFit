@@ -133,7 +133,7 @@ public class CommunicationManager2 {
                     Thread.sleep(4000);
                     HashMap<String, TCPClientNio.Client> map = TCPClientNio.get().getMap();
                     for (HashMap.Entry<String, TCPClientNio.Client> client : map.entrySet()) {
-                        client.getValue().sendMessage(DataParser.sendGetStatus());
+                        client.getValue().sendMessage(DataParser.sendGetStatus(false));
                         pingSentDevice(client.getKey());
                         //client.getValue().sendMessage(message);
                     }
@@ -147,11 +147,11 @@ public class CommunicationManager2 {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
                             if (d.getName() != null) {
                                 if (d.getName().contains("MIBO-")) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
                                     pingSentDevice(d.getName().replace("MIBO-", ""));
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
                                     pingSentDevice(d.toString());
                                 }
                             }

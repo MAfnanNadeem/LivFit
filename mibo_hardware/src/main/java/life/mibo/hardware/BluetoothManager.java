@@ -276,7 +276,7 @@ public class BluetoothManager {
         return mGattManager;
     }
 
-    public void connectMIBOBoosterGattDevice(String Id) {
+    void connectMIBOBoosterGattDevice(String Id) {
         Logger.e("connectMIBOBoosterGattDevice "+Id);
         boolean newDevice = true;
         for (BluetoothDevice t : devicesConnectedBle) {
@@ -309,7 +309,7 @@ public class BluetoothManager {
 
     }
 
-    public void disconnectMIBOBoosterGattDevice(String Id) {
+    int disconnectMIBOBoosterGattDevice(String Id) {
         Logger.e("disconnectMIBOBoosterGattDevice "+Id);
 
         int aux = -1;
@@ -323,25 +323,27 @@ public class BluetoothManager {
         }
         if (aux != -1)
             devicesConnectedBle.remove(aux);
+        return aux;
     }
 
-    public void disconnectHrGattDevice(String Id) {
+    void disconnectHrGattDevice(String Id) {
         for (BluetoothDevice d : devicesHRBle) {
             if (d.toString().equals(Id)) {
                 devicesConnectedBle.remove(d);
                 getGattManager().queue(new GattDisconnectOperation(d));
+                SessionManager.getInstance().getUserSession().removeDevice(Id);
             }
         }
     }
 
-    public ArrayList<BluetoothDevice> getConnectedBleDevices() {
+    ArrayList<BluetoothDevice> getConnectedBleDevices() {
         if (devicesBoosterBle == null)
             devicesBoosterBle = new ArrayList<>();
         return devicesConnectedBle;
     }
 
 
-    public void addGattListenerBooster(BleGattManager gatt, final BluetoothDevice d) {
+    private void addGattListenerBooster(BleGattManager gatt, final BluetoothDevice d) {
         gatt.addCharacteristicChangeListener(BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID, new CharacteristicChangeListener() {
             @Override
             public void onCharacteristicChanged(String deviceAddress, BluetoothGattCharacteristic characteristic) {
@@ -365,7 +367,7 @@ public class BluetoothManager {
         });
     }
 
-    public void sendToMIBOBoosterGattDevice(String Id, byte[] message) {
+    void sendToMIBOBoosterGattDevice(String Id, byte[] message) {
         if (!TextUtils.isEmpty(Id))
             Encryption.mbp_encrypt(message, message.length);
             for (BluetoothDevice d : devicesBoosterBle) {
@@ -380,7 +382,7 @@ public class BluetoothManager {
             }
     }
 
-    public void sendPingToBoosterGattDevice(byte[] message, BluetoothDevice d) {
+    void sendPingToBoosterGattDevice(byte[] message, BluetoothDevice d) {
         Encryption.mbp_encrypt(message, message.length);
         getGattManager().queue(new GattCharacteristicWriteOperation(d,
                 BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
@@ -390,7 +392,7 @@ public class BluetoothManager {
     }
 
 
-    public void addGattListenerHR(final BluetoothDevice d, BleGattManager gatt) {
+    private void addGattListenerHR(final BluetoothDevice d, BleGattManager gatt) {
         gatt.addCharacteristicChangeListener(BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID, new CharacteristicChangeListener() {
             @Override
             public void onCharacteristicChanged(String deviceAddress, BluetoothGattCharacteristic characteristic) {

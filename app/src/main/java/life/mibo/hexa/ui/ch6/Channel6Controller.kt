@@ -103,10 +103,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     val plays = BooleanArray(7)
 
     // TODO Overrides
-    override fun onViewCreated(view: View, uid: String?) {
+    override fun onViewCreated(view: View) {
 
         viewModel = ViewModelProviders.of(this.fragment).get(Channel6ViewModel::class.java)
-        userUid = uid ?: SessionManager.getInstance().userSession.device.uid
+        userUid =  SessionManager.getInstance().userSession?.booster?.uid ?: ""
 
         setRecycler(view.findViewById(R.id.recyclerView))
         progressBar = view.findViewById(R.id.progressBar)
@@ -116,7 +116,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         if (SessionManager.getInstance().userSession != null) {
             if (SessionManager.getInstance().userSession.user != null) {
                 sendProgramToAllBoosters(SessionManager.getInstance().userSession.user)
-                if (SessionManager.getInstance().userSession.device != null && SessionManager.getInstance().userSession.program != null) {
+                if (SessionManager.getInstance().userSession.booster != null && SessionManager.getInstance().userSession.program != null) {
                     isConnected = true
                     pauseDuration =
                         SessionManager.getInstance().userSession.program.blocks[0].pauseDuration.valueInteger
@@ -278,7 +278,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun startUserSession(uid: String) {
-        if (SessionManager.getInstance().userSession.device == null) {
+        if (SessionManager.getInstance().userSession.booster == null) {
             Toasty.warning(this.fragment.activity!!, "No Device Connected").show()
         }
 
@@ -353,7 +353,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun sendStartToAllBoosters(u: User) {
         if (u.isActive) {
-            SessionManager.getInstance().userSession.device.isStarted = true
+            SessionManager.getInstance().userSession.booster.isStarted = true
             EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
             SessionManager.getInstance().userSession.currentSessionStatus = 2
         }
@@ -361,7 +361,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun sendReStartToAllBoosters(u: User) {
         if (u.isActive) {
-            SessionManager.getInstance().userSession.device.isStarted = true
+            SessionManager.getInstance().userSession.booster.isStarted = true
             EventBus.getDefault().postSticky(SendDeviceStartEvent(userUid))
         }
     }
@@ -373,21 +373,21 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun sendStopToAllBoosters(u: User) {
-        SessionManager.getInstance().userSession.device.isStarted = false
+        SessionManager.getInstance().userSession.booster.isStarted = false
         EventBus.getDefault().postSticky(
             SendDeviceStopEvent(
-                SessionManager.getInstance().userSession.device.uid
+                SessionManager.getInstance().userSession.booster.uid
             )
         )
     }
 
 
     private fun stopUserSession(uid: String) {
-        if (SessionManager.getInstance().userSession.device == null) {
+        if (SessionManager.getInstance().userSession.booster == null) {
             Toasty.warning(this.fragment.activity!!, "No Device Connected").show()
         }
         log("sendStopSignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
-        SessionManager.getInstance().userSession.device.isStarted = false
+        SessionManager.getInstance().userSession.booster.isStarted = false
         EventBus.getDefault().postSticky(SendDeviceStopEvent(uid))
         SessionManager.getInstance().userSession.user.mainLevel = 0
         disposable?.dispose()
@@ -422,7 +422,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun onMusclePlayStopClicked(id: Int, play: Boolean) {
         log("onMusclePlayStopClicked $play $id")
-        if (SessionManager.getInstance().userSession.device.isStarted) {
+        if (SessionManager.getInstance().userSession.booster.isStarted) {
             SessionManager.getInstance().userSession.user.currentChannelLevels[id - 1] = 0
             EventBus.getDefault().postSticky(
                 SendChannelsLevelEvent(
@@ -522,7 +522,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //                SessionManager.getInstance().userSession.device.uid
 //            )
 //        )
-        if (SessionManager.getInstance().userSession.device.isStarted) {
+        if (SessionManager.getInstance().userSession.booster.isStarted) {
             disposable?.dispose()
             disposable = null
             startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)

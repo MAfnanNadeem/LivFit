@@ -210,17 +210,17 @@ public class DashboardItem extends FrameLayout {
 //        if (gravity_ == 0) {
 //            //imageView.setScaleType(ImageView.ScaleType.FIT_START);
 //            //test.setScaleType(ImageView.ScaleType.FIT_START);
-//            set.connect(imageView.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP, 0);
-//            set.connect(imageView.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM, 0);
-//            set.connect(imageView.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START, 0);
-//            //set.connect(imageView.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.TOP, constraintLayout.getUid(), ConstraintSet.TOP, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.BOTTOM, constraintLayout.getUid(), ConstraintSet.BOTTOM, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.START, constraintLayout.getUid(), ConstraintSet.START, 0);
+//            //set.connect(imageView.getUid(), ConstraintSet.END, constraintLayout.getUid(), ConstraintSet.END, 0);
 //        } else if (gravity_ == 1) {
 //            //imageView.setScaleType(ImageView.ScaleType.FIT_END);
 //            //test.setScaleType(ImageView.ScaleType.FIT_END);
-//            set.connect(imageView.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP, 0);
-//            set.connect(imageView.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(), ConstraintSet.BOTTOM, 0);
-//            //set.connect(imageView.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START, 0);
-//            set.connect(imageView.getId(), ConstraintSet.END, constraintLayout.getId(), ConstraintSet.END, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.TOP, constraintLayout.getUid(), ConstraintSet.TOP, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.BOTTOM, constraintLayout.getUid(), ConstraintSet.BOTTOM, 0);
+//            //set.connect(imageView.getUid(), ConstraintSet.START, constraintLayout.getUid(), ConstraintSet.START, 0);
+//            set.connect(imageView.getUid(), ConstraintSet.END, constraintLayout.getUid(), ConstraintSet.END, 0);
 //
 //        }
 

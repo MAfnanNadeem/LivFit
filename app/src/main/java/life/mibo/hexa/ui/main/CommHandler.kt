@@ -133,7 +133,7 @@ class CommHandler(val activity: MainActivity) {
             CommunicationManager.getInstance().onMainLevelEvent(
                 SendMainLevelEvent(
                     SessionManager.getInstance().userSession.user.mainLevel,
-                    SessionManager.getInstance().userSession.device.uid
+                    SessionManager.getInstance().userSession.booster.uid
                 )
             )
         }, 200)

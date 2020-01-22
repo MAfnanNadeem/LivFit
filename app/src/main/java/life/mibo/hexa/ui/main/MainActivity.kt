@@ -396,7 +396,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_DEVICE_STATUS_RESPONSE -> {
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE")
-                val d = SessionManager.getInstance().userSession.device
+                val d = SessionManager.getInstance().userSession.booster
                 if (d != null && d.uid == uid) {
                     logw(
                         "COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED battery " + DataParser.getStatusBattery(
@@ -405,9 +405,9 @@ class MainActivity : BaseActivity(), Navigator {
                     )
                     d.batteryLevel = DataParser.getStatusBattery(command)
                     d.signalLevel = DataParser.getStatusSignal(command)
-                    SessionManager.getInstance().userSession.device.batteryLevel =
+                    SessionManager.getInstance().userSession.booster.batteryLevel =
                         DataParser.getStatusBattery(command)
-                    SessionManager.getInstance().userSession.device.signalLevel =
+                    SessionManager.getInstance().userSession.booster.signalLevel =
                         DataParser.getStatusSignal(command)
                     // updated device status/line
                     EventBus.getDefault().postSticky(DeviceStatusEvent(d))
@@ -416,13 +416,13 @@ class MainActivity : BaseActivity(), Navigator {
                             EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
                         }
                         d.statusConnected = DEVICE_CONNECTED
-                        SessionManager.getInstance().userSession.device.statusConnected =
+                        SessionManager.getInstance().userSession.booster.statusConnected =
                             DEVICE_CONNECTED
 
                         EventBus.getDefault().postSticky(NewConnectionStatus(uid))
                     } else {
                         d.statusConnected = DEVICE_CONNECTED
-                        SessionManager.getInstance().userSession.device.statusConnected =
+                        SessionManager.getInstance().userSession.booster.statusConnected =
                             DEVICE_CONNECTED
                     }
                     if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
@@ -473,12 +473,12 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_START_CURRENT_CYCLE_RESPONSE -> {
                 logw("parseCommands COMMAND_START_CURRENT_CYCLE_RESPONSE")
-                SessionManager.getInstance().userSession.device.isStarted = true
+                SessionManager.getInstance().userSession.booster.isStarted = true
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
             }
             COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE -> {
                 logw("parseCommands COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE")
-                SessionManager.getInstance().userSession.device.isStarted = false
+                SessionManager.getInstance().userSession.booster.isStarted = false
                 //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
             }
@@ -487,7 +487,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             ASYNC_PROGRAM_STATUS -> {
                 logw("parseCommands ASYNC_PROGRAM_STATUS")
-                SessionManager.getInstance().userSession.device.deviceSessionTimer =
+                SessionManager.getInstance().userSession.booster.deviceSessionTimer =
                     DataParser.getProgramStatusTime(command)
                 EventBus.getDefault().postSticky(
                     ProgramStatusEvent(
@@ -512,12 +512,12 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_ASYNC_PAUSE -> {
                 logw("parseCommands COMMAND_ASYNC_PAUSE")
-                SessionManager.getInstance().userSession.device.isStarted = false
+                SessionManager.getInstance().userSession.booster.isStarted = false
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid));
             }
             COMMAND_ASYNC_START -> {
                 logw("parseCommands COMMAND_ASYNC_START")
-                SessionManager.getInstance().userSession.device.isStarted = true
+                SessionManager.getInstance().userSession.booster.isStarted = true
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
 
             }
@@ -548,7 +548,7 @@ class MainActivity : BaseActivity(), Navigator {
         logw("checkDeviceStatus wifi " + status[0] + " ble " + status[1] + " program " + status[2] + " runn " + status[3] + " color " + status[4])
 
         if (user.currentSessionStatus == 2 || user.currentSessionStatus == 1) {
-            if (user.device.uid == uid) {
+            if (user.booster.uid == uid) {
                 logw("checkDeviceStatus UID MATCH")
                 if (!status[2]) {//check if program
                     logw("checkDeviceStatus SendProgramEvent")
@@ -557,7 +557,7 @@ class MainActivity : BaseActivity(), Navigator {
                 }
                 if (!status[4]) {//check if color if (listener != null)
                     logw("checkDeviceStatus ChangeColorEvent")
-                    EventBus.getDefault().postSticky(ChangeColorEvent(user.device, uid));
+                    EventBus.getDefault().postSticky(ChangeColorEvent(user.booster, uid));
                 }
                 if (status[3]) {//check if run
                     //logw("checkDeviceStatus status is 3")

@@ -7,8 +7,11 @@ package life.mibo.hardware.bluetooth.operations;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 
 import java.util.UUID;
+
+import life.mibo.hardware.CommunicationManager;
 
 public class GattCharacteristicWriteOperation extends GattOperation {
 
@@ -25,7 +28,12 @@ public class GattCharacteristicWriteOperation extends GattOperation {
 
     @Override
     public void execute(BluetoothGatt gatt) {
-        BluetoothGattCharacteristic characteristic = gatt.getService(mService).getCharacteristic(mCharacteristic);
+        BluetoothGattService service = gatt.getService(mService);
+        if (service == null) {
+            CommunicationManager.log("GattCharacteristicWriteOperation service is NULL......");
+            return;
+        }
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(mCharacteristic);
         characteristic.setValue(mValue);
         gatt.writeCharacteristic(characteristic);
     }

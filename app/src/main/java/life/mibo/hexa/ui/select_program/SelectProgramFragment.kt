@@ -180,7 +180,7 @@ class SelectProgramFragment : BaseFragment() {
                     item?.id?.let {
                         circleImage?.visibility = View.VISIBLE
                         circleImage?.circleColor = it
-                        val d = SessionManager.getInstance().userSession.device
+                        val d = SessionManager.getInstance().userSession.booster
                         d.colorPalet = it
                         EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
                     }

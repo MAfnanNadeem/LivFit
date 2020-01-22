@@ -26,6 +26,7 @@ import com.rilixtech.widget.countrycodepicker.CountryCodePicker
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
+import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
 import life.mibo.hexa.models.register.Data
 import life.mibo.hexa.models.register.RegisterGuestMember
@@ -287,7 +288,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 firstName, lastName, cPassword, email, gender,
                 city, country, dob, ccp!!.selectedCountryCodeWithPlus, phoneNumber
             )
-            register(data = RegisterGuestMember(data))
+            register(RegisterGuestMember(data))
 
             //Toasty.success(context, "Successfully registered").show()
             //viewAnimator.showNext()
@@ -306,13 +307,13 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
     private var userId: String = ""
 
-    private fun register(data: RegisterGuestMember) {
+    private fun register(registerData: RegisterGuestMember) {
         FirebaseEvent.registerEvent(
-            "${data.data?.firstName} - ${data.data?.lastName}",
-            "${data.data?.email}"
+            "${registerData.data?.firstName} - ${registerData.data?.lastName}",
+            "${registerData.data?.email}"
         )
         context.getDialog()?.show()
-        API.request.getApi().register(data).enqueue(object : Callback<RegisterResponse> {
+        API.request.getApi().register(registerData).enqueue(object : Callback<RegisterResponse> {
 
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
@@ -338,9 +339,15 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         success("Successfully Registered $userId")
                         updateNumber(1)
                         isOtp = true
-
+                        //Prefs.get(this@RegisterController.context).member = Member(data)
+                        Prefs.get(this@RegisterController.context)
+                            .set("user_idd", data.member?.userId)
+                        Prefs.get(this@RegisterController.context)
+                            .set("user_email", registerData.data?.email)
                         FirebaseEvent.registerSuccess("${data.member?.userId}")
                     }
+
+
                     data.status == "error" -> {
                         //val er = data.errors;
                         //var msg = data?.status

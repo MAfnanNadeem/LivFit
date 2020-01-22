@@ -52,7 +52,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         super.onViewCreated(view, savedInstanceState)
         //controller = Channel6Controller(this@Channel6Fragment)
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
-        controller.onViewCreated(view, userId)
+        controller.onViewCreated(view)
 
         iv_plus?.setOnClickListener {
             controller.onMainPlusClicked()
@@ -169,7 +169,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         fun onMainPlayClicked()
         fun onMainStopClicked()
         fun onStop()
-        fun onViewCreated(view: View, uid: String?)
+        fun onViewCreated(view: View)
     }
 
     override fun onBackPressed(): Boolean {

@@ -18,7 +18,6 @@ import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.R
 import java.util.*
-import kotlin.math.log
 
 
 class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
@@ -56,6 +55,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var view: View? = itemView.findViewById(R.id.itemView)
         var name: TextView? = itemView.findViewById(R.id.tv_deviceName)
         var address: TextView? = itemView.findViewById(R.id.tv_deviceMac)
         var image: ImageView? = itemView.findViewById(R.id.iv_device)
@@ -125,18 +125,25 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 callback?.onCancelClicked(item)
             }
 
+            view?.background = null
             if (item.statusConnected == 1) {
                 disconnect?.setColorFilter(Color.RED)
                 connect?.setColorFilter(grey)
+                view?.background = ContextCompat.getDrawable(
+                    itemView.context,
+                    R.drawable.device_list_item_bg_selected
+                )
             } else {
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(Color.GREEN)
+                view?.background =
+                    ContextCompat.getDrawable(itemView.context, R.drawable.device_list_item_bg)
             }
             image?.background = null
             battery?.background = null
             if (item.type == DeviceTypes.RXL_WIFI) {
                 image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
-            } else if (item.type == DeviceTypes.WIFI_STIMULATOR) {
+            } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
                 image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
             }
 
@@ -190,8 +197,8 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     fun addDevice(item: Device) {
         Logger.e("ScanDevice addDevice device")
         for (l in list!!) {
-            if (l.serial == item.serial) {
-                return;
+            if (l.uid == item.uid) {
+                return
             }
         }
         list!!.add(item)

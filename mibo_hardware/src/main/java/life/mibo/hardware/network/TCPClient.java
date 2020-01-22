@@ -37,16 +37,22 @@ public class TCPClient {
     private String uid;
     private Thread thread;
     private Socket mSocket;
+    private boolean rxl = false;
+
+    public boolean isRxl() {
+        return rxl;
+    }
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages
      * received from server
      */
-    public TCPClient(String ip, int port, String Uid, OnMessageReceived listener) {
+    public TCPClient(String ip, int port, String Uid, boolean rxl, OnMessageReceived listener) {
         this.listener = listener;
         this.serverIp = ip;
         serverPort = port;
         uid = Uid;
+        this.rxl = rxl;
     }
 
     public String getServerIp() {

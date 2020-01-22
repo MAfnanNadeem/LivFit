@@ -22,7 +22,8 @@ public class UserSession {
 
     private String locationId = "";
     private User user;
-    private Device device;
+    //private Device device;
+    private Device booster;
     private String currentSessionId = "";
     private String currentSessionName = "";
 
@@ -47,29 +48,29 @@ public class UserSession {
     private boolean boosterMode = true; // true wifi false ble
     private boolean isStarted;
 
-    public Device getDevice() {
-        return device;
-    }
+//    public Device getDevice() {
+//        return device;
+//    }
 
     public User getUser() {
         return user;
     }
 
-    public boolean isStarted() {
-        if (device != null)
-            return device.getIsStarted();
-        return isStarted;
-    }
+//    public boolean isStarted() {
+//        if (device != null)
+//            return device.getIsStarted();
+//        return isStarted;
+//    }
 
     public static UserSession create() {
         return new UserSession();
     }
 
-    public void setDevice(Device device) {
-        this.device = device;
-        if (device != null)
-            this.userId = device.getUid();
-    }
+//    public void setDevice(Device device) {
+//        this.device = device;
+//        if (device != null)
+//            this.userId = device.getUid();
+//    }
 
     public void setUser(User user) {
         this.user = user;
@@ -86,7 +87,7 @@ public class UserSession {
     public static UserSession from(Device device) {
         UserSession session = new UserSession();
         if (device != null) {
-            session.device = device;
+            session.addDevice(device);
             session.userId = device.getUid();
             session.user = new User("Sumeet", "Kumar", session.userId);
 
@@ -113,11 +114,6 @@ public class UserSession {
         return session;
     }
 
-    public String getUid() {
-        if (device != null)
-            return device.getUid();
-        return userId;
-    }
 
     public ArrayList<Device> getRegisteredDevices() {
         return registeredDevices;
@@ -163,19 +159,53 @@ public class UserSession {
         this.registeredDevices = registeredDevices;
     }
 
-    public ArrayList<Device> getConnectedDevices() {
+    public ArrayList<Device> getDevices() {
         return connectedDevices;
     }
 
-    public void addConnectedDevice(Device device) {
-        boolean newDevice = true;
-        for (Device d : connectedDevices) {
-            if (d.getUid().equals(device.getUid())) {
-                newDevice = false;
+    public void addDevice(Device device) {
+        addConnectedDevice(device);
+    }
+
+    public void removeDevice(Device device) {
+        removeConnectedDevice(device);
+    }
+
+    public void removeDevice(String uid) {
+        int aux = -1;
+
+        for (int i = 0; i < connectedDevices.size(); i++) {
+            if (connectedDevices.get(i).getUid().equals(uid)) {
+                aux = i;
+                break;
             }
         }
-        if (newDevice) {
-            this.connectedDevices.add(device);
+        if (aux != -1) {
+            this.connectedDevices.remove(aux);
+        }
+    }
+
+    private void addConnectedDevice(Device device) {
+        for (Device d : connectedDevices) {
+            if (d.getUid().equals(device.getUid())) {
+                return;
+            }
+        }
+        this.connectedDevices.add(device);
+    }
+
+    private void removeConnectedDevice(Device device) {
+        int aux = -1;
+
+        for (int i = 0; i < connectedDevices.size(); i++) {
+            if (connectedDevices.get(i).getUid().equals(device.getUid())) {
+                aux = i;
+                break;
+            }
+        }
+        //connectedDevices.remove(device);
+        if (aux != -1) {
+            this.connectedDevices.remove(aux);
         }
     }
 
@@ -187,21 +217,6 @@ public class UserSession {
         return connectedScale;
     }
 
-    public void removeConnectedDevice(Device device) {
-        int aux = -1;
-        for (Device t : connectedDevices) {
-            if (t.getUid().equals(device.getUid())) {
-                aux = connectedDevices.indexOf(t);
-            }
-        }
-        if (aux != -1) {
-            this.connectedDevices.remove(aux);
-        }
-    }
-
-    public void setConnectedDevices(ArrayList<Device> registeredDevices) {
-        this.connectedDevices = registeredDevices;
-    }
 
     public String getCurrentSessionId() {
         return currentSessionId;
@@ -303,7 +318,8 @@ public class UserSession {
         this.currentSessionProgram = new Program(currentSessionProgram);
     }
 
-    String userId;
+    private String userId;
+    private String uid;
 
     public String getUserId() {
         return userId;
@@ -311,6 +327,52 @@ public class UserSession {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public String getUid(int pos) {
+        if (pos >= 0 && pos < connectedDevices.size()) {
+            Device device = connectedDevices.get(pos);
+            if (device != null)
+                return device.getUid();
+        }
+        return userId;
+    }
+
+    public void setBooster(Device booster) {
+        this.booster = booster;
+    }
+
+    public Device getBooster() {
+        if (booster == null) {
+            for (Device device : connectedDevices) {
+                if (device.getType() == DeviceTypes.BLE_STIMULATOR || device.getType() == DeviceTypes.WIFI_STIMULATOR) {
+                    booster = device;
+                    break;
+                }
+            }
+        }
+        return booster;
+    }
+
+    public ArrayList<Device> getRxl() {
+        ArrayList<Device> list = new ArrayList<>();
+
+        if (!connectedDevices.isEmpty()) {
+            for (Device device : connectedDevices) {
+                if (device.getType() == DeviceTypes.RXL_WIFI || device.getType() == DeviceTypes.RXL_BLE) {
+                    list.add(device);
+                }
+            }
+        }
+        return list;
     }
 
     public String getLocationId() {
@@ -461,7 +523,6 @@ public class UserSession {
         return "UserSession{" +
                 "locationId='" + locationId + '\'' +
                 ", user=" + user +
-                ", device=" + device +
                 ", currentSessionId='" + currentSessionId + '\'' +
                 ", currentSessionName='" + currentSessionName + '\'' +
                 ", currentSessionProgram=" + currentSessionProgram +

@@ -31,8 +31,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
+            android:id="@+id/button_device_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="Select Device" />
+
+        <Button
             android:id="@+id/button_lights_on"
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/grid_1x"
             android:layout_height="wrap_content"
             android:text="Lights On" />
 

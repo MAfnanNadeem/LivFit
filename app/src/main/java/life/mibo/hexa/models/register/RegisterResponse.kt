@@ -5,18 +5,6 @@
 package life.mibo.hexa.models.register
 
 
-import com.google.gson.annotations.JsonAdapter
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.core.gson.AlwaysListTypeAdapterFactory
-import life.mibo.hexa.models.base.BaseModel
-import life.mibo.hexa.models.base.Error
+import life.mibo.hexa.models.base.BaseResponse
 
-data class RegisterResponse(
-    @SerializedName("data")
-    var member: Member?,
-    @JsonAdapter(AlwaysListTypeAdapterFactory::class)
-    @SerializedName("error")
-    var errors: List<Error>?,
-    @SerializedName("status")
-    var status: String?
-): BaseModel()
+class RegisterResponse(member: Member?) : BaseResponse<Member>(member)

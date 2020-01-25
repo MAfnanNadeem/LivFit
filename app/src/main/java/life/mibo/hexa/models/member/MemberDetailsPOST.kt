@@ -1,12 +1,10 @@
 package life.mibo.hexa.models.member
 
 
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.models.base.PostDataModel
+import life.mibo.hexa.models.base.BaseModel
+import life.mibo.hexa.models.base.BasePost
 
-data class MemberDetailsPOST(
-    @SerializedName("token")
-    var token: String?, var datax: MemberId
-) : PostDataModel(datax) {
+class MemberDetailsPOST(token: String?, data: MemberId
+) : BasePost<MemberId>(data, "", token) {
 
 }

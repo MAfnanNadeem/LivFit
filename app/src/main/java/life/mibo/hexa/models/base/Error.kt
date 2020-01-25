@@ -9,8 +9,11 @@
 package life.mibo.hexa.models.base
 
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import life.mibo.hexa.core.gson.AlwaysListTypeAdapterFactory
 
+//@JsonAdapter(AlwaysListTypeAdapterFactory::class)
 public data class Error(
     @SerializedName("code")
     var code: Int?,

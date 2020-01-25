@@ -8,15 +8,6 @@
 package life.mibo.hexa.models.weight
 
 
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.models.base.BaseModel
-import life.mibo.hexa.models.base.Error
+import life.mibo.hexa.models.base.BaseResponse
 
-data class WeightAllResponse(
-    @SerializedName("data")
-    var `data`: List<Data?>?,
-    @SerializedName("error")
-    var error: List<Error?>?,
-    @SerializedName("status")
-    var status: String?
-): BaseModel()
+class WeightAllResponse(data: List<Data?>) : BaseResponse<List<Data?>?>(data)

@@ -8,15 +8,6 @@
 package life.mibo.hexa.models.calories
 
 
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.models.base.BaseModel
-import life.mibo.hexa.models.base.Error
+import life.mibo.hexa.models.base.BaseResponse
 
-data class Calories  (
-    @SerializedName("data")
-    var `data`: List<CaloriesData?>?,
-    @SerializedName("error")
-    var error: List<Error?>?,
-    @SerializedName("status")
-    var status: String?
-): BaseModel()
+class Calories(data: List<CaloriesData?>?) : BaseResponse<List<CaloriesData?>?>(data)

@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ProgramData(
     @SerializedName("CurrentPage")
-    var currentPage: Int?,
+    var currentPage: String,
     @SerializedName("Programs")
     var programs: ArrayList<Program?>?,
     @SerializedName("TotalPages")

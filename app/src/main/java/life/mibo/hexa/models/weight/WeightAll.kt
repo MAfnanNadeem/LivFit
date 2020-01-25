@@ -8,28 +8,12 @@
 package life.mibo.hexa.models.weight
 
 
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.models.base.BaseModel
+import life.mibo.hexa.models.base.BasePost
 
-data class WeightAll(
-    @SerializedName("ClientID")
-    var clientID: String?,
-    @SerializedName("Data")
-    var `data`: DataX?,
-    @SerializedName("IPAddress")
-    var iPAddress: String?,
-    @SerializedName("RequestType")
-    var requestType: String?,
-    @SerializedName("TimeStamp")
-    var timeStamp: String?,
-    @SerializedName("token")
-    var token: String?,
-    @SerializedName("Version")
-    var version: String?
-): BaseModel()
+class WeightAll(userId: String, token: String?): BasePost<DataX?>(DataX(userId), "AllWeight", token)
 {
-    constructor(userId: String, token: String?) : this(
-        "Client1213", DataX(userId), "192.168.195.122", "AllWeight",
-        "2019-12-10T04:49:11.6570000", token, "1.0.0.0"
-    )
+//    constructor(userId: String, token: String?) : this(
+//        "Client1213", DataX(userId), "192.168.195.122", "AllWeight",
+//        "2019-12-10T04:49:11.6570000", token, "1.0.0.0"
+//    )
 }

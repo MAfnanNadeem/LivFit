@@ -8,14 +8,6 @@
 package life.mibo.hexa.models.program
 
 
-import com.google.gson.annotations.SerializedName
-import life.mibo.hexa.models.base.Error
+import life.mibo.hexa.models.base.BaseResponse
 
-data class SearchPrograms(
-    @SerializedName("data")
-    var `data`: ProgramData?,
-    @SerializedName("errors")
-    var errors: List<Error?>?,
-    @SerializedName("status")
-    var status: String?
-)
+class SearchPrograms(data: ProgramData?) : BaseResponse<ProgramData>(data)

@@ -1,5 +1,7 @@
 package life.mibo.hardware.events;
 
+import life.mibo.hardware.core.DataParser;
+
 /**
  * Created by Fer on 12/04/2019.
  */
@@ -14,6 +16,8 @@ public class ProgramStatusEvent {
     private int currentProgram;
 
     private String uid;
+    private byte[] command;
+    private boolean isCommand;
 
     public ProgramStatusEvent(int programtime, int actiontime, int pausetime, int currentprogram, int currrentblock , String uid) {
         this.remainingProgramTime = programtime;
@@ -24,8 +28,39 @@ public class ProgramStatusEvent {
         this.uid = uid;
     }
 
+    public ProgramStatusEvent(byte[] command, String uid) {
+        this.command = command;
+        this.uid = uid;
+        this.isCommand = true;
+        // listener.onStatus(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command), DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid);
+
+    }
     public String getUid() {
         return uid;
+    }
+
+    public int getActionTime() {
+        try {
+            return DataParser.getProgramStatusAction(command);
+        } catch (Exception e) {
+            return remainingProgramAction;
+        }
+    }
+
+    public int getPauseTime() {
+        try {
+            return DataParser.getProgramStatusPause(command);
+        } catch (Exception e) {
+            return remainingProgramPause;
+        }
+    }
+
+    public int getRemainingTime() {
+        try {
+            return DataParser.getProgramStatusTime(command);
+        } catch (Exception e) {
+            return remainingProgramPause;
+        }
     }
 
     public int getRemainingProgramTime() {

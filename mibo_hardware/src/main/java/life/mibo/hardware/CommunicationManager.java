@@ -123,7 +123,7 @@ public class CommunicationManager {
                 try {
                     Thread.sleep(4000);
                     for (TCPClient t : tcpClients) {
-                        t.sendMessage(DataParser.sendGetStatus(t.isRxl()), "PingThread");
+                        t.sendMessage(DataParser.sendGetStatus(t.getType()), "PingThread");
                         pingSentDevice(t.getUid());
                         // log("PingThread tcpClients sendMessage");
                         // Log.e("commManag", "send ping");
@@ -133,17 +133,17 @@ public class CommunicationManager {
                             log("PingThread bluetoothManager sendMessage");
                             if (d.getName() != null) {
                                 if (d.getName().contains("MIBO-")) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     pingSentDevice(d.getName().replace("MIBO-", ""));
                                     log("PingThread bluetoothManager to MIBO-");
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     pingSentDevice(d.toString());
                                     log("PingThread bluetoothManager to Geonaute-");
                                 }
                                 if (d.getName().contains("MBRXL-")) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(true), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
                                     pingSentDevice(d.getName().replace("MIBO-", ""));
                                     log("PingThread bluetoothManager to MIBO-");
                                 }
@@ -205,9 +205,10 @@ public class CommunicationManager {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public synchronized void reScanning(final Activity context, boolean isWifi) {
+        mDiscoveredDevices.clear();
         stopScanning();
-        udpServer = null;
-        bluetoothManager = null;
+        //udpServer = null;
+        //bluetoothManager = null;
         startScanning(context, isWifi);
 
     }
@@ -222,31 +223,84 @@ public class CommunicationManager {
             scanBluetooth(context);
     }
 
+    private UDPServer.OnBroadcastReceived wifiListener = new UDPServer.OnBroadcastReceived() {
+        @Override
+        public void broadcastReceived(byte[] msg, InetAddress ip) {
+            if (listener != null)
+                listener.udpDeviceReceiver(msg, ip);
+            log("udpDeviceReceiver " + new String(msg) + " IP " + ip);
+            // TODO remove later broadcastConsumer
+            //broadcastConsumer(msg, ip);
+            SessionManager manager = SessionManager.getInstance();
+            if (manager.getUserSession() != null) {
+                if (manager.getUserSession().isBoosterMode()) {// true wifi mode
+                    broadcastConsumer(msg, ip);
+                    log("Session Manager Boosted Mode");
+                } else {
+                    log("Session Manager No Boosted Mode " + manager);
+                }
+            } else {
+                log("Session Manager getSession is NULL " + manager);
+            }
+        }
+    };
+
+    private BluetoothManager.OnBleDeviceDiscovered bleListener = new BluetoothManager.OnBleDeviceDiscovered() {
+        @Override
+        public void bleHrDeviceDiscovered(String uid, String serial) {
+            log("BluetoothManager bleHrDeviceDiscovered " + uid + " IP " + serial);
+            bleHrDiscoverConsumer(uid, serial);
+
+        }
+
+        @Override
+        public void bleBoosterDeviceDiscovered(String uid, String serial) {
+            log("BluetoothManager bleBoosterDeviceDiscovered " + uid + " IP " + serial);
+            //if (!SessionManager.getInstance().getUserSession().isBoosterMode())// true wifi mode, false ble mode
+            bleBoosterDiscoverConsumer(uid, serial);
+
+        }
+
+        @Override
+        public void bleScaleDeviceDiscovered(String uid, String serial) {
+            log("BluetoothManager bleScaleDeviceDiscovered " + uid + " IP " + serial);
+            bleScaleDiscoverConsumer(uid, serial);
+
+        }
+    };
+
+    private BluetoothManager.OnBleCharChanged bleCharChanged = new BluetoothManager.OnBleCharChanged() {
+        @Override
+        public void bleHrChanged(int hr, String serial) {
+            log("BluetoothManager bleHrChanged " + hr + " IP " + serial);
+            bleHrConsumer(hr, serial);
+
+        }
+
+        @Override
+        public void bleBoosterChanged(byte[] data, String serial) {
+            log("BluetoothManager bleBoosterChanged " + data + " IP " + serial);
+            // bleBoosterConsumer(data, serial);
+            receiveCommands(data, serial, true);
+            //Log.e("commManag","Char booster changed "+data);
+        }
+    };
+
+
+    private BleGattManager.OnConnection bleConnection = new BleGattManager.OnConnection() {
+        @Override
+        public void onConnected(String deviceName) {
+            log("BluetoothManager leGattManager.OnConnection ");
+            onBleConnect(new BleConnection(deviceName));
+        }
+    };
+
     public void scanWifi(Activity context) {
         if (udpServer == null) {
             mDiscoveredDevices.clear();
-            udpServer = new UDPServer(new UDPServer.OnBroadcastReceived() {
-                @Override
-                public void broadcastReceived(byte[] msg, InetAddress ip) {
-                    if (listener != null)
-                        listener.udpDeviceReceiver(msg, ip);
-                    log("udpDeviceReceiver " + new String(msg) + " IP " + ip);
-                    // TODO remove later broadcastConsumer
-                    //broadcastConsumer(msg, ip);
-                    SessionManager manager = SessionManager.getInstance();
-                    if (manager.getUserSession() != null) {
-                        if (manager.getUserSession().isBoosterMode()) {// true wifi mode
-                            broadcastConsumer(msg, ip);
-                            log("Session Manager Boosted Mode");
-                        } else {
-                            log("Session Manager No Boosted Mode " + manager);
-                        }
-                    } else {
-                        log("Session Manager getSession is NULL " + manager);
-                    }
-                }
-            });
+            udpServer = new UDPServer();
         }
+        udpServer.addListener(wifiListener);
         udpServer.start(context);
     }
 
@@ -254,53 +308,14 @@ public class CommunicationManager {
     public void scanBluetooth(Context context) {
         //TODO: Change to not overwrite the current one if its initialized and only start discovery
         if (bluetoothManager == null) {
-            bluetoothManager = new BluetoothManager(context, new BluetoothManager.OnBleDeviceDiscovered() {
-                @Override
-                public void bleHrDeviceDiscovered(String uid, String serial) {
-                    log("BluetoothManager bleHrDeviceDiscovered " + uid + " IP " + serial);
-                    bleHrDiscoverConsumer(uid, serial);
-
-                }
-
-                @Override
-                public void bleBoosterDeviceDiscovered(String uid, String serial) {
-                    log("BluetoothManager bleBoosterDeviceDiscovered " + uid + " IP " + serial);
-                    //if (!SessionManager.getInstance().getUserSession().isBoosterMode())// true wifi mode, false ble mode
-                    bleBoosterDiscoverConsumer(uid, serial);
-
-                }
-
-                @Override
-                public void bleScaleDeviceDiscovered(String uid, String serial) {
-                    log("BluetoothManager bleScaleDeviceDiscovered " + uid + " IP " + serial);
-                    bleScaleDiscoverConsumer(uid, serial);
-
-                }
-            }, new BluetoothManager.OnBleCharChanged() {
-                @Override
-                public void bleHrChanged(int hr, String serial) {
-                    log("BluetoothManager bleHrChanged " + hr + " IP " + serial);
-                    bleHrConsumer(hr, serial);
-
-                }
-
-                @Override
-                public void bleBoosterChanged(byte[] data, String serial) {
-                    log("BluetoothManager bleBoosterChanged " + data + " IP " + serial);
-                    // bleBoosterConsumer(data, serial);
-                    receiveCommands(data, serial, true);
-                    //Log.e("commManag","Char booster changed "+data);
-                }
-            }, new BleGattManager.OnConnection() {
-                @Override
-                public void onConnected(String deviceName) {
-                    log("BluetoothManager leGattManager.OnConnection ");
-                    onBleConnect(new BleConnection(deviceName));
-                }
-            });
+            bluetoothManager = new BluetoothManager(context);
             bluetoothManager.initBlueTooth();
         }
         //bluetoothManager.initBlueTooth();
+        //bluetoothManager.reset();
+        bluetoothManager.setListener(bleListener);
+        bluetoothManager.setOnBleCharChanged(bleCharChanged);
+        bluetoothManager.setBleGatListener(bleConnection);
         bluetoothManager.scanDevice(bleScanCallback);
         //bluetoothManager.scanDevice();
     }
@@ -625,15 +640,17 @@ public class CommunicationManager {
         if (device == null)
             return;
         if (device.getType() == WIFI_STIMULATOR) {
-            DataParser.isRxl = false;
-
+            //DataParser.isRxl = false;
+            String disc = "Not Found!";
             for (Device d : mDiscoveredDevices) {
                 if (d.getUid().equals(device.getUid()) && (d.getType() == WIFI_STIMULATOR)) {
-                    connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid(), false);
+                    connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid(), DataParser.BOOSTER);
                     SessionManager.getInstance().getUserSession().addDevice(device);
                     device.setStatusConnected(DEVICE_CONNECTING);
+                    disc = "Found!...";
                 }
             }
+            log("connectDevice " + disc);
         } else if (device.getType() == HR_MONITOR) {
             //stopDiscoveryServers();
             if (bluetoothManager != null)
@@ -658,8 +675,8 @@ public class CommunicationManager {
             SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
         } else if (device.getType() == RXL_WIFI) {
             log("device connect " + device.getIp());
-            DataParser.isRxl = true;
-            connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), true);
+            //DataParser.isRxl = true;
+            connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), DataParser.RXL);
             SessionManager.getInstance().getUserSession().addDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         }
@@ -667,7 +684,7 @@ public class CommunicationManager {
     }
 
 
-    private void connectTCPDevice(String ServerIP, String ServerPort, String Uid, boolean rxl) {
+    private void connectTCPDevice(String ServerIP, String ServerPort, String Uid, int rxl) {
         TCPConnect(ServerIP, ServerPort, Uid, rxl);
 
     }
@@ -730,7 +747,7 @@ public class CommunicationManager {
         return aux;
     }
 
-    private void TCPConnect(String ip, String port, String Uid, boolean rxl) {
+    private void TCPConnect(String ip, String port, String Uid, int rxl) {
         //create a TCPClient object
         Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port);
         boolean newDevice = true;
@@ -760,7 +777,7 @@ public class CommunicationManager {
 
     private void receiveCommands(byte[] message, String uid, boolean bluetooth) {//lento?
         Encryption.mbp_decrypt(message, message.length);
-        log("receiveCommands msg " + Arrays.toString(message) + " : UID " + uid);
+        log("parseCommandsRxl msg " + Arrays.toString(message) + " : UID " + uid);
         log("receiveCommands char " + Arrays.toString(new String(message).toCharArray()) + " : UID " + uid);
         if (message.length >= MIN_COMMAND_LENGTH) {
             try {
@@ -781,12 +798,13 @@ public class CommunicationManager {
                         else if (message[i] == 77 && message[i + 1] == 66 && message[i + 2] == 82 && message[i + 3] == 88 && message[i + 4] == 76) {
                             if (message.length > (i + message[i + 6] + 8)) {
                                 byte[] command = new byte[message[i + 7] + 2];
-                                for (int j = 0; j < message[i + 6] + 2; j++) {
+                                for (int j = 0; j < message[i + 7] + 2; j++) {
                                     command[j] = message[i + 6 + j];
+                                    log("parseCommandsRxl parsing  " + j + " : " + (message[i + 6 + j] & 0xFF));
                                 }
 
                                 parseCommandsRxl(command, uid);
-                                log("receiveCommands i "+i);
+                                log("receiveCommands2 i " + i);
                                 break;
                             }
                         }
@@ -916,14 +934,15 @@ public class CommunicationManager {
                 break;
             case ASYNC_PROGRAM_STATUS:
                 log("parseCommands ASYNC_PROGRAM_STATUS");
-                if (listener != null)
-                    listener.ProgramStatusEvent(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
-                            DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid);
+                if (listener != null) {
+                    //listener.onStatus(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command), DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid);
+                    listener.onStatus(command, uid);
+                }
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
-                //EventBus.getDefault().postSticky(new ProgramStatusEvent(DataParser.getProgramStatusTime(command),
+                //EventBus.getDefault().postSticky(new onStatus(DataParser.getProgramStatusTime(command),
                 //  DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
                 //    DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid));
-                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
+                // SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
 
                 //  Log.e("commManager", "Receiver ASYNC PROGRAM STATUS");
                 break;
@@ -1035,12 +1054,16 @@ public class CommunicationManager {
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet())), "onChangeColorEvent");
+                if (event.getDevice().getType() == RXL_WIFI) {
+                    t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
+                } else {
+                    t.sendMessage(DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), t.getType()), "onChangeColorEvent");
+                }
             }
         }
         if (bluetoothManager != null)
             bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet())));
+                    DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), event.getDevice().type()));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         Log.e("CommManager", "Color EVENT");
 
@@ -1051,12 +1074,12 @@ public class CommunicationManager {
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
             }
         }
         if (bluetoothManager != null)
             bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         Log.e("CommManager", "Color EVENT");
 

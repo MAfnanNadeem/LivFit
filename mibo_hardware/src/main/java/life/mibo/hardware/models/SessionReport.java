@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SessionReport {
+public class SessionReport  implements BaseModel {
 
     private int sessionID;
     private int trainerID;

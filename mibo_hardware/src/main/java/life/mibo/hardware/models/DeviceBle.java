@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Created by Fer on 16/03/2019.
  */
 
-public class DeviceBle implements Serializable {
+public class DeviceBle implements Serializable, BaseModel {
 
     @SerializedName("deviceName")
     String deviceName;

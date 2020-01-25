@@ -15,7 +15,7 @@ import life.mibo.hardware.models.program.Program;
  * Created by Fer on 16/03/2019.
  */
 
-public class Trainer {
+public class Trainer implements BaseModel {
 
     int id;
     String firstName;

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Program;
 
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_GET_DEVICE_STATUS;
@@ -21,6 +22,8 @@ import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_STOP_C
 
 
 public class DataParser {
+    public final static int BOOSTER = 0;
+    public final static int RXL = 1;
 
     public static void transformSignedToUnsignedBytes(byte[] message) {
         for (int i = 0; i < message.length; i++) {
@@ -117,40 +120,37 @@ public class DataParser {
 
     public static byte[] sendStart() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_START_CURRENT_CYCLE}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_START_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
     }
 
     public static byte[] sendReStart() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_RESET_CURRENT_CYCLE}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_RESET_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
     }
 
     public static byte[] sendStop() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_STOP_CURRENT_CYCLE}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_STOP_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
     }
 
     public static byte[] sendMain(int main) {
         byte[] aux = new byte[1];
         aux[0] = (byte) main;
-        return fullMessage(new byte[]{COMMAND_SET_MAIN_LEVEL}, new byte[]{1}, aux);
+        return fullMessage(new byte[]{COMMAND_SET_MAIN_LEVEL}, new byte[]{1}, aux, BOOSTER);
     }
 
     public static byte[] sendPing() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_PING_STIMULATOR}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_PING_STIMULATOR}, new byte[]{0}, aux, BOOSTER);
     }
 
     public static byte[] sendGetFirm() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_GET_FIRMWARE_REVISION}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_GET_FIRMWARE_REVISION}, new byte[]{0}, aux, BOOSTER);
     }
 
-    public static byte[] sendGetStatus(boolean isRxl) {
-        byte[] aux = new byte[0];
-        if (isRxl)
-            return fullMessageRxl(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, aux);
-        return fullMessage(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, aux);
+    public static byte[] sendGetStatus(int type) {
+        return fullMessage(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, new byte[0], type);
     }
 
     public static int getStatusBattery(byte[] command) {
@@ -167,21 +167,43 @@ public class DataParser {
 
     public static byte[] sendSearchCommand() {
         byte[] aux = new byte[0];
-        return fullMessage(new byte[]{COMMAND_SEARCH_STIMULATOR}, new byte[]{0}, aux);
+        return fullMessage(new byte[]{COMMAND_SEARCH_STIMULATOR}, new byte[]{0}, aux, BOOSTER);
     }
 
-    public static byte[] sendColor(byte[] color) {
+    public static byte[] sendColor(byte[] color, int type) {
         byte[] aux = new byte[3];
         aux[0] = color[0];
         aux[1] = color[1];
         aux[2] = color[2];
-        return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, aux);
+        return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, aux, type);
+    }
+
+    public static byte[] sendRxlColor(int color, int time, int type) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            Logger.e("sendRxlColor " + color + " : r"+r+" g"+g+" b "+b + time+" : "+t1 +"  "+t2);
+            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{5}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRxlColor " + color + " : " + time, e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
+    public static byte[] sendRxlColor(byte[] color, int type) {
+        return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, color, type);
     }
 
     public static byte[] sendMainLevel(int main) {
         byte[] aux = new byte[1];
         aux[0] = (byte) main;
-        return fullMessage(new byte[]{COMMAND_SET_MAIN_LEVEL}, new byte[]{1}, aux);
+        return fullMessage(new byte[]{COMMAND_SET_MAIN_LEVEL}, new byte[]{1}, aux, BOOSTER);
     }
 
     public static byte[] sendLevels(int[] levels) {
@@ -198,7 +220,7 @@ public class DataParser {
         aux[8] = (byte) levels[8];//
         aux[9] = (byte) levels[9];//
 
-        return fullMessage(new byte[]{COMMAND_SET_CHANNELS_LEVELS}, new byte[]{10}, aux);
+        return fullMessage(new byte[]{COMMAND_SET_CHANNELS_LEVELS}, new byte[]{10}, aux, BOOSTER);
     }
 
     public static byte[] sendProgram(int numberOfPrograms, int programIndex, Program program) {
@@ -211,7 +233,7 @@ public class DataParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fullMessage(new byte[]{COMMAND_SET_COMMON_STIMULATION_PARAMETERS}, new byte[]{(byte) outputProgram.toByteArray().length}, outputProgram.toByteArray());
+        return fullMessage(new byte[]{COMMAND_SET_COMMON_STIMULATION_PARAMETERS}, new byte[]{(byte) outputProgram.toByteArray().length}, outputProgram.toByteArray(), BOOSTER);
     }
 
     public static byte[] sendProgramOnHot(int numberOfPrograms, int programIndex, Program program) {
@@ -224,7 +246,7 @@ public class DataParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fullMessage(new byte[]{COMMAND_SET_COMMON_STIMULATION_PARAMETERS_ON_HOT}, new byte[]{(byte) outputProgram.toByteArray().length}, outputProgram.toByteArray());
+        return fullMessage(new byte[]{COMMAND_SET_COMMON_STIMULATION_PARAMETERS_ON_HOT}, new byte[]{(byte) outputProgram.toByteArray().length}, outputProgram.toByteArray(), BOOSTER);
     }
 
 
@@ -269,17 +291,16 @@ public class DataParser {
         return aux;
     }
 
-    public static boolean isRxl = true;
+    //public static boolean isRxl = true;
 
-    private static byte[] fullMessage(byte[] code, byte[] length, byte[] data) {
-        if (isRxl)
-            return fullMessageRxl(code, length, data);
-        byte[] header = new byte[5];
-        header[0] = 'M';
-        header[1] = 'I';
-        header[2] = 'B';
-        header[3] = 'O';
-        header[4] = '\0';
+    private static byte[] fullMessage(byte[] code, byte[] length, byte[] data, int type) {
+        byte[] header;
+        if (type == RXL) {
+            header = getRxlHeader();
+        } else {
+            header = getBoosterHeader();
+        }
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(header);
@@ -294,12 +315,33 @@ public class DataParser {
         outputStream.write((byte) (crc16(c) & 0xFF));
         outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
 
-        Logger.e("Writing Message1 " + Arrays.toString(header));
-        Logger.e("Writing Message2 " + Arrays.toString(code));
-        Logger.e("Writing Message3 " + Arrays.toString(length));
+        Logger.e("Writing Header1 " + Arrays.toString(header));
+        Logger.e("Writing Code2 " + Arrays.toString(code));
+        Logger.e("Writing Length3 " + Arrays.toString(length));
         Logger.e("Writing Message4 " + Arrays.toString(data));
 
         return outputStream.toByteArray();
+    }
+
+    private static byte[] getBoosterHeader() {
+        byte[] header = new byte[5];
+        header[0] = 'M';
+        header[1] = 'I';
+        header[2] = 'B';
+        header[3] = 'O';
+        header[4] = '\0';
+        return header;
+    }
+
+    private static byte[] getRxlHeader() {
+        byte[] header = new byte[6];
+        header[0] = 'M';
+        header[1] = 'B';
+        header[2] = 'R';
+        header[3] = 'X';
+        header[4] = 'L';
+        header[5] = '\0';
+        return header;
     }
 
     private static byte[] fullMessageRxl(byte[] code, byte[] length, byte[] data) {
@@ -330,6 +372,53 @@ public class DataParser {
         Logger.e("Writing Message8 " + Arrays.toString(data));
 
         return outputStream.toByteArray();
+    }
+
+    // [-64, 2, -45, -62]
+    public static int getRxlTime(byte[] command) {
+        int aux;
+        aux = ((command[3] & 0xff) << 8) | (command[2] & 0xff);
+        return aux;
+    }
+
+    public static String getRxlTimeTest(byte[] command) {
+        StringBuilder time = new StringBuilder();
+        if (command.length > 2) {
+            int a = command[2] & 0xff;
+            int b = command[3] & 0xff;
+            time.append(a);
+            time.append(" ");
+            time.append(b);
+            b = b * 256;
+            b += +a;
+            time.append(" - ");
+            time.append(b);
+            time.append(" ms");
+            time.append(" - ");
+            time.append(b / 1000);
+        }
+        time.append(" sec");
+        return time.toString();
+    }
+
+    public static byte[] getRxlColor(int color, int time) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            return new byte[]{(byte) r, (byte) g, (byte) b, (byte) t1, (byte) t2};
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+        }
+        return DeviceColors.VIOLET_BYTES;
+    }
+
+    public static byte[] parseRxlTime(int time) {
+        int a = (time >> 8) & 0xFF;
+        int b = (time) & 0xFF;
+        return new byte[]{(byte) a, (byte) b};
     }
 
     static int crc16(final byte[] buffer) {

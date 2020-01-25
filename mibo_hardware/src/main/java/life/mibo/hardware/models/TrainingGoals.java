@@ -4,7 +4,7 @@ package life.mibo.hardware.models;
  * Created by Fer on 18/03/2019.
  */
 
-public class TrainingGoals {
+public class TrainingGoals implements BaseModel {
     private String weightloss;
     private String toning;
     private String performanceEnhancement;

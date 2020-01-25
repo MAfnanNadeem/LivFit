@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import life.mibo.hardware.SessionManager;
 
-public class MemberReport {
+public class MemberReport implements BaseModel {
     int memberId = 0;
     int userRating = 0;
     String trainerFeedback = "";

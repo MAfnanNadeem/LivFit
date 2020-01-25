@@ -19,3 +19,14 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep public class * implements life.mibo.hardware.models.BaseModel
+
+# member fields of serialized classes, including enums that implement this interface
+-keepclassmembers class * implements life.mibo.hardware.models.BaseModel {
+    <fields>;
+}
+
+# also keep names of these classes. not required, but just in case.
+-keepnames class * implements life.mibo.hardware.models.BaseModel
+-keep public class * extends android.content.BroadcastReceiver
+-keepclassmembers enum * { *; }

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.encryption.Encryption;
 
@@ -37,22 +38,26 @@ public class TCPClient {
     private String uid;
     private Thread thread;
     private Socket mSocket;
-    private boolean rxl = false;
+    private int type = DataParser.BOOSTER;
 
     public boolean isRxl() {
-        return rxl;
+        return type == DataParser.RXL;
+    }
+
+    public int getType() {
+        return type;
     }
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages
      * received from server
      */
-    public TCPClient(String ip, int port, String Uid, boolean rxl, OnMessageReceived listener) {
+    public TCPClient(String ip, int port, String Uid, int rxl, OnMessageReceived listener) {
         this.listener = listener;
         this.serverIp = ip;
         serverPort = port;
         uid = Uid;
-        this.rxl = rxl;
+        this.type = rxl;
     }
 
     public String getServerIp() {

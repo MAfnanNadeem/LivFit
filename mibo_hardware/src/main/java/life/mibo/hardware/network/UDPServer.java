@@ -34,7 +34,14 @@ public class UDPServer {
 
     private OnBroadcastReceived broadcastReceived = null;
 
+    public UDPServer() {
+
+    }
     public UDPServer(OnBroadcastReceived listener) {
+        broadcastReceived = listener;
+    }
+
+    public void addListener(OnBroadcastReceived listener) {
         broadcastReceived = listener;
     }
 

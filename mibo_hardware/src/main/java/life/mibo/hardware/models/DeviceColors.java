@@ -14,7 +14,7 @@ import life.mibo.hardware.R;
  * Created by Fer on 03/04/2019.
  */
 
-public class DeviceColors {
+public class DeviceColors implements BaseModel{
     public static final int LIME = 0;
     public static final int ORANGE = 1;
     public static final int PINK = 2;
@@ -91,6 +91,20 @@ public class DeviceColors {
            // Color c = Color.valueOf(color);
         }
         return VIOLET_BYTES;
+    }
+
+    public static byte[] getRxlColor(int color, int time) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            return new byte[]{(byte) r, (byte) g, (byte) b, (byte) t1, (byte) t2};
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+        }
+        return DeviceColors.VIOLET_BYTES;
     }
 
 //    public static Color valueOf(@ColorInt int color) {

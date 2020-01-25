@@ -67,6 +67,22 @@ public class BluetoothManager {
         void bleBoosterChanged(byte[] data, String uid);
     }
 
+    public void setBleGatListener(BleGattManager.OnConnection bleGatListener) {
+        this.bleGatListener = bleGatListener;
+    }
+
+    public void setListener(OnBleDeviceDiscovered listener) {
+        this.listener = listener;
+    }
+
+    public void setOnBleCharChanged(OnBleCharChanged onBleCharChanged) {
+        this.onBleCharChanged = onBleCharChanged;
+    }
+
+    public BluetoothManager(Context context) {
+        this.activity = context;
+    }
+
     public BluetoothManager(Context activity, OnBleDeviceDiscovered listenerDiscovery, OnBleCharChanged listenerBle) {
         this.activity = activity;
         listener = listenerDiscovery;

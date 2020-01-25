@@ -13,7 +13,7 @@ import life.mibo.hardware.models.program.Program;
  * Created by Sumeet on 18/12/2019.
  */
 // Copy of Session class for Consumer App (LivFit/Hexa)
-public class UserSession {
+public class UserSession implements BaseModel {
 
     public static final int NOT_STARTED = 0;
     public static final int SESSION_PAUSED = 1;
@@ -47,8 +47,26 @@ public class UserSession {
 
     private boolean boosterMode = true; // true wifi false ble
     private boolean isStarted;
+    private boolean isBooster = false;
+    private boolean isRxl = false;
 
-//    public Device getDevice() {
+    public boolean isBooster() {
+        return isBooster;
+    }
+
+    public void setBooster(boolean booster) {
+        isBooster = booster;
+    }
+
+    public void setRxl(boolean rxl) {
+        isRxl = rxl;
+    }
+
+    public boolean isRxl() {
+        return isRxl;
+    }
+
+    //    public Device getDevice() {
 //        return device;
 //    }
 

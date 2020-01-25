@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+import life.mibo.hardware.core.DataParser;
+
 import static life.mibo.hardware.models.ConnectionTypes.BLE;
 import static life.mibo.hardware.models.ConnectionTypes.WIFI;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
@@ -23,7 +25,7 @@ import static life.mibo.hardware.models.DeviceTypes.GENERIC;
  * Created by Fer on 16/03/2019.
  */
 
-public class Device implements Serializable {
+public class Device implements Serializable, BaseModel {
 
     @SerializedName("id")
     private String id = "";
@@ -230,6 +232,14 @@ public class Device implements Serializable {
 
     public DeviceTypes getType() {
         return type;
+    }
+
+    public int type() {
+        if (type == DeviceTypes.RXL_WIFI || type == DeviceTypes.RXL_BLE)
+            return DataParser.RXL;
+        if (type == DeviceTypes.WIFI_STIMULATOR || type == DeviceTypes.BLE_STIMULATOR)
+            return DataParser.BOOSTER;
+        return 0;
     }
 
     public void setType(DeviceTypes type) {

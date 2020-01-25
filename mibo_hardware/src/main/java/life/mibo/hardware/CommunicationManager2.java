@@ -133,7 +133,7 @@ public class CommunicationManager2 {
                     Thread.sleep(4000);
                     HashMap<String, TCPClientNio.Client> map = TCPClientNio.get().getMap();
                     for (HashMap.Entry<String, TCPClientNio.Client> client : map.entrySet()) {
-                        client.getValue().sendMessage(DataParser.sendGetStatus(false));
+                        client.getValue().sendMessage(DataParser.sendGetStatus(DataParser.BOOSTER));
                         pingSentDevice(client.getKey());
                         //client.getValue().sendMessage(message);
                     }
@@ -147,11 +147,11 @@ public class CommunicationManager2 {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
                             if (d.getName() != null) {
                                 if (d.getName().contains("MIBO-")) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     pingSentDevice(d.getName().replace("MIBO-", ""));
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(false), d);
+                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     pingSentDevice(d.toString());
                                 }
                             }
@@ -760,10 +760,10 @@ public class CommunicationManager2 {
                 break;
             case ASYNC_PROGRAM_STATUS:
                 if (listener != null)
-                    listener.ProgramStatusEvent(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
+                    listener.onStatus(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
                             DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid);
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
-                //EventBus.getDefault().postSticky(new ProgramStatusEvent(DataParser.getProgramStatusTime(command),
+                //EventBus.getDefault().postSticky(new onStatus(DataParser.getProgramStatusTime(command),
                 //  DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
                 //    DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid));
                 SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
@@ -911,14 +911,14 @@ public class CommunicationManager2 {
     public void onChangeColorEvent(ChangeColorEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
 
-        send(event.getUid(), DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        send(event.getUid(), DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
 //        for (TCPClient t : tcpClients) {
 //            if (t.getUid().equals(event.getUid())) {
 //                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
 //            }
 //        }
         bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+                DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("Color EVENT");
 

@@ -28,7 +28,8 @@ public interface CommunicationListener {
 
     void GetLevelsEvent(String uid);
 
-    void ProgramStatusEvent(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
+    void onStatus(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
+    void onStatus(byte[] command, String uid);
 
     void onCommandReceived(int code, byte[] command, String uid);
 

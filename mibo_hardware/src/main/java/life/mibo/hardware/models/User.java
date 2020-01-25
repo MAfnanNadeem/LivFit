@@ -16,7 +16,7 @@ import life.mibo.hardware.models.program.Program;
  * Created by Fer on 14/03/2019.
  */
 
-public class User implements Serializable {
+public class User implements Serializable, BaseModel{
 
     private String id = "";
     private String name = "";

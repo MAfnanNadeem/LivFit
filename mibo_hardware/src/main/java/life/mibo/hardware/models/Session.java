@@ -12,7 +12,7 @@ import life.mibo.hardware.models.program.Program;
  * Created by Fer on 18/03/2019.
  */
 
-public class Session {
+public class Session  implements BaseModel {
 
     public static final int SESSION_NOT_STARTED = 0;
     public static final int SESSION_PAUSED = 1;
@@ -105,6 +105,7 @@ public class Session {
             for (Device t : registeredDevices) {
                 if (t.getUid().equals(device.getUid())) {
                     aux = registeredDevices.indexOf(t);
+                    break;
                 }
             }
             if (aux != -1)
@@ -113,7 +114,6 @@ public class Session {
     }
 
     public Device getRegisteredDevicebyUid(String uid) {
-        boolean newDevice = true;
         for (Device d : registeredDevices) {
             if (d.getUid().equals(uid)) {
                 return d;

@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Created by Fer on 18/03/2019.
  */
 
-public class MedicalHistory {
+public class MedicalHistory implements BaseModel {
 
     private String height = "0";
     private String weight = "70";

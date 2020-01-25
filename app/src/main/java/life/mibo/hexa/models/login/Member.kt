@@ -39,7 +39,7 @@ data class Member(
     var province: Any?,
     @SerializedName("token_type")
     var tokenType: String?
-): BaseModel()
+): BaseModel
 {
     fun id() : String{
         return id.toString()

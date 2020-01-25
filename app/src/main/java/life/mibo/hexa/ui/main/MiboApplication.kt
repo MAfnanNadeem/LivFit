@@ -9,10 +9,7 @@ package life.mibo.hexa.ui.main
 
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import coil.util.CoilLogger
-import com.crashlytics.android.Crashlytics
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
@@ -32,7 +29,7 @@ class MiboApplication : Application() {
         context = this
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
-        FirebaseEvent.init(applicationContext)
+        MiboEvent.init(applicationContext)
     }
 
     fun setHandler(){

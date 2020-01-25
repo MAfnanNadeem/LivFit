@@ -2,7 +2,10 @@ package life.mibo.hexa.ui.ch6
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +17,6 @@ import life.mibo.hardware.events.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.ui.base.BaseFragment
-import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -48,6 +50,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         return root
     }
 
+    var test = true
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //controller = Channel6Controller(this@Channel6Fragment)
@@ -63,6 +66,8 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         }
 
         iv_play?.setOnClickListener {
+            //test = !test
+            //updatePlayButton(test)
             controller.onMainPlayClicked()
             //startSession(SessionManager.getInstance().userSession.user)
             //onPlayClicked()
@@ -84,6 +89,22 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
 
     }
 
+
+    override fun updatePlayButton(isPaused: Boolean) {
+        activity?.runOnUiThread {
+            iv_play?.setImageBitmap(null)
+            //iv_play?.background = null
+           // iv_play?.scaleType = ImageView.ScaleType.CENTER
+            if (isPaused) {
+                //iv_play?.setBackground(AppCompatResources.getDrawable(context!!, R.drawable.ic_resume_hexa))
+                iv_play?.setImageResource(R.drawable.ic_resume_hexa)
+                //iv_play?.scaleType = ImageView.ScaleType.CENTER
+            } else {
+                iv_play?.setImageResource(R.drawable.ic_play_hexa)
+
+            }
+        }
+    }
 
     override fun onTimerUpdate(time: Long) {
         //log("onTimerUpdate $time")

@@ -15,4 +15,4 @@ data class Member(
     var errors: List<Error?>?,
     @SerializedName("status")
     var status: String?
-): BaseModel()
+): BaseModel

@@ -12,28 +12,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.models.program.Post2
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.program.ProgramPost
+import life.mibo.hexa.models.program.ProgramPost2
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
-import life.mibo.views.calendardayview.CalendarEvent
-import life.mibo.views.calendardayview.data.IEvent
-import life.mibo.views.calendardayview.data.IPopup
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class ScheduleFragment : BaseFragment() {
 
@@ -82,6 +85,23 @@ class ScheduleFragment : BaseFragment() {
         tv_time?.text = String.format(
             "%02d:%02d %s", now.get(Calendar.HOUR_OF_DAY) % 12, now.get(Calendar.MINUTE), if (hours > 12) "PM" else "AM"
         )
+
+        setRecycler()
+    }
+
+    private val dayList = ArrayList<DayAdapter.Day>()
+    private var adapter: DayAdapter? = null
+    fun setRecycler() {
+        dayList.clear()
+
+        for (i in 1..24) {
+            dayList.add(DayAdapter.Day(i, String.format("%02d:00", i)))
+        }
+
+        adapter = DayAdapter(dayList, null)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        recyclerView.adapter = adapter
     }
 
 
@@ -131,8 +151,8 @@ class ScheduleFragment : BaseFragment() {
         dpd.show(childFragmentManager, "TimePickerDialog")
     }
 
-    val events = ArrayList<IEvent>()
-    val popups = ArrayList<IPopup>();
+    //val events = ArrayList<IEvent>()
+    //val popups = ArrayList<IPopup>();
 
     var start = Calendar.getInstance()
 
@@ -146,33 +166,40 @@ class ScheduleFragment : BaseFragment() {
         val end = start.clone() as Calendar
         //end.add(Calendar.HOUR_OF_DAY, 1)
         end.add(Calendar.MINUTE, program?.duration?.valueInt()!!.div(60))
-        val event = CalendarEvent(3, start, end, "${program?.name}", "house", eventColor)
+        //val event = CalendarEvent(3, start, end, "${program?.name}", "house", eventColor)
         //event.setBitmap(BitmapFactory.decodeResource(resources, R.drawable.avatar))
-        event.name = "MI.BO Session"
-        events.add(event)
-
-        calendarDayView.setLimitTime(0,23)
-        calendarDayView.setEvents(events)
-        calendarDayView
+        //event.name = "MI.BO ${program?.name}"
+        //events.add(event)
+        val m = if (end[Calendar.MINUTE] > 25) 1 else 0
+        val h = end.get(Calendar.HOUR_OF_DAY)
+        adapter?.addEvent(h, "MI.BO ${program?.name}", m)
+        // calendarDayView.setLimitTime(0,23)
+        //calendarDayView.setEvents(events)
+        // calendarDayView
         log("CalendarDayView setEvents")
+        // val d = com.android.calendar.DayView
         //calendarDayView.invalidate()
+        Single.just(h).delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+            recyclerView.scrollToPosition(it)
+            log("DayAdapter : recyclerView.scrollToPosition $h")
+        }.subscribe()
     }
 
-    fun addEvent(string: String) {
-        val eventColor = resources.getColor(R.color.eventColor)
-        val timeStart = Calendar.getInstance()
-        timeStart.set(Calendar.HOUR_OF_DAY, 16)
-        timeStart.set(Calendar.MINUTE, 15)
-        val timeEnd = timeStart.clone() as Calendar
-        timeEnd.add(Calendar.HOUR_OF_DAY, 1)
-        timeEnd.add(Calendar.MINUTE, 30)
-        val event = CalendarEvent(3, timeStart, timeEnd, "${program?.name}", "house", eventColor)
-        //event.setBitmap(BitmapFactory.decodeResource(resources, R.drawable.avatar))
-        event.name = "MI.BO"
-        events.add(event)
-
-        calendarDayView.setEvents(events)
-    }
+//    fun addEvent(string: String) {
+//        val eventColor = resources.getColor(R.color.eventColor)
+//        val timeStart = Calendar.getInstance()
+//        timeStart.set(Calendar.HOUR_OF_DAY, 16)
+//        timeStart.set(Calendar.MINUTE, 15)
+//        val timeEnd = timeStart.clone() as Calendar
+//        timeEnd.add(Calendar.HOUR_OF_DAY, 1)
+//        timeEnd.add(Calendar.MINUTE, 30)
+//        val event = CalendarEvent(3, timeStart, timeEnd, "${program?.name}", "house", eventColor)
+//        //event.setBitmap(BitmapFactory.decodeResource(resources, R.drawable.avatar))
+//        event.name = "MI.BO"
+//        //events.add(event)
+//
+//        //calendarDayView.setEvents(events)
+//    }
 
 
     private var programDialog: ProgramDialog? = null
@@ -184,8 +211,9 @@ class ScheduleFragment : BaseFragment() {
             Prefs.get(context).member ?: return
 
         getDialog()?.show()
-        val post = ProgramPost(member.accessToken)
-        API.request.getApi().searchPrograms(post).enqueue(object :
+        val post =
+            ProgramPost2(item = Post2(), auth = member.accessToken!!, type = "SearchPrograms")
+        API.request.getApi().searchPrograms2(post).enqueue(object :
             Callback<SearchPrograms> {
             override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
                 getDialog()?.dismiss()

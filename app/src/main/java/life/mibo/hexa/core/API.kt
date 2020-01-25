@@ -4,13 +4,17 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.core.gson.GsonConverterFactory
 import life.mibo.hexa.models.base.PostData
+import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.calories.Calories
-import life.mibo.hexa.models.login.LoginData
+import life.mibo.hexa.models.create_session.BookSession
+import life.mibo.hexa.models.create_session.BookSessionPost
+import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.member.Member
 import life.mibo.hexa.models.member.MemberDetailsPOST
 import life.mibo.hexa.models.program.ProgramPost
+import life.mibo.hexa.models.program.ProgramPost2
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.models.register.RegisterGuestMember
 import life.mibo.hexa.models.register.RegisterResponse
@@ -64,6 +68,7 @@ class API {
 
     companion object {
         val request: API by lazy { API() }
+        fun get() = lazy { API() }
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
         const val baseUrl = "http://test.mibo.world/api/consumer/"
@@ -94,9 +99,9 @@ class API {
         @POST("loginUser")
         fun login(@Body login: LoginUser): Call<LoginResponse>
 
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("loginMember")
-        fun loginMember(@Body data: LoginData): Call<Member>
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("loginMember")
+//        fun loginMember(@Body data: LoginData): Call<Member>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("verifyNumber")
@@ -142,5 +147,17 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("searchPrograms")
         fun searchPrograms(@Body data: ProgramPost): Call<SearchPrograms>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchPrograms")
+        fun searchPrograms2(@Body data: ProgramPost2): Call<SearchPrograms>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("bookAndStartConsumerSession")
+        fun bookSession(@Body data: BookSessionPost): Call<BookSession>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveSessionReport")
+        fun saveSessionReport(@Body data: SaveSessionPost): Call<ResponseData>
     }
 }

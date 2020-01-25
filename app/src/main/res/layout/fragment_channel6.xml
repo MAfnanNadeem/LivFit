@@ -11,8 +11,8 @@
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
         android:layout_marginStart="30dp"
-        android:src="@drawable/ic_play_hexa"
         android:scaleType="fitCenter"
+        android:src="@drawable/ic_play_hexa"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/hexagonImageView" />
 
@@ -20,9 +20,9 @@
         android:id="@+id/iv_stop"
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_stop_hexa"
         android:translationY="-20dp"
-        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_play" />
 
@@ -31,27 +31,27 @@
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
         android:layout_marginEnd="30dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_plus_main"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/hexagonImageView"
-        android:scaleType="fitCenter" />
+        app:layout_constraintTop_toTopOf="@+id/hexagonImageView" />
 
     <ImageView
         android:id="@+id/iv_minus"
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_minus_main"
         android:translationY="-24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_plus"
-        android:scaleType="fitCenter" />
+        app:layout_constraintTop_toBottomOf="@id/iv_plus" />
 
     <com.github.siyamed.shapeimageview.HexagonImageView
         android:id="@+id/hexagonImageView"
         android:layout_width="wrap_content"
         android:layout_height="96dp"
-        android:src="@drawable/login_bg"
         android:scaleType="fitCenter"
+        android:src="@drawable/login_bg"
         app:layout_constraintEnd_toStartOf="@+id/iv_plus"
         app:layout_constraintStart_toEndOf="@+id/iv_play"
         app:layout_constraintTop_toTopOf="parent"
@@ -70,20 +70,22 @@
         android:id="@+id/tv_timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/progressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="18sp"
         android:layout_margin="8dp"
         android:text="Timer"
-        android:typeface="monospace"
         android:textColor="@color/textColor"
+        android:textSize="18sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:minHeight="8dp"
+        android:maxHeight="8dp"
+        android:layout_height="8dp"
         android:layout_margin="4dp"
         android:max="100"
         android:progress="0"
@@ -91,6 +93,80 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_stop" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/progressBar">
+
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline6"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline7"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline8"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline9"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

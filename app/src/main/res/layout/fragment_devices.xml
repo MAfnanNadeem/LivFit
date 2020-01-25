@@ -87,7 +87,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardview_scan" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewConnect" />
     <TextView
         android:id="@+id/tv_no_available"
         android:layout_width="wrap_content"
@@ -104,8 +104,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAvailable"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/grid_1x"
+        app:layout_constraintBottom_toTopOf="@+id/button_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_no_available" />
@@ -121,7 +122,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewAvailable" />
+        app:layout_constraintTop_toBottomOf="@id/cardview_scan" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewConnect"
@@ -165,6 +166,7 @@
         tools:layout_editor_absoluteX="8dp" />
 
     <LinearLayout
+        android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_1x"

@@ -8,8 +8,12 @@ import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import java.util.Random;
+
+import life.mibo.hexa.R;
 
 public class Utils {
 
@@ -122,4 +126,19 @@ public class Utils {
                 (startG + (int)(fraction * (endG - startG))) << 8 |
                 (startB + (int)(fraction * (endB - startB)));
     }
+
+    public static void success(Context context, int resId) {
+        success(context, resId, Toasty.LENGTH_SHORT);
+    }
+
+    public static void success(Context context, int resId, int length) {
+        try {
+            Toasty.custom(context, context.getString(resId), AppCompatResources.getDrawable(context, R.drawable.ic_check_white_24dp),
+                    ContextCompat.getColor(context, R.color.successColor), ContextCompat.getColor(context, R.color.defaultTextColor),
+                    length, true, true).show();
+        } catch (Exception e) {
+
+        }
+    }
+
 }

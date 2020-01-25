@@ -25,7 +25,7 @@ data class VerifyOTP(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) : BaseModel(){
+) : BaseModel{
     constructor(userId: String, otp: String) : this(
         "Client1213",
         Data(userId, otp),

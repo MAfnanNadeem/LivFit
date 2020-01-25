@@ -5,13 +5,16 @@
 package life.mibo.hexa.ui.login
 
 import android.content.Intent
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
-import life.mibo.hexa.ui.main.FirebaseEvent
+import life.mibo.hexa.room.Database
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
@@ -48,14 +51,14 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             pwd = "123456"
         }
 
-        if(usr.isNullOrEmpty())
+        if(usr.isEmpty())
         {
-            Toasty.info(context, "Please enter username").show()
+            Toasty.info(context, context.getString(R.string.enter_username)).show()
             return
         }
-        if(pwd.isNullOrEmpty())
+        if(pwd.isEmpty())
         {
-            Toasty.info(context, "Please enter password").show()
+            Toasty.info(context, R.string.enter_password).show()
             return
         }
 
@@ -64,7 +67,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(context, "Unable to connect").show()
+                Toasty.error(context, R.string.unable_to_connect).show()
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
@@ -73,16 +76,23 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 val data = response.body()
                 if (data != null) {
                     if (data.status.equals("success", true)) {
-                        Toasty.success(context, "Successfully logged").show()
+                        Observable.just("").observeOn(Schedulers.newThread()).doOnComplete {
+                            Database.getInstance(context).memberDao()
+                                .add(life.mibo.hexa.room.Member.from(data.data!!))
+                        }.subscribe()
+                        Toasty.success(context, context.getString(R.string.logged_succes)).show()
                         isLogin = true
                         Prefs.get(this@LoginController.context).member = data.data
                         Prefs.get(this@LoginController.context).set("user_email",usr)
-                        FirebaseEvent.loginSuccess(
+                        MiboEvent.loginSuccess(
                             "${data.data?.firstName} - ${data.data?.lastName}", "$usr"
                         )
+
+
+
                         loginSucceed()
                     } else if (data.status.equals("error", true)) {
-                        Toasty.error(context, "${data.error?.get(0)?.message}").show()
+                        Toasty.error(context, "${data.errors?.get(0)?.message}").show()
                     }
                 } else {
                     Toasty.error(context, R.string.error_occurred).show()

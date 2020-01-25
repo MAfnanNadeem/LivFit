@@ -23,4 +23,4 @@ data class VerifyOtpResponse(
     var errors: List<Error>?,
     @SerializedName("status")
     var status: String?
-): BaseModel()
+): BaseModel

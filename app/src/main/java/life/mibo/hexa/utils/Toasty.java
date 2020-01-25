@@ -32,6 +32,7 @@ public class Toasty {
     private static boolean allowQueue = true;
 
     private static Toast lastToast = null;
+    private boolean showIcon = false;
 
     public static final int LENGTH_SHORT = Toast.LENGTH_SHORT;
     public static final int LENGTH_LONG = Toast.LENGTH_LONG;
@@ -103,7 +104,7 @@ public class Toasty {
 
     @CheckResult
     public static Toast warning(@NonNull Context context, @NonNull CharSequence message) {
-        return warning(context, message, Toast.LENGTH_SHORT, true);
+        return warning(context, message, Toast.LENGTH_SHORT, false);
     }
 
     @CheckResult
@@ -205,17 +206,17 @@ public class Toasty {
 
     @CheckResult
     public static Toast error(@NonNull Context context, @NonNull CharSequence message) {
-        return error(context, message, Toast.LENGTH_SHORT, true);
+        return error(context, message, Toast.LENGTH_SHORT, false);
     }
 
     @CheckResult
     public static Toast error(@NonNull Context context, @StringRes int message, int duration) {
-        return error(context, context.getString(message), duration, true);
+        return error(context, context.getString(message), duration, false);
     }
 
     @CheckResult
     public static Toast error(@NonNull Context context, @NonNull CharSequence message, int duration) {
-        return error(context, message, duration, true);
+        return error(context, message, duration, false);
     }
 
     @CheckResult

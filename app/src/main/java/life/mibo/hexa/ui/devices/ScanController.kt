@@ -63,6 +63,7 @@ class ScanController(val context: DeviceScanFragment, val observer: ScanObserver
     fun getConnectedDevices() {
         val list = CommunicationManager.getInstance().tcpClients
         if (list != null && list.isNotEmpty()) {
+            connectedList.clear()
             for (i in list) {
                 var d: Device? = null
                 try {
@@ -74,11 +75,19 @@ class ScanController(val context: DeviceScanFragment, val observer: ScanObserver
                 context.log("Saved device found.........${d}")
                 if (d != null) {
                     //d.statusConnected = 1
-                    connectedList.add(d)
+                    var add = true
+                    for (k in connectedList) {
+                        if (k.uid == d.uid) {
+                            add = false
+                            break
+                        }
+                    }
+                    if (add)
+                        connectedList.add(d)
                 }
                 else connectedList.add(
                     Device(
-                        "Null",
+                        "Device",
                         i.serverIp,
                         i.uid,
                         DeviceTypes.WIFI_STIMULATOR

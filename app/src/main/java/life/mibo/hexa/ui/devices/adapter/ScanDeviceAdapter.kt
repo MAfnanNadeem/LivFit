@@ -21,10 +21,20 @@ import java.util.*
 
 
 class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
-    RecyclerView.Adapter<ScanDeviceAdapter.Holder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val ITEM = 0
+    private val HEADER = 1
     private var listener: Listener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (viewType == HEADER)
+            return Header(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.list_item_devices_header,
+                parent,
+                false
+            )
+        )
         return Holder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.list_item_devices,
@@ -48,10 +58,31 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         return list?.get(position)
     }
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        //val item = getItem(position)
-        holder.bind(getItem(position), listener)
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
+    }
 
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        //val item = getItem(position)
+        if (holder is Holder)
+            holder.bind(getItem(position), listener)
+        else if (holder is Header)
+            holder.bind(getItem(position))
+
+    }
+
+    class Header(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var title: TextView? = itemView.findViewById(R.id.title)
+        fun bind(item: Device?) {
+            if (item == null)
+                return
+
+            if (item.statusConnected == 1) {
+                title?.text = itemView.context.getString(R.string.connected_devices)
+            } else {
+                title?.text = itemView.context.getString(R.string.available_devices)
+            }
+        }
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -72,7 +103,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
 
             try {
-                name?.text = item.name?.split("-")!![0]
+                name?.text = item.name?.split("-")!![0] + " "+item.batteryLevel
             } catch (e: Exception) {
                 name?.text = item.name
             }
@@ -192,6 +223,28 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 //            list!!.add(item)
 //            notifyItemInserted(list!!.size)
 //        }
+    }
+
+    fun remove(uid: String) {
+        Logger.e("ScanDevice addDevice device")
+        list?.forEachIndexed { i, d ->
+            if (d.uid == uid) {
+                list!!.removeAt(i)
+                notifyItemRemoved(i)
+                return
+            }
+        }
+    }
+
+    fun remove(item: Device) {
+        Logger.e("ScanDevice addDevice device")
+        list?.forEachIndexed { i, d ->
+            if (d.uid == item.uid) {
+                list!!.removeAt(i)
+                notifyItemRemoved(i)
+                return
+            }
+        }
     }
 
     fun addDevice(item: Device) {

@@ -23,7 +23,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.program.ProgramPost
+import life.mibo.hexa.models.program.ProgramPost2
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -100,8 +100,8 @@ class SelectProgramFragment : BaseFragment() {
             Prefs.get(context).member ?: return
 
         getDialog()?.show()
-        val post = ProgramPost(member.accessToken)
-        API.request.getApi().searchPrograms(post).enqueue(object :
+        val post = ProgramPost2(auth = member.accessToken!!)
+        API.request.getApi().searchPrograms2(post).enqueue(object :
             Callback<SearchPrograms> {
             override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
                 getDialog()?.dismiss()

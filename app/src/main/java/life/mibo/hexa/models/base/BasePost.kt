@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName
 abstract class BasePost<T>(
     @SerializedName("Data") val data: T,
     @SerializedName("RequestType") var requestType: String?, @SerializedName("token") var authToken: String?
-) : BaseModel() {
+) : BaseModel {
 
 
     @SerializedName("ClientID")

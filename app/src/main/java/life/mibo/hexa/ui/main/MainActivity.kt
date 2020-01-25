@@ -38,9 +38,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.zxing.BarcodeFormat
 import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
@@ -56,6 +58,7 @@ import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.ScanComplete
+import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -85,7 +88,6 @@ class MainActivity : BaseActivity(), Navigator {
     //private var navigator: ScreenNavigator? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var drawerLayout: DrawerLayout
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -216,7 +218,7 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
 
-    fun shoBarcode(){
+    fun shoBarcode() {
         val barcodeFragment = BarcodeFragment.makeInstance(
             formats = listOf(BarcodeFormat.QR_CODE),
             barcodeInverted = false
@@ -238,7 +240,7 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     private fun updateMenu() {
-       // bottom_nav_view.menu.clear()
+        // bottom_nav_view.menu.clear()
         try {
             Thread.sleep(100)
         } catch (e: Exception) {
@@ -303,6 +305,7 @@ class MainActivity : BaseActivity(), Navigator {
 
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
+
             override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {
                 parseCommands(code, command, uid)
             }
@@ -322,11 +325,11 @@ class MainActivity : BaseActivity(), Navigator {
                 log("udpDeviceReceiver " + String(msg!!))
                 //EventBus.getDefault().post(NewDeviceDiscoveredEvent(ip))
 
-                }
+            }
 
             override fun onConnectionStatus(getname: String?) {
                 log("onConnectionStatus $getname")
-                }
+            }
 
             override fun onAlarmEvent() {
                 log("onAlarmEvent ")
@@ -334,60 +337,73 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun onDeviceDiscoveredEvent(s: String?) {
                 log("onDeviceDiscoveredEvent String $s")
-               // EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(s))
+                // EventBus.getDefault().post(life.mibo.hardware.events.NewDeviceDiscoveredEvent(s))
                 //manager.discoveredDevices
 
-                }
+            }
 
-                override fun HrEvent(hr: Int, uid: String?) {
-                    log("HrEvent $hr : $uid")
-                }
+            override fun HrEvent(hr: Int, uid: String?) {
+                log("HrEvent $hr : $uid")
+            }
 
-                override fun DeviceStatusEvent(uid: String?) {
-                    log("DeviceStatusEvent $uid")
-                }
+            override fun DeviceStatusEvent(uid: String?) {
+                log("DeviceStatusEvent $uid")
+            }
 
-                override fun ChangeColorEvent(d: Device?, uid: String?) {
-                    log("DeviceStatusEvent $d : $uid")
-                }
+            override fun ChangeColorEvent(d: Device?, uid: String?) {
+                log("DeviceStatusEvent $d : $uid")
+            }
 
-                override fun GetMainLevelEvent(mainLevel: Int, uid: String?) {
-                    log("GetMainLevelEvent $mainLevel : $uid")
-                    EventBus.getDefault().postSticky(GetMainLevelEvent(mainLevel, uid))
-                    EventBus.getDefault().postSticky(SendMainLevelEvent(1, uid));
+            override fun GetMainLevelEvent(mainLevel: Int, uid: String?) {
+                log("GetMainLevelEvent $mainLevel : $uid")
+                EventBus.getDefault().postSticky(GetMainLevelEvent(mainLevel, uid))
+                EventBus.getDefault().postSticky(SendMainLevelEvent(1, uid));
 
-                }
+            }
 
-                override fun GetLevelsEvent(uid: String?) {
-                    log("GetLevelsEvent  $uid")
-                    EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
-                }
+            override fun GetLevelsEvent(uid: String?) {
+                log("GetLevelsEvent  $uid")
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+            }
 
-                override fun ProgramStatusEvent(
-                    time: Int,
-                    action: Int,
-                    pause: Int,
-                    currentBlock: Int,
-                    currentProgram: Int,
-                    uid: String?
-                ) {
-                    log("ProgramStatusEvent  $uid")
-                    EventBus.getDefault().postSticky(
-                        ProgramStatusEvent(time, action, pause, currentBlock, currentProgram, uid)
+            override fun onStatus(
+                time: Int,
+                action: Int,
+                pause: Int,
+                currentBlock: Int,
+                currentProgram: Int,
+                uid: String?
+            ) {
+                log("onStatus  $uid")
+                // don't using, parse command whenever needed, don't store in memory
+                EventBus.getDefault().postSticky(
+                    ProgramStatusEvent(
+                        time,
+                        action,
+                        pause,
+                        currentBlock,
+                        currentProgram,
+                        uid
                     )
+                )
 
-                }
+            }
 
-                override fun DevicePlayPauseEvent(uid: String?) {
-                    log("GetLevelsEvent  $uid")
-                    EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
-                }
+            override fun onStatus(command: ByteArray?, uid: String?) {
+                EventBus.getDefault().postSticky(ProgramStatusEvent(command, uid))
+            }
 
-            })
+            override fun DevicePlayPauseEvent(uid: String?) {
+                log("GetLevelsEvent  $uid")
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+            }
+
+        })
 
         log("getScanning finished")
     }
 
+    //[77, 66, 82, 88, 76, 0, -64, 2, 26, -116, -43, -65]
     private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseCommands $code : data " + command.contentToString())
         when (code) {
@@ -395,66 +411,89 @@ class MainActivity : BaseActivity(), Navigator {
                 logw("parseCommands COMMAND_PING_RESPONSE")
             }
             COMMAND_DEVICE_STATUS_RESPONSE -> {
+                // code -126
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE")
-                val d = SessionManager.getInstance().userSession.booster
-                if (d != null && d.uid == uid) {
-                    logw(
-                        "COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED battery " + DataParser.getStatusBattery(
-                            command
+                //val d = SessionManager.getInstance().userSession.booster
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    if (d != null && d.uid == uid) {
+                        logw(
+                            "COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED battery " + DataParser.getStatusBattery(
+                                command
+                            )
                         )
-                    )
-                    d.batteryLevel = DataParser.getStatusBattery(command)
-                    d.signalLevel = DataParser.getStatusSignal(command)
-                    SessionManager.getInstance().userSession.booster.batteryLevel =
-                        DataParser.getStatusBattery(command)
-                    SessionManager.getInstance().userSession.booster.signalLevel =
-                        DataParser.getStatusSignal(command)
-                    // updated device status/line
-                    EventBus.getDefault().postSticky(DeviceStatusEvent(d))
-                    if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
-                        if (d.statusConnected == DEVICE_DISCONNECTED) {
-                            EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
-                        }
-                        d.statusConnected = DEVICE_CONNECTED
-                        SessionManager.getInstance().userSession.booster.statusConnected =
-                            DEVICE_CONNECTED
+                        d.batteryLevel = DataParser.getStatusBattery(command)
+                        d.signalLevel = DataParser.getStatusSignal(command)
+                        //SessionManager.getInstance().userSession.booster.batteryLevel =
+                        //    DataParser.getStatusBattery(command)
+                        // SessionManager.getInstance().userSession.booster.signalLevel =
+                        //      DataParser.getStatusSignal(command)
+                        // updated device status/line
+                        EventBus.getDefault().postSticky(DeviceStatusEvent(d))
+                        if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
+                            if (d.statusConnected == DEVICE_DISCONNECTED) {
+                                // todo why fernando sending again color to booster?
+                                // EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                                logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_DISCONNECTED")
+                            }
+                            d.statusConnected = DEVICE_CONNECTED
+                            logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_CONNECTED_")
+                            //d.statusConnected = DEVICE_CONNECTED
+                            //SessionManager.getInstance().userSession.booster.statusConnected = DEVICE_CONNECTED
 
-                        EventBus.getDefault().postSticky(NewConnectionStatus(uid))
-                    } else {
-                        d.statusConnected = DEVICE_CONNECTED
-                        SessionManager.getInstance().userSession.booster.statusConnected =
-                            DEVICE_CONNECTED
-                    }
-                    if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
-                        if (SessionManager.getInstance().userSession.getRegisteredDevicebyUid(uid).setNewDeviceChannelAlarms(
-                                DataParser.getChannelAlarms(command)
-                            )
-                        ) {
-                            AlarmManager.getInstance().alarms.AddDeviceChannelAlarm(
-                                SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
-                                    uid
-                                ).deviceChannelAlarms, d.uid
-                            )
-                            EventBus.getDefault().postSticky(NewAlarmEvent())
+                            EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+                        } else {
+                            d.statusConnected = DEVICE_CONNECTED
+                            // SessionManager.getInstance().userSession.booster.statusConnected = DEVICE_CONNECTED
+                            logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_CONNECTED")
                         }
-                    }
-                    // TODO check later functionality remaining
-                    //SessionManager.getInstance().userSession.checkDeviceStatus(DataParser.getStatusFlags(command), uid)
-                    checkDeviceStatus(SessionManager.getInstance().userSession, DataParser.getStatusFlags(command), uid)
-                    logw(
-                        "signal:" + DataParser.getStatusSignal(command) + " bat:" + DataParser.getStatusBattery(
-                            command
+                        if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
+                            if (SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
+                                    uid
+                                ).setNewDeviceChannelAlarms(
+                                    DataParser.getChannelAlarms(command)
+                                )
+                            ) {
+                                AlarmManager.getInstance().alarms.AddDeviceChannelAlarm(
+                                    SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
+                                        uid
+                                    ).deviceChannelAlarms, d.uid
+                                )
+                                EventBus.getDefault().postSticky(NewAlarmEvent())
+                            }
+                            logw("COMMAND_DEVICE_STATUS_RESPONSE device is booster, session is 1 or 2")
+                            checkDeviceStatus(
+                                SessionManager.getInstance().userSession,
+                                DataParser.getStatusFlags(command),
+                                uid
+                            )
+                        }
+                        // TODO check later functionality remaining
+                        //SessionManager.getInstance().userSession.checkDeviceStatus(DataParser.getStatusFlags(command), uid)
+//                        if (SessionManager.getInstance().userSession.currentSessionStatus == 2 || SessionManager.getInstance().userSession.currentSessionStatus == 1)
+//                            checkDeviceStatus(
+//                                SessionManager.getInstance().userSession,
+//                                DataParser.getStatusFlags(command),
+//                                uid
+//                            )
+                        logw(
+                            "signal:" + DataParser.getStatusSignal(command) + " bat:" + DataParser.getStatusBattery(
+                                command
+                            )
                         )
-                    )
-                } else {
-                    logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED")
+                        break
+                    } else {
+                        logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED")
+                    }
                 }
+
             }
             COMMAND_FIRMWARE_REVISION_RESPONSE -> {
                 logw("parseCommands COMMAND_FIRMWARE_REVISION_RESPONSE")
             }
             COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
                 logw("parseCommands COMMAND_SET_DEVICE_COLOR_RESPONSE")
+                //color response code -125
             }
             COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE -> {
                 logw("parseCommands COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE")
@@ -487,21 +526,29 @@ class MainActivity : BaseActivity(), Navigator {
             }
             ASYNC_PROGRAM_STATUS -> {
                 logw("parseCommands ASYNC_PROGRAM_STATUS")
-                SessionManager.getInstance().userSession.booster.deviceSessionTimer =
-                    DataParser.getProgramStatusTime(command)
-                EventBus.getDefault().postSticky(
-                    ProgramStatusEvent(
-                        DataParser.getProgramStatusTime(command),
-                        DataParser.getProgramStatusAction(command),
-                        DataParser.getProgramStatusPause(command),
-                        DataParser.getProgramStatusCurrentBlock(command),
-                        DataParser.getProgramStatusCurrentProgram(command),
-                        uid
-                    )
-                )
-                SessionManager.getInstance().userSession.getRegisteredDevicebyUid(uid)
-                    .deviceSessionTimer =
-                    DataParser.getProgramStatusTime(command)
+                if (SessionManager.getInstance().userSession.isBooster) {
+                    SessionManager.getInstance().userSession.booster.deviceSessionTimer =
+                        DataParser.getProgramStatusTime(command)
+                    EventBus.getDefault().postSticky(ProgramStatusEvent(command, uid))
+
+//                    EventBus.getDefault().postSticky(
+//                        ProgramStatusEvent(
+//                            DataParser.getProgramStatusTime(command),
+//                            DataParser.getProgramStatusAction(command),
+//                            DataParser.getProgramStatusPause(command),
+//                            DataParser.getProgramStatusCurrentBlock(command),
+//                            DataParser.getProgramStatusCurrentProgram(command),
+//                            uid
+//                        )
+//                    )
+                    SessionManager.getInstance().userSession.booster?.deviceSessionTimer =
+                        DataParser.getProgramStatusTime(command)
+                } else if (SessionManager.getInstance().userSession.isRxl) {
+                    logw("parseCommands RXL TAP COMMANDS")
+
+                    EventBus.getDefault().postSticky(RxlStatusEvent(command, uid))
+
+                }
             }
             COMMAND_ASYNC_SET_MAIN_LEVEL -> {
                 logw("parseCommands COMMAND_ASYNC_SET_MAIN_LEVEL")
@@ -578,7 +625,7 @@ class MainActivity : BaseActivity(), Navigator {
                 logw("checkDeviceStatus UID NOT MATCH")
             }
         } else {
-            logw("checkDeviceStatus currentSessionStatus "+user.currentSessionStatus)
+            logw("checkDeviceStatus currentSessionStatus " + user.currentSessionStatus)
         }
     }
 
@@ -739,11 +786,13 @@ class MainActivity : BaseActivity(), Navigator {
             .setPopExitAnim(R.anim.slide_out_right).build()
 
     }
+
     // TODO Dashboard click events
     private fun homeItemClicked(item: HomeItem?) {
         item?.let {
             navigate(it.type)
         }
+        //testRoom()
     }
 
     var lastId: Int = -1
@@ -924,7 +973,7 @@ class MainActivity : BaseActivity(), Navigator {
             return true;
         }
 
-        if(item.itemId == R.id.home){
+        if (item.itemId == R.id.home) {
 
         }
         log("onOptionsItemSelected $item")
@@ -940,6 +989,7 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     override fun onDestroy() {
+        Database.getInstance(this).clearAll()
         commHandler.unregisiter()
         super.onDestroy()
         manager?.onDestroy()
@@ -998,6 +1048,56 @@ class MainActivity : BaseActivity(), Navigator {
         super.onConfigurationChanged(newConfig)
         if (::drawerToggle.isInitialized)
             drawerToggle.onConfigurationChanged(newConfig)
+    }
+
+    /* test room performance and implementation with rx java */
+    @SuppressLint("CheckResult")
+    fun testRoom() {
+        Observable.empty<String>().observeOn(Schedulers.newThread()).doOnComplete {
+            log("Database.getInstance memberDao")
+            Database.getInstance(this@MainActivity).memberDao()
+                .getMember().doOnNext {
+                    log("RoomDatabase memberDao doOnNext size ${it.size}")
+                    log("RoomDatabase memberDao doOnNext $it")
+                }.subscribe {
+                    log("RoomDatabase memberDao subscribe $it")
+                }
+            log("RoomDatabase memberDao end")
+        }.subscribe()
+
+        Observable.just("test").observeOn(Schedulers.newThread()).doOnComplete {
+            log("RoomDatabase memberDao2 doOnComplete")
+            val l = Database.getInstance(this@MainActivity).memberDao().getMembers()
+            log("RoomDatabase memberDao2 end ${l.size} : $l")
+        }.subscribe {
+            log("RoomDatabase memberDao2 subscribe $it")
+        }
+
+        Observable.just("test_insert").observeOn(Schedulers.newThread()).doOnComplete {
+            log("RoomDatabase memberDao3 doOnComplete")
+            val m = Prefs.get(this@MainActivity).member
+            log("RoomDatabase memberDao3 $m")
+            val m2 = life.mibo.hexa.room.Member.from(m!!)
+            log("RoomDatabase memberDao3 - $m2")
+            val id = Database.getInstance(this@MainActivity).memberDao().add(m2)
+            log("RoomDatabase memberDao3 - added $id")
+        }.subscribe {
+            log("RoomDatabase memberDao3 subscribe $it")
+        }
+
+        Observable.fromCallable {
+            log("RoomDatabase memberDao4 fromCallable")
+        }.observeOn(Schedulers.newThread()).doOnComplete {
+            log("RoomDatabase memberDao4 doOnComplete")
+            val m = Prefs.get(this@MainActivity).member
+            log("RoomDatabase memberDao4 $m")
+            val m2 = life.mibo.hexa.room.Member.from(m!!)
+            log("RoomDatabase memberDao4 - $m2")
+            val id = Database.getInstance(this@MainActivity).memberDao().add(m2)
+            log("RoomDatabase memberDao4 - added $id")
+        }.subscribe {
+            log("RoomDatabase memberDao4 subscribe ")
+        }
     }
 
 }

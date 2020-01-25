@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = false) :
@@ -130,6 +131,39 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         list = items
         result.dispatchUpdatesTo(this)
         Logger.e("updateList dispatchUpdatesTo")
+    }
+
+    fun getMainLevel(): Int {
+        var level = 0
+        list?.get(0)?.let {
+            level = it.percentMain
+        }
+
+        return level
+    }
+
+    fun getChannelLevels(): IntArray {
+
+        val array = IntArray(list?.size ?: 6)
+
+        list?.forEachIndexed { i, j ->
+            array[i] = j.percentChannel
+        }
+
+        //return intArrayOf(0, 0, 0, 0, 0, 0)
+        return array
+    }
+
+    fun getChannels(): List<Int> {
+
+        val array = ArrayList<Int>()
+
+        list?.forEach {
+            array.add(it.percentChannel)
+        }
+
+        //return intArrayOf(0, 0, 0, 0, 0, 0)
+        return array
     }
 
 }

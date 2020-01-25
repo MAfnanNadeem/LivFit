@@ -28,6 +28,8 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
+import life.mibo.hexa.models.login.LoginResponse
+import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.register.Data
 import life.mibo.hexa.models.register.RegisterGuestMember
 import life.mibo.hexa.models.register.RegisterResponse
@@ -37,8 +39,8 @@ import life.mibo.hexa.models.verify_otp.VerifyOTP
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.receiver.AppSignatureHelper
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
-import life.mibo.hexa.ui.main.FirebaseEvent
 import life.mibo.hexa.ui.main.MainActivity
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
@@ -74,8 +76,12 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 //        }
     }
     override fun onStop() {
-        if (::smsBroadcast.isInitialized)
-            context.unregisterReceiver(smsBroadcast)
+        try {
+            if (::smsBroadcast.isInitialized)
+                context.unregisterReceiver(smsBroadcast)
+        } catch (e: java.lang.Exception) {
+            MiboEvent.log(e)
+        }
         cancelTimer()
     }
 
@@ -94,12 +100,15 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
 
+    var resend = false
     override fun onResendOtpClicked(number: String?) {
+        resend = true
         sendOtp(number)
     }
 
     override fun onSendOtpClicked(number: String?) {
         //updateNumber(2)
+        resend = false
         sendOtp(number)
     }
 
@@ -200,7 +209,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Logger.e("RegisterController onActivityResult $data")
         if (requestCode == RC_HINT && resultCode == Activity.RESULT_OK) {
-            val credential: Credential = data!!.getParcelableExtra(Credential.EXTRA_KEY)
+            val credential: Credential? = data!!.getParcelableExtra(Credential.EXTRA_KEY)
             Logger.e("RegisterController credential : $credential")
         }
     }
@@ -306,9 +315,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     private var userId: String = ""
+    private var memberData: RegisterGuestMember? = null
 
     private fun register(registerData: RegisterGuestMember) {
-        FirebaseEvent.registerEvent(
+        MiboEvent.registerEvent(
             "${registerData.data?.firstName} - ${registerData.data?.lastName}",
             "${registerData.data?.email}"
         )
@@ -335,16 +345,17 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 }
                 when {
                     data.status == "success" -> {
-                        userId = data.member?.userId!!
-                        success("Successfully Registered $userId")
+                        memberData = registerData
+                        userId = data.data?.userId!!
+                        success(R.string.regestered)
                         updateNumber(1)
                         isOtp = true
                         //Prefs.get(this@RegisterController.context).member = Member(data)
                         Prefs.get(this@RegisterController.context)
-                            .set("user_idd", data.member?.userId)
+                            .set("user_idd", data.data?.userId)
                         Prefs.get(this@RegisterController.context)
                             .set("user_email", registerData.data?.email)
-                        FirebaseEvent.registerSuccess("${data.member?.userId}")
+                        MiboEvent.registerSuccess("${data.data?.userId}")
                     }
 
 
@@ -358,7 +369,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         // val rr: Error? = Gson().fromJson(el, Error::class.java)
                         // log("RegisterGuestMember rr ${rr.toString()}")
                         error("${data.errors?.get(0)?.message}")
-                        FirebaseEvent.registerError("${data.member?.userId}", "$data")
+                        MiboEvent.registerError("${data.data?.userId}", "$data")
                     }
                     else -> Toasty.warning(
                         context,
@@ -420,10 +431,11 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 }
                 when {
                     data.status == "success" -> {
-                        success(
-                            msg = "OTP Code has been sent successfully",
-                            length = Toast.LENGTH_LONG
-                        )
+                        success(R.string.otp_sent, Toast.LENGTH_LONG)
+                        if (resend) {
+                            resend = false
+                            return
+                        }
                         updateNumber(2)
                     }
                     data.status == "error" -> {
@@ -459,7 +471,6 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             override fun onResponse(
                 call: Call<VerifyOtpResponse>, response: Response<VerifyOtpResponse>
             ) {
-                context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
                     error(getString(R.string.error_occurred))
@@ -469,8 +480,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                     data.status == "success" -> {
                         success("${data.data?.message}")
                         //success("OTP Verified")
-                        updateNumber(3)
-                        FirebaseEvent.otpSuccess("$userId", "$otp")
+                        //updateNumber(3)
+                        MiboEvent.otpSuccess("$userId", "$otp")
+                        loginUser(memberData?.data?.email, memberData?.data?.password)
+                        return
                     }
                     data.status == "error" -> {
                         error("${data.errors?.get(0)?.message}")
@@ -481,16 +494,75 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         "Register: " + response.body()
                     ).show()
                 }
+                context.getDialog()?.dismiss()
             }
 
         })
     }
 
+
+    private fun loginUser(email: String?, password: String?) {
+
+        if (email.isNullOrEmpty() || password.isNullOrEmpty()) {
+            // TODO this should not happen
+            context.getDialog()?.dismiss()
+            loginToLogin()
+            return
+        }
+
+        context.getDialog()?.show()
+        API.request.getApi().login(LoginUser(email, password))
+            .enqueue(object : Callback<LoginResponse> {
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    context.getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(context, R.string.unable_to_connect).show()
+                    loginToLogin()
+                }
+
+                override fun onResponse(
+                    call: Call<LoginResponse>,
+                    response: Response<LoginResponse>
+                ) {
+                    context.getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+
+                        if (data.status.equals("success", true)) {
+                            Toasty.success(context, R.string.regestered).show()
+                            Prefs.get(this@RegisterController.context).member = data.data
+                            Prefs.get(this@RegisterController.context).set("user_email", email)
+                            MiboEvent.loginSuccess(
+                                "${data.data?.firstName} - ${data.data?.lastName}", "$email"
+                            )
+                            isOtpVerified = true
+                            //updateNumber(3)
+                            loginToHome()
+                            return
+                        } else if (data.status.equals("error", true)) {
+                            Toasty.error(context, "${data.errors?.get(0)?.message}").show()
+                        }
+                    } else {
+                        Toasty.error(context, R.string.error_occurred).show()
+                    }
+                    loginToLogin()
+                }
+            })
+    }
+
+    private fun loginToLogin() {
+        context.startActivity(Intent(context, LoginActivity::class.java))
+        context.finish()
+    }
+
     fun loginToHome() {
         // Toasty.success(context, "Successfully registered").show()
         //TODO
-        if (isOtpVerified)
+        if (isOtpVerified) {
             context.startActivity(Intent(context, MainActivity::class.java))
+            context.finish()
+        }
     }
 
     var isDob = false
@@ -574,11 +646,13 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             Toasty.error(context, getString(resId), length, true).show()
     }
 
-    fun success(msg: String? = "", resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
+    fun success(resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
+        success(getString(resId), length)
+    }
+
+    fun success(msg: String? = "", length: Int = Toast.LENGTH_SHORT) {
         if (!msg.isNullOrEmpty())
             Toasty.success(context, msg, length, true).show()
-        else if (resId != 0)
-            Toasty.success(context, getString(resId), length, true).show()
     }
 
     fun onRestoreInstanceState(savedInstanceState: Bundle) {

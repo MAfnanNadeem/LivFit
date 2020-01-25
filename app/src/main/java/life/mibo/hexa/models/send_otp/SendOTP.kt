@@ -21,7 +21,7 @@ data class SendOTP(
     var timeStamp: String?,
     @SerializedName("Version")
     var version: String?
-) : BaseModel(){
+) : BaseModel {
 
     constructor(userId: String) : this (
         "Client1213",

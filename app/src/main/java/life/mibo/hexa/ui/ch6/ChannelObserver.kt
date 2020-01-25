@@ -9,4 +9,5 @@ package life.mibo.hexa.ui.ch6
 
 interface ChannelObserver {
     abstract fun onTimerUpdate(time: Long)
+    abstract fun updatePlayButton(isPaused: Boolean)
 }

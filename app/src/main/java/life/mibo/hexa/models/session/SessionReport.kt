@@ -19,4 +19,4 @@ data class SessionReport(
     var error: List<Error?>?,
     @SerializedName("status")
     var status: String?
-): BaseModel()
+): BaseModel

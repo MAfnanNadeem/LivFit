@@ -27,4 +27,4 @@ data class SendOtpResponse(
     var errors: List<Error>?,
     @SerializedName("status")
     var status: String?
-): BaseModel()
+): BaseModel

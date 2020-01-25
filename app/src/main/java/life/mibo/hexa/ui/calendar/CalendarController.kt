@@ -121,7 +121,7 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
                 if (data != null && data.status.equals("success")) {
                     parseData(data)
                 } else {
-                    val err = data?.error?.get(0)?.message
+                    val err = data?.errors?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
                     else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()

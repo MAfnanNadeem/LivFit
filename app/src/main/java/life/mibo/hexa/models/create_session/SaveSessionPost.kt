@@ -11,6 +11,5 @@ package life.mibo.hexa.models.create_session
 import life.mibo.hexa.models.base.BasePost
 
 
-data class SaveSessionPost(
-    var post: Session, var type: String = "SaveSessionReport", var auth: String
-) : BasePost<Session>(post, type, auth)
+class SaveSessionPost(post: Session, auth: String) :
+    BasePost<Session>(post, "SaveSessionReport", auth)

@@ -15,4 +15,4 @@ data class VerifyResponse(
     var errors: Any??,
     @SerializedName("status")
     var status: String?
-): BaseModel()
+): BaseModel

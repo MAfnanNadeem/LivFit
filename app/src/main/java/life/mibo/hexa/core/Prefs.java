@@ -226,4 +226,24 @@ public class Prefs {
             return null;
         }
     }
+
+    public void setMemberId(Member member) {
+        setMemberId(member.id());
+    }
+
+    public void setMemberId(String id) {
+        set("member_id", id);
+    }
+
+    public String getMemberId() {
+        return get("member_id");
+    }
+
+    public void setMemberToken(String id) {
+        set("member_token_auth", id);
+    }
+
+    public String getMemberToken() {
+        return get("member_token_auth");
+    }
 }

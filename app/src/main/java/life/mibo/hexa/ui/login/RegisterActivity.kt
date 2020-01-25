@@ -1,26 +1,18 @@
 package life.mibo.hexa.ui.login
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.View
-import android.widget.Chronometer
 import com.twilio.verification.TwilioVerification
 import com.twilio.verification.external.Via
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
 import kotlinx.android.synthetic.main.activity_register_page2.*
 import kotlinx.android.synthetic.main.activity_register_page3.*
-import kotlinx.coroutines.channels.ticker
 import life.mibo.hexa.R
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
 import life.mibo.hexa.ui.base.BaseActivity
-import java.util.concurrent.TimeUnit
 
 
 class RegisterActivity : BaseActivity() {
@@ -181,6 +173,7 @@ class RegisterActivity : BaseActivity() {
 //                }
             }
             3 -> {
+                getDialog()?.dismiss()
                 controller.loginToHome()
             }
         }

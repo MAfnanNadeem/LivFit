@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_hr_tab_gradient">
+    android:background="@drawable/bg_gradient">
 
     <life.mibo.views.HexagonMaskView
         android:id="@+id/iv_user_pic"

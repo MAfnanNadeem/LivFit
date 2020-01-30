@@ -22,11 +22,10 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -66,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/grid_1x"
             android:hint="Commands Code"
+            android:inputType="number"
             android:textColor="@color/textColor" />
 
         <Button
@@ -105,6 +105,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_device_color"
         app:thumbBorder="2dp" />
+
+
+    <life.mibo.views.CircleProgressView
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

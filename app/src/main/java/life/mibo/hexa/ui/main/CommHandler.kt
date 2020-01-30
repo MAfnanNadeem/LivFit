@@ -11,8 +11,10 @@ import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
+import life.mibo.hardware.events.PodEvent
 import life.mibo.hardware.models.program.Circuit
 import life.mibo.hardware.network.TCPClient
+//import life.mibo.hexa.pods.PodEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.NoSubscriberEvent
 import org.greenrobot.eventbus.Subscribe
@@ -123,6 +125,13 @@ class CommHandler(val activity: MainActivity) {
         log("onBleConnect $event")
         EventBus.getDefault().removeStickyEvent(event)
         CommunicationManager.getInstance().onBleConnect(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    private fun onPodEvent(event: PodEvent) {
+        log("PodEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        CommunicationManager.getInstance().onPodEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +33,7 @@ import life.mibo.hardware.events.SendProgramChangesHotEvent;
 import life.mibo.hardware.events.SendProgramEvent;
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
+import life.mibo.hardware.events.PodEvent;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
 import life.mibo.hardware.network.CommunicationListener;
@@ -63,6 +66,7 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
+import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
@@ -115,6 +119,7 @@ public class CommunicationManager {
             manager.listener = listener;
         return manager;
     }
+
 
     class PingThread implements Runnable {
         @Override
@@ -1046,6 +1051,24 @@ public class CommunicationManager {
                     DataParser.sendProgram(circuit.getPrograms().length, index, p));
             index++;
         }
+    }
+
+    // POD
+    public void onPodEvent(@NotNull PodEvent event) {
+        log("PodEvent "+event);
+        if (event.isAll()) {
+            for (TCPClient t : tcpClients) {
+                if (event.getPod().getType() == RXL_WIFI || event.getPod().getType() == RXL_BLE)
+                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), t.getType()), "onPodEvent");
+            }
+        } else {
+            for (TCPClient t : tcpClients) {
+                if (t.getUid().equals(event.getUid())) {
+                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), t.getType()), "onPodEvent");
+                }
+            }
+        }
+
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)

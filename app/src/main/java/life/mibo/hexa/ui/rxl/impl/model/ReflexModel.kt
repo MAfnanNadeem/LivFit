@@ -1,6 +1,9 @@
-package life.mibo.hexa.ui.rxl.model
+package life.mibo.hexa.ui.rxl.impl.model
 
-data class ReflexModel(val id: Int) {
+import androidx.navigation.Navigator
+import java.io.Serializable
+
+data class ReflexModel(val id: Int) : Serializable {
 
     constructor(
         id: Int,
@@ -20,6 +23,8 @@ data class ReflexModel(val id: Int) {
         this.podsText = podsText
         this.isLike = isLike
     }
+
+    var extras: Navigator.Extras? = null
 
     var title: String = ""
     var image: Int = 0

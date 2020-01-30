@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/26/20 4:53 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/26/20 4:18 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingBottom="@dimen/grid_1x"
+        app:layout_constraintBottom_toTopOf="@+id/btn_start_now"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_reflex_random_icon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                android:transitionName="@string/transition_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_desc_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="#10000000"
+                android:padding="@dimen/grid_1x"
+                android:text="Description"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_icon" />
+
+            <life.mibo.views.ExpandableTextView
+                android:id="@+id/tv_desc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="#10000000"
+                android:paddingStart="@dimen/grid_1x"
+                android:paddingBottom="@dimen/grid_1x"
+                android:text="Description"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_desc_title" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:min="0"
+                app:layout_constraintTop_toBottomOf="@id/tv_desc" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_stations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="working station"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="@+id/iv_stations"
+                app:layout_constraintStart_toStartOf="@+id/iv_stations"
+                app:layout_constraintTop_toBottomOf="@id/tv_desc" />
+
+            <ImageView
+                android:id="@+id/iv_stations"
+                style="@style/rxl_create_icon"
+                android:src="@drawable/ic_reflex_stations"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_select_stations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:minWidth="100dp"
+                android:padding="@dimen/grid_1x"
+                android:text="1"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintBottom_toBottomOf="@id/iv_stations"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_stations" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_lights"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="Lights out"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="@+id/iv_cycles"
+                app:layout_constraintStart_toStartOf="@+id/iv_cycles"
+                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+
+            <ImageView
+                android:id="@+id/iv_cycles"
+                style="@style/rxl_create_icon"
+                android:src="@drawable/ic_reflex_lights_out"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_lights" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_select_lights"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:minWidth="100dp"
+                android:padding="@dimen/grid_1x"
+                android:text="Sequence"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_lights" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="ACTIVITY SETTINGS"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_cycles"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_customize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:text="Customize"
+                android:textColor="@color/colorDeviceColorRed"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_cycles"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_1x"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
+                app:layout_constraintWidth_percent="0.5">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_pods"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:text="ReFlex"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pods"
+                    app:layout_constraintStart_toStartOf="@+id/iv_pods"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_pods"
+                    style="@style/rxl_create_icon"
+                    android:paddingEnd="@dimen/grid_2x"
+                    android:src="@drawable/ic_rxl_pods_icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_pods" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_pods"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:gravity="center"
+                    android:padding="@dimen/grid_1x"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_pods"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_pods" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_cycles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:text="Cycles"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_lights"
+                    app:layout_constraintStart_toStartOf="@+id/iv_lights"
+                    app:layout_constraintTop_toBottomOf="@id/iv_pods" />
+
+                <ImageView
+                    android:id="@+id/iv_lights"
+                    style="@style/rxl_create_icon"
+                    android:paddingEnd="@dimen/grid_2x"
+                    android:src="@drawable/ic_reflex_cycles"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_cycles"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:gravity="center"
+                    android:padding="@dimen/grid_1x"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_lights"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_cycles" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
+                app:layout_constraintWidth_percent="0.5">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_players"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="Action"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
+                    app:layout_constraintStart_toStartOf="@+id/iv_players"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_players"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_players" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_players"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/grid_2x"
+                    android:background="@drawable/login_edittext"
+                    android:gravity="center"
+                    android:padding="@dimen/grid_1x"
+                    android:text="1"
+                    android:singleLine="true"
+                    android:textColor="@color/textColor"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_players"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_players" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="@dimen/grid_1x"
+                    android:src="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_select_players"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_select_players"
+                    app:layout_constraintTop_toTopOf="@+id/tv_select_players" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="Delay"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
+                    app:layout_constraintStart_toStartOf="@+id/iv_delay"
+                    app:layout_constraintTop_toBottomOf="@id/iv_players" />
+
+                <ImageView
+                    android:id="@+id/iv_delay"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_reflex_delay"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_delay" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="76dp"
+                    android:layout_marginEnd="@dimen/grid_2x"
+                    android:background="@drawable/login_edittext"
+                    android:gravity="center"
+                    android:padding="@dimen/grid_1x"
+                    android:text="1"
+                    android:singleLine="true"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_delay"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_delay" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="@dimen/grid_1x"
+                    android:src="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_select_delay"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_select_delay"
+                    app:layout_constraintTop_toTopOf="@+id/tv_select_delay" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="Activity Duration"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="@+id/iv_time"
+                app:layout_constraintStart_toStartOf="@+id/iv_time"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout" />
+
+            <ImageView
+                android:id="@+id/iv_time"
+                style="@style/rxl_create_icon"
+                android:src="@drawable/ic_reflex_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_time" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_select_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/login_edittext"
+                android:gravity="center"
+                android:minWidth="100dp"
+                android:padding="@dimen/grid_1x"
+                android:text="30 sec"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintBottom_toBottomOf="@id/iv_time"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_time" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="@dimen/grid_1x"
+                android:src="@drawable/ic_arrow_drop_down_black_24dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_select_time"
+                app:layout_constraintEnd_toEndOf="@+id/tv_select_time"
+                app:layout_constraintTop_toTopOf="@+id/tv_select_time" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <Button
+        android:id="@+id/btn_start_now"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:background="@drawable/bg_button_reflex"
+        android:text="START NOW"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/btn_start_hit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.75" />
+
+    <Button
+        android:id="@+id/btn_start_hit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/bg_button_reflex"
+        android:text="START ON HINT"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.75" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

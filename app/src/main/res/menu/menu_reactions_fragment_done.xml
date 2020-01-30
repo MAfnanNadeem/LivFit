@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/26/20 12:11 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/21/20 10:29 AM
+  ~  Mibo Hexa - app
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_filter_done"
+        android:icon="@drawable/ic_check_white_24dp"
+        android:orderInCategory="100"
+        android:title="Apply Filters"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_filter_cancel"
+        android:icon="@drawable/ic_clear_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/cancel"
+        app:showAsAction="always" />
+
+</menu>

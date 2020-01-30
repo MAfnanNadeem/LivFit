@@ -175,6 +175,13 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
+
+        list.add(
+            HomeItem(
+                "Reflex", "",
+                HomeItem.Type.ReFlex, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
+            )
+        )
         isMember = true
         observer.onDataReceived(list)
     }
@@ -240,6 +247,14 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
+
+        list.add(
+            HomeItem(
+                "Reflex", "",
+                HomeItem.Type.ReFlex, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
+            )
+        )
+
         isMember = true
         observer.onDataReceived(list)
     }

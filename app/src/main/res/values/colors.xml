@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#09B189</color>
+    <color name="colorPrimaryTranslucent">#8009B189</color>
+    <color name="colorPrimaryUnselected">#1009B189</color>
     <color name="colorPrimaryDark">#09B189</color>
     <color name="colorAccent">#D81B60</color>
     <color name="white">#FFF</color>
@@ -30,5 +32,9 @@
     <color name="eventColor">#553fa9eb</color>
     <color name="eventColorSelected">#aab2c99a</color>
     <color name="qr_code_reader_square">#09B189</color>
+
+    <color name="radio_button_selected_color">#09B189</color>
+    <color name="radio_button_unselected_color">#e0e0e0</color>
+
 
 </resources>

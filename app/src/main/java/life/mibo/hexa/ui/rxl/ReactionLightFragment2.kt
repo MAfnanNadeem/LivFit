@@ -15,10 +15,13 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MainActivity
-import life.mibo.hexa.ui.rxl.model.ReflexAdapter
-import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
-import life.mibo.hexa.ui.rxl.model.ReflexModel
+import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.rxl.impl.RxlViewModel
+import life.mibo.hexa.ui.rxl.impl.model.ReflexAdapter
+import life.mibo.hexa.ui.rxl.impl.model.ReflexFilterAdapter
+import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
 import life.mibo.hexa.utils.Toasty
 import life.mibo.views.backdrop.BackdropBehavior
 import life.mibo.views.dialog.SheetMenu
@@ -44,7 +47,11 @@ class ReactionLightFragment2 : BaseFragment() {
     ): View? {
 
         val root = inflater.inflate(R.layout.fragment_rxl_backdrop, container, false)
+        return root
+    }
 
+    override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(root, savedInstanceState)
         backdropBehavior = root.findViewById<View>(R.id.frontLayout).findBehavior()
         with(backdropBehavior) {
             attachBackLayout(R.id.backLayout)
@@ -72,17 +79,26 @@ class ReactionLightFragment2 : BaseFragment() {
         backdropBehavior?.addOnDropListener(object : BackdropBehavior.OnDropListener {
             override fun onDrop(dropState: BackdropBehavior.DropState, fromUser: Boolean) {
                 if (dropState == BackdropBehavior.DropState.CLOSE && isAdded) {
-                    Toasty.warning(
-                        this@ReactionLightFragment2.context!!,
-                        "closed " + selectedItems.keys.toIntArray().contentToString()
-                        , Toasty.LENGTH_SHORT, false
-                    ).show()
+                    isFilterOpen = false
+                    if (isFilterDone) {
+                        Toasty.info(
+                            this@ReactionLightFragment2.context!!,
+                            "closed " + selectedItems.keys.toIntArray().contentToString()
+                            , Toasty.LENGTH_SHORT, false
+                        ).show()
+                        shuffle()
+                    }
                     log("closed" + selectedItems.keys.toIntArray().contentToString())
+                } else if (dropState == BackdropBehavior.DropState.OPEN) {
+                    isFilterOpen = true
                 }
+                //invalidateOptionsMenu();
+                (activity as MainActivity?)?.supportActionBar?.invalidateOptionsMenu()
+
             }
 
         })
-        return root
+
     }
 
     @SuppressLint("CheckResult")
@@ -192,21 +208,33 @@ class ReactionLightFragment2 : BaseFragment() {
 
     }
 
+    private fun shuffle() {
+        list.shuffle()
+        adapter?.notifyDataSetChanged()
+    }
+
+    val list = ArrayList<ReflexModel>()
+    var adapter: ReflexAdapter? = null
     @SuppressLint("CheckResult")
     private fun setRecycler(view: RecyclerView) {
         Single.fromCallable<ArrayList<ReflexModel>> {
-            val list = ArrayList<ReflexModel>();
             for (i in 1..50
             ) {
                 list.add(ReflexModel(i))
             }
             list
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe { it ->
-            val adapter = ReflexAdapter(it)
+            adapter = ReflexAdapter(it)
             val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
             view.layoutManager = manager
             view.adapter = adapter
             view.isNestedScrollingEnabled = false
+            adapter?.setListener(object : ItemClickListener<ReflexModel> {
+                override fun onItemClicked(item: ReflexModel?, position: Int) {
+                    navigate(Navigator.RXL_DETAILS, item)
+                }
+
+            })
         }
 //        val list = ArrayList<ReflexModel>();
 //        for (i in 1..50
@@ -230,19 +258,37 @@ class ReactionLightFragment2 : BaseFragment() {
         ).show(this@ReactionLightFragment2.context!!)
     }
 
+    lateinit var menu_: Menu
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
+        menu_ = menu
     }
 
+    var isFilterOpen = false
+    var isFilterDone = false
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_reactions_fragment, menu)
+        if (isFilterOpen)
+            inflater.inflate(R.menu.menu_reactions_fragment_done, menu)
+        else inflater.inflate(R.menu.menu_reactions_fragment, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_filter) {
-            backdropBehavior.toggle()
+        when {
+            item.itemId == R.id.action_filter -> {
+                backdropBehavior.toggle()
+            }
+            item.itemId == R.id.action_filter_cancel -> {
+                isFilterDone = false
+                backdropBehavior.close()
+            }
+            item.itemId == R.id.action_filter_done -> {
+                isFilterDone = true
+                backdropBehavior.close()
+            }
         }
+        //Toasty.error(this@ReactionLightFragment2.context!!, "click").show()
         //Toasty.error(this@ReactionLightFragment2.context!!, "click").show()
         return super.onOptionsItemSelected(item)
     }

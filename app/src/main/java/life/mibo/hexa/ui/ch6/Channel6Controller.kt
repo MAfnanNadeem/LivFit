@@ -40,7 +40,7 @@ import life.mibo.hexa.models.user_details.UserDetailsPost
 import life.mibo.hexa.ui.ch6.adapter.Channel6Listener
 import life.mibo.hexa.ui.ch6.adapter.Channel6Model
 import life.mibo.hexa.ui.ch6.adapter.ChannelAdapter
-import life.mibo.hexa.ui.main.MiboDialog
+import life.mibo.hexa.ui.main.MessageDialog
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Toasty
@@ -63,14 +63,15 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     override fun onBackPressed(): Boolean {
         if (isSessionActive) {
-            MiboDialog(fragment.context!!,
+            MessageDialog(
+                fragment.context!!,
                 fragment.getString(R.string.stop_session),
                 fragment.getString(R.string.stop_session_message),
-                fragment.getString(R.string.dialog_continue),
                 fragment.getString(R.string.stop_anyway),
-                object : MiboDialog.Listener {
+                fragment.getString(R.string.dialog_continue),
+                object : MessageDialog.Listener {
                     override fun onClick(button: Int) {
-                        if (button == MiboDialog.POSITIVE)
+                        if (button == MessageDialog.NEGATIVE)
                             exerciseCompleted(true)
                     }
 
@@ -81,12 +82,13 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun sessionCompleteDialog(msg: String?) {
-        val d = MiboDialog(fragment.context!!,
+        val d = MessageDialog(
+            fragment.context!!,
             fragment.getString(R.string.session_completed),
             msg ?: "Congrats you have completed session",
             "",
             "close",
-            object : MiboDialog.Listener {
+            object : MessageDialog.Listener {
                 override fun onClick(button: Int) {
                     navigatetoHome()
                 }
@@ -394,12 +396,13 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun pauseUserSession() {
         if (SessionManager.getInstance().userSession.user.isActive) {
-            SessionManager.getInstance().userSession.booster.isStarted = true
-            EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
-            SessionManager.getInstance().userSession.currentSessionStatus = 1
-            isPaused = false;
-            observer.updatePlayButton(isPaused);
-            log("pauseUserSession")
+//            SessionManager.getInstance().userSession.booster.isStarted = true
+//            EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
+//            SessionManager.getInstance().userSession.currentSessionStatus = 1
+//            isPaused = false;
+//            observer.updatePlayButton(isPaused);
+//            log("pauseUserSession")
+            Toasty.info(fragment?.requireContext(), "Pause functionality is remaining").show()
         }
 
     }
@@ -450,26 +453,28 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun onMuscleMinusClicked(id: Int) {
-        SessionManager.getInstance().userSession.user.decrementChannelLevelUserSelected(id)
-        EventBus.getDefault().postSticky(
-            SendChannelsLevelEvent(
-                SessionManager.getInstance().userSession.user.currentChannelLevels,
-                userUid
+        if (SessionManager.getInstance().userSession.user.checkAndDecreaseChannel(id)) {
+            EventBus.getDefault().postSticky(
+                SendChannelsLevelEvent(
+                    SessionManager.getInstance().userSession.user.currentChannelLevels,
+                    userUid
+                )
             )
-        )
+        }
         //updateItem(id)
         log("onMuscleMinusClicked Minus group $id")
     }
 
     private fun onMusclePlusClicked(id: Int) {
-        SessionManager.getInstance().userSession.user.incrementChannelLevelUserSelected(id)
-
-        EventBus.getDefault().postSticky(
-            SendChannelsLevelEvent(
-                SessionManager.getInstance().userSession.user.currentChannelLevels,
-                userUid
+        if (SessionManager.getInstance().userSession.user.checkAndIncreaseChannel(id)) {
+            EventBus.getDefault().postSticky(
+                SendChannelsLevelEvent(
+                    SessionManager.getInstance().userSession.user.currentChannelLevels,
+                    userUid
+                )
             )
-        )
+        }
+
         log("onMusclePlusClicked Plus group $id")
         // updateItem(id)
     }

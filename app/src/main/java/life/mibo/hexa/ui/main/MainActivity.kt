@@ -70,9 +70,17 @@ import life.mibo.hexa.ui.main.Navigator.Companion.CONNECT
 import life.mibo.hexa.ui.main.Navigator.Companion.DISCONNECT
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME_VIEW
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_COURSE_CREATE
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_COURSE_SELECT
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_DETAILS
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_EXERCISE
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_HOME
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
+import life.mibo.hexa.ui.rxl.create.ReflexCourseCreateFragment
+import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
+import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
@@ -161,7 +169,7 @@ class MainActivity : BaseActivity(), Navigator {
         navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
             Prefs.get(this@MainActivity).get("user_email")
 
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             navigation.menu.clear()
             navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
         }
@@ -760,6 +768,34 @@ class MainActivity : BaseActivity(), Navigator {
             SELECT_PROGRAM -> {
                 navigate(0, R.id.navigation_select_program)
             }
+            RXL_HOME -> {
+                navigate(0, R.id.navigation_rxl_home)
+            }
+            RXL_EXERCISE -> {
+                navigate(0, R.id.navigation_reflex2)
+            }
+            RXL_COURSE_SELECT -> {
+                // val t = FragmentNavigator.Extras.Builder().addSharedElement(image!!, "course_icon") .addSharedElement(title!!, "course_title").build()
+                navigate(0, R.id.navigation_select_rxl_course)
+            }
+            RXL_COURSE_CREATE -> {
+
+                if (data is CreateCourseAdapter.Course) {
+                    val args = Bundle()
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(0, R.id.navigation_create_course, args, getNavOptions(), data.extras)
+                    updateBar(true)
+                }
+            }
+            RXL_DETAILS -> {
+
+                if (data is ReflexModel) {
+                    val args = Bundle()
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(0, R.id.navigation_rxl_details, args, getNavOptions(), data.extras)
+                    updateBar(true)
+                }
+            }
             SESSION -> {
                 navigate(0, R.id.navigation_channels)
                 updateBar(true)
@@ -819,9 +855,7 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_devices)
             }
             R.id.nav_rxl -> {
-                //startScanning(false)
-                //updateMenu()
-                navigate(0, R.id.navigation_reflex)
+                navigate(0, R.id.navigation_rxl_home)
 
             }
 
@@ -932,24 +966,39 @@ class MainActivity : BaseActivity(), Navigator {
                 drawerItemClicked(R.id.navigation_rxl_test)
             }
 
+            HomeItem.Type.ReFlex -> {
+                navigate(0, R.id.navigation_rxl_home)
+                // drawerItemClicked(R.id.navigation_rxl_test)
+            }
+            HomeItem.Type.PROFILE -> {
+                navigate(0, R.id.navigation_profile)
+                // drawerItemClicked(R.id.navigation_rxl_test)
+            }
+
             else -> {
                 Toasty.warning(this, "ItemClicked - $type").show()
             }
         }
     }
 
-    private fun navigate(actionId: Int, fragmentId: Int, args: Bundle? = null) {
+    private fun navigate(
+        actionId: Int,
+        fragmentId: Int,
+        args: Bundle? = null,
+        options: NavOptions? = getNavOptions(),
+        extras: androidx.navigation.Navigator.Extras? = null
+    ) {
         try {
             if (actionId != 0) {
                 val action = navController.currentDestination?.getAction(actionId)
                     ?: navController.graph.getAction(actionId)
                 if (action != null && navController.currentDestination?.id != action.destinationId) {
-                    navController.navigate(actionId, args, getNavOptions(), null)
+                    navController.navigate(actionId, args, options, extras)
                     return
                 }
             }
             if (fragmentId != 0 && fragmentId != navController.currentDestination?.id)
-                navController.navigate(fragmentId, args, getNavOptions(), null)
+                navController.navigate(fragmentId, args, options, extras)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             //IllegalAccessException when action id not match in fragment
@@ -961,7 +1010,7 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    private fun popup(fragmentId: Int, args: Bundle? = null) {
+    private fun popup(fragmentId: Int) {
         navController.popBackStack(fragmentId, false)
         lastId = -1
     }

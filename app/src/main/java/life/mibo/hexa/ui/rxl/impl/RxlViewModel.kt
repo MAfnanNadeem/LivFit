@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.rxl
+package life.mibo.hexa.ui.rxl.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

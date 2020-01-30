@@ -62,20 +62,17 @@
         android:id="@+id/navigation_devices"
         android:name="life.mibo.hexa.ui.devices.DeviceScanFragment"
         android:label="Scan Devices"
-        tools:layout="@layout/fragment_devices">
-    </fragment>
+        tools:layout="@layout/fragment_devices" />
     <fragment
         android:id="@+id/navigation_reflex"
         android:name="life.mibo.hexa.ui.rxl.ReactionLightFragment"
         android:label="ReFlex"
-        tools:layout="@layout/fragment_reactions">
-    </fragment>
+        tools:layout="@layout/fragment_reactions" />
     <fragment
         android:id="@+id/navigation_reflex2"
         android:name="life.mibo.hexa.ui.rxl.ReactionLightFragment2"
-        android:label="ReFlex2"
-        tools:layout="@layout/fragment_reactions_filters">
-    </fragment>
+        android:label="ReFlex"
+        tools:layout="@layout/fragment_reactions_filters" />
     <fragment
         android:id="@+id/navigation_add_product"
         android:name="life.mibo.hexa.ui.add_product.AddProductFragment"
@@ -117,8 +114,7 @@
         android:id="@+id/navigation_heart_rate"
         android:name="life.mibo.hexa.ui.heart_rate.HeartRateFragment"
         android:label="Heart Rate"
-        tools:layout="@layout/fragment_hr_tab1">
-    </fragment>
+        tools:layout="@layout/fragment_hr_tab1" />
 
     <fragment
         android:id="@+id/navigation_weight"
@@ -131,5 +127,32 @@
         android:name="life.mibo.hexa.ui.select_program.SelectProgramFragment"
         android:label="Select Program"
         tools:layout="@layout/fragment_weight" />
+
+    <fragment
+        android:id="@+id/navigation_rxl_home"
+        android:name="life.mibo.hexa.ui.rxl.ReflexSelectFragment"
+        android:label="ReFlex Exercise"
+        tools:layout="@layout/fragment_rxl_initial" />
+    <fragment
+        android:id="@+id/navigation_select_rxl_course"
+        android:name="life.mibo.hexa.ui.rxl.create.ReflexCourseSelectionFragment"
+        android:label="ReFlex Course Select"
+        tools:layout="@layout/fragment_rxl_initial" />
+    <fragment
+        android:id="@+id/navigation_create_course"
+        android:name="life.mibo.hexa.ui.rxl.create.ReflexCourseCreateFragment"
+        android:label="Create Course"
+        tools:layout="@layout/fragment_rxl_initial" />
+
+    <fragment
+        android:id="@+id/navigation_rxl_details"
+        android:name="life.mibo.hexa.ui.rxl.ReflexDetailsFragment"
+        android:label="Reaction Lights"
+        tools:layout="@layout/fragment_rxl_initial" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="life.mibo.hexa.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
 
 </navigation>

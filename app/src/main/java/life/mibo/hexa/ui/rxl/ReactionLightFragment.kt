@@ -8,9 +8,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
-import life.mibo.hexa.ui.rxl.model.ReflexAdapter
-import life.mibo.hexa.ui.rxl.model.ReflexFilterAdapter
-import life.mibo.hexa.ui.rxl.model.ReflexModel
+import life.mibo.hexa.ui.rxl.impl.RxlViewModel
+import life.mibo.hexa.ui.rxl.impl.model.ReflexAdapter
+import life.mibo.hexa.ui.rxl.impl.model.ReflexFilterAdapter
+import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
 import life.mibo.views.dialog.SheetMenu
 
 class ReactionLightFragment : Fragment() {

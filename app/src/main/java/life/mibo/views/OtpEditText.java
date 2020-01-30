@@ -180,6 +180,10 @@ public class OtpEditText extends AppCompatEditText implements TextWatcher {
         a.recycle();
     }
 
+    public void clear(){
+        super.setText("");
+    }
+
     @Override
     public void setOnClickListener(OnClickListener l) {
         clickListener = l;

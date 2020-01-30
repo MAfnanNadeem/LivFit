@@ -18,7 +18,11 @@ import static life.mibo.hardware.models.ConnectionTypes.BLE;
 import static life.mibo.hardware.models.ConnectionTypes.WIFI;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
+import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.GENERIC;
+import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
+import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
+import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 
 /**
@@ -191,6 +195,12 @@ public class Device implements Serializable, BaseModel {
         return ip;
     }
 
+    public String getIpToString() {
+        if (ip != null)
+            return ip.getHostAddress();
+        return "0.0.0.0";
+    }
+
 
     public void setIp(InetAddress ip) {
         this.ip = ip;
@@ -232,6 +242,14 @@ public class Device implements Serializable, BaseModel {
 
     public DeviceTypes getType() {
         return type;
+    }
+
+    public boolean isBooster() {
+        return type == WIFI_STIMULATOR || type == BLE_STIMULATOR;
+    }
+
+    public boolean isPod() {
+        return type == RXL_BLE || type == RXL_WIFI;
     }
 
     public int type() {

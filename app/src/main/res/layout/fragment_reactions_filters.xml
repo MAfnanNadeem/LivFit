@@ -36,7 +36,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewTypes" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewLogic" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPods"
@@ -56,7 +56,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewPods" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewTypes" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewLogic"
@@ -76,7 +76,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewLogic" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewPods" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPlayers"

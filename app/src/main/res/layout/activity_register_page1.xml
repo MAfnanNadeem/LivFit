@@ -21,12 +21,14 @@
         style="@style/login_edittext"
         android:imeOptions="actionNext"
         android:inputType="textPersonName"
+        android:digits="@string/alphabets_only"
         android:hint="First Name" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_last_name"
         style="@style/login_edittext"
         android:imeOptions="actionNext"
+        android:digits="@string/alphabets_only"
         android:inputType="textPersonName"
         android:layout_marginTop="@dimen/grid_1x"
         android:hint="Last Name" />
@@ -112,8 +114,9 @@
             style="@style/login_edittext"
             android:layout_margin="0dp"
             android:ems="7"
-            android:maxLength="15"
+            android:maxLength="14"
             android:layout_weight="1"
+            android:digits="@string/numbers_only"
             android:hint="Phone Number"
             android:imeOptions="actionSend"
             android:inputType="number" />
@@ -125,7 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:buttonTint="@color/colorPrimary"
-        android:text="I accept the terms of agreement"
+        android:text="@string/accept_terms_of_agreement"
         android:textColor="@color/white" />
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_register"

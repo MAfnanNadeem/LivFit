@@ -6,6 +6,7 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hexa.ui.dialog.MyDialog
 import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.main.Navigator
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseFragment : Fragment() {
 
@@ -49,5 +50,14 @@ abstract class BaseFragment : Fragment() {
 
     open fun onBackPressed(): Boolean {
         return true
+    }
+
+    fun register(any: Any) {
+        if (!EventBus.getDefault().isRegistered(any))
+            EventBus.getDefault().register(any)
+    }
+
+    fun unregister(any: Any) {
+        EventBus.getDefault().unregister(any)
     }
 }

@@ -45,6 +45,7 @@
                 android:text="WI-FI"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_large"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="@+id/wifi_switch"
                 app:layout_constraintStart_toEndOf="@+id/wifi_switch"
                 app:layout_constraintTop_toTopOf="@+id/wifi_switch" />
@@ -56,7 +57,8 @@
                 android:layout_gravity="center_vertical"
                 android:background="@color/transparent"
                 android:paddingEnd="@dimen/grid_1x"
-                android:text="Scan"
+                android:text="@string/scan"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

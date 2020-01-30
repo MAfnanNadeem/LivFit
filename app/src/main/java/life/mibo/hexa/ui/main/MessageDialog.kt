@@ -10,12 +10,12 @@ package life.mibo.hexa.ui.main
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Html
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import life.mibo.hexa.R
-import life.mibo.hexa.utils.Utils
 
-class MiboDialog(
+class MessageDialog(
     c: Context,
     val title: String,
     val message: String,
@@ -31,8 +31,30 @@ class MiboDialog(
     }
 
     companion object {
-        val POSITIVE = 2
-        val NEGATIVE = 1
+        const val POSITIVE = 2
+        const val NEGATIVE = 1
+
+        fun show(
+            context: Context,
+            title: String,
+            message: String,
+            positiveButton: String?,
+            negativeButton: String?,
+            listener: Listener
+        ) {
+            MessageDialog(
+                context,
+                title,
+                message,
+                negativeButton,
+                positiveButton,
+                listener
+            ).cancelable(false).show()
+        }
+
+        fun info(context: Context, title: String, message: String) {
+            MessageDialog(context, title, message, "", "close", null).show()
+        }
     }
 
     var textView: TextView? = null
@@ -53,7 +75,7 @@ class MiboDialog(
         }
 
         textView?.text = title
-        messageView?.text = message
+        messageView?.text = Html.fromHtml(message)
 
         //if (!Utils.isEmpty(negativeButton))
             no?.text = negativeButton
@@ -69,7 +91,12 @@ class MiboDialog(
             listener?.onClick(NEGATIVE)
             dismiss()
         }
-
     }
+
+    fun cancelable(flag: Boolean) : MessageDialog {
+        super.setCancelable(flag)
+        return this
+    }
+
 
 }

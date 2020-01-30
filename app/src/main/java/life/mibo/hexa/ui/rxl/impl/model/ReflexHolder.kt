@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.rxl.model
+package life.mibo.hexa.ui.rxl.impl.model
 
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
@@ -9,7 +9,7 @@ import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
-import kotlin.math.log
+import life.mibo.hexa.ui.base.ItemClickListener
 
 
 class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -19,8 +19,11 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     //var percentChannel: TextView? = itemView.findViewById(R.id.tv_perc_main_channel)
     var data: ReflexModel? = null
 
-    fun bind(item: ReflexModel?, listener: ReflexListener?) {
+    fun bind(item: ReflexModel?, listener: ItemClickListener<ReflexModel>?) {
         setBg(imageBg, image)
+        itemView?.setOnClickListener {
+            listener?.onItemClicked(item, adapterPosition)
+        }
 
     }
 

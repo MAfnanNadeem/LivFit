@@ -7,20 +7,32 @@
 
 package life.mibo.hexa.ui.rxl
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_rxl_test.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.events.ColorReceivedEvent
+import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.utils.Toasty
 import life.mibo.views.ColorSeekBar
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import android.widget.ProgressBar
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import org.greenrobot.eventbus.ThreadMode
+
 
 class RxlTestFragment : BaseFragment() {
 
@@ -40,14 +52,28 @@ class RxlTestFragment : BaseFragment() {
 
         seekBar.setOnColorChangeListener(object : ColorSeekBar.OnColorChangeListener {
             override fun onColorSelectListener(color: Int) {
+                if (edittext_cmd!!.text?.isEmpty()!!) {
+                    Toasty.info(context!!, "Please enter time").show()
+                    //progress(3000)
+                    return
+                }
                 tv_device_color?.setTextColor(color)
-                val d = SessionManager.getInstance().userSession.rxl
-                for (i in d) {
-                    if (i != null) {
-                        i.colorPalet = color
-                        EventBus.getDefault().postSticky(ChangeColorEvent(i, i.uid))
+                if (selectPosition != -1 && selectPosition < list.size) {
+                    val d: Device? = list[selectPosition]
+                    d?.let {
+                        it.colorPalet = color
+                        EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, getTime()))
+                    }
+                } else {
+                    for (d in list) {
+                        d.let {
+                            it.colorPalet = color
+                            EventBus.getDefault()
+                                .postSticky(ChangeColorEvent(it, it.uid, getTime()))
+                        }
                     }
                 }
+                progress(lastTime)
             }
 
             override fun onColorChangeListener(color: Int) {
@@ -77,11 +103,28 @@ class RxlTestFragment : BaseFragment() {
             showRxlDialog()
         }
         list.addAll(SessionManager.getInstance().userSession.rxl)
+
+        if (list.isNotEmpty())
+            SessionManager.getInstance().userSession.isRxl = true
+
+        //progressBar.progress = 50f
     }
 
+    private var lastTime = 0
+    fun getTime(): Int {
+        if (edittext_cmd!!.text?.isNotEmpty()!!) {
+            try {
+                lastTime = edittext_cmd!!.text!!.toString().toInt()
+                return lastTime
+            } catch (e: Exception) {
+
+            }
+        }
+        return 1000
+    }
     val list = ArrayList<Device>()
 
-    var selectPosition = 0
+    var selectPosition = -1
     private fun showRxlDialog() {
         val builder = AlertDialog.Builder(context!!)
         builder.setTitle("Choose an animal")
@@ -95,6 +138,7 @@ class RxlTestFragment : BaseFragment() {
 
         builder.setSingleChoiceItems(array, 0) { dialog, which ->
             selectPosition = which
+            log("selectPosition $selectPosition")
         }
 
         builder.setPositiveButton("CLOSE") { dialog, which ->
@@ -104,6 +148,59 @@ class RxlTestFragment : BaseFragment() {
 
         val dialog = builder.create()
         dialog.show()
+    }
+
+    var animator: ObjectAnimator? = null
+    fun progress(duration: Int) {
+        Observable.empty<String>().observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+            animator = ObjectAnimator.ofFloat(progressBar, "progress", 100f, 0f)
+                .setDuration(duration.toLong())
+
+            animator?.start()
+            log("progressBar $duration")
+        }.subscribe()
+    }
+
+    @Subscribe
+    fun onEvent(event: ColorReceivedEvent) {
+        //progress(lastTime)
+    }
+
+    @Subscribe
+    fun onEvent(event: RxlStatusEvent) {
+        Observable.just("").observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+            animator?.end()
+            Toasty.info(
+                this@RxlTestFragment.context!!,
+                event.timeString,
+                Toasty.LENGTH_LONG,
+                false
+            ).show()
+        }.subscribe()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    inner class ProgressBarAnimation(
+        private val progressBar: ProgressBar,
+        private val from: Float,
+        private val to: Float
+    ) : Animation() {
+
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+            super.applyTransformation(interpolatedTime, t)
+            val value = from + (to - from) * interpolatedTime
+            progressBar.progress = value.toInt()
+        }
+
     }
 
 }

@@ -29,15 +29,47 @@
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/et_username"
             style="@style/login_edittext"
-            android:hint="Username"
+            android:hint="@string/email_hint"
             android:inputType="textEmailAddress" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_password"
-            style="@style/login_edittext"
-            android:ems="11"
-            android:hint="Password"
-            android:inputType="textPassword" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_password"
+                style="@style/login_edittext"
+                android:ems="11"
+                android:hint="@string/password_hint"
+                android:inputType="textPassword" />
+
+            <ImageView
+                android:id="@+id/iv_pwd_visible"
+                android:src="@drawable/ic_visibility_off"
+                android:layout_width="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:padding="@dimen/grid_1x"
+                android:tint="@color/grey"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+
+        <!--        <com.google.android.material.textfield.TextInputLayout-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            app:passwordToggleEnabled="true"-->
+        <!--            app:passwordToggleTint="@color/grey"-->
+        <!--            android:layout_height="wrap_content">-->
+        <!--            <com.google.android.material.textfield.TextInputEditText-->
+        <!--                style="@style/login_edittext"-->
+        <!--                android:ems="11"-->
+        <!--                android:hint="Password"-->
+        <!--                android:lines="1"-->
+        <!--                android:textColorHint="@color/grey"-->
+        <!--                android:inputType="textPassword" />-->
+        <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_login"
@@ -59,16 +91,33 @@
             android:text="Create an Account"
             android:textColor="@color/white" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_forget"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:padding="@dimen/grid_1x"
-            android:text="Forgot Password?  Click Here"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_small"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_forget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:padding="@dimen/grid_1x"
+                android:text="@string/forgot_pwd"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_forget_click"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:padding="@dimen/grid_1x"
+                android:text="@string/click_here"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold" />
+        </LinearLayout>
 
 
     </LinearLayout>

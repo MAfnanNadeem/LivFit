@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.rxl.model
+package life.mibo.hexa.ui.rxl.impl.model
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
 
 
@@ -14,7 +15,7 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
     RecyclerView.Adapter<ReflexHolder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: ReflexListener? = null
+    private var listener: ItemClickListener<ReflexModel>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReflexHolder {
         return ReflexHolder(
@@ -26,7 +27,7 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
         )
     }
 
-    fun setListener(listener: ReflexListener) {
+    fun setListener(listener: ItemClickListener<ReflexModel>) {
         this.listener = listener
     }
 

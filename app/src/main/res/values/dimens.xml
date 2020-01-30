@@ -28,5 +28,10 @@
     <dimen name="popup_quote_width">150dp</dimen>
     <dimen name="popup_quote_height">40dp</dimen>
     <dimen name="popup_quote_margin_top">-30dp</dimen>
+    <dimen name="default_circle_width">12dp</dimen>
+    <dimen name="default_circle_background_width">5dp</dimen>
+
+    <dimen name="radio_button_conner_radius">5dp</dimen>
+    <dimen name="radio_button_stroke_border">1dp</dimen>
 
 </resources>

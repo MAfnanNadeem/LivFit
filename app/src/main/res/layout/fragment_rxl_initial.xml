@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/25/20 2:34 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/21/20 10:29 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_quickplay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_reflext_quickplay"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/grid_2x"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_quickplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quick Play"
+        android:background="@drawable/bg_button_reflex"
+        android:textColor="@color/white"
+        android:padding="@dimen/grid_2x"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_quickplay"
+        app:layout_constraintEnd_toEndOf="@+id/iv_quickplay"
+        app:layout_constraintStart_toStartOf="@+id/iv_quickplay"
+        app:layout_constraintTop_toTopOf="@+id/iv_quickplay" />
+
+    <ImageView
+        android:id="@+id/iv_create"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_reflex_create"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_quickplay" />
+
+    <Button
+        android:id="@+id/btn_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CREATE A COURSE"
+        android:background="@drawable/bg_button_reflex"
+        android:textColor="@color/white"
+        android:padding="@dimen/grid_2x"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_create"
+        app:layout_constraintEnd_toEndOf="@+id/iv_create"
+        app:layout_constraintStart_toStartOf="@+id/iv_create"
+        app:layout_constraintTop_toTopOf="@+id/iv_create" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

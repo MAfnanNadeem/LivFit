@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.rxl.model
+package life.mibo.hexa.ui.rxl.impl.model
 
 import android.graphics.Color
 import android.view.LayoutInflater

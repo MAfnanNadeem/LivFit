@@ -75,6 +75,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
         val format = SimpleDateFormat("EEE, dd MMM, yyyy")
         //controller.setRecycler(recyclerView!!)
         textView2?.text = format.format(Date())
+
+        iv_user_pic?.setOnClickListener {
+            navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
+        }
     }
 
     override fun onDataReceived(list: ArrayList<HomeItem>) {
@@ -210,7 +214,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
             data.add(arrayOf(list[0], list[1]))
             data.add(arrayOf(list[2], list[3], list[4]))
             data.add(arrayOf(list[5], list[6]))
-            data.add(arrayOf(list[7]))
+            data.add(arrayOf(list[7], list[8]))
             val metrics = resources.displayMetrics
             setRecyclerView(metrics!!.widthPixels.div(3))
         }

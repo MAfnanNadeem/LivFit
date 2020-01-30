@@ -50,7 +50,9 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
             override fun onFailure(call: Call<UserDetails>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
+                fragment?.context?.let {
+                    Toasty.error(it, "Unable to connect").show()
+                }
             }
 
             override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {

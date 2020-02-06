@@ -1,13 +1,12 @@
 /*
- *  Created by Sumeet Kumar on 1/27/20 2:11 PM
+ *  Created by Sumeet Kumar on 2/1/20 3:27 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/27/20 2:01 PM
+ *  Last modified 2/1/20 11:16 AM
  *  Mibo Hexa - app
  */
 
 package life.mibo.hexa.pods
 
-import android.graphics.Color
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -21,6 +20,7 @@ import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
+import life.mibo.hexa.pods.pod.Pod
 import life.mibo.hexa.pods.pod.PodType
 import life.mibo.hexa.ui.main.MiboEvent
 import org.greenrobot.eventbus.EventBus
@@ -31,63 +31,88 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.random.Random
 
-class RXLManager private constructor() {
+class PodManager private constructor() {
 
     init {
         life.mibo.hardware.core.Logger.e("RXLManager init for first time")
     }
 
-    interface Listener {
-        fun onExerciseStart()
-        fun onExerciseEnd()
-        fun onCycleStart(cycle: Int, duration: Int)
-        fun onCycleEnd(cycle: Int)
-        fun onCyclePaused(cycle: Int, time: Int)
-        fun onCycleResumed(cycle: Int)
-        fun onPod(podId: Int, time: Int)
-    }
-
     companion object {
         val REFLEX = 10
         @Volatile
-        private var INSTANCE: RXLManager? = null
+        private var INSTANCE: PodManager? = null
 
-        fun getInstance(): RXLManager =
+        fun getInstance(): PodManager =
             INSTANCE ?: synchronized(this) {
                 life.mibo.hardware.core.Logger.e("RXLManager INSTANCE init ")
-                INSTANCE = RXLManager()
+                INSTANCE = PodManager()
                 INSTANCE!!
             }
     }
 
 
-    var listener: Listener? = null
+    var listener: RXLManager.Listener? = null
+    var list = ArrayList<Pod?>()
     var devices = ArrayList<Device>()
     var events = ArrayList<Event>()
 
+    var is4 = false
+    var is6 = false
+
+
     private var lastActivePod = -1
-    var program: RxlProgram? = null
+    var exercise: PodExercise? = null
     var type: PodType = PodType.UNKNOWN
 
+    fun add(pod: Pod) {
+        if (!list.contains(pod))
+            list.add(pod)
+    }
 
-    fun addDevices(pod: List<Device>): RXLManager {
-        devices.clear()
-        devices.addAll(pod)
+    fun addAll(pod: Array<Pod>) {
+        list.clear()
+        list.addAll(pod)
+    }
+
+    fun addAll(pod: List<Pod>) {
+        list.clear()
+        list.addAll(pod)
+    }
+
+    fun addPods(pod: List<Pod>): PodManager {
+        list.clear()
+        list.addAll(pod)
         return this
     }
 
-    fun with(exercise: RxlProgram): RXLManager {
-        this.program = exercise
+
+    fun addDevices(pod: List<Device>): PodManager {
+        devices.clear()
+        devices.addAll(pod)
+
+        if (pod.isNotEmpty()) {
+            list.clear()
+
+            pod.forEach {
+                list.add(Pod.from(it))
+            }
+        }
+        return this
+    }
+
+    fun with(exercise: PodExercise): PodManager {
+        this.exercise = exercise
         refresh()
         return this
     }
 
-    fun withListener(listener: Listener): RXLManager {
+    fun withListener(listener: RXLManager.Listener): PodManager {
         this.listener = listener
         return this
     }
 
     fun refresh() {
+        list.clear()
         devices.clear()
         events.clear()
     }
@@ -103,7 +128,7 @@ class RXLManager private constructor() {
 
 
     // todo startObserver - start
-    private var publisher: PublishSubject<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
+    val publisher = PublishSubject.create<Int>()
     private var observers: CompositeDisposable? = null
     private var disposable: Disposable? = null
     private var delayDisposable: Disposable? = null
@@ -115,36 +140,27 @@ class RXLManager private constructor() {
     private var actionTime = 0
     private var pauseTime = 0
     private var isStarted = false
-    private var isInternalStarted = false
     private var isRunning = false
-    //private var actionTime = 0
 
-    private fun getDuration(): Int = program?.getDuration() ?: 0
+    fun startNow(random: Boolean) {
 
-    private fun getAction(): Int = program?.getAction() ?: 0
-    private fun getCycles(): Int = program?.getCyclesCount() ?: 0
-
-    private fun getPause(): Int = program?.getPause() ?: 0
-
-    private fun getColor(): Int = program?.getActiveColor() ?: Color.RED
-
-    fun startNow() {
-        //isRandom = random
-        //register()
-        isStarted = false
-        startPublish()
-        //startInternal()
     }
-
 
     fun startOnHit(random: Boolean) {
 
     }
+    fun start(random: Boolean) {
+        isRandom = random
+        //register()
+        isStarted = false
+        startInternal()
+//        source.subscribeOn(Schedulers.newThread()).subscribe {
+//
+//        }
+    }
 
-
-    fun startTest(program: RxlProgram) {
-        startPublish()
-        log("startTest.......... duration ${program.getDuration()} cycle ${program.getCyclesCount()} action ${program.getAction()} pause ${program.getPause()}")
+    fun startTest(duration: Int, cycle: Int, action: Int, pause: Int, random: Boolean = false) {
+        log("startTest.......... duration $duration cycle $cycle action $action pause $pause")
         test = true
         devices.clear()
         for (i in 1..6) {
@@ -157,55 +173,17 @@ class RXLManager private constructor() {
         }
 
         startExercise(0, 0)
-        this.program = program
-        program.repeat(getCycles())
+        isRandom = random
+        if (exercise == null)
+            exercise = PodExercise("$duration - $cycle")
+        exercise?.duration!!.duration = duration
+        exercise?.duration!!.actionTime = action
+        exercise?.duration!!.cycles.value = cycle
+        exercise?.duration!!.cycles.pause.value = pause
 
-        cycles = getCycles().toLong()
+        cycles = cycle.toLong()
         currentCycle = 1
-        startObserver(currentCycle, program!!.getNext().cycleDuration)
-    }
-
-    private fun startPublish() {
-        publisher = PublishSubject.create<RxlStatusEvent>()
-        publisher!!.subscribeOn(Schedulers.io()).doOnNext {
-            log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
-            if (!isInternalStarted) {
-                if (it.time > 10)
-                    startInternal()
-                else
-                    return@doOnNext
-            }
-
-            if (it.uid == lastUid) {
-                log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
-                events.add(Event(events.size + 1, getAction(), it.time))
-                lightOnDynamic()
-            } else {
-                log("RxlStatusEvent UID NOT Matched >> ${it.uid} == $lastUid ")
-            }
-        }.subscribe()
-
-        if (isInternalStarted)
-            return
-        log("RxlStatusEvent2 isStarted >> $isInternalStarted ")
-        if (devices.isNotEmpty()) {
-            val device = devices[0]
-            lastUid = device.uid
-            device.let {
-                it.colorPalet = getColor()
-                lastUid = it.uid
-                EventBus.getDefault()
-                    .postSticky(
-                        ChangeColorEvent(
-                            it,
-                            it.uid,
-                            10 * 10000
-                        )
-                    )
-            }
-            lastPod = 1
-            log("RxlStatusEvent2 ChangeColorEvent2 send To UID == $lastUid ")
-        }
+        startObserver2(currentCycle, exercise?.duration!!.duration)
     }
 
     // Private Functions
@@ -218,11 +196,10 @@ class RXLManager private constructor() {
     }
 
     private fun startInternal() {
-        isInternalStarted = true
         log("startInternal..........")
         log(
-            "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
-                    "action ${program?.getAction()} pause ${program?.getPause()}"
+            "startInternal.......... duration ${exercise?.duration?.duration} cycle ${exercise?.duration?.cycles?.value} " +
+                    "action ${exercise?.duration?.actionTime} pause ${exercise?.duration?.cycles?.pause?.value}"
         )
         if (isRunning) {
             //Toasty.info(MiboApplication.context, "")
@@ -235,16 +212,51 @@ class RXLManager private constructor() {
         test = false
         startExercise(0, 0)
         // isRandom = exercise?.logic == LightLogic.RANDOM
-        cycles = program!!.getCyclesCount().toLong()
-        actionTime = program?.getAction()?.times(1000) ?: 0
-        pauseTime = program!!.getPause()
+        cycles = exercise?.duration!!.cycles.value.toLong()
+        actionTime = exercise?.duration!!.actionTime
+        pauseTime = exercise?.duration!!.cycles.pause.value
         currentCycle = 1
         events.clear()
-        startObserver(currentCycle, program!!.getDuration())
+        startObserver2(currentCycle, exercise?.duration!!.duration)
     }
 
-
     private fun startObserver(cycle: Int, duration: Int) {
+        log("startObserver >> cycle $cycle - duration $duration")
+        disposable?.dispose()
+        observers?.add(
+            Observable.just(cycle).delay(duration.toLong(), TimeUnit.SECONDS).observeOn(
+                Schedulers.computation()
+            ).doOnComplete {
+                log("startObserver >> doOnComplete cycle $cycle - duration $duration")
+                completeCycle(currentCycle, duration)
+            }.doOnSubscribe {
+                log("startObserver >> doOnSubscribe cycle $cycle - duration $duration")
+                startCycle(currentCycle)
+            }.doOnError {
+                log("startObserver >> doOnError cycle $cycle ${it.message}")
+                it.printStackTrace()
+            }.subscribe()
+        )
+//        disposable =
+//            Observable.just(cycle).delay(duration.toLong(), TimeUnit.SECONDS).observeOn(Schedulers.computation()).doOnComplete {
+//                log("startObserver >> doOnComplete cycle $cycle - duration $duration")
+//                completeCycle(currentCycle, duration)
+//            }.doOnSubscribe {
+//                log("startObserver >> doOnSubscribe cycle $cycle - duration $duration")
+//                startCycle(currentCycle)
+//                observers?.add(it)
+//            }.doOnError {
+//                log("startObserver >> doOnError cycle $cycle ${it.message}")
+//                it.printStackTrace()
+//            }.subscribe()
+
+//        disposable?.let {
+//            observers?.add(it)
+//        }
+        //observers.add(disposable)
+    }
+
+    private fun startObserver2(cycle: Int, duration: Int) {
         log("startObserver >> cycle $cycle - duration $duration")
         disposable?.dispose()
         observers?.add(
@@ -267,7 +279,7 @@ class RXLManager private constructor() {
         disposable = Single.timer(delay.toLong(), TimeUnit.SECONDS).subscribeOn(Schedulers.io())
             .doOnSuccess {
                 resumeCycle(cycle)
-                startObserver(cycle, duration)
+                startObserver2(cycle, duration)
                 //resumeCycle(cycles, 0)
             }.subscribe()
         disposable?.let {
@@ -309,7 +321,7 @@ class RXLManager private constructor() {
 //                    log("RxlStatusEvent delayObserver subscribe")
 //                }
 
-        delayDisposable = Single.timer(getAction().toLong().plus(1), TimeUnit.SECONDS)
+        delayDisposable = Single.timer(exercise?.duration!!.actionTime.toLong().plus(1), TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io()).doOnSuccess {
                 onEvent(RxlStatusEvent(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), lastUid))
                 log("RxlStatusEvent delayObserver doOnComplete")
@@ -329,23 +341,27 @@ class RXLManager private constructor() {
     }
 
     private fun startExercise() {
-        log("startExercise exercise $program")
+        log("startExercise exercise $exercise")
         if (test) {
             startExercise(0, 0)
             currentCycle = 1
-            startObserver(currentCycle, getDuration())
+            startObserver2(currentCycle, exercise?.duration!!.duration)
             return
         }
         //RXLManager.getInstance().with(PodExercise.getExercise1()).addPods(list).startExercise()
         disposable?.dispose()
-        if (getDuration() > 0) {
-            cycles = getCycles().toLong()
+        if (exercise?.duration!!.duration > 0) {
+            cycles = exercise?.duration!!.cycles.value.minus(1).toLong()
             disposable =
-                Observable.interval(getDuration().toLong(), TimeUnit.SECONDS)
+                Observable.interval(exercise?.duration!!.duration.toLong(), TimeUnit.SECONDS)
                     .concatMap { s ->
-                        log("Observable concatMap $s  -- " + getPause())
+                        log("Observable concatMap $s  -- " + exercise?.duration!!.cycles.pause.value)
                         pauseCycle(currentCycle)
-                        Observable.just(s).delay(getPause().toLong(), TimeUnit.SECONDS)
+                        Observable.just(s)
+                            .delay(
+                                exercise?.duration!!.cycles.pause.value.toLong(),
+                                TimeUnit.SECONDS
+                            )
                     }
                     .doOnNext {
                         log("Observable doOnNext $it")
@@ -385,7 +401,6 @@ class RXLManager private constructor() {
         isStarted = true
         lastPod = 0
         lightOnDynamic()
-        //publisher.onNext("startCycle")
     }
 
     private fun pauseCycle(cycle: Int, time: Int = 0) {
@@ -393,7 +408,6 @@ class RXLManager private constructor() {
         listener?.onCyclePaused(cycle, time)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle paused"))
         isStarted = false
-        //publisher.onNext("pauseCycle")
     }
 
     private fun resumeCycle(cycle: Int, time: Int = 0) {
@@ -403,7 +417,6 @@ class RXLManager private constructor() {
             .post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle resumed"))
         //startCycle(cycle)
         //isStarted = true
-        //publisher.onNext("resumeCycle")
     }
 
     private fun completeCycle(cycle: Int, duration: Int = 0) {
@@ -414,14 +427,13 @@ class RXLManager private constructor() {
         disposable?.dispose()
         if (cycles > currentCycle) {
             currentCycle++
-            pauseCycle(0, getPause())
-            resumeObserver(currentCycle, getPause(), duration)
+            pauseCycle(0, exercise?.duration!!.cycles.pause.value)
+            resumeObserver(currentCycle, exercise?.duration!!.cycles.pause.value, duration)
         } else {
             completeExercise(0, 0)
         }
         isStarted = false
 
-        //publisher.onNext("completeCycle")
 
     }
 
@@ -429,19 +441,15 @@ class RXLManager private constructor() {
         listener?.onExerciseStart()
         log(".......... startExercise .......... ")
         isRunning = true
-        //publisher.onNext("startExercise")
     }
 
     private fun completeExercise(cycle: Int, time: Int = 0) {
         log(".......... completeExercise .......... ")
-        isInternalStarted = false
         isRunning = false
         listener?.onExerciseEnd()
         EventBus.getDefault()
             .post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
         dispose()
-        publisher?.onComplete()
-        //publisher.onNext("completeExercise")
     }
 
     // todo startObserver - end
@@ -451,8 +459,8 @@ class RXLManager private constructor() {
         val d = Observable.intervalRange(
             1L,
             cycles,
-            getPause().toLong(),
-            getDuration().toLong(),
+            exercise?.duration!!.cycles.pause.value.toLong(),
+            exercise?.duration!!.duration.toLong(),
             TimeUnit.SECONDS
         ).subscribeOn(Schedulers.newThread()).doOnNext {
             log("test1 Observable doOnNext $it")
@@ -463,10 +471,62 @@ class RXLManager private constructor() {
         }.subscribe {
             log("test1 Observable subscribe $it")
         }
+
+
+//        Observable.zip<Int, Long, Int>(Observable.range(1, 5)
+//            .groupBy { n -> n % 5 }
+//            .flatMap { g -> g.toList() },
+//            Observable.interval(50, TimeUnit.MILLISECONDS),
+//            { obs, timer -> obs })
+//            .doOnNext { item ->
+//                System.out.println(System.currentTimeMillis() - timeNow)
+//                println(item)
+//                println(" ")
+//            }.toList().toBlocking().first()
     }
 
 
+    //var duration = 0
 
+    fun startPods(interval: Long, count: Long) {
+        log("startPods type:$type $interval $count ")
+        when (type) {
+            PodType.PODS_4 -> {
+                disposable = Observable.interval(interval, TimeUnit.SECONDS)
+                    .doOnNext {
+                        lightOff(lastActivePod)
+                        lightOn(next())
+                    }.takeUntil { i ->
+                        i == count
+                    }.doOnComplete {
+                        disposable?.dispose()
+                    }.subscribe()
+            }
+            PodType.PODS_6 -> {
+
+            }
+            PodType.DYNAMIC -> {
+                disposable = Observable.interval(interval, TimeUnit.SECONDS)
+                    .doOnNext {
+                        lightOff(lastActivePod)
+                        lightOn(next())
+                    }.takeUntil { i ->
+                        i == count
+                    }.doOnComplete {
+                        disposable?.dispose()
+                    }.subscribe()
+            }
+            else -> {
+
+            }
+        }
+    }
+
+    fun stopPods() {
+        disposable?.dispose()
+        disposable = null
+        log("stopPods")
+    }
 
     private fun random(): Int {
         return when (type) {
@@ -478,8 +538,8 @@ class RXLManager private constructor() {
             }
 
             PodType.DYNAMIC -> {
-                if (devices.size > 0)
-                    Random(getCycles()).nextInt()
+                if (list.size > 0)
+                    Random(list.size).nextInt()
                 return -1
             }
             else -> {
@@ -496,7 +556,7 @@ class RXLManager private constructor() {
     }
 
     private fun checkPod(id: Int): Boolean {
-        if (id >= 0 && id < devices.size)
+        if (id >= 0 && id < list.size)
             return true
         //lightOn(list[id])
         return false
@@ -566,26 +626,24 @@ class RXLManager private constructor() {
     }
 
     private fun sendColorEvent(device: Device?) {
-        //publisher.onNext("sendColorEvent ${device?.uid}")
         delayObserver()
         if (test) {
             log("sendColorEvent test >> sent $lastPod")
             lastUid = "000002"
-            testObserver(getAction())
+            testObserver(exercise?.duration!!.actionTime)
             return
         }
         device?.let {
-            it.colorPalet = getColor()
+            it.colorPalet = exercise?.colors!!.activeColor
             lastUid = it.uid
             EventBus.getDefault()
                 .postSticky(
                     ChangeColorEvent(
                         it,
                         it.uid,
-                        actionTime
+                        exercise?.duration!!.actionTime.times(1000)
                     )
                 )
-            log("RxlStatusEvent ChangeColorEvent send To UID == $lastUid ")
         }
     }
 
@@ -597,7 +655,7 @@ class RXLManager private constructor() {
                         ChangeColorEvent(
                             it,
                             it.uid,
-                            getAction().times(1000)
+                            exercise?.duration!!.actionTime.times(1000)
                         )
                     )
             }
@@ -607,16 +665,16 @@ class RXLManager private constructor() {
 
     private fun lightOn(pod: Int) {
         if (checkPod(pod))
-            lightOn(devices[pod])
+            lightOn(list[pod])
         log("lightOn $pod")
     }
 
-    private fun lightOn(pod: Device?) {
+    private fun lightOn(pod: Pod?) {
         if (pod == null)
             return
         EventBus.getDefault().postSticky(
             PodEvent(
-                pod.uid, getColor(), getAction(), false
+                pod.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false
             )
         )
         log("lightOn EventBus $pod")
@@ -624,11 +682,11 @@ class RXLManager private constructor() {
 
     private fun lightOff(pod: Int) {
         if (checkPod(pod))
-            lightOff(devices[pod])
+            lightOff(list[pod])
         log("lightOff $pod")
     }
 
-    private fun lightOff(pod: Device?) {
+    private fun lightOff(pod: Pod?) {
         if (pod == null)
             return
         EventBus.getDefault().postSticky(
@@ -680,45 +738,47 @@ class RXLManager private constructor() {
 
     @Subscribe
     fun onResponse(event: PodResponseEvent) {
-        events.add(Event(devices.size.plus(1), getAction(), event.tapTime))
+        events.add(Event(list.size.plus(1), exercise!!.duration.actionTime, event.tapTime))
     }
 
     @Subscribe
     fun onEvent(event: RxlStatusEvent) {
-        EventBus.getDefault().removeStickyEvent(event)
-        publisher?.onNext(event)
+        log("RxlStatusEvent $event")
+        if (event.uid == lastUid) {
+            log("RxlStatusEvent UID Matched ${event.uid} == $lastUid ")
+            events.add(Event(list.size.plus(1), exercise!!.duration.actionTime, event.time))
+            lightOnDynamic()
+        } else {
+            log("RxlStatusEvent UID NOT Matched >> ${event.uid} == $lastUid ")
+        }
     }
 
     fun getHits(): String {
-        val b = StringBuilder()
-        b.append("\n")
-        b.append("\n")
-        b.append("Total events   ")
-        b.append(events.size)
-        b.append("\n")
-        b.append("\n")
-        b.append("Total time   ")
-        b.append(getDuration().times(cycles))
-        b.append(" sec")
-        b.append("\n")
-        b.append("\n")
-        b.append("Your hits   ")
-        var hits = 0
-        var missed = 0
-        events?.forEach {
-            if (it.tapTime > 1)
-                hits++
-            else
-                missed++
-        }
-        b.append(hits)
-        b.append("\n")
-        b.append("\n")
-        b.append("You missed   ")
-        b.append(missed)
-        //return String(b)
-        return b.toString()
-        // return ""
+//        val b = StringBuilder()
+//        b.append("\n")
+//        b.append("Total events")
+//        b.append("\n")
+//        b.append(events.size)
+//        b.append("Total time")
+//        b.append("\n")
+//        b.append(exercise?.duration?.duration?.times(cycles))
+//        b.append("Your hits")
+//        b.append("\n")
+//        var hits = 0
+//        var missed = 0
+//        events?.forEach {
+//            if (it.tapTime > 1)
+//                hits++
+//            else
+//                missed++
+//        }
+//        b.append(hits)
+//        b.append("You missed")
+//        b.append("\n")
+//        b.append(missed)
+//        //return String(b)
+//        return b.toString()
+        return ""
     }
 
 

@@ -11,69 +11,18 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:text="Random"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="1" />
-
-    <ImageView
-        android:id="@+id/iv_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="76dp"
-        android:layout_marginStart="@dimen/grid_2x"
-        android:src="@drawable/ic_reflex_random_icon"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_large"
-        app:layout_constraintBottom_toBottomOf="@+id/et_course_structure"
-        app:layout_constraintEnd_toStartOf="@+id/et_course_structure"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/et_course_name"
-        app:layout_constraintWidth_percent="1" />
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_course_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:layout_marginEnd="@dimen/grid_2x"
-        android:background="@drawable/login_edittext"
-        android:ems="10"
-        android:hint="Course Name"
-        android:padding="@dimen/grid_1x"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_course_structure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_1x"
-        android:layout_marginEnd="@dimen/grid_2x"
-        android:background="@drawable/login_edittext"
-        android:ems="10"
-        android:hint="Course Structure"
-        android:padding="@dimen/grid_1x"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_course_name" />
 
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/grid_2x"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/btn_tap_hit"
+        app:layout_constraintBottom_toTopOf="@+id/btn_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_course_structure">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -82,14 +31,67 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="Random"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="1" />
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="76dp"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:src="@drawable/ic_reflex_random_icon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintBottom_toBottomOf="@+id/et_course_structure"
+                app:layout_constraintEnd_toStartOf="@+id/et_course_structure"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/et_course_name"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_course_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/login_edittext"
+                android:ems="10"
+                android:hint="Course Name"
+                android:padding="@dimen/grid_1x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_course_structure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:background="@drawable/login_edittext"
+                android:ems="10"
+                android:hint="Course Structure"
+                android:padding="@dimen/grid_1x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_course_name" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_general"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="GENERAL SETTINGS"
                 android:textColor="@color/white"
+                android:layout_marginTop="@dimen/grid_2x"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_course_structure"
                 app:layout_constraintWidth_percent="1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -126,7 +128,7 @@
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_stations"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_stations" />
+                app:layout_constraintTop_toTopOf="@id/iv_stations" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -163,7 +165,7 @@
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_cycles" />
+                app:layout_constraintTop_toTopOf="@id/iv_cycles" />
 
 
 
@@ -193,7 +195,7 @@
                     android:id="@+id/tv_pods"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_1x"
+                    android:layout_marginTop="@dimen/grid_2x"
                     android:text="ReFlex"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
@@ -215,22 +217,22 @@
                     android:layout_width="76dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/login_edittext"
-                    android:padding="@dimen/grid_1x"
-                    android:text="1"
                     android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:padding="@dimen/grid_1x"
                     android:singleLine="true"
+                    android:text="1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@id/iv_pods"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_pods" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_pods" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_lights"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_1x"
+                    android:layout_marginTop="@dimen/grid_2x"
                     android:text="@string/cycles"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
@@ -251,20 +253,21 @@
                     android:layout_width="76dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                     android:padding="@dimen/grid_1x"
                     android:singleLine="true"
                     android:text="1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                     app:layout_constraintBottom_toBottomOf="@id/iv_lights"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_lights" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_lights" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -296,17 +299,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/login_edittext"
-                    android:singleLine="true"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                     android:minWidth="76dp"
                     android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
                     android:text="1"
                     android:textColor="@color/textColor"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@id/iv_players"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_players" />
-
+                    app:layout_constraintTop_toTopOf="@+id/iv_players" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -343,7 +345,7 @@
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_delay" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_delay" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -352,7 +354,7 @@
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/grid_1x"
+                android:layout_marginTop="@dimen/grid_2x"
                 android:text="Activity Duration"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
@@ -373,51 +375,79 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/login_edittext"
-                android:minWidth="100dp"
-                android:singleLine="true"
-                android:padding="@dimen/grid_1x"
-                android:text="30 sec"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:minWidth="100dp"
+                android:padding="@dimen/grid_1x"
+                android:singleLine="true"
+                android:text="30 sec"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_time"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_time" />
+                app:layout_constraintTop_toTopOf="@+id/iv_time" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_time">
+
+                <life.mibo.views.FluidSlider
+                    android:id="@+id/fluidSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:slider_bar_color="@color/colorPrimary"
+                    app:slider_bar_text_color="@color/white"
+                    app:slider_bubble_color="@color/colorAccent"
+                    app:slider_bubble_text_color="@color/white"
+                    app:slider_end_text=""
+                    app:slider_initial_position="0.5"
+                    app:slider_size="small"
+                    app:slider_start_text="inches" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="1">
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/radio_start_now"
+                        style="@style/RadioButton"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector"
+                        android:checked="true"
+                        android:text="ON CLICK" />
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/radio_start_tap"
+                        style="@style/RadioButton"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_center"
+                        android:text="ON TAP" />
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/radio_start_sensor"
+                        style="@style/RadioButton"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_right"
+                        android:text="ON SENSOR" />
+
+                </RadioGroup>
+            </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-
-    <life.mibo.views.SegmentedGroup
-        android:id="@+id/btn_tap_hit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/btn_save"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="@dimen/grid_1x"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.75">
-
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/radio_start_now"
-            style="@style/RadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="START NOW" />
-
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/radio_start_tap"
-            style="@style/RadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="START ON HINT" />
-
-    </life.mibo.views.SegmentedGroup>
 
 
     <Button
@@ -426,9 +456,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
         android:background="@drawable/bg_button_reflex"
-        android:padding="@dimen/grid_2x"
-        android:text="SAVE"
+        android:text="SAVE PROGRAM"
         android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

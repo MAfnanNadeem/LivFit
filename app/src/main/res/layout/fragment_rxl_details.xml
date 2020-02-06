@@ -56,6 +56,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_icon" />
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_sensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Senor Off   "
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_desc_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_icon" />
+
             <life.mibo.views.ExpandableTextView
                 android:id="@+id/tv_desc"
                 android:layout_width="0dp"
@@ -164,6 +174,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_cycles"
                 app:layout_constraintWidth_percent="1" />
+
+            <life.mibo.views.CircleView
+                android:id="@+id/iv_select_color"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="@dimen/grid_2x"
+                app:cv_color="#0F0"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_activity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_activity" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_customize"
@@ -291,8 +311,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_select_players"
-                    android:layout_width="76dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="76dp"
                     android:layout_marginEnd="@dimen/grid_2x"
                     android:background="@drawable/login_edittext"
                     android:gravity="center"
@@ -418,26 +439,26 @@
     </androidx.core.widget.NestedScrollView>
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_start_now"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_1x"
-        android:background="@drawable/bg_button_reflex"
-        android:text="START NOW"
+        android:background="@drawable/bg_button_reflex_state"
+        android:text="@string/start_now"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/btn_start_hit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.75" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_start_hit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
-        android:background="@drawable/bg_button_reflex"
-        android:text="START ON HINT"
+        android:background="@drawable/bg_create_course_item"
+        android:text="@string/start_on_hint"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -195,6 +194,10 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
 
     override fun onBackPressed(): Boolean {
         //Toasty.info(context!!, "onBackPressed").show()
-        return controller.onBackPressed()
+        if (controller.onBackPressed()) {
+            navigate(life.mibo.hexa.ui.main.Navigator.POST, arguments)
+            return true
+        }
+        return false
     }
 }

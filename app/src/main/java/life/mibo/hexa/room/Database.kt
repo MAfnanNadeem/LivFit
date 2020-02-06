@@ -10,7 +10,7 @@ package life.mibo.hexa.room
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.room.RoomDatabase
-import io.reactivex.Completable
+import androidx.room.TypeConverters
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
@@ -18,12 +18,20 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import life.mibo.hexa.models.program.Program
 import java.util.concurrent.Callable
 
-@androidx.room.Database(entities = [Member::class], version = 3, exportSchema = false)
-abstract class Database() : RoomDatabase() {
+@androidx.room.Database(
+    entities = [Member::class, Device::class, UserDetails::class, Program::class],
+    version = 6,
+    exportSchema = false
+)
+@TypeConverters(Converters::class, ProgramConverter::class)
+abstract class Database : RoomDatabase() {
 
     abstract fun memberDao(): MemberDao
+    abstract fun deviceDao(): DevicesDao
+    abstract fun programDao(): ProgramDao
 
     companion object {
 
@@ -43,7 +51,7 @@ abstract class Database() : RoomDatabase() {
             ).fallbackToDestructiveMigration().build()
 
         fun execute(action: Action): Disposable {
-            return Observable.empty<String>().observeOn(Schedulers.newThread())
+            return Observable.empty<String>().observeOn(Schedulers.io())
                 .doOnComplete(action)
                 .subscribe()
         }
@@ -76,5 +84,14 @@ abstract class Database() : RoomDatabase() {
         })
     }
 
+    fun insert(action: Action): Disposable {
+        return execute(action)
+    }
+
+    fun insert(program: List<Program?>) {
+        execute(Action {
+            programDao().insert(program)
+        })
+    }
 }
 

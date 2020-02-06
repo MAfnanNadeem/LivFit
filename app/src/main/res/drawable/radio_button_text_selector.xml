@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Created by Sumeet Kumar on 2/6/20 10:11 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 2/6/20 10:11 AM
+  ~  Mibo Hexa - app
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:color="@color/colorPrimary" android:state_checked="false" />
+    <item android:color="@color/white" android:state_checked="true" />
+</selector>

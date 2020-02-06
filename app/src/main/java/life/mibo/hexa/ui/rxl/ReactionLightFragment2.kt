@@ -35,6 +35,10 @@ fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.ru
 
 class ReactionLightFragment2 : BaseFragment() {
 
+    interface Listener {
+
+    }
+
     private lateinit var rxl: RxlViewModel
     private lateinit var controller: ReactionLightController
 
@@ -61,7 +65,7 @@ class ReactionLightFragment2 : BaseFragment() {
 //            setTitle(R.string.app_name)
 //        }
 
-
+        controller = ReactionLightController(this)
         rxl = ViewModelProviders.of(this).get(RxlViewModel::class.java)
 
         val recycler: RecyclerView = root.findViewById(R.id.recyclerView)
@@ -94,12 +98,15 @@ class ReactionLightFragment2 : BaseFragment() {
                 }
                 //invalidateOptionsMenu();
                 (activity as MainActivity?)?.supportActionBar?.invalidateOptionsMenu()
-
             }
-
         })
 
+        controller.onStart()
+        //controller.getPrograms()
+
     }
+
+
 
     @SuppressLint("CheckResult")
     private fun setFilters(view: RecyclerView?, type: Int = 0) {
@@ -184,6 +191,7 @@ class ReactionLightFragment2 : BaseFragment() {
 
     }
 
+
     val selectedItems = HashMap<Int, ReflexFilterAdapter.ReflexFilterModel>()
 
 
@@ -218,10 +226,13 @@ class ReactionLightFragment2 : BaseFragment() {
     @SuppressLint("CheckResult")
     private fun setRecycler(view: RecyclerView) {
         Single.fromCallable<ArrayList<ReflexModel>> {
-            for (i in 1..50
-            ) {
-                list.add(ReflexModel(i))
-            }
+            //            for (i in 1..50
+//            ) {
+//                list.add(ReflexModel(i))
+//            }
+            list.clear()
+            list.add(ReflexModel(1))
+            list.add(ReflexModel(2))
             list
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe { it ->
             adapter = ReflexAdapter(it)

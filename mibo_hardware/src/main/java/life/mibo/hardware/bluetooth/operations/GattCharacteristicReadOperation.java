@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.util.UUID;
 
+import life.mibo.hardware.CommunicationManager;
 import life.mibo.hardware.bluetooth.GattCharacteristicReadCallback;
 
 
@@ -25,7 +26,7 @@ public class GattCharacteristicReadOperation extends GattOperation {
 
     @Override
     public void execute(BluetoothGatt gatt) {
-        Log.d("writing to " + mCharacteristic,"");
+        log("writing to " + mCharacteristic);
         BluetoothGattCharacteristic characteristic = gatt.getService(mService).getCharacteristic(mCharacteristic);
         gatt.readCharacteristic(characteristic);
     }

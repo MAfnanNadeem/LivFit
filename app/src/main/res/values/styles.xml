@@ -23,6 +23,7 @@
         <item name="android:ems">11</item>
         <item name="android:padding">@dimen/grid_1x</item>
         <item name="android:lines">1</item>
+        <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="android:textColorHint">@color/grey</item>
     </style>
@@ -92,13 +93,20 @@
 
 
     <style name="RadioButton">
-        <item name="android:textColor">@drawable/button_text_color</item>
-        <item name="android:minHeight">33dp</item>
+        <item name="android:textColor">@drawable/radio_button_text_selector</item>
+        <item name="android:background">@drawable/radio_button_selector</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:minWidth">70dp</item>
         <item name="android:gravity">center</item>
         <item name="android:button">@null</item>
-        <item name="android:paddingLeft">5dp</item>
-        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
     </style>
 
     <style name="DialogAnimation">

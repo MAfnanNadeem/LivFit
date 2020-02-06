@@ -36,6 +36,7 @@ class ReflexDialog(
         setContentView(R.layout.fragment_dialog_program)
         recyclerView = findViewById(R.id.recyclerView)
         textView = findViewById(R.id.tv_title)
+        val close: View? = findViewById(R.id.iv_cancel)
 
         window?.attributes?.windowAnimations = R.style.DialogAnimation;
 
@@ -57,6 +58,9 @@ class ReflexDialog(
             }
         })
         recyclerView?.adapter = dialogAdapter
+        close?.setOnClickListener {
+            dismiss()
+        }
 
     }
 

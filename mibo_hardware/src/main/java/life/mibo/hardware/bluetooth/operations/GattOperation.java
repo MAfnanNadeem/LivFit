@@ -3,6 +3,8 @@ package life.mibo.hardware.bluetooth.operations;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 
+import life.mibo.hardware.CommunicationManager;
+
 public abstract class GattOperation {
 
     private static final int DEFAULT_TIMEOUT_IN_MILLIS = 400;
@@ -31,5 +33,9 @@ public abstract class GattOperation {
 
     public void setBundle(GattOperationBundle bundle) {
         mBundle = bundle;
+    }
+
+    void log(String msg) {
+        CommunicationManager.log("GattOperation: " + msg);
     }
 }

@@ -15,6 +15,7 @@ public interface CommunicationListener {
     void onAlarmEvent();
 
     void onDeviceDiscoveredEvent(String s);
+    void onDeviceDisconnect(String uid);
 
     void onDeviceDiscoveredEvent(Device s);
 

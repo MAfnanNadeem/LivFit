@@ -228,6 +228,11 @@ public class CommunicationManager2 {
                     }
 
                     @Override
+                    public void bleRXLDiscovered(String uid, String serial, String name) {
+
+                    }
+
+                    @Override
                     public void bleScaleDeviceDiscovered(String uid, String serial) {
                         log("bleScaleDeviceDiscovered " + uid + " IP " + serial);
                         bleScaleDiscoverConsumer(uid, serial);
@@ -318,6 +323,11 @@ public class CommunicationManager2 {
                     log("bleBoosterDeviceDiscovered " + uid + " IP " + serial);
                     if (!SessionManager.getInstance().getSession().isBoosterMode())// true wifi mode, false ble mode
                         bleBoosterDiscoverConsumer(uid, serial);
+
+                }
+
+                @Override
+                public void bleRXLDiscovered(String uid, String serial, String name) {
 
                 }
 
@@ -515,10 +525,6 @@ public class CommunicationManager2 {
         return mDiscoveredDevices;
     }
 
-    public void resetDiscoveredDevices() {
-        mDiscoveredDevices.clear();
-        bluetoothManager.clearDevicesboosterBle();
-    }
 
     public void addDeviceToDiscoveredDevices(Device device) {
         boolean newDevice = true;
@@ -563,7 +569,7 @@ public class CommunicationManager2 {
             SessionManager.getInstance().getSession().addConnectedDevice(device);
             device.setStatusConnected(DEVICE_CONNECTING);
         } else if (device.getType() == SCALE) {
-            SessionManager.getInstance().getSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+            SessionManager.getInstance().getSession().addScale(bluetoothManager.getScaleDevice());
         }
 
     }

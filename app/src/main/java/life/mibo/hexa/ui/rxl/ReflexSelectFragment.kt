@@ -39,4 +39,9 @@ class ReflexSelectFragment : BaseFragment() {
         }
 
     }
+
+    override fun onBackPressed(): Boolean {
+        navigate(Navigator.CLEAR_HOME, null)
+        return false
+    }
 }

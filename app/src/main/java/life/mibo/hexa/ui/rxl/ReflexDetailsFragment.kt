@@ -21,18 +21,25 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_rxl_details.*
 import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.events.ProximityEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
+import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
-import life.mibo.hexa.pods.PodExercise
+import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.pods.RXLManager
+import life.mibo.hexa.pods.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog
 import life.mibo.hexa.ui.rxl.impl.CourseCreateImpl
 import life.mibo.hexa.ui.rxl.impl.ReflexDialog
+import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
@@ -47,42 +54,133 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         return inflater.inflate(R.layout.fragment_rxl_details, container, false)
     }
 
-    lateinit var deligate: CourseCreateImpl
+    private lateinit var delegate: CourseCreateImpl
     //val manager = RXLManager.getInstance()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deligate = CourseCreateImpl(this, this)
-        //deligate.listener = this
+        delegate = CourseCreateImpl(this, this)
+        //delegate.listener = this
 
         btn_start_now?.setOnClickListener {
             startNowClicked()
         }
 
         btn_start_hit?.setOnClickListener {
-            startHitClicked()
+            //startHitClicked()
         }
 
         tv_select_stations?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.STATIONS)
+            //delegate.showDialog(CourseCreateImpl.Type.STATIONS)
         }
         tv_select_cycles?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.CYCLES)
+            delegate.showDialog(CourseCreateImpl.Type.CYCLES)
         }
         tv_select_time?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.DURATION)
+            delegate.showDialog(CourseCreateImpl.Type.DURATION)
         }
 
         tv_select_delay?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.DELAY)
+            delegate.showDialog(CourseCreateImpl.Type.DELAY)
         }
         tv_select_lights?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.LIGHT_LOGIC)
+            delegate.showDialog(CourseCreateImpl.Type.LIGHT_LOGIC)
         }
         tv_select_players?.setOnClickListener {
-            deligate.showDialog(CourseCreateImpl.Type.PLAYERS)
+            delegate.showDialog(CourseCreateImpl.Type.ACTION)
+        }
+        iv_select_color?.setOnClickListener {
+            showColors()
         }
         SessionManager.getInstance().userSession.isRxl = true
         getPods()
+        switch_sensor?.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                buttonView?.text = "Sensor On   "
+                changeSensor(200)
+            } else {
+                buttonView?.text = "Sensor Off    "
+                changeSensor(0)
+            }
+        }
+
+        changeSensor(0)
+    }
+
+    private fun changeSensor(value: Int) {
+
+        val list = SessionManager.getInstance().userSession.devices
+        if (list.size > 0) {
+            val pods = ArrayList<Device>()
+            list.forEach {
+                if (it.isPod) {
+                    pods.add(it)
+                }
+            }
+
+            if (pods.isNotEmpty()) {
+                Observable.fromArray(pods).flatMapIterable { x -> x }
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object : io.reactivex.Observer<Device> {
+
+                        override fun onSubscribe(d: Disposable) {
+
+                        }
+
+                        override fun onNext(t: Device) {
+                            try {
+                                EventBus.getDefault().postSticky(ProximityEvent(t.uid, value))
+                                Thread.sleep(50)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            log("ProximityEvent onError", e)
+                            e.printStackTrace()
+                        }
+
+                        override fun onComplete() {
+                            Toasty.info(
+                                this@ReflexDetailsFragment.context!!,
+                                "Sensor " + if (value > 0) "Enabled" else "Disabled"
+                            ).show()
+                        }
+                    })
+            }
+        }
+    }
+
+
+    var colorDialog: ProgramDialog? = null
+    var selectedColor: Int = Color.GREEN
+    private fun showColors() {
+        var isDialog = false
+        colorDialog?.let {
+            isDialog = true
+            it.showColors()
+            return
+        }
+        if (isDialog)
+            return
+
+        colorDialog =
+            ProgramDialog(context!!, ArrayList(), object : ItemClickListener<Program> {
+
+                override fun onItemClicked(item: Program?, position: Int) {
+                    //Toasty.info(context!!, "$position").show()
+
+                    item?.id?.let {
+                        iv_select_color?.visibility = View.VISIBLE
+                        iv_select_color?.circleColor = it
+                        selectedColor = it
+                    }
+                }
+
+            }, ProgramDialog.COLORS)
+
+        colorDialog?.showColors()
     }
 
     private fun getPods() {
@@ -99,29 +197,43 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         } else {
             tv_select_pods?.text = "0"
         }
+
+
     }
 
     private fun startHitClicked() {
-        //manager.lightOnSequence()
-        RXLManager.getInstance().test("test from ReflexDetailsFragment")
+        if (BuildConfig.DEBUG) {
+            //manager.lightOnSequence()
+            RXLManager.getInstance().test("test from ReflexDetailsFragment")
 
 //        for (i in 1..50) {
 //            log("Random text " + Random.nextInt(4))
 //        }
-        //RXLManager.getInstance().startTest(30, 5, 2, 4)
-        RXLManager.getInstance().withListener(this).startTest(getDuration(), getCycles(), getAction(), getPause(), isRandom())
-        //RXLManager.getInstance().with(PodExercise.getExercise(getDuration(), getAction(), getPause(),getCycles()))
-        //    .addDevices(SessionManager.getInstance().userSession.devices).sendColor(null)
+            //RXLManager.getInstance().startTest(30, 5, 2, 4)
+//            RXLManager.getInstance().withListener(this).startTest(
+//                RxlProgram.getExercise(
+//                    getDuration(),
+//                    getAction(),
+//                    getPause(),
+//                    getCycles(),
+//                    selectedColor,
+//                    isRandom()
+//                )
+//            )
+            //RXLManager.getInstance().with(PodExercise.getExercise(getDuration(), getAction(), getPause(),getCycles()))
+            //    .addDevices(SessionManager.getInstance().userSession.devices).sendColor(null)
 
-        //RXLManager.getInstance().with(PodExercise.getExercise(getDuration(), 3, getPause(),getCycles()))
-        //  .addDevices(SessionManager.getInstance().userSession.devices).start()
+            //RXLManager.getInstance().with(PodExercise.getExercise(getDuration(), 3, getPause(),getCycles()))
+            //  .addDevices(SessionManager.getInstance().userSession.devices).start()
+        }
+
     }
 
 
     private fun startNowClicked() {
         val list = SessionManager.getInstance().userSession.devices
         if (list.size < 3) {
-            Toasty.warning(
+            Toasty.info(
                 context!!,
                 getString(R.string.three_pods_required),
                 Toasty.LENGTH_SHORT,
@@ -141,8 +253,14 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 //                .with(PodExercise.getExercise(getDuration(), 3, getPause(), getCycles()))
 //                .addDevices(pods).sendColor(null)
             RXLManager.getInstance()
-                .with(PodExercise.getExercise(getDuration(), getAction(), getPause(), getCycles()))
-                .addDevices(pods).withListener(this).start(isRandom())
+                .with(
+                    RxlProgram.getExercise(
+                        getDuration(), getAction(), getPause(),
+                        getCycles(), selectedColor, isRandom()
+                    )
+                )
+                .addDevices(pods).withListener(this).startNow()
+            Toasty.info(context!!, "Tap Reaction Light to start").show()
             return
         } else {
             context?.let {
@@ -171,6 +289,9 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
             }
             CourseCreateImpl.Type.LIGHT_LOGIC.type -> {
                 tv_select_lights?.text = item.title
+                if (item.title == "Focus" || item.title == "All at once") {
+                    Toasty.info(context!!, "${item.title} this option is not supported yet").show()
+                }
             }
             CourseCreateImpl.Type.PLAYERS.type -> {
                 tv_select_players?.text = item.title
@@ -183,24 +304,27 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
             CourseCreateImpl.Type.DURATION.type -> {
                 tv_select_time?.text = item.title?.replace("seconds", "sec")
             }
+            CourseCreateImpl.Type.ACTION.type -> {
+                tv_select_players?.text = item.title?.replace("seconds", "sec")
+            }
         }
     }
 
-    fun isRandom(): Boolean = tv_select_lights.text?.toString().equals("random", true)
+    private fun isRandom(): Boolean = tv_select_lights.text?.toString().equals("random", true)
 
-    fun getCycles(): Int {
+    private fun getCycles(): Int {
         return getInt(tv_select_cycles?.text)
     }
 
-    fun getDuration(): Int {
+    private fun getDuration(): Int {
         return getInt(tv_select_time?.text)
     }
 
-    fun getPause(): Int {
+    private fun getPause(): Int {
         return getInt(tv_select_delay?.text)
     }
 
-    fun getAction(): Int {
+    private fun getAction(): Int {
         return getInt(tv_select_players?.text)
     }
 
@@ -230,7 +354,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         super.onStart()
         //register(this)
         RXLManager.getInstance().register()
-        //EventBus.getDefault().register(this)
+       // EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
@@ -245,7 +369,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         super.onDestroy()
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
+   // @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onEvent(event: RxlStatusEvent) {
         log("RxlStatusEvent $event")
         //RXLManager.getInstance().onEvent(event)
@@ -264,15 +388,20 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
     override fun onExerciseStart() {
         log("onExerciseStart")
+        activity?.runOnUiThread {
+            btn_start_now?.isEnabled = false
+        }
     }
 
     override fun onExerciseEnd() {
         log("onExerciseEnd")
         progress(0, 100, 0, 2)
         activity?.runOnUiThread {
+            btn_start_now?.isEnabled = true
             tv_desc?.text = "Completed..."
-            MessageDialog.info(requireContext(), "Completed", "Exercise finished")
+            MessageDialog.info(requireContext(), "Completed", "Exercise finished "+ RXLManager.getInstance().getHits())
         }
+
     }
 
     override fun onCycleStart(cycle: Int, duration: Int) {
@@ -331,7 +460,8 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
                     .setDuration(duration.toLong())
                     .start()
             }.subscribe()
-
     }
+
+
 }
 

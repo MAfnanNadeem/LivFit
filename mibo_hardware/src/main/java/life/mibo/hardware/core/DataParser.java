@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import life.mibo.hardware.models.DeviceColors;
+import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Program;
 
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_GET_DEVICE_STATUS;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_GET_FIRMWARE_REVISION;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_PING_STIMULATOR;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_RESET_CURRENT_CYCLE;
+import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_RXL_PROXIMATE;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SEARCH_STIMULATOR;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_CHANNELS_LEVELS;
 import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_COMMON_STIMULATION_PARAMETERS;
@@ -116,6 +118,13 @@ public class DataParser {
         aux[3] = ((command[6] & 8) == 8);
         aux[4] = ((command[6] & 16) == 16);
         return aux;
+    }
+
+    public static byte[] sendProximitySensor(int value) {
+        byte[] data = new byte[2];
+        data[0] = (byte) (value & 0xFF);
+        data[1] = (byte) ((value >> 8) & 0xFF);
+        return fullMessage(new byte[]{COMMAND_RXL_PROXIMATE}, new byte[]{2}, data, RXL);
     }
 
     public static byte[] sendStart() {
@@ -253,7 +262,7 @@ public class DataParser {
     private static byte[] generateOutputProgram(int numberOfPrograms, int programIndex, Program program) {
         byte[] blocks = new byte[14 * program.getBlocks().size()];
         for (int i = 0; i < program.getBlocks().size(); i++) {
-            blocks[0 + (i * 14)] = (byte) i;// block index
+            blocks[(i * 14)] = (byte) i;// block index
             blocks[1 + (i * 14)] = (byte) ((Integer.parseInt(program.getBlocks().get(i).getBlockDuration().getValue())) & 0xFF);
             blocks[2 + (i * 14)] = (byte) (((Integer.parseInt(program.getBlocks().get(i).getBlockDuration().getValue())) >> 8) & 0xFF);
             blocks[3 + (i * 14)] = (byte) ((Integer.parseInt(program.getBlocks().get(i).getPauseDuration().getValue())) & 0xFF);
@@ -275,6 +284,54 @@ public class DataParser {
             outputProgram.write((byte) programIndex);//index first(single) program
             outputProgram.write((byte) Integer.parseInt(program.getDuration().getValue()) & 0xFF);   //program duration
             outputProgram.write((byte) (Integer.parseInt(program.getDuration().getValue()) >> 8) & 0xFF);   //program duration
+            outputProgram.write((byte) program.getBlocks().size());   //number of blocks
+            outputProgram.write(blocks);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputProgram.toByteArray();
+    }
+
+    private static int getInt(String i) {
+        try {
+            return Integer.parseInt(i);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private static byte[] generateOutputProgramEnhanced(int numberOfPrograms, int programIndex, Program program) {
+        byte[] blocks = new byte[14 * program.getBlocks().size()];
+        int count = 0;
+        int byte_ = 0xFF;
+        for (Block block : program.getBlocks()) {
+            int index = count * 14;
+            blocks[index] = (byte) count;// block index
+            blocks[1 + index] = (byte) ((getInt(block.getBlockDuration().getValue())) & 0xFF);
+            blocks[2 + index] = (byte) (((getInt(block.getBlockDuration().getValue())) >> 8) & 0xFF);
+            blocks[3 + index] = (byte) ((getInt(block.getPauseDuration().getValue())) & 0xFF);
+            blocks[4 + index] = (byte) (((getInt(block.getPauseDuration().getValue())) >> 8) & 0xFF);
+            blocks[5 + index] = (byte) ((getInt(block.getActionDuration().getValue())) & 0xFF);
+            blocks[6 + index] = (byte) (((getInt(block.getActionDuration().getValue())) >> 8) & 0xFF);
+            blocks[7 + index] = (byte) ((getInt(block.getUpRampDuration().getValue())) & 0xFF);
+            blocks[8 + index] = (byte) (((getInt(block.getUpRampDuration().getValue())) >> 8) & 0xFF);
+            blocks[9 + index] = (byte) ((getInt(block.getDownRampDuration().getValue())) & 0xFF);
+            blocks[10 + index] = (byte) (((getInt(block.getDownRampDuration().getValue())) >> 8) & 0xFF);
+            blocks[11 + index] = (byte) ((getInt(block.getPulseWidth().getValue())) & 0xFF);
+            blocks[12 + index] = (byte) (((getInt(block.getPulseWidth().getValue())) >> 8) & 0xFF);
+            blocks[13 + index] = (byte) getInt(block.getFrequency().getValue());
+            count++;
+        }
+
+
+        ByteArrayOutputStream outputProgram = new ByteArrayOutputStream();
+        try {
+            outputProgram.write((byte) numberOfPrograms);//single program
+            outputProgram.write((byte) programIndex);//index first(single) program
+            outputProgram.write((byte) getInt(program.getDuration().getValue()) & 0xFF);   //program duration
+            outputProgram.write((byte) (getInt(program.getDuration().getValue()) >> 8) & 0xFF);   //program duration
             outputProgram.write((byte) program.getBlocks().size());   //number of blocks
             outputProgram.write(blocks);
 

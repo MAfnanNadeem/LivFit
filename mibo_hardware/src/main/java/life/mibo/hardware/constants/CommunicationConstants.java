@@ -38,6 +38,7 @@ public class CommunicationConstants {
     public static final int COMMAND_ASYNC_SET_MAIN_LEVEL = 0xC1;
     public static final int COMMAND_ASYNC_PAUSE = 0xC2;
     public static final int COMMAND_ASYNC_START = 0xC4;
+    public static final int COMMAND_RXL_PROXIMATE = 0x04;
 
 
 

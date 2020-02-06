@@ -156,10 +156,20 @@ public class Program {
         return duration;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public void setDuration(int seconds) {
         if(this.duration == null)
             this.duration = new Duration();
         this.duration.setValue(seconds+"");
+    }
+
+    public int getDurationSeconds() {
+        if (this.duration != null)
+            return this.duration.getValueInt();
+        return 0;
     }
 
     public ArrayList<Block> getBlocks() {

@@ -25,8 +25,8 @@ android {
         applicationId "life.mibo.hexa"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 3
-        versionName "0.0.2"
+        versionCode 5
+        versionName "0.0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -39,14 +39,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
             // resValue "string", "app_name", "MiBo Hexa"
-            buildConfigField "String", "API_URL", "\"https://os.mibo.world/api/v1/\""
+            buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
             signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
-            buildConfigField "String", "API_URL", "\"https://test3.mibo.world/api/v1/\""
+            buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
         }
 
     }
@@ -62,6 +63,7 @@ android {
     packagingOptions {
         exclude 'META-INF/library_release.kotlin_module'
     }
+
 }
 
 dependencies {
@@ -109,6 +111,8 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.kizitonwose:CalendarView:0.3.1'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    // bug in library, directly imported
+    //implementation 'com.ramotion.fluidslider:fluid-slider:0.3.1'
 
 
     // networking and RxJava

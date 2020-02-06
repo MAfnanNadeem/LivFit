@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothGattDescriptor;
 
 import java.util.UUID;
 
+import life.mibo.hardware.CommunicationManager;
+
 public class GattSetNotificationOperation extends GattOperation {
 
     private final UUID mServiceUuid;
@@ -22,10 +24,12 @@ public class GattSetNotificationOperation extends GattOperation {
 
     @Override
     public void execute(BluetoothGatt gatt) {
+        log("GattSetNotificationOperation execute "+gatt);
+        log("GattSetNotificationOperation mServiceUuid "+mServiceUuid);
+        log("GattSetNotificationOperation mCharacteristicUuid "+mCharacteristicUuid);
         BluetoothGattCharacteristic characteristic = gatt.getService(mServiceUuid).getCharacteristic(mCharacteristicUuid);
         boolean enable = true;
         gatt.setCharacteristicNotification(characteristic, enable);
-
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {

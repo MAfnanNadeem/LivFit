@@ -33,12 +33,14 @@ public class TCPClient {
     private byte[] serverMessage;
     private OnMessageReceived listener;
     private boolean isRunning = false;
+    private boolean isStopped = false;
     private DataOutputStream mBufferOut;
     private DataInputStream mBufferIn;
     private String uid;
     private Thread thread;
     private Socket mSocket;
     private int type = DataParser.BOOSTER;
+    private Object object;
 
     public boolean isRxl() {
         return type == DataParser.RXL;
@@ -102,7 +104,7 @@ public class TCPClient {
      */
     public void stopClient() {
         Logger.i("TCPClient stopClient " + uid);
-
+        isStopped = true;
         isRunning = false;
         if (mBufferOut != null) {
             try {
@@ -110,6 +112,11 @@ public class TCPClient {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            mSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         //listener = null;
         mBufferIn = null;
@@ -126,6 +133,7 @@ public class TCPClient {
     public void run() {
         Logger.i("TCPClient running IP " + serverIp + ", UID " + uid);
 
+        isStopped = false;
         isRunning = true;
 
         thread = new Thread("TCPThread") {
@@ -212,6 +220,29 @@ public class TCPClient {
         }
     }
 
+    public boolean isAvailable() {
+        boolean available = false;
+        try {
+            if (mSocket != null)
+                available = !mSocket.isClosed();
 
+        } catch (Exception e) {
+
+        }
+
+        return available;
+    }
+
+    public void setDevice(Object object) {
+        this.object = object;
+    }
+
+    public Object getDevice() {
+        return object;
+    }
+
+    public boolean isStopped() {
+        return isStopped;
+    }
 }
 

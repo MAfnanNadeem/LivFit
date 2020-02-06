@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 
 import java.util.ArrayList;
 
+import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Program;
@@ -162,7 +163,7 @@ public class UserSession implements BaseModel {
         }
     }
 
-    public Device getRegisteredDevicebyUid(String uid) {
+    private Device getRegisteredDevicebyUid(String uid) {
         //boolean newDevice = true;
         for (Device d : registeredDevices) {
             if (d.getUid().equals(uid)) {
@@ -171,6 +172,41 @@ public class UserSession implements BaseModel {
         }
 
         return new Device();
+    }
+
+    public void setDeviceStatus(String uid, int status) {
+        //boolean newDevice = true;
+        Logger.e("UserSession: setDeviceStatus " + uid + " : status " + status);
+        for (Device d : registeredDevices) {
+            if (d.getUid().equals(uid)) {
+                d.setStatusConnected(status);
+                break;
+            }
+        }
+    }
+
+    public boolean setDeviceAlarm(String uid, byte[] command) {
+        //boolean newDevice = true;
+        Logger.e("UserSession: setDeviceAlarm " + uid + " : status " + command);
+        for (Device d : registeredDevices) {
+            if (d.getUid().equals(uid)) {
+                return d.setNewDeviceChannelAlarms(DataParser.getChannelAlarms(command));
+            }
+        }
+
+        return false;
+    }
+
+    public boolean[] getDeviceAlarm(String uid) {
+        //boolean newDevice = true;
+        Logger.e("UserSession: getDeviceAlarm " + uid + " : status " );
+        for (Device d : registeredDevices) {
+            if (d.getUid().equals(uid)) {
+                return d.getDeviceChannelAlarms();
+            }
+        }
+
+        return new boolean[]{false, false, false, false, false, false, false, false, false, false};
     }
 
     public void setRegisteredDevices(ArrayList<Device> registeredDevices) {

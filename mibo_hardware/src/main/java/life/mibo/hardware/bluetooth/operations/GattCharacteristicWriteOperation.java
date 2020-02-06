@@ -28,6 +28,7 @@ public class GattCharacteristicWriteOperation extends GattOperation {
 
     @Override
     public void execute(BluetoothGatt gatt) {
+        log("GattCharacteristicWriteOperation BluetoothGatt execute "+gatt);
         BluetoothGattService service = gatt.getService(mService);
         if (service == null) {
             CommunicationManager.log("GattCharacteristicWriteOperation service is NULL......");
@@ -36,6 +37,7 @@ public class GattCharacteristicWriteOperation extends GattOperation {
         BluetoothGattCharacteristic characteristic = service.getCharacteristic(mCharacteristic);
         characteristic.setValue(mValue);
         gatt.writeCharacteristic(characteristic);
+
     }
 
     @Override

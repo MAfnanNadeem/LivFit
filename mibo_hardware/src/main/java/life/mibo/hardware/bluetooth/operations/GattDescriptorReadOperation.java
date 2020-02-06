@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.util.UUID;
 
+import life.mibo.hardware.CommunicationManager;
 import life.mibo.hardware.bluetooth.GattDescriptorReadCallback;
 
 
@@ -27,7 +28,7 @@ public class GattDescriptorReadOperation extends GattOperation {
 
     @Override
     public void execute(BluetoothGatt gatt) {
-        Log.d("Reading from " + mDescriptor,"");
+        log("Reading from " + mDescriptor);
         BluetoothGattDescriptor descriptor = gatt.getService(mService).getCharacteristic(mCharacteristic).getDescriptor(mDescriptor);
         gatt.readDescriptor(descriptor);
     }

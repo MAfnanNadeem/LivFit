@@ -20,7 +20,7 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
     //var listener: Listener? = null
 
     enum class Type(val type: Int) {
-        STATIONS(1), CYCLES(2), PODS(3), LIGHT_LOGIC(4), PLAYERS(5), DELAY(6), DURATION(7)
+        STATIONS(1), CYCLES(2), PODS(3), LIGHT_LOGIC(4), PLAYERS(5), DELAY(6), DURATION(7), ACTION(8)
     }
 
     fun bindViews(root: View) {
@@ -105,6 +105,12 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
                 list.add(ReflexDialog.Item(0, "5 seconds"))
                 for (i in 1..10) {
                     list.add(ReflexDialog.Item(i, "${i.times(15)} seconds"))
+                }
+                title = "Total Duration (Seconds)"
+            }
+            Type.ACTION -> {
+                for (i in 1..5) {
+                    list.add(ReflexDialog.Item(i, "$i seconds"))
                 }
                 title = "Total Duration (Seconds)"
             }

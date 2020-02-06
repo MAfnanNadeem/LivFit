@@ -17,19 +17,23 @@
         <item
             android:id="@+id/nav_ch6"
             android:icon="@drawable/ic_nfc_black_24dp"
-            android:title="6CH Booster" />
+            android:title="@string/booster_6ch" />
         <item
             android:id="@id/navigation_calendar"
             android:icon="@drawable/ic_dashboard_calendar"
-            android:title="Book Session" />
+            android:title="@string/schedule_title" />
         <item
             android:id="@+id/nav_scan"
             android:icon="@drawable/bottom_bar_item_3"
-            android:title="Scan Devices" />
+            android:title="@string/scan_devices" />
         <item
             android:id="@id/navigation_barcode"
-            android:icon="@drawable/ic_add_circle_24dp"
-            android:title="Scan Product" />
+            android:icon="@drawable/ic_qr_24dp"
+            android:title="@string/scan_product" />
+        <item
+            android:id="@+id/nav_test3"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/rxl_title" />
 
     </group>
 
@@ -40,9 +44,13 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/menu_share" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_dashboard_black_24dp"
+                android:title="@string/help" />
+            <item
+                android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_send" />
+                android:title="@string/contact_us" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_logout_24dp"

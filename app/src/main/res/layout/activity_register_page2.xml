@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OTP VERIFICATION"
+        android:text="@string/otp_verification"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium" />
 
@@ -26,14 +26,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
-        android:text="Enter your mobile number"
+        android:text="@string/enter_your_mobile_number"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="We will send you a OTP message"
+        android:text="@string/otp_hint"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_small" />
 
@@ -54,7 +54,7 @@
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_number"
         style="@style/login_edittext"
-        android:hint="Phone Number" />
+        android:hint="@string/phone_number_hint" />
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -64,7 +64,7 @@
         android:layout_marginTop="@dimen/grid_2x"
         android:background="@drawable/login_button_green"
         android:ems="13"
-        android:text="SEND OTP"
+        android:text="@string/send_otp"
         android:textColor="@color/white" />
 
 

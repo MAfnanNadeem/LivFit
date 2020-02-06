@@ -12,8 +12,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.Editable
+import android.text.Html
+import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.credentials.Credential
@@ -31,7 +36,7 @@ import life.mibo.hexa.libs.datepicker.SpinnerDatePickerDialogBuilder
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.register.Data
-import life.mibo.hexa.models.register.RegisterGuestMember
+import life.mibo.hexa.models.register.RegisterMember
 import life.mibo.hexa.models.register.RegisterResponse
 import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
@@ -40,6 +45,7 @@ import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.receiver.AppSignatureHelper
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
 import life.mibo.hexa.ui.main.MainActivity
+import life.mibo.hexa.ui.main.MessageDialog
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
@@ -63,9 +69,12 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         fun updateNumber(id: Int)
         fun otpReceived(otp: String?)
         fun onTimerUpdate(time: Long)
+        fun onValidationError(type: Int)
+        fun onInvalidOtp()
     }
 
     //lateinit var observer: RegisterObserver
+    private var testDebug = false
 
     override fun onCreate(view: View) {
 
@@ -288,8 +297,12 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
         if ((password.trim() == cPassword.trim())) {
             if (!isValidPassword(password)) {
-                Toasty.warning(context, getString(R.string.password_requirement), Toast.LENGTH_LONG, false)
-                    .show()
+                MessageDialog.info(
+                    context,
+                    context.getString(R.string.pwd_requirement),
+                    getString(R.string.password_requirement)
+                )
+                //Toasty.warning(context, getString(R.string.password_requirement), Toast.LENGTH_LONG, false).show()
                 return
             }
 
@@ -297,7 +310,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 firstName, lastName, cPassword, email, gender,
                 city, country, dob, ccp!!.selectedCountryCodeWithPlus, phoneNumber
             )
-            register(RegisterGuestMember(data))
+            register(RegisterMember(data))
 
             //Toasty.success(context, "Successfully registered").show()
             //viewAnimator.showNext()
@@ -310,14 +323,18 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         }
     }
 
+    private fun showOtpDialog(code: Int) {
+        //OTPDialog(context,code, "", null)
+    }
+
     private fun getString(resId: Int): String {
         return context.getString(resId)
     }
 
     private var userId: String = ""
-    private var memberData: RegisterGuestMember? = null
+    private var memberData: RegisterMember? = null
 
-    private fun register(registerData: RegisterGuestMember) {
+    private fun register(registerData: RegisterMember) {
         MiboEvent.registerEvent(
             "${registerData.data?.firstName} - ${registerData.data?.lastName}",
             "${registerData.data?.email}"
@@ -356,6 +373,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         Prefs.get(this@RegisterController.context)
                             .set("user_email", registerData.data?.email)
                         MiboEvent.registerSuccess("${data.data?.userId}")
+                        isBack = false
                     }
 
 
@@ -408,10 +426,20 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     private fun sendOtp(number: String?) {
+        if (testDebug) {
+            success(R.string.otp_sent, Toast.LENGTH_LONG)
+            if (resend) {
+                resend = false
+                return
+            }
+            updateNumber(2)
+            return
+        }
+
         startOtpListener()
         context.getDialog()?.show()
-        val data = SendOTP(userId)
-        API.request.getApi().sendOtp(data).enqueue(object : Callback<SendOtpResponse> {
+       // val data = SendOTP(userId)
+        API.request.getApi().sendOtp(SendOTP(userId)).enqueue(object : Callback<SendOtpResponse> {
 
             override fun onFailure(call: Call<SendOtpResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
@@ -453,11 +481,25 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     private fun validateOtp(otp: String?) {
-        if (otp == null || otp.length < 4)
+        if (otp.isNullOrEmpty()) {
+            error(context.getString(R.string.ent_otp))
             return
+        }
+        if (otp.length < 4) {
+            //error(context.getString(R.string.ent_otp))
+            return
+        }
         //userId = "139"
         context.log("validateOtp $otp")
         context.getDialog()?.show()
+        if (testDebug && otp == "1234") {
+            success("Success!")
+            //success("OTP Verified")
+            //updateNumber(3)
+            MiboEvent.otpSuccess("$userId", "$otp")
+            loginUser(memberData?.data?.email, memberData?.data?.password)
+            return
+        }
         val otpData = VerifyOTP(userId, otp)
         API.request.getApi().verifyOtp(otpData).enqueue(object : Callback<VerifyOtpResponse> {
 
@@ -478,8 +520,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 }
                 when {
                     data.status == "success" -> {
-                        success("${data.data?.message}")
-                        //success("OTP Verified")
+                        //success("${data.data?.message}")
+                        success(context.getString(R.string.number_verified))
                         //updateNumber(3)
                         MiboEvent.otpSuccess("$userId", "$otp")
                         loginUser(memberData?.data?.email, memberData?.data?.password)
@@ -487,12 +529,14 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                     }
                     data.status == "error" -> {
                         error("${data.errors?.get(0)?.message}")
+                        observer?.onInvalidOtp()
 
                     }
                     else -> Toasty.warning(
                         context,
                         "Register: " + response.body()
                     ).show()
+
                 }
                 context.getDialog()?.dismiss()
             }
@@ -612,7 +656,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             .showDaySpinner(true)
             .defaultDate(2000, 1, 1)
             .maxDate(2010, 0, 1)
-            .minDate(1980, 0, 1)
+            .minDate(1950, 0, 1)
             .build()
             .show()
     }
@@ -639,11 +683,15 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         countTimer?.cancel()
     }
 
+    fun error(type: Int) {
+        observer?.onValidationError(type)
+    }
+
     fun error(msg: String? = "", resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
         if (!msg.isNullOrEmpty())
-            Toasty.error(context, msg, length, true).show()
+            Toasty.error(context, msg, length, false).show()
         else if (resId != 0)
-            Toasty.error(context, getString(resId), length, true).show()
+            Toasty.error(context, getString(resId), length, false).show()
     }
 
     fun success(resId: Int = 0, length: Int = Toast.LENGTH_SHORT) {
@@ -663,4 +711,32 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         outState.putString("userId", userId)
     }
 
+    fun showError(error: Int, editText: EditText?) {
+        showError(context?.getString(error), editText)
+    }
+
+    fun setHint(hint: String?, editText: EditText?) {
+        //editText?.hint = Html.fromHtml("<small><small><small>$hint</small></small></small>");
+        editText?.hint = Html.fromHtml("<small>$hint</small>");
+    }
+
+    fun showError(error: String?, editText: TextView?) {
+        editText?.error = error
+        editText?.addTextChangedListener(object : TextWatcher {
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+                if (editText?.error != null)
+                    editText?.error = null
+            }
+        })
+    }
+
+    private var isBack = true
+    fun onBackPressed(): Boolean {
+        return isBack
+    }
 }

@@ -127,7 +127,7 @@
         android:visibility="visible"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_drawer"
-        app:menu="@menu/activity_drawer_drawer" />
+        app:menu="@menu/activity_drawer_drawer_release" />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

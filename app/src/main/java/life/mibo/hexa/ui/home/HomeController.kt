@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.models.session.Report
 import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
@@ -73,6 +72,12 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             parseData(s)
             return
         }
+        s?.weight?.let {
+            if (it == "0") {
+                parseData(s)
+                return
+            }
+        }
 
         val member =
             Prefs.get(this.fragment.context).member
@@ -102,9 +107,12 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
                     else {
-                        Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
-                        if(err.contains("No Schedules Found"))
+                        Toasty.error(fragment.context!!, err, Toasty.LENGTH_SHORT).show()
+                        if (err.contains("No Schedules Found", true)) {
+                            Prefs.get(fragment.context)
+                                .settJson(Prefs.SESSION, Report(null, null, null, null, "0"))
                             parseDefaults()
+                        }
                     }
                 }
                 fragment.getDialog()?.dismiss()
@@ -118,13 +126,13 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         val data = report?.sessionMemberReports
         list.add(
             HomeItem(
-                "  Weight ", "" + report.weight + " Kg",
+                "  Weight ", "" + (report.weight ?: 0) + " Kg",
                 HomeItem.Type.WEIGHT, 0, R.drawable.dashboard_item_bg_4
             )
         )
         list.add(
             HomeItem(
-                "" + data?.peakHr + " BPM", "",
+                "" + (data?.peakHr ?: 0)+ " BPM", "",
                 HomeItem.Type.HEART,
                 R.drawable.ic_rxl_heart_unselect,
                 R.drawable.dashboard_item_bg_5
@@ -141,7 +149,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Calories ", "" + data?.caloriesBurnt,
+                "Calories ", "" + (data?.caloriesBurnt ?: 0),
                 HomeItem.Type.CALORIES, 0, R.drawable.dashboard_item_bg_12
             )
         )
@@ -162,7 +170,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Booster",
+                "6CH Booster",
                 "",
                 HomeItem.Type.BOOSTER,
                 R.drawable.ic_dashboard_booster,
@@ -234,7 +242,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                "Booster",
+                "6CH Booster",
                 "",
                 HomeItem.Type.BOOSTER,
                 R.drawable.ic_dashboard_booster,

@@ -18,6 +18,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import life.mibo.hexa.R
+import life.mibo.hexa.utils.Toasty
 import java.io.Serializable
 
 @Throws(JsonIOException::class)
@@ -34,6 +35,10 @@ fun String.toIntOrZero(): Int = if (this.isEmpty()) 0 else this.toInt()
 
 fun Color.PRIMARY():Int {
     return Color.parseColor("#09B189")
+}
+
+fun Context.showToast(msg: String) {
+    Toasty.info(this, msg).show()
 }
 
 class Extentions {

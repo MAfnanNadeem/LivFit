@@ -188,11 +188,11 @@ public class Prefs {
         try {
             String json = new Gson().toJson(o);
             getEditor().putString(key, json).apply();
-            //Logger.e("settJson saved " + key);
+            Logger.e("settJson saved " + key);
 
         } catch (Exception e) {
             e.printStackTrace();
-            //Logger.e("settJson error " + e.getMessage());
+            Logger.e("settJson error " + e.getMessage());
         }
     }
 

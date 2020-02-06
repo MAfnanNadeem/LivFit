@@ -17,17 +17,20 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.models.program.Post2
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.program.ProgramPost2
+import life.mibo.hexa.models.program.ProgramPost
+import life.mibo.hexa.models.program.ProgramPostData
 import life.mibo.hexa.models.program.SearchPrograms
+import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.ui.main.MessageDialog
 import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
@@ -44,7 +47,7 @@ class ScheduleFragment : BaseFragment() {
         fun onHomeItemClicked(position: Int)
     }
 
-    private lateinit var controller: ScheduleControler
+    private lateinit var controller: ScheduleController
     //var recyclerView: RecyclerView? = null
 
 
@@ -57,7 +60,7 @@ class ScheduleFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //controller = WeightController(this@ScheduleFragment, this)
+        controller = ScheduleController(this@ScheduleFragment)
         //controller.setRecycler(recyclerView!!)
 
         iv_date?.setOnClickListener {
@@ -76,7 +79,7 @@ class ScheduleFragment : BaseFragment() {
             programDialog?.showPrograms()
             //checkDialog()
         }
-        loadPrograms()
+        loadProgramObservables()
         val now = Calendar.getInstance()
         tv_date?.text = String.format(
             "%02d/%02d/%d", now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.MONTH).plus(1), now.get(Calendar.YEAR)
@@ -86,6 +89,9 @@ class ScheduleFragment : BaseFragment() {
             "%02d:%02d %s", now.get(Calendar.HOUR_OF_DAY) % 12, now.get(Calendar.MINUTE), if (hours > 12) "PM" else "AM"
         )
 
+        button_book?.setOnClickListener {
+            bookSession()
+        }
         setRecycler()
     }
 
@@ -104,18 +110,60 @@ class ScheduleFragment : BaseFragment() {
         recyclerView.adapter = adapter
     }
 
+    private fun bookSession() {
+        if (program == null) {
+            Toasty.error(context!!, "Select Program").show()
+            return
+        }
 
-    fun datePickerDialog() {
+        if (!isDateSet) {
+            Toasty.error(context!!, "Select Date").show()
+            return
+        }
+
+        if (!isTimeSet) {
+            Toasty.error(context!!, "Select Time").show()
+            return
+        }
+
+        //val date = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
+        val date = SimpleDateFormat("dd-MM-yyyy").format(calendar.time)
+        val time = SimpleDateFormat("hh:mm a").format(calendar.time)
+        //val time = SimpleDateFormat("HH:mm").format(calendar.time)
+        MessageDialog(
+            context!!,
+            "Book Session",
+            "Are you sure want to book session on $date at $time",
+            "Cancel",
+            "Book",
+            object : MessageDialog.Listener {
+                override fun onClick(button: Int) {
+                    if (button == MessageDialog.POSITIVE) {
+                        controller.bookSession(program!!.id!!, calendar.time)
+                    }
+                }
+
+            }).show()
+    }
+
+    var calendar: Calendar = Calendar.getInstance()
+    var isDateSet = false
+    var isTimeSet = false
+    val programs = ArrayList<Program?>()
+    var isProgram = false
+    var program: Program? = null
+
+    private fun datePickerDialog() {
         val now = Calendar.getInstance()
         val dpd = DatePickerDialog.newInstance(
             { view, year, monthOfYear, dayOfMonth ->
                 tv_date?.text = String.format(
                     "%02d/%02d/%d", dayOfMonth, monthOfYear.plus(1), year
                 )
-                start.set(Calendar.YEAR, year)
-                start.set(Calendar.MONTH, monthOfYear)
-                start.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                tv_day?.text = SimpleDateFormat("EEEE").format(start.time)
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, monthOfYear)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                tv_day?.text = SimpleDateFormat("EEEE").format(calendar.time)
                 isDateSet = true
                 addEvent()
             },
@@ -123,13 +171,13 @@ class ScheduleFragment : BaseFragment() {
             now.get(Calendar.MONTH),
             now.get(Calendar.DAY_OF_MONTH)
         )
+        dpd.minDate = now
         dpd.accentColor = ContextCompat.getColor(context!!, R.color.colorPrimary)
         dpd.show(childFragmentManager, "DatePickerDialog")
     }
 
-    var isDateSet = false
-    var isTimeSet = false
-    fun timePickerDialog() {
+
+    private fun timePickerDialog() {
         val now = Calendar.getInstance()
         val dpd = TimePickerDialog.newInstance(
             { view, hourOfDay, minute, second ->
@@ -137,8 +185,8 @@ class ScheduleFragment : BaseFragment() {
                 tv_time?.text = String.format(
                     "%02d:%02d %s", hourOfDay % 12, minute, if (hourOfDay > 12) "PM" else "AM"
                 )
-                start.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                start.set(Calendar.MINUTE, minute)
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
                 isTimeSet = true
                 addEvent()
             },
@@ -154,7 +202,6 @@ class ScheduleFragment : BaseFragment() {
     //val events = ArrayList<IEvent>()
     //val popups = ArrayList<IPopup>();
 
-    var start = Calendar.getInstance()
 
     fun addEvent() {
         if (program == null)
@@ -163,16 +210,17 @@ class ScheduleFragment : BaseFragment() {
             return
 
         val eventColor = resources.getColor(R.color.eventColor)
-        val end = start.clone() as Calendar
+        val end = calendar.clone() as Calendar
         //end.add(Calendar.HOUR_OF_DAY, 1)
+        val type = if (end[Calendar.MINUTE] > 30) 1 else 0
         end.add(Calendar.MINUTE, program?.duration?.valueInt()!!.div(60))
         //val event = CalendarEvent(3, start, end, "${program?.name}", "house", eventColor)
         //event.setBitmap(BitmapFactory.decodeResource(resources, R.drawable.avatar))
         //event.name = "MI.BO ${program?.name}"
         //events.add(event)
-        val m = if (end[Calendar.MINUTE] > 25) 1 else 0
+
         val h = end.get(Calendar.HOUR_OF_DAY)
-        adapter?.addEvent(h, "MI.BO ${program?.name}", m)
+        adapter?.addEvent(h, "MI.BO ${program?.name}", type)
         // calendarDayView.setLimitTime(0,23)
         //calendarDayView.setEvents(events)
         // calendarDayView
@@ -203,16 +251,44 @@ class ScheduleFragment : BaseFragment() {
 
 
     private var programDialog: ProgramDialog? = null
-    private var colorDialog: ProgramDialog? = null
 
+
+    private fun loadProgramObservables() {
+        Single.fromCallable {
+            val list = Database.getInstance(requireContext()).programDao().getAll()
+            log("loadProgramObservables $list")
+            log("loadProgramObservables ${list?.size}")
+            if (list != null && list.isNotEmpty()) {
+                programs.clear()
+                programs.addAll(list)
+                //return@fromCallable true
+            }// else
+            // false
+            programs
+
+
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+            if (it.isEmpty()) {
+                loadPrograms()
+            }
+            else
+                parsePrograms(it)
+
+        }.subscribe()
+    }
 
     private fun loadPrograms() {
+        //loadProgramObservables()
         val member =
             Prefs.get(context).member ?: return
 
         getDialog()?.show()
         val post =
-            ProgramPost2(item = Post2(), auth = member.accessToken!!, type = "SearchPrograms")
+            ProgramPost(
+                item = ProgramPostData(),
+                auth = member.accessToken!!,
+                type = "SearchPrograms"
+            )
         API.request.getApi().searchPrograms2(post).enqueue(object :
             Callback<SearchPrograms> {
             override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
@@ -242,9 +318,7 @@ class ScheduleFragment : BaseFragment() {
         })
     }
 
-    val programs = ArrayList<Program?>()
-    var isProgram = false
-    var program: Program? = null
+
     private fun parse(list: ArrayList<Program?>?) {
         if (list == null)
             return
@@ -260,7 +334,7 @@ class ScheduleFragment : BaseFragment() {
                     isProgram = true
                     program = item
                     select_program.text = it
-                    button_next.isEnabled = true
+                    button_book.isEnabled = true
                     addEvent()
 
                 }
@@ -268,8 +342,32 @@ class ScheduleFragment : BaseFragment() {
 
         }, ProgramDialog.PROGRAMS)
 
+        Database.getInstance(context!!).insert(programs)
+    }
+
+    private fun parsePrograms(list: ArrayList<Program?>) {
+        if (list.isEmpty()) {
+            loadPrograms()
+            return
+        }
+        programDialog = ProgramDialog(context!!, programs, object : ItemClickListener<Program> {
+
+            override fun onItemClicked(item: Program?, position: Int) {
+                // Toasty.info(context!!, "$position").show()
+                item?.name?.let {
+                    isProgram = true
+                    program = item
+                    select_program.text = it
+                    button_book.isEnabled = true
+                    addEvent()
+
+                }
+            }
+
+        }, ProgramDialog.PROGRAMS)
 
     }
+
 
 
     override fun onStop() {

@@ -25,6 +25,7 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -36,8 +37,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.google.zxing.BarcodeFormat
-import com.kroegerama.kaiteki.bcode.ui.BarcodeFragment
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -54,9 +53,9 @@ import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
 import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
-import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.ScanComplete
 import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseActivity
@@ -78,6 +77,7 @@ import life.mibo.hexa.ui.main.Navigator.Companion.RXL_HOME
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
+import life.mibo.hexa.ui.main.Navigator.Companion.SESSION_POP
 import life.mibo.hexa.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
 import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
@@ -130,7 +130,7 @@ class MainActivity : BaseActivity(), Navigator {
             commHandler = CommHandler(this)
             checkPermissions()
             //startManager()
-            commHandler.regisiter()
+            commHandler.register()
 
             setBottomBar()
 
@@ -169,10 +169,10 @@ class MainActivity : BaseActivity(), Navigator {
         navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
             Prefs.get(this@MainActivity).get("user_email")
 
-        if (BuildConfig.DEBUG) {
-            navigation.menu.clear()
-            navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
-        }
+//        if (BuildConfig.DEBUG) {
+//            navigation.menu.clear()
+//            navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
+//        }
     }
 
     private fun setDrawerIcon(drawer: DrawerLayout) {
@@ -206,10 +206,6 @@ class MainActivity : BaseActivity(), Navigator {
 
     }
 
-    fun setBottomBar(navController: NavController) {
-        //val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_view)
-        // bottomNavView.setupWithNavController(navController)
-    }
 
     @SuppressLint("CheckResult")
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -225,14 +221,6 @@ class MainActivity : BaseActivity(), Navigator {
             }
     }
 
-
-    fun shoBarcode() {
-        val barcodeFragment = BarcodeFragment.makeInstance(
-            formats = listOf(BarcodeFormat.QR_CODE),
-            barcodeInverted = false
-        )
-    }
-
     fun setToolbar(drawerLayout: DrawerLayout) {
         val toolbar = supportActionBar
         if (toolbar != null) {
@@ -244,7 +232,6 @@ class MainActivity : BaseActivity(), Navigator {
                     R.string.app_name
                 )
         }
-
     }
 
     private fun updateMenu() {
@@ -313,6 +300,9 @@ class MainActivity : BaseActivity(), Navigator {
 
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
+            override fun onDeviceDisconnect(uid: String?) {
+                EventBus.getDefault().post(RemoveConnectionStatus(uid))
+            }
 
             override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {
                 parseCommands(code, command, uid)
@@ -420,7 +410,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_DEVICE_STATUS_RESPONSE -> {
                 // code -126
-                logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE")
+                logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE $uid")
                 //val d = SessionManager.getInstance().userSession.booster
                 val list = SessionManager.getInstance().userSession.devices
                 for (d in list) {
@@ -456,17 +446,16 @@ class MainActivity : BaseActivity(), Navigator {
                             logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_CONNECTED")
                         }
                         if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
-                            if (SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
-                                    uid
-                                ).setNewDeviceChannelAlarms(
-                                    DataParser.getChannelAlarms(command)
+                            if (SessionManager.getInstance().userSession.setDeviceAlarm(
+                                    uid, command
                                 )
                             ) {
+
                                 AlarmManager.getInstance().alarms.AddDeviceChannelAlarm(
-                                    SessionManager.getInstance().userSession.getRegisteredDevicebyUid(
-                                        uid
-                                    ).deviceChannelAlarms, d.uid
+                                    SessionManager.getInstance().userSession.getDeviceAlarm(uid),
+                                    d.uid
                                 )
+
                                 EventBus.getDefault().postSticky(NewAlarmEvent())
                             }
                             logw("COMMAND_DEVICE_STATUS_RESPONSE device is booster, session is 1 or 2")
@@ -491,7 +480,7 @@ class MainActivity : BaseActivity(), Navigator {
                         )
                         break
                     } else {
-                        logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED")
+                        logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED ${d.uid} == $uid")
                     }
                 }
 
@@ -745,7 +734,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             DISCONNECT -> {
                 if (data is Device)
-                    manager?.deviceDisconnect(data)
+                    manager?.disconnectDevice(data)
             }
             SCAN -> {
                 //stopScanning()
@@ -764,9 +753,6 @@ class MainActivity : BaseActivity(), Navigator {
             HOME_VIEW -> {
                 if (data != null && data is Boolean)
                     updateBar(data)
-            }
-            SELECT_PROGRAM -> {
-                navigate(0, R.id.navigation_select_program)
             }
             RXL_HOME -> {
                 navigate(0, R.id.navigation_rxl_home)
@@ -796,15 +782,40 @@ class MainActivity : BaseActivity(), Navigator {
                     updateBar(true)
                 }
             }
+            SELECT_PROGRAM -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_select_program, bundle)
+            }
             SESSION -> {
-                navigate(0, R.id.navigation_channels)
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_channels, bundle)
                 updateBar(true)
+            }
+            SESSION_POP -> {
+//                var bundle: Bundle? = null
+//                if (data is Bundle)
+//                    bundle = data
+                popup(R.id.navigation_select_program)
+                //updateBar(true)
+            }
+            Navigator.POST -> {
+                postObservable(data)
             }
 
             else -> {
                 drawerItemClicked(type)
             }
         }
+    }
+
+    private fun postObservable(data: Any?) {
+        Single.just("just").delay(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).doOnSuccess {
+            EventBus.getDefault().postSticky(EventBusEvent(1, data))
+        }.subscribe()
     }
 
     private fun updateBar(hide: Boolean) {
@@ -841,7 +852,7 @@ class MainActivity : BaseActivity(), Navigator {
 
         when (id) {
             R.id.nav_home -> {
-                navigate(0, R.id.navigation_home)
+                popup(R.id.navigation_home)
                 isHome = true
             }
             R.id.nav_ch6 -> {
@@ -850,8 +861,13 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_channels -> {
                 navigate(HomeItem.Type.BOOSTER)
             }
+            R.id.navigation_calendar -> {
+                navigate(HomeItem.Type.SCHEDULE)
+            }
             R.id.nav_scan -> {
                 //startScanning(false)
+                val bundle = Bundle()
+                bundle.putBoolean("is_rxl", false);
                 navigate(0, R.id.navigation_devices)
             }
             R.id.nav_rxl -> {
@@ -862,7 +878,8 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.nav_test3 -> {
                 //startScanning(false)
                 //updateMenu()
-                navigate(0, R.id.navigation_reflex2)
+                // test
+                navigate(0, R.id.navigation_rxl_home)
 
             }
             R.id.navigation_add_product -> {
@@ -877,13 +894,17 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_rxl_test)
 
             }
-            R.id.nav_send -> {
-                navigateTo(CLEAR_HOME, null)
-
-            }
             R.id.nav_logout -> {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
+                lastId = -1
+                AlertDialog.Builder(this).setTitle(getString(R.string.logout))
+                    .setMessage(getString(R.string.logout_message))
+                    .setPositiveButton(
+                        R.string.logout
+                    ) { dialog, which ->
+                        dialog.dismiss()
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                        finish()
+                    }.show()
             }
             else -> {
                 //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
@@ -943,9 +964,11 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.BOOSTER -> {
                 //navController.navigate(R.id.action_navigation_home_pop)
                 //navController.navigate(R.id.navigation_home)
+                val bundle = Bundle()
+                bundle.putBoolean("is_rxl", false)
                 navigate(
                     R.id.action_navigation_home_to_navigation_scan,
-                    R.id.navigation_devices
+                    R.id.navigation_devices, bundle
                 )
                 // navigate(0, R.id.navigation_devices)
                 //navigateFragment(R.id.navigation_calories)
@@ -953,7 +976,7 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.SCHEDULE -> {
                 navigate(
                     R.id.action_navigation_home_to_schedule,
-                    R.id.navigation_select_program
+                    R.id.navigation_schedule
                 )
                 //navigateFragment(R.id.navigation_schedule)
             }
@@ -967,7 +990,13 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             HomeItem.Type.ReFlex -> {
-                navigate(0, R.id.navigation_rxl_home)
+                val bundle = Bundle()
+                bundle.putBoolean("is_rxl", true)
+                navigate(
+                    R.id.action_navigation_home_to_navigation_scan,
+                    R.id.navigation_devices, bundle
+                )
+                // navigate(0, R.id.navigation_rxl_home)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.PROFILE -> {
@@ -1011,8 +1040,12 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     private fun popup(fragmentId: Int) {
-        navController.popBackStack(fragmentId, false)
-        lastId = -1
+        try {
+            navController.popBackStack(fragmentId, false)
+            lastId = -1
+        } catch (e: java.lang.Exception) {
+            navigate(0, fragmentId)
+        }
     }
 
 
@@ -1039,7 +1072,7 @@ class MainActivity : BaseActivity(), Navigator {
 
     override fun onDestroy() {
         Database.getInstance(this).clearAll()
-        commHandler.unregisiter()
+        commHandler.unregister()
         super.onDestroy()
         manager?.onDestroy()
     }

@@ -16,6 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/grid_3x"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.35"
         app:layout_constraintStart_toStartOf="parent"
@@ -335,7 +336,6 @@
             android:layout_margin="@dimen/grid_1x"
             android:visibility="gone"
             android:paddingBottom="@dimen/grid_2x"
-            android:text="28.01"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintEnd_toEndOf="@+id/tv_body_fat"
@@ -363,7 +363,6 @@
             android:visibility="gone"
             android:layout_margin="@dimen/grid_1x"
             android:paddingBottom="@dimen/grid_2x"
-            android:text="3.25"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintEnd_toEndOf="@+id/tv_body_fat_lost"
@@ -390,7 +389,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
             android:paddingBottom="@dimen/grid_2x"
-            android:text="24.76"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintEnd_toEndOf="@+id/tv_body_fat_remain"
@@ -405,7 +403,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/grid_3x"
-        android:text="BMI : 36.0"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_large"
         app:layout_constraintEnd_toEndOf="parent"
@@ -436,7 +433,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/grid_3x"
-            android:text="BMI : 36.0"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_large"
             app:layout_constraintEnd_toStartOf="@+id/tv_bmi_class"
@@ -467,5 +463,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
+    <RelativeLayout
+        android:id="@+id/no_data_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:background="@drawable/bg_gradient"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="1.2"
+                android:scaleY="1.2"
+                android:src="@drawable/no_data" />
+
+            <TextView
+                android:id="@+id/no_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_data_found"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:textColor="@color/grey" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_below="@id/no_data"
+                android:text="Add Measurement Scale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

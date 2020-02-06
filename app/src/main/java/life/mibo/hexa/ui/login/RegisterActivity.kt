@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_register_page3.*
 import life.mibo.hexa.R
 import life.mibo.hexa.receiver.SMSBroadcastReceiver
 import life.mibo.hexa.ui.base.BaseActivity
+import life.mibo.hexa.ui.main.MessageDialog
 
 
 class RegisterActivity : BaseActivity() {
@@ -41,19 +42,7 @@ class RegisterActivity : BaseActivity() {
 
         btn_register?.setOnClickListener {
             //viewAnimator?.showNext()
-
-            controller.onRegisterClicked(
-                et_first_name.text?.toString(),
-                et_last_name.text?.toString(),
-                et_email.text?.toString(),
-                et_password.text?.toString(),
-                et_confirm_password.text?.toString(),
-                et_city.text?.toString(),
-                tv_country.text?.toString(),
-                tv_dob.text?.toString(),
-                checkbox_terms.isChecked,
-                et_phone_number.text?.toString()
-            )
+            validate()
             // startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
         }
         btn_send_otp?.setOnClickListener {
@@ -66,6 +55,10 @@ class RegisterActivity : BaseActivity() {
             // startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
         }
         btn_otp_confirmed?.setOnClickListener {
+            if (et_otp?.text.isNullOrEmpty()) {
+                error(getString(R.string.enter_otp))
+                return@setOnClickListener
+            }
             controller.onVerifyOtpClicked(et_otp?.text?.toString())
             // startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
         }
@@ -100,6 +93,53 @@ class RegisterActivity : BaseActivity() {
             //Toasty.success(this, "OTP Verified").show()
             //loginToHome()
         }
+        checkbox_terms?.setOnCheckedChangeListener { _, isChecked ->
+            if (isDialog) {
+                isDialog = false
+                return@setOnCheckedChangeListener
+            }
+            if (isChecked) {
+                termsDialog(getString(R.string.terms_of_agreement))
+                checkbox_terms?.isChecked = false
+            }
+        }
+    }
+
+    var isDialog = false
+    fun termsDialog(terms: String) {
+        MessageDialog(this,
+            getString(R.string.terms_of_agreement),
+            terms,
+            getString(R.string.cancel),
+            getString(R.string.accept),
+            object : MessageDialog.Listener {
+                override fun onClick(button: Int) {
+                    if (button == MessageDialog.POSITIVE) {
+                        isDialog = true
+                    }
+                    checkbox_terms?.isChecked = button == MessageDialog.POSITIVE
+
+                }
+
+            }).show()
+    }
+
+    fun otpDialog() {
+        MessageDialog(this,
+            "",
+            "",
+            getString(R.string.cancel),
+            getString(R.string.send),
+            object : MessageDialog.Listener {
+                override fun onClick(button: Int) {
+                    if (button == MessageDialog.POSITIVE) {
+                        isDialog = true
+                    }
+                    checkbox_terms?.isChecked = button == MessageDialog.POSITIVE
+
+                }
+
+            }).show()
     }
 
     fun registerOtpListener() {
@@ -117,6 +157,14 @@ class RegisterActivity : BaseActivity() {
     }
 
     val observer = object : RegisterController.RegisterObserver {
+        override fun onInvalidOtp() {
+            et_otp?.clear()
+        }
+
+        override fun onValidationError(type: Int) {
+            showError(type)
+        }
+
         override fun onTimerUpdate(time: Long) {
             log("startTimer $time")
             if (time == 0L) {
@@ -148,6 +196,108 @@ class RegisterActivity : BaseActivity() {
             tv_country.text = country
         }
 
+    }
+
+    private fun validate() {
+
+        if (et_first_name.text.isNullOrEmpty()) {
+            controller.showError(R.string.enter_fname, et_first_name)
+            return
+        }
+
+        if (et_last_name.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_lname), et_last_name)
+            return
+        }
+        if (et_email.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_email), et_email)
+            return
+        }
+        if (et_password.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_password), et_password)
+            return
+        }
+        if (et_confirm_password.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_confirm_password), et_confirm_password)
+            return
+        }
+        if (!controller.isGender) {
+            controller.showError(getString(R.string.select_gender), tv_gender)
+            return
+        }
+        if (!controller.isDob) {
+            controller.showError(getString(R.string.enter_dob), tv_dob)
+            return
+        }
+        if (et_city.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_city), et_city)
+            return
+        }
+
+        if (!controller.isCountry) {
+            controller.showError(getString(R.string.select_your_country), tv_country)
+            return
+        }
+        if (et_phone_number.text.isNullOrEmpty()) {
+            controller.showError(getString(R.string.enter_number), et_phone_number)
+            return
+        }
+
+        controller.onRegisterClicked(
+            et_first_name.text?.toString(),
+            et_last_name.text?.toString(),
+            et_email.text?.toString(),
+            et_password.text?.toString(),
+            et_confirm_password.text?.toString(),
+            et_city.text?.toString(),
+            tv_country.text?.toString(),
+            tv_dob.text?.toString(),
+            checkbox_terms.isChecked,
+            et_phone_number.text?.toString()
+        )
+
+    }
+
+    private fun showError(type: Int) {
+//        controller.onRegisterClicked(
+//            et_first_name.text?.toString(),
+//            et_last_name.text?.toString(),
+//            et_email.text?.toString(),
+//            et_password.text?.toString(),
+//            et_confirm_password.text?.toString(),
+//            et_city.text?.toString(),
+//            tv_country.text?.toString(),
+//            tv_dob.text?.toString(),
+//            checkbox_terms.isChecked,
+//            et_phone_number.text?.toString()
+//        )
+
+        when (type) {
+            1 -> {
+                controller.showError(R.string.enter_fname, et_first_name)
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+            5 -> {
+
+            }
+            6 -> {
+
+            }
+            7 -> {
+
+            }
+            8 -> {
+
+            }
+        }
     }
 
     private fun updateNumberView(id: Int) {
@@ -226,6 +376,11 @@ class RegisterActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         controller.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onBackPressed() {
+        if (controller.onBackPressed())
+            super.onBackPressed()
     }
 
 }

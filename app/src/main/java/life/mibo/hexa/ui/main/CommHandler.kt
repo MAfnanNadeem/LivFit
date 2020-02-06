@@ -23,12 +23,12 @@ import org.greenrobot.eventbus.ThreadMode
 
 class CommHandler(val activity: MainActivity) {
 
-    fun regisiter() {
+    fun register() {
         log("regisiter ")
         EventBus.getDefault().register(this)
     }
 
-    fun unregisiter() {
+    fun unregister() {
         log("unregisiter ")
         EventBus.getDefault().unregister(this)
     }
@@ -63,12 +63,7 @@ class CommHandler(val activity: MainActivity) {
         //CommunicationManager.getInstance().sendCircuitGATT(circuit, Uid)
     }
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    fun onChangeColorEvent(event: ChangeColorEvent) {
-        log("onChangeColorEvent $event")
-        EventBus.getDefault().removeStickyEvent(event)
-        CommunicationManager.getInstance().onChangeColorEvent(event)
-    }
+
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onDeviceSearchEvent(event: DeviceSearchEvent) {
@@ -128,14 +123,28 @@ class CommHandler(val activity: MainActivity) {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    private fun onPodEvent(event: PodEvent) {
+    fun onChangeColorEvent(event: ChangeColorEvent) {
+        log("onChangeColorEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        CommunicationManager.getInstance().onChangeColorEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onProximityEvent(event: ProximityEvent) {
+        log("ProximityEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        CommunicationManager.getInstance().onProximityEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onPodEvent(event: PodEvent) {
         log("PodEvent $event")
         EventBus.getDefault().removeStickyEvent(event)
         CommunicationManager.getInstance().onPodEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    private fun onGetMainLevelEvent(event: GetMainLevelEvent) {
+    fun onGetMainLevelEvent(event: GetMainLevelEvent) {
         log("onBleConnect $event")
         EventBus.getDefault().removeStickyEvent(event)
         android.os.Handler(activity.mainLooper).postDelayed({

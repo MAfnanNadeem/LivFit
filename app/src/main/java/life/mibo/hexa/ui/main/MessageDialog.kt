@@ -22,7 +22,8 @@ class MessageDialog(
     private val negativeButton: String?,
     private val positiveButton: String?,
     val listener: Listener?,
-    val type: Int = 1
+    val type: Int = 1,
+    var isHtml: Boolean = false
 ) :
     AlertDialog(c) {
 
@@ -53,7 +54,17 @@ class MessageDialog(
         }
 
         fun info(context: Context, title: String, message: String) {
-            MessageDialog(context, title, message, "", "close", null).show()
+            MessageDialog(context, title, message, "", "close", null, 1, false).show()
+        }
+
+        fun info(context: Context, title: String, message: String, button: String = "close", action: () -> Unit) {
+            MessageDialog(context, title, message, "", button, object : Listener {
+                override fun onClick(button: Int) {
+                    action.invoke()
+                }
+
+            }, 1, false).show()
+
         }
     }
 
@@ -61,12 +72,13 @@ class MessageDialog(
     var messageView: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_channels_dlialog)
+        setContentView(R.layout.fragment_dlialog)
         window?.decorView?.setBackgroundColor(Color.TRANSPARENT)
         textView = findViewById(R.id.tv_title)
         messageView = findViewById(R.id.tv_message)
         val yes: TextView? = findViewById(R.id.tv_yes)
         val no: TextView? = findViewById(R.id.tv_no)
+        //val close: TextView? = findViewById(R.id.tv_no)
 
         when (type) {
             1 -> {
@@ -75,7 +87,10 @@ class MessageDialog(
         }
 
         textView?.text = title
-        messageView?.text = Html.fromHtml(message)
+        if (isHtml)
+            messageView?.text = Html.fromHtml(message)
+        else
+            messageView?.text = message
 
         //if (!Utils.isEmpty(negativeButton))
             no?.text = negativeButton

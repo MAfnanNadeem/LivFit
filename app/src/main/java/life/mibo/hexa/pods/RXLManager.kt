@@ -169,14 +169,16 @@ class RXLManager private constructor() {
         publisher = PublishSubject.create<RxlStatusEvent>()
         publisher!!.subscribeOn(Schedulers.io()).doOnNext {
             log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
-            if (!isInternalStarted) {
-                if (it.time > 10)
-                    startInternal()
-                else
-                    return@doOnNext
-            }
 
             if (it.uid == lastUid) {
+                if (!isInternalStarted) {
+                    log("RxlStatusEvent2 starting........... >> $isInternalStarted ")
+                    if (it.time > 10)
+                        startInternal()
+                    else
+                        return@doOnNext
+                }
+
                 log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
                 events.add(Event(events.size + 1, getAction(), it.time))
                 lightOnDynamic()

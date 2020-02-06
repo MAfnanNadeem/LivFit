@@ -5,15 +5,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Base64;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
 import life.mibo.hexa.R;
+import life.mibo.hexa.ui.main.MiboEvent;
 
 public class Utils {
 
@@ -139,6 +144,98 @@ public class Utils {
         } catch (Exception e) {
 
         }
+    }
+
+    public static int getWifiSignalLevel(int rssi, int level) {
+        int MIN_RSSI = -100;
+        int MAX_RSSI = -55;
+
+        if (rssi <= MIN_RSSI) {
+            return 0;
+        } else if (rssi >= MAX_RSSI) {
+            return level - 1;
+        } else {
+            float inputRange = (MAX_RSSI - MIN_RSSI);
+            float outputRange = (level - 1);
+            return (int) ((float) (rssi - MIN_RSSI) * outputRange / inputRange);
+        }
+    }
+
+    public static String bitmapToBase64(Bitmap bitmap) {
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] imageBytes = stream.toByteArray();
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            MiboEvent.INSTANCE.log(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static @Nullable
+    Bitmap base64ToBitmap(String bitmap) {
+        try {
+            byte[] imageBytes = Base64.decode(bitmap, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        } catch (Exception e) {
+            MiboEvent.INSTANCE.log(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String testUserImage() {
+        return "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";
+    }
+
+
+    public static void slideUp(View view) {
+        view.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(0, 0, view.getHeight(), 0);
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        animate.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                view.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view.startAnimation(animate);
+    }
+
+    public static void slideDown(View view) {
+        TranslateAnimation animate = new TranslateAnimation(0, 0, 0, view.getHeight());
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        animate.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view.startAnimation(animate);
     }
 
 }

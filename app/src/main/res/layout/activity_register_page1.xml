@@ -22,7 +22,7 @@
         android:imeOptions="actionNext"
         android:inputType="textPersonName"
         android:digits="@string/alphabets_only"
-        android:hint="First Name" />
+        android:hint="@string/first_name_hint" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_last_name"
@@ -31,14 +31,14 @@
         android:digits="@string/alphabets_only"
         android:inputType="textPersonName"
         android:layout_marginTop="@dimen/grid_1x"
-        android:hint="Last Name" />
+        android:hint="@string/last_name_hint" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_email"
         style="@style/login_edittext"
         android:imeOptions="actionNext"
         android:layout_marginTop="@dimen/grid_1x"
-        android:hint="Email"
+        android:hint="@string/email_hint"
         android:inputType="textEmailAddress" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -46,7 +46,7 @@
         android:imeOptions="actionNext"
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
-        android:hint="Password"
+        android:hint="@string/password_hint"
         android:inputType="textPassword" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -54,7 +54,7 @@
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:imeOptions="actionNext"
-        android:hint="Confirm Password"
+        android:hint="@string/confirm_password_hint"
         android:inputType="textPassword" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -62,7 +62,7 @@
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:ems="11"
-        android:hint="Gender"
+        android:hint="@string/gender_hint"
         android:textSize="@dimen/text_size_medium" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -70,7 +70,7 @@
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:ems="11"
-        android:hint="Date of Birth"
+        android:hint="@string/date_of_birth_hint"
         android:textSize="@dimen/text_size_medium" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -78,7 +78,7 @@
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:imeOptions="actionNext"
-        android:hint="City"
+        android:hint="@string/city_hint"
         android:inputType="textAutoComplete" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -86,7 +86,7 @@
         style="@style/login_edittext"
         android:layout_marginTop="@dimen/grid_1x"
         android:ems="11"
-        android:hint="Country"
+        android:hint="@string/country_hint"
         android:textSize="@dimen/text_size_medium" />
 
 
@@ -117,7 +117,7 @@
             android:maxLength="14"
             android:layout_weight="1"
             android:digits="@string/numbers_only"
-            android:hint="Phone Number"
+            android:hint="@string/phone_number_hint"
             android:imeOptions="actionSend"
             android:inputType="number" />
 
@@ -130,6 +130,7 @@
         android:buttonTint="@color/colorPrimary"
         android:text="@string/accept_terms_of_agreement"
         android:textColor="@color/white" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"
@@ -137,7 +138,7 @@
         android:layout_marginTop="@dimen/grid_2x"
         android:background="@drawable/login_button_green"
         android:ems="13"
-        android:text="Register"
+        android:text="@string/register"
         android:textColor="@color/white" />
 
 

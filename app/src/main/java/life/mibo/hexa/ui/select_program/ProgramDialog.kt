@@ -10,6 +10,7 @@ package life.mibo.hexa.ui.select_program
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -42,6 +43,7 @@ class ProgramDialog(
         setContentView(R.layout.fragment_dialog_program)
         recyclerView = findViewById(R.id.recyclerView)
         textView = findViewById(R.id.tv_title)
+        var cancel: View? = findViewById(R.id.iv_cancel)
 
         if (type == 1) {
             recyclerView?.layoutManager = LinearLayoutManager(context)
@@ -73,32 +75,39 @@ class ProgramDialog(
 
         })
         recyclerView?.adapter = programAdpter
+        cancel?.setOnClickListener {
+            dismiss()
+        }
 
     }
 
     private fun getColors() {
         list.clear()
-        list.add(Program(Color.RED))
-        list.add(Program(Color.GREEN))
-        list.add(Program(Color.BLUE))
-        list.add(Program(Color.YELLOW))
-        list.add(Program(Color.CYAN))
-        list.add(Program(Color.MAGENTA))
+        list.add(Program(0xFFFF0000.toInt()))
         list.add(Program(0xFF00FF00.toInt()))
+        list.add(Program(0xFF0000FF.toInt()))
+        list.add(Program(0xFFFFFF00.toInt()))
+        list.add(Program(0xFFFF00FF.toInt()))
+        list.add(Program(0xFF00b75b.toInt()))
         list.add(Program(0xFF800000.toInt()))
         list.add(Program(0xFF808000.toInt()))
         list.add(Program(0xFF000080.toInt()))
         list.add(Program(0xFF800080.toInt()))
         list.add(Program(0xFF008080.toInt()))
         list.add(Program(0xFFa7d129.toInt()))
+        list.add(Program(0xFF111111.toInt()))
+        list.add(Program(0xFFfa8072.toInt()))
+        list.add(Program(0xFFFFFFFF.toInt()))
     }
 
 
     fun showPrograms() {
+        //type = 1;
         super.show()
     }
 
     fun showColors() {
+        //type = 2;
         super.show()
     }
 }

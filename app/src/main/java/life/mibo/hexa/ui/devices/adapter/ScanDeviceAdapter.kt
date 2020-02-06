@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.net.wifi.WifiManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -96,6 +97,21 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         var bluetooth: ImageView? = itemView.findViewById(R.id.iv_bl)
         var wifi: AppCompatImageView? = itemView.findViewById(R.id.iv_wifi)
 
+        private fun getSignal(rssi: Int): Int {
+            val MIN_RSSI = -100
+            val MAX_RSSI = -55
+            val numLevels = 4
+            return when {
+                rssi <= MIN_RSSI -> 0
+                rssi >= MAX_RSSI -> numLevels - 1
+                else -> {
+                    val inputRange = (MAX_RSSI - MIN_RSSI).toFloat()
+                    val outputRange = (numLevels - 1).toFloat()
+                    ((rssi - MIN_RSSI).toFloat() * outputRange / inputRange).toInt()
+                }
+            }
+        }
+
         @SuppressLint("SetTextI18n")
         fun bind(item: Device?, callback: Listener?) {
             if (item == null)
@@ -103,7 +119,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
 
             try {
-                name?.text = item.name?.split("-")!![0] + " "+item.batteryLevel
+                name?.text = item.name?.split("-")!![0]
             } catch (e: Exception) {
                 name?.text = item.name
             }
@@ -111,12 +127,14 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             if (txt.isNullOrBlank())
                 txt = item.ip.hostAddress
             address?.text = item.serial + " : $txt"
+            val isWifi =
+                item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.RXL_WIFI
             when {
-                item.type == DeviceTypes.WIFI_STIMULATOR -> {
+                isWifi -> {
                     wifi?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)
                     bluetooth?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
                 }
-                item.type == DeviceTypes.BLE_STIMULATOR -> {
+                item.type == DeviceTypes.BLE_STIMULATOR || item.type == DeviceTypes.RXL_BLE -> {
                     wifi?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
                     bluetooth?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
                 }
@@ -148,9 +166,15 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 connect?.setColorFilter(grey)
             }
             connect?.setOnClickListener {
+                if (item.statusConnected == 1) {
+                    return@setOnClickListener
+                }
                 callback?.onConnectClicked(item)
             }
             disconnect?.setOnClickListener {
+                if (item.statusConnected == 0) {
+                    return@setOnClickListener
+                }
                 item.statusConnected = 0
                 disconnect?.setColorFilter(grey)
                 callback?.onCancelClicked(item)
@@ -172,23 +196,42 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             }
             image?.background = null
             battery?.background = null
-            if (item.type == DeviceTypes.RXL_WIFI) {
+            if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
                 image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
             } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
                 image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
             }
 
-            when {
-                item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
-                item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
-                item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
-                item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
-               // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+            if (isWifi) {
+                when (getSignal(item.signalLevel)) {
+                    3 -> wifi?.setImageResource(R.drawable.ic_wifi_80)
+                    2 -> wifi?.setImageResource(R.drawable.ic_wifi_60)
+                    1 -> wifi?.setImageResource(R.drawable.ic_wifi_20)
+                    0 -> wifi?.setImageResource(R.drawable.ic_wifi_20)
+                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+                }
+            } else {
+                when {
+                    item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
+                    item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
+                    item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
+                    item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
+                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+                }
             }
 
-            Logger.e("DeviceStatusEvent batteryLevel ${item.batteryLevel}")
+
+//            Logger.e("DeviceStatusEvent batteryLevel ${item.batteryLevel} - signalLevel ${item.signalLevel} ")
+//            Logger.e(
+//                "DeviceStatusEvent batteryLevel levels " + WifiManager.calculateSignalLevel(
+//                    item.signalLevel,
+//                    4
+//                )
+//            )
+
         }
     }
+
 
     fun getRandomColor(): Int {
         val rnd = Random()
@@ -210,6 +253,14 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         }
     }
 
+    fun move(from: Int, to: Int) {
+        if (list?.size!! > 1 && from != to) {
+            Collections.swap(list, from, to)
+            notifyItemMoved(from, to)
+
+        }
+    }
+
     fun addDevice(item: ScanItem) {
 //        Logger.e("ScanDevice addDevice ")
 //        var contain = false
@@ -226,7 +277,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     }
 
     fun remove(uid: String) {
-        Logger.e("ScanDevice addDevice device")
+        Logger.e("ScanDevice remove device uid")
         list?.forEachIndexed { i, d ->
             if (d.uid == uid) {
                 list!!.removeAt(i)
@@ -237,7 +288,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     }
 
     fun remove(item: Device) {
-        Logger.e("ScanDevice addDevice device")
+        Logger.e("ScanDevice remove device")
         list?.forEachIndexed { i, d ->
             if (d.uid == item.uid) {
                 list!!.removeAt(i)
@@ -251,6 +302,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         Logger.e("ScanDevice addDevice device")
         for (l in list!!) {
             if (l.uid == item.uid) {
+                Logger.e("ScanDevice addDevice already added")
                 return
             }
         }

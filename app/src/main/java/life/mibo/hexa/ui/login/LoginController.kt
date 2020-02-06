@@ -5,6 +5,9 @@
 package life.mibo.hexa.ui.login
 
 import android.content.Intent
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hexa.BuildConfig
@@ -14,12 +17,13 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.room.Database
-import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.MainActivity
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
@@ -46,7 +50,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
             //usr = "test@mibo.life"
             //usr = "christie.ffrench@gmail.com"
-            usr = "diana@gmail.com"
+           // usr = "diana@gmail.com"
+            usr = "max@gmail.com"
            // usr = "alisher@mibo.life"
             pwd = "123456"
         }
@@ -58,7 +63,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         }
         if(pwd.isEmpty())
         {
-            Toasty.info(context, R.string.enter_password).show()
+            Toasty.info(context, R.string.enter_your_password).show()
             return
         }
 
@@ -80,7 +85,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                             Database.getInstance(context).memberDao()
                                 .add(life.mibo.hexa.room.Member.from(data.data!!))
                         }.subscribe()
-                        Toasty.success(context, context.getString(R.string.logged_succes)).show()
+                        //Toasty.success(context, context.getString(R.string.logged_succes)).show()
                         isLogin = true
                         Prefs.get(this@LoginController.context).member = data.data
                         Prefs.get(this@LoginController.context).set("user_email",usr)
@@ -104,5 +109,20 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
     private fun loginSucceed() {
         context.startActivity(Intent(context, MainActivity::class.java))
         context.finish()
+    }
+
+    fun showError(error: String, editText: EditText?) {
+        editText?.error = error
+        editText?.addTextChangedListener(object : TextWatcher {
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+                if (editText?.error != null)
+                    editText?.error = null
+            }
+        })
     }
 }

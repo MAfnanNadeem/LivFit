@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
@@ -79,6 +83,21 @@ class HomeFragment : BaseFragment(), HomeObserver {
         iv_user_pic?.setOnClickListener {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
         }
+        loadImage(iv_user_pic)
+    }
+
+    private fun loadImage(iv: ImageView) {
+        Single.fromCallable {
+            log("loadImage fromCallable")
+            val img = Prefs.get(this.context).member?.imageThumbnail
+            if (img.isNullOrEmpty())
+                return@fromCallable Utils.base64ToBitmap(Utils.testUserImage())
+            else return@fromCallable Utils.base64ToBitmap(img)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+            log("loadImage doOnSuccess $it")
+            if (it != null)
+                iv.setImageBitmap(it)
+        }.subscribe()
     }
 
     override fun onDataReceived(list: ArrayList<HomeItem>) {

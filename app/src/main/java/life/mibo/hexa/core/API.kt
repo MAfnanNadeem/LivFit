@@ -6,17 +6,17 @@ import life.mibo.hexa.core.gson.GsonConverterFactory
 import life.mibo.hexa.models.base.PostData
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.calories.Calories
+import life.mibo.hexa.models.circuits.CircuitResponse
+import life.mibo.hexa.models.circuits.SearchCircuit
 import life.mibo.hexa.models.create_session.BookSession
 import life.mibo.hexa.models.create_session.BookSessionPost
 import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
-import life.mibo.hexa.models.member.Member
-import life.mibo.hexa.models.member.MemberDetailsPOST
+import life.mibo.hexa.models.password.ChangePassword
 import life.mibo.hexa.models.program.ProgramPost
-import life.mibo.hexa.models.program.ProgramPost2
 import life.mibo.hexa.models.program.SearchPrograms
-import life.mibo.hexa.models.register.RegisterGuestMember
+import life.mibo.hexa.models.register.RegisterMember
 import life.mibo.hexa.models.register.RegisterResponse
 import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
@@ -24,8 +24,6 @@ import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
 import life.mibo.hexa.models.user_details.UserDetails
 import life.mibo.hexa.models.user_details.UserDetailsPost
-import life.mibo.hexa.models.verify_number.VerifyNumber
-import life.mibo.hexa.models.verify_number.VerifyResponse
 import life.mibo.hexa.models.verify_otp.VerifyOTP
 import life.mibo.hexa.models.verify_otp.VerifyOtpResponse
 import life.mibo.hexa.models.weight.WeightAll
@@ -93,7 +91,7 @@ class API {
 
         @Headers("Accept: application/json" , "Content-Type: application/json")
         @POST("registerUser")
-        fun register(@Body data: RegisterGuestMember): Call<RegisterResponse>
+        fun register(@Body data: RegisterMember): Call<RegisterResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("loginUser")
@@ -103,13 +101,9 @@ class API {
 //        @POST("loginMember")
 //        fun loginMember(@Body data: LoginData): Call<Member>
 
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("verifyNumber")
-        fun verifyNumber(@Body data: VerifyNumber): Call<VerifyResponse>
-
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("memberDetails")
-        fun memberDetails(@Body data: MemberDetailsPOST): Call<Member>
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("verifyNumber")
+//        fun verifyNumber(@Body data: VerifyNumber): Call<VerifyResponse>
 
 
         @Headers("Accept: application/json", "Content-Type: application/json")
@@ -120,37 +114,45 @@ class API {
         @POST("verifyOTP")
         fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
 
+        //@Headers("Accept: application/json", "Content-Type: application/json")
+        //@POST("verifyOTP")
+        //fun changePassword(@Body data: ChangePassword): Call<VerifyOtpResponse>
+
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getLatestSessionReports")
         fun getSessionDetails(@Body data: SessionDetails): Call<SessionReport>
 
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("getLatestSessionDetails")
-        fun getProducts(@Body data: SessionDetails): Call<SessionReport>
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("getLatestSessionDetails")
+//        fun getProducts(@Body data: SessionDetails): Call<SessionReport>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getAllWeight")
         fun getAllWeight(@Body data: WeightAll): Call<WeightAllResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("userDetails")
+        @POST("memberDetails")
         fun userDetails(@Body data: UserDetailsPost): Call<UserDetails>
+
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("userDetails")
+//        fun memberDetails(@Body data: UserDetailsPost): Call<UserDetails>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getAllCaloriesBurnt")
         fun getAllCaloriesBurnt(@Body data: PostData): Call<Calories>
 
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("getProgram")
-        fun getProgram(@Body data: PostData): Call<Calories>
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("getProgram")
+//        fun getProgram(@Body data: PostData): Call<Calories>
+
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("searchPrograms")
+//        fun searchPrograms(@Body data: ProgramPost2): Call<SearchPrograms2>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("searchPrograms")
-        fun searchPrograms(@Body data: ProgramPost): Call<SearchPrograms>
-
-        @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("searchPrograms")
-        fun searchPrograms2(@Body data: ProgramPost2): Call<SearchPrograms>
+        fun searchPrograms2(@Body data: ProgramPost): Call<SearchPrograms>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("bookAndStartConsumerSession")
@@ -159,5 +161,9 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("saveSessionReport")
         fun saveSessionReport(@Body data: SaveSessionPost): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchCircuit")
+        fun getCircuits(@Body data: SearchCircuit): Call<CircuitResponse>
     }
 }

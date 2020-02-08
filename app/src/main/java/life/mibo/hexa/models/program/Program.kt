@@ -8,12 +8,19 @@
 package life.mibo.hexa.models.program
 
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import life.mibo.hardware.core.Logger
+import life.mibo.hexa.room.ProgramConverter
 
+//@Parcelize
+@Entity(tableName = "programs")
 data class Program(
     @SerializedName("AccessType")
     var accessType: String?,
+    @TypeConverters(ProgramConverter::class)
     @SerializedName("Blocks")
     var blocks: List<Block?>?,
     @SerializedName("BorgRating")
@@ -27,9 +34,10 @@ data class Program(
     @SerializedName("Description")
     var description: String?,
     @SerializedName("Duration")
+    @TypeConverters(ProgramConverter::class)
     var duration: Duration?,
     @SerializedName("Id")
-    var id: Int?,
+    @PrimaryKey var id: Int?,
     @SerializedName("MemberID")
     var memberID: Int?,
     @SerializedName("Name")

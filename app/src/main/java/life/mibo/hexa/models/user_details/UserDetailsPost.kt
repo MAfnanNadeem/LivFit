@@ -10,7 +10,7 @@ package life.mibo.hexa.models.user_details
 
 import life.mibo.hexa.models.base.BasePost
 
-class UserDetailsPost(userId: String?, token: String?) :
-    BasePost<DataX?>(DataX(userId), "UserDetails", token) {
+class UserDetailsPost(userId: String?, token: String?, type: String = "MemberDetails") :
+    BasePost<DataX?>(DataX(userId), type, token) {
     //constructor(userId: String, token: String?) : this(DataX(userId), token)
 }

@@ -1,31 +1,26 @@
 /*
- *  Created by Sumeet Kumar on 1/15/20 3:40 PM
+ *  Created by Sumeet Kumar on 2/4/20 12:14 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/15/20 3:39 PM
+ *  Last modified 2/4/20 12:13 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.models.program
+package life.mibo.hexa.models.circuits
 
 
-import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
-//@Entity(tableName = "program_duration")
 data class Duration(
     @SerializedName("default")
-    var default: String?,
+    var default: Int?,
     @SerializedName("format")
     var format: String?,
     @SerializedName("max")
-    var max: String?,
+    var max: Int?,
     @SerializedName("min")
-    var min: String?,
+    var min: Int?,
     @SerializedName("unit")
     var unit: String?,
     @SerializedName("value")
-    var value: String?
-) {
-
-    fun valueInt() = value?.toInt() ?: 0
-}
+    var value: Int?
+)

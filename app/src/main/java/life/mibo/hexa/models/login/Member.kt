@@ -30,7 +30,7 @@ data class Member(
     @SerializedName("id")
     var id: Int?,
     @SerializedName("imageThumbnail")
-    var imageThumbnail: Any?,
+    var imageThumbnail: String?,
     @SerializedName("lastName")
     var lastName: String?,
     @SerializedName("number_verify")

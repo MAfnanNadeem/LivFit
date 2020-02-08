@@ -4,9 +4,9 @@ package life.mibo.hexa.models.register
 import com.google.gson.annotations.SerializedName
 
 data class Data(
-    @SerializedName("firstname")
+    @SerializedName("firstName")
     var firstName: String?,
-    @SerializedName("lastname")
+    @SerializedName("lastName")
     var lastName: String?,
     @SerializedName("password")
     var password: String?,
@@ -20,7 +20,7 @@ data class Data(
     var country: String?,
     @SerializedName("dob")
     var dOB: String?,
-    @SerializedName("country_code")
+    @SerializedName("countryCode")
     var countryCode: String?,
     @SerializedName("phone")
     var phone: String?

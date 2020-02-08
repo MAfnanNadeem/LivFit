@@ -11,6 +11,6 @@ package life.mibo.hexa.models.weight
 import com.google.gson.annotations.SerializedName
 
 data class DataX(
-    @SerializedName("userid")
+    @SerializedName("UserID")
     var userid: String?
 )

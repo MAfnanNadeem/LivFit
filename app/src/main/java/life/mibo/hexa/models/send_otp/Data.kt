@@ -8,6 +8,6 @@ package life.mibo.hexa.models.send_otp
 import com.google.gson.annotations.SerializedName
 
 data class Data(
-    @SerializedName("userid")
+    @SerializedName("UserID")
     var userid: String?
 )

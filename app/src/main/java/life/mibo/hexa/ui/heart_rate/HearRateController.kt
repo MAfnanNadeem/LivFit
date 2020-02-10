@@ -13,7 +13,6 @@ import com.github.mikephil.charting.data.Entry
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.models.session.Report
 import life.mibo.hexa.models.session.SessionDetails
 import life.mibo.hexa.models.session.SessionReport
@@ -109,7 +108,7 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
                     val err = data?.error?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
-                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_SHORT).show()
                 }
                 fragment.getDialog()?.dismiss()
             }

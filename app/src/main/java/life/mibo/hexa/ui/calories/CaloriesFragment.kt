@@ -43,9 +43,9 @@ class CaloriesFragment : BaseFragment(), CaloriesObserver {
     }
 
     override fun onDataReceived(list: ArrayList<CaloriesData>) {
-        val data = life.mibo.hexa.ui.heart_rate.chart.ChartData()
+       // val data = life.mibo.hexa.ui.heart_rate.chart.ChartData()
         var total = 0
-        val entries = java.util.ArrayList<Entry>()
+        //val entries = java.util.ArrayList<Entry>()
         list.forEachIndexed { index, caloriesData ->
             total += caloriesData.caloriesBurnt ?: 0
         }

@@ -18,6 +18,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kizitonwose.calendarview.model.CalendarMonth
+import kotlinx.android.synthetic.main.date_picker.*
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import life.mibo.hexa.R
 import life.mibo.hexa.models.calories.CaloriesData
@@ -37,7 +38,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     private lateinit var controller: CalendarController
     var recyclerView: RecyclerView? = null
-    private val monthTitleFormatter = DateTimeFormatter.ofPattern("MMMM")
+    private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
+    private val yearFormatter = DateTimeFormatter.ofPattern("yyyy")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
@@ -62,12 +64,12 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         controller.setUpCalendar(calendarView, weeks)
         controller.getCalories()
         // tv_month.text = monthTitleFormatter.format(it.yearMonth)
-        iv_user_pic.setImageDrawable(
-            ContextCompat.getDrawable(
-                this@CalendarFragment.context!!,
-                R.drawable.ic_person_black_24dp
-            )
-        )
+//        iv_user_pic.setImageDrawable(
+////            ContextCompat.getDrawable(
+////                this@CalendarFragment.context!!,
+////                R.drawable.ic_person_black_24dp
+////            )
+////        )
 
     }
 
@@ -84,7 +86,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     override fun onMonthChanged(calender: CalendarMonth) {
         //super.onMonthChanged(calender)
-        tv_month?.text = monthTitleFormatter.format(calender?.yearMonth).toUpperCase()
+        tv_month?.text = monthFormatter.format(calender?.yearMonth).toUpperCase() + " ("+ calender?.year +")"
     }
 
 

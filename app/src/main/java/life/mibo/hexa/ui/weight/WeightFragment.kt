@@ -43,6 +43,7 @@ class WeightFragment : BaseFragment(), WeightObserver {
         //controller.setRecycler(recyclerView!!)
         controller.getUserDetails()
         controller.getAllWeight()
+        tv_bmi_value?.text = ""
     }
 
     override fun onChartDataReceived(list: List<Data?>?) {
@@ -59,9 +60,12 @@ class WeightFragment : BaseFragment(), WeightObserver {
         val medical = data?.medicalHistory
 
         if (medical != null) {
+            no_data_layout?.visibility = View.GONE
+            constraintLayout1?.visibility = View.VISIBLE
             weight_value.text = "${medical.weight} ${medical.weightUnit}"
-            val weight: Double? = medical.weight?.toDouble()
+
             try {
+                val weight: Double? = medical.weight?.toDoubleOrNull()
                 var bmi: Double? = medical.height?.toDouble()?.div(100)
                 bmi = bmi!!.times(bmi)
                 //tv_start_bmi.text = String.format("%.2f", weight?.div(bmi!!))
@@ -71,7 +75,8 @@ class WeightFragment : BaseFragment(), WeightObserver {
                 tv_bmi_value.text = "0.0"
 
             }
-
+        } else {
+            no_data_layout?.visibility = View.VISIBLE
         }
     }
 

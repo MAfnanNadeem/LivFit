@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.net.wifi.WifiManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,15 +117,18 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 return
             val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
 
-            try {
-                name?.text = item.name?.split("-")!![0]
-            } catch (e: Exception) {
-                name?.text = item.name
+            if (item.isPod) {
+                name?.text = "RXL  ${adapterPosition.plus(1)}"
+                address?.text = item.serial
             }
-            var txt = item.id
-            if (txt.isNullOrBlank())
-                txt = item.ip.hostAddress
-            address?.text = item.serial + " : $txt"
+            else {
+                name?.text = item.name?.split("-")!![0]
+                var txt = item.id
+                if (txt.isNullOrBlank())
+                    txt = item.ip.hostAddress
+                address?.text = item.serial + " : $txt"
+            }
+
             val isWifi =
                 item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.RXL_WIFI
             when {
@@ -165,20 +167,6 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(grey)
             }
-            connect?.setOnClickListener {
-                if (item.statusConnected == 1) {
-                    return@setOnClickListener
-                }
-                callback?.onConnectClicked(item)
-            }
-            disconnect?.setOnClickListener {
-                if (item.statusConnected == 0) {
-                    return@setOnClickListener
-                }
-                item.statusConnected = 0
-                disconnect?.setColorFilter(grey)
-                callback?.onCancelClicked(item)
-            }
 
             view?.background = null
             if (item.statusConnected == 1) {
@@ -188,14 +176,22 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     itemView.context,
                     R.drawable.device_list_item_bg_selected
                 )
+
+                when {
+                    item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
+                    item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
+                    item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
+                    item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
+                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+                }
             } else {
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(Color.GREEN)
                 view?.background =
                     ContextCompat.getDrawable(itemView.context, R.drawable.device_list_item_bg)
+                battery?.background = null
             }
             image?.background = null
-            battery?.background = null
             if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
                 image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
             } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
@@ -210,16 +206,22 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     0 -> wifi?.setImageResource(R.drawable.ic_wifi_20)
                     // else -> battery?.setImageResource(R.drawable.ic_battery_0)
                 }
-            } else {
-                when {
-                    item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
-                    item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
-                    item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
-                    item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
-                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
-                }
             }
 
+            connect?.setOnClickListener {
+                if (item.statusConnected == 1) {
+                    return@setOnClickListener
+                }
+                callback?.onConnectClicked(item)
+            }
+            disconnect?.setOnClickListener {
+                if (item.statusConnected == 0) {
+                    return@setOnClickListener
+                }
+                item.statusConnected = 0
+                disconnect?.setColorFilter(grey)
+                callback?.onCancelClicked(item)
+            }
 
 //            Logger.e("DeviceStatusEvent batteryLevel ${item.batteryLevel} - signalLevel ${item.signalLevel} ")
 //            Logger.e(
@@ -298,6 +300,17 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         }
     }
 
+    fun addConnectedDevice(item: Device) {
+        var d = item
+        for (l in list!!) {
+            if (l.uid == item.uid) {
+                // l = item
+                d.update(item)
+            }
+        }
+        list!!.add(d)
+        notifyDataSetChanged()
+    }
     fun addDevice(item: Device) {
         Logger.e("ScanDevice addDevice device")
         for (l in list!!) {

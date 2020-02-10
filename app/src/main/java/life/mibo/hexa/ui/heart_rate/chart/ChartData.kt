@@ -463,7 +463,7 @@ class ChartData {
                     val err = data?.error?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(chart?.context!!, R.string.error_occurred).show()
-                    else Toasty.error(chart?.context!!, err, Toasty.LENGTH_LONG).show()
+                    else Toasty.error(chart?.context!!, err, Toasty.LENGTH_SHORT).show()
                 }
                 //fragment.getDialog()?.dismiss()
             }

@@ -47,7 +47,7 @@ class HeartRateTabFragment : BaseFragment() {
     lateinit var chartData: ChartData
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
-        val root = inflater.inflate(life.mibo.hexa.R.layout.fragment_hr_tab1, container, false)
+        val root = inflater.inflate(R.layout.fragment_hr_tab1, container, false)
         chart = root.findViewById(R.id.lineChart)
         noDataText = root.findViewById(R.id.lineChart_no_data)
         hrValue = root.findViewById(R.id.hr_value)
@@ -72,6 +72,7 @@ class HeartRateTabFragment : BaseFragment() {
                     }
 
                     hrValue?.text = "${total.div(list.size)}"
+                    animate(hr_heart_image)
                 }
             }
             1 -> {
@@ -90,7 +91,7 @@ class HeartRateTabFragment : BaseFragment() {
                 chartData.getHeartRate(chart, type)
             }
 
-        animate(hr_heart_image)
+        //animate(hr_heart_image)
     }
 
     fun animate(iv: ImageView?) {

@@ -59,6 +59,7 @@ class CaloriesController(val fragment: CaloriesFragment, val observer: CaloriesO
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
                     else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                    parseData(null)
                 }
 
 

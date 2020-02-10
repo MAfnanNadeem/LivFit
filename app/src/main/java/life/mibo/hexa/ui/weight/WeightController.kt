@@ -15,6 +15,7 @@ import life.mibo.hexa.models.user_details.UserDetails
 import life.mibo.hexa.models.user_details.UserDetailsPost
 import life.mibo.hexa.models.weight.WeightAll
 import life.mibo.hexa.models.weight.WeightAllResponse
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
@@ -58,10 +59,9 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
             override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success" , true)) {
                     parseUserData(data)
                 } else {
-
                     val err = data?.errors?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
@@ -83,6 +83,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
                 Toasty.error(fragment.context!!, "Unable to connect").show()
+                MiboEvent.log(t)
             }
 
             override fun onResponse(
@@ -95,10 +96,10 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
                     parseData(data)
                 } else {
 
-                    val err = data?.errors?.get(0)?.message
-                    if (err.isNullOrEmpty())
-                        Toasty.error(fragment.context!!, R.string.error_occurred).show()
-                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                   // val err = data?.errors?.get(0)?.message
+//                    if (err.isNullOrEmpty())
+//                        Toasty.error(fragment.context!!, R.string.error_occurred).show()
+//                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
                 }
                 fragment.getDialog()?.dismiss()
             }

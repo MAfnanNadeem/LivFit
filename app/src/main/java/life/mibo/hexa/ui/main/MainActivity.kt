@@ -314,9 +314,9 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             override fun onBluetoothDeviceFound(result: ScanResult?) {
-                log("onBluetoothDeviceFound " + result)
-                EventBus.getDefault()
-                    .post(NewDeviceDiscoveredEvent(result?.device))
+                //log("onBluetoothDeviceFound " + result)
+               // EventBus.getDefault()
+                 //   .post(NewDeviceDiscoveredEvent(result?.device))
             }
 
             override fun udpDeviceReceiver(msg: ByteArray?, ip: InetAddress?) {

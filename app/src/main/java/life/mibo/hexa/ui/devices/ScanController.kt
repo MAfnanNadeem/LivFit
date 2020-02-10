@@ -121,7 +121,8 @@ class ScanController(val context: BaseFragment, val observer: ScanObserver) :
                     connectedList.add(d)
 //                if(d == null)
 //                    d = Device(b.name, b.address, b.address, DeviceTypes.BLE_STIMULATOR)
-//                connectedList.add(d)
+               // if (d != null)
+                 //   connectedList.add(d)
                 context.log("getConnectedDevices connectedList add ble $b")
             }
 

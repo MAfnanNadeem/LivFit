@@ -11,6 +11,7 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.dialog.MyDialog
 import life.mibo.hexa.ui.main.MainActivity
+import life.mibo.hexa.ui.main.MiboApplication
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.NoSubscriberEvent
 import org.greenrobot.eventbus.Subscribe
@@ -18,6 +19,7 @@ import java.util.*
 
 
 abstract class BaseActivity : AppCompatActivity() {
+    var DEBUG = MiboApplication.DEBUG
 
     fun log(msg: String) {
         Logger.e("${this.javaClass} : $msg")

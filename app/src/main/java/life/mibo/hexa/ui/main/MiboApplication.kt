@@ -11,6 +11,7 @@ import android.app.Application
 import android.content.Context
 import coil.util.CoilLogger
 import com.jakewharton.threetenabp.AndroidThreeTen
+import life.mibo.hardware.BuildConfig
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
 
@@ -19,6 +20,7 @@ class MiboApplication : Application() {
 
     companion object {
         var context : Context? = null
+        val DEBUG = life.mibo.hexa.BuildConfig.DEBUG
     }
 
    // private var mFirebaseAnalytics: FirebaseAnalytics? = null

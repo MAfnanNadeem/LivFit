@@ -43,12 +43,23 @@
             android:id="@+id/iv_user_pic"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:src="@drawable/login_bg"
+            android:scaleType="fitCenter"
             android:visibility="visible"
+            android:src="@drawable/ic_person_black_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.33" />
 
+        <!--        <life.mibo.views.DashboardItem-->
+        <!--            android:id="@+id/iv_user_pic2"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:src="@drawable/login_bg"-->
+        <!--            android:visibility="visible"-->
+        <!--            app:item_icon="@drawable/ic_reflex_user"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            app:layout_constraintWidth_percent="0.33" />-->
 
         <TextView
             android:id="@+id/tv_user_name"

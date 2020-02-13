@@ -56,9 +56,10 @@
     <string name="filters">Filters</string>
     <string name="transition_icon">course_icon</string>
     <string name="transition_title">course_title</string>
-    <string name="working_station">working station</string>
+    <string name="working_station">Working station</string>
     <string name="lights_out">Lights out</string>
     <string name="cycles">Cycles</string>
+    <string name="players">Players</string>
     <string name="three_pods_required">Please connect at least 3 Reaction Lights</string>
     <string name="forgot_pwd">Forgot Password? </string>
     <string name="click_here"> <u>Click Here</u> </string>
@@ -119,7 +120,7 @@
     <string name="device_name">Device Name</string>
     <string name="select_color">Select Color</string>
     <string name="start_now">START NOW</string>
-    <string name="start_on_hint">START ON HINT</string>
+    <string name="start_on_hint">START ON HIT</string>
     <string name="assign_color">Assign Booster Color</string>
     <string name="scan_product">Scan Product</string>
     <string name="booster_6ch">6CH Booster</string>
@@ -127,5 +128,16 @@
     <string name="contact_us">Contact us</string>
     <string name="permission_denied">Permission Denied</string>
     <string name="device_not_connected">Device is not connected!</string>
+    <string name="title_reflex">Reaction Lights</string>
+    <string name="duration">Duration</string>
+    <string name="random">Random</string>
+    <string name="proximity_on">Proximity On</string>
+    <string name="proximity_off">Proximity Off</string>
+    <string name="pods">Pods</string>
+    <string name="activity_duration">Activity Duration</string>
+    <string name="action">Action</string>
+    <string name="delay">Delay</string>
+    <string name="description">Description</string>
+    <string name="course_description">Course Description</string>
 
 </resources>

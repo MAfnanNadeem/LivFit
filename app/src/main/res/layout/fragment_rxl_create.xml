@@ -12,7 +12,6 @@
     android:background="@drawable/bg_gradient">
 
 
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="0dp"
@@ -45,12 +44,12 @@
 
             <ImageView
                 android:id="@+id/iv_icon"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="76dp"
-                android:layout_marginStart="@dimen/grid_2x"
                 android:src="@drawable/ic_reflex_random_icon"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large"
+                android:layout_marginEnd="4dp"
                 app:layout_constraintBottom_toBottomOf="@+id/et_course_structure"
                 app:layout_constraintEnd_toStartOf="@+id/et_course_structure"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,29 +68,50 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/et_course_structure"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/grid_1x"
                 android:background="@drawable/login_edittext"
-                android:ems="10"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:singleLine="true"
+                android:textColor="@color/textColor"
                 android:hint="Course Structure"
+                android:textSize="@dimen/text_size_medium"
                 android:padding="@dimen/grid_1x"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/et_course_name"
                 app:layout_constraintTop_toBottomOf="@+id/et_course_name" />
+
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_course_desc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:background="@drawable/login_edittext"
+                android:hint="@string/course_description"
+                android:maxLines="10"
+                android:minLines="4"
+                android:nestedScrollingEnabled="true"
+                android:padding="@dimen/grid_1x"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_course_structure" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_general"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
                 android:text="GENERAL SETTINGS"
                 android:textColor="@color/white"
-                android:layout_marginTop="@dimen/grid_2x"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_course_structure"
+                app:layout_constraintTop_toBottomOf="@id/et_course_desc"
                 app:layout_constraintWidth_percent="1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -109,6 +129,7 @@
             <ImageView
                 android:id="@+id/iv_stations"
                 style="@style/rxl_create_icon"
+                android:layout_width="100dp"
                 android:src="@drawable/ic_reflex_lights_out"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
@@ -119,11 +140,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minWidth="100dp"
                 android:padding="@dimen/grid_1x"
-                android:text="1"
-                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:singleLine="true"
+                android:text="1"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_stations"
@@ -146,6 +167,7 @@
             <ImageView
                 android:id="@+id/iv_cycles"
                 style="@style/rxl_create_icon"
+                android:layout_width="100dp"
                 android:src="@drawable/ic_reflex_stations"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
@@ -156,18 +178,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minWidth="100dp"
                 android:padding="@dimen/grid_1x"
-                android:text="1"
-                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:singleLine="true"
+                android:text="1"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/iv_cycles" />
-
-
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -186,7 +206,7 @@
                 android:id="@+id/constraintLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/grid_1x"
+                android:paddingEnd="@dimen/grid_1x"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_activity"
                 app:layout_constraintWidth_percent="0.5">
@@ -206,8 +226,8 @@
                 <ImageView
                     android:id="@+id/iv_pods"
                     style="@style/rxl_create_icon"
-                    android:paddingEnd="@dimen/grid_2x"
                     android:src="@drawable/ic_rxl_pods_icon"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_pods"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_pods" />
 
@@ -244,6 +264,7 @@
                     android:id="@+id/iv_lights"
                     style="@style/rxl_create_icon"
                     android:src="@drawable/ic_reflex_cycles"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_cycles"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_lights" />
 
@@ -264,6 +285,43 @@
                     app:layout_constraintTop_toTopOf="@+id/iv_lights" />
 
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_players"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/players"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
+                    app:layout_constraintStart_toStartOf="@+id/iv_players"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_cycles" />
+
+                <ImageView
+                    android:id="@+id/iv_players"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_reflex_user"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_players"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_players" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_players"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_players"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_play" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -275,27 +333,29 @@
                 app:layout_constraintWidth_percent="0.5">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_players"
+                    android:id="@+id/tv_action"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
-                    android:text="Players"
+                    android:text="Action"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
-                    app:layout_constraintStart_toStartOf="@+id/iv_players"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
+                    app:layout_constraintStart_toStartOf="@+id/iv_action"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/iv_players"
+                    android:id="@+id/iv_action"
                     style="@style/rxl_create_icon"
-                    android:src="@drawable/ic_reflex_user"
+                    android:layout_marginEnd="1dp"
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_action"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_players" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_action" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_players"
+                    android:id="@+id/tv_select_action"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/login_edittext"
@@ -306,9 +366,9 @@
                     android:text="1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_players"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_action"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_players" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_action" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -319,14 +379,15 @@
                     android:text="Delay"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
                     app:layout_constraintStart_toStartOf="@+id/iv_delay"
-                    app:layout_constraintTop_toBottomOf="@id/iv_players" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_action" />
 
                 <ImageView
                     android:id="@+id/iv_delay"
                     style="@style/rxl_create_icon"
                     android:src="@drawable/ic_reflex_delay"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_delay"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_delay" />
 
@@ -343,48 +404,51 @@
                     android:text="1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_delay"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/iv_delay" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/duration"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_time"
+                    app:layout_constraintStart_toStartOf="@+id/iv_time"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_delay" />
+
+                <ImageView
+                    android:id="@+id/iv_time"
+                    style="@style/rxl_create_icon"
+                    android:layout_marginEnd="1dp"
+                    android:src="@drawable/ic_reflex_time"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_time"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_time" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:minWidth="100dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="30 sec"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_time" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/grid_2x"
-                android:text="Activity Duration"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_small"
-                app:layout_constraintEnd_toEndOf="@+id/iv_time"
-                app:layout_constraintStart_toStartOf="@+id/iv_time"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayout" />
-
-            <ImageView
-                android:id="@+id/iv_time"
-                style="@style/rxl_create_icon"
-                android:src="@drawable/ic_reflex_time"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_time" />
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_select_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/login_edittext"
-                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
-                android:minWidth="100dp"
-                android:padding="@dimen/grid_1x"
-                android:singleLine="true"
-                android:text="30 sec"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium"
-                app:layout_constraintBottom_toBottomOf="@id/iv_time"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/iv_time" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -393,7 +457,7 @@
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_time">
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout">
 
                 <life.mibo.views.FluidSlider
                     android:id="@+id/fluidSlider"

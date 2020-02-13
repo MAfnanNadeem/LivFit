@@ -25,7 +25,7 @@ data class PostData(
     var token: String?,
     @SerializedName("Version")
     var version: String?
-){
+) : BaseModel {
     constructor(userId: String, token: String?, type: String?) : this(
         "Client1213", Post(userId), "192.168.195.122", type,
         "2019-12-10T04:49:11.6570000", token, "1.0.0.0"

@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.core.showToast
 import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseActivity
 
@@ -25,6 +24,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private lateinit var controller: LoginController
+    private var isPwd = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +38,7 @@ class LoginActivity : BaseActivity() {
         btn_register?.setOnClickListener {
             controller.onRegister()
         }
+
         clear()
 
         et_password?.setOnKeyListener { v, keyCode, event ->
@@ -49,22 +50,37 @@ class LoginActivity : BaseActivity() {
             return@setOnKeyListener false
         }
 
-        iv_pwd_visible?.setOnTouchListener { v, event ->
-
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                et_password.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            }
-            if (event.action == MotionEvent.ACTION_UP) {
+        iv_pwd_visible?.setOnClickListener {
+            if (isPwd) {
+                iv_pwd_visible?.setImageResource(R.drawable.ic_visibility_off)
                 et_password.transformationMethod = PasswordTransformationMethod.getInstance()
                 et_password?.setSelection(et_password?.length() ?: 0)
+                isPwd = false
+            } else {
+                iv_pwd_visible?.setImageResource(R.drawable.ic_visibility_on)
+                et_password.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                et_password?.setSelection(et_password?.length() ?: 0)
+                isPwd = true
+
             }
 
-            true
-
         }
+//        iv_pwd_visible?.setOnTouchListener { v, event ->
+//
+//            if (event.action == MotionEvent.ACTION_DOWN) {
+//                et_password.transformationMethod = HideReturnsTransformationMethod.getInstance()
+//            }
+//            if (event.action == MotionEvent.ACTION_UP) {
+//                et_password.transformationMethod = PasswordTransformationMethod.getInstance()
+//                et_password?.setSelection(et_password?.length() ?: 0)
+//            }
+//
+//            true
+//
+//        }
         //Database.getInstance(this).clearAllTables()
         // debug()
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             btn_login?.setOnLongClickListener {
                 controller.onLogin(et_username?.text.toString(), et_password?.text.toString())
                 return@setOnLongClickListener true

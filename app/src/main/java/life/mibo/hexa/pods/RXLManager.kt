@@ -109,7 +109,7 @@ class RXLManager private constructor() {
     private var delayDisposable: Disposable? = null
     var isRandom = false
     var exerciseType = 0
-    private var test = false
+    private var unitTest = false
     private var cycles = 0L
     private var currentCycle = 1
     private var actionTime = 0
@@ -128,24 +128,16 @@ class RXLManager private constructor() {
 
     private fun getColor(): Int = program?.getActiveColor() ?: Color.RED
 
-    fun startNow() {
-        //isRandom = random
-        //register()
+    private fun reset() {
         isStarted = false
-        startPublish()
-        //startInternal()
+        isInternalStarted = false
+        isRunning = false
     }
-
-
-    fun startOnHit(random: Boolean) {
-
-    }
-
 
     fun startTest(program: RxlProgram) {
-        startPublish()
+        createTapPublish()
         log("startTest.......... duration ${program.getDuration()} cycle ${program.getCyclesCount()} action ${program.getAction()} pause ${program.getPause()}")
-        test = true
+        unitTest = true
         devices.clear()
         for (i in 1..6) {
             devices.add(Device("Name $i", "00000$i", "${i.times(123)}", DeviceTypes.RXL_WIFI))
@@ -165,7 +157,24 @@ class RXLManager private constructor() {
         startObserver(currentCycle, program!!.getNext().cycleDuration)
     }
 
-    private fun startPublish() {
+    fun startOnTap() {
+        //isRandom = random
+        //register()
+        reset()
+        createTapPublish()
+        //startInternal()
+    }
+
+    fun startNow() {
+        //isRandom = random
+        //register()
+        reset()
+        createNowPublish()
+        startInternal()
+        //startInternal()
+    }
+
+    private fun createTapPublish() {
         publisher = PublishSubject.create<RxlStatusEvent>()
         publisher!!.subscribeOn(Schedulers.io()).doOnNext {
             log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
@@ -173,17 +182,18 @@ class RXLManager private constructor() {
             if (it.uid == lastUid) {
                 if (!isInternalStarted) {
                     log("RxlStatusEvent2 starting........... >> $isInternalStarted ")
-                    if (it.time > 10)
+                    if (it.time > 10) {
                         startInternal()
-                    else
+                        return@doOnNext
+                    } else
                         return@doOnNext
                 }
 
                 log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
-                events.add(Event(events.size + 1, getAction(), it.time))
-                lightOnDynamic()
+                nextEvent(it.time)
             } else {
                 log("RxlStatusEvent UID NOT Matched >> ${it.uid} == $lastUid ")
+                return@doOnNext
             }
         }.subscribe()
 
@@ -210,6 +220,26 @@ class RXLManager private constructor() {
         }
     }
 
+    private fun createNowPublish() {
+        publisher = PublishSubject.create<RxlStatusEvent>()
+        publisher!!.subscribeOn(Schedulers.io()).doOnNext {
+            log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
+
+            if (it.uid == lastUid) {
+                log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
+                nextEvent(it.time)
+            } else {
+                log("RxlStatusEvent UID NOT Matched >> ${it.uid} == $lastUid ")
+            }
+        }.subscribe()
+    }
+
+    private fun nextEvent(time: Int) {
+        colorSent = false
+        events.add(Event(events.size + 1, getAction(), time))
+        lightOnDynamic()
+    }
+
     // Private Functions
 
     private fun testObserver(action: Int) {
@@ -227,14 +257,13 @@ class RXLManager private constructor() {
                     "action ${program?.getAction()} pause ${program?.getPause()}"
         )
         if (isRunning) {
-            //Toasty.info(MiboApplication.context, "")
             log("exercise is already running")
             disposable?.dispose()
             return
         }
         if (observers == null || observers?.isDisposed == true)
             observers = CompositeDisposable()
-        test = false
+        unitTest = false
         startExercise(0, 0)
         // isRandom = exercise?.logic == LightLogic.RANDOM
         cycles = program!!.getCyclesCount().toLong()
@@ -332,7 +361,7 @@ class RXLManager private constructor() {
 
     private fun startExercise() {
         log("startExercise exercise $program")
-        if (test) {
+        if (unitTest) {
             startExercise(0, 0)
             currentCycle = 1
             startObserver(currentCycle, getDuration())
@@ -506,7 +535,7 @@ class RXLManager private constructor() {
 
     private var isException = false
     private fun lightOnDynamic() {
-        log("lightOnDynamic sequence $lastPod $isStarted")
+        log("lightOnDynamic random $isRandom  $lastPod $isStarted ")
         if (devices.size > 0 && isStarted) {
             try {
                 if (isRandom) {
@@ -567,10 +596,17 @@ class RXLManager private constructor() {
         //lastPod++
     }
 
+    private var colorSent = false
+
     private fun sendColorEvent(device: Device?) {
+        if (colorSent) {
+            log("sendColorEvent color is already sent.......")
+            return
+        }
+        colorSent = true
         //publisher.onNext("sendColorEvent ${device?.uid}")
         delayObserver()
-        if (test) {
+        if (unitTest) {
             log("sendColorEvent test >> sent $lastPod")
             lastUid = "000002"
             testObserver(getAction())

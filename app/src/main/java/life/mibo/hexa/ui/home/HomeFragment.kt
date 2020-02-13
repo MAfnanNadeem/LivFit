@@ -1,16 +1,17 @@
 package life.mibo.hexa.ui.home
 
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -68,12 +69,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         //iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
         val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
-        iv_user_pic.setImageDrawable(
-            ContextCompat.getDrawable(
-                this@HomeFragment.context!!,
-                R.drawable.ic_person_black_24dp
-            )
-        )
+//        iv_user_pic.setImageDrawable(
+//            ContextCompat.getDrawable(
+//                this@HomeFragment.context!!,
+//                R.drawable.ic_person_black_24dp
+//            )
+//        )
         controller.getDashboard()
         navigate(HOME_VIEW, true)
         val format = SimpleDateFormat("EEE, dd MMM, yyyy")
@@ -87,16 +88,21 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     private fun loadImage(iv: ImageView) {
-        Single.fromCallable {
+        Maybe.fromCallable {
             log("loadImage fromCallable")
+            var bitmap: Bitmap? = null
             val img = Prefs.get(this.context).member?.imageThumbnail
-            if (img.isNullOrEmpty())
-                return@fromCallable Utils.base64ToBitmap(Utils.testUserImage())
-            else return@fromCallable Utils.base64ToBitmap(img)
+            if (!img.isNullOrEmpty())
+                bitmap = Utils.base64ToBitmap(img)
+           // else
+             //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
+            bitmap
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
             log("loadImage doOnSuccess $it")
             if (it != null)
                 iv.setImageBitmap(it)
+        }.doOnError {
+
         }.subscribe()
     }
 

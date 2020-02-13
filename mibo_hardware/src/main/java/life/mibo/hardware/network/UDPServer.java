@@ -22,7 +22,7 @@ import life.mibo.hardware.core.Logger;
 
 public class UDPServer {
 
-    private Context context;
+    //private Context context;
     private final int PortSend = CommunicationsConfig.UDP_PORT_SEND ;
     private final int PortReceive = CommunicationsConfig.UDP_PORT_RECEIVE;
 
@@ -47,8 +47,8 @@ public class UDPServer {
 
 
     @SuppressLint("NewApi")
-    public void start(final Activity context) {
-        this.context = context;
+    public void start() {
+       // this.context = context;
 
         UDPRunning = true;
 

@@ -59,7 +59,7 @@ class AddProductController(val fragment: AddProductFragment, val observer: Produ
             override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     parseData(data)
                 } else {
 

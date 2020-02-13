@@ -9,7 +9,6 @@ package life.mibo.hexa.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -34,12 +33,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -57,6 +56,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.ScanComplete
+import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.BaseFragment
@@ -78,9 +78,9 @@ import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION_POP
+import life.mibo.hexa.ui.rxl.adapter.ReflexModel
 import life.mibo.hexa.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
-import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
@@ -96,6 +96,7 @@ class MainActivity : BaseActivity(), Navigator {
     //private var navigator: ScreenNavigator? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var drawerLayout: DrawerLayout
+    private var navigation: NavigationView? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +108,7 @@ class MainActivity : BaseActivity(), Navigator {
             val toolbar: Toolbar? = findViewById(R.id.toolbar)
             setSupportActionBar(toolbar)
             drawerLayout = findViewById(R.id.drawer_layout)
-            val navigation: NavigationView = findViewById(R.id.nav_view)
+            navigation = findViewById(R.id.nav_view)
             //navigator = ScreenNavigator(FragmentHelper(this, R.id.nav_host_fragment, supportFragmentManager))
 
 
@@ -122,7 +123,7 @@ class MainActivity : BaseActivity(), Navigator {
             //setBottomBar()
             setDrawerIcon(drawerLayout)
 
-            setNavigationView(navigation)
+            setNavigationView()
 
 //        drawer.setupWithNavController(navController)
 
@@ -153,8 +154,14 @@ class MainActivity : BaseActivity(), Navigator {
         bottomBarHelper.bind(bottom_bar)
     }
 
-    private fun setNavigationView(navigation: NavigationView) {
-        navigation.setNavigationItemSelectedListener {
+    fun getNavigation(): NavigationView {
+        if (navigation == null)
+            navigation = findViewById(R.id.nav_view)
+        return navigation!!
+    }
+
+    private fun setNavigationView() {
+        getNavigation().setNavigationItemSelectedListener {
             drawerItemClicked(it.itemId)
             if (::drawerLayout.isInitialized)
                 drawerLayout.closeDrawer(GravityCompat.START)
@@ -163,13 +170,15 @@ class MainActivity : BaseActivity(), Navigator {
 
         val member = Prefs.get(this).member ?: return
         //drawer_user_email?.text = member.imageThumbnail
-        navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
+        navigation!!.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
             "${member.firstName} ${member.lastName}"
 //        /drawer.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text = "${member.email}"
-        navigation.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
+        navigation!!.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
             Prefs.get(this@MainActivity).get("user_email")
+        navigation?.setCheckedItem(R.id.nav_home)
 
-//        if (BuildConfig.DEBUG) {
+        //navigation.s
+//        if (DEBUG) {
 //            navigation.menu.clear()
 //            navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
 //        }
@@ -190,6 +199,7 @@ class MainActivity : BaseActivity(), Navigator {
         drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
         drawerToggle.drawerArrowDrawable?.color = Color.WHITE
         drawerToggle.setToolbarNavigationClickListener {
+            log("setToolbarNavigationClickListener")
             if (!drawer.isDrawerOpen(GravityCompat.START))
                 drawer.openDrawer(GravityCompat.START)
         }
@@ -197,14 +207,55 @@ class MainActivity : BaseActivity(), Navigator {
         drawerToggle.isDrawerIndicatorEnabled = true;
         drawerToggle.syncState();
         //drawerToggle.isDrawerIndicatorEnabled = true
-        setupActionBarWithNavController(navController, drawer)
+        //setupActionBarWithNavController(navController, drawer)
+//        NavigationUI.setupActionBarWithNavController(
+//            this, navController, AppBarConfiguration(navController.graph, drawerLayout)
+//        )
         toolbar!!.setupWithNavController(navController, drawer)
         //too.setupWithNavController(navController, config)
         drawer.post {
             drawerToggle.syncState()
         }
 
+//        drawerToggle.setToolbarNavigationClickListener {
+//            log("setToolbarNavigationClickListener")
+//        }
+//        toolbar?.setOnMenuItemClickListener {
+//            log("setOnMenuItemClickListener")
+//            true
+//        }
+        toolbar.setNavigationOnClickListener {
+            log("setNavigationOnClickListener")
+            if (childBackPressed()) {
+                NavigationUI.navigateUp(
+                    navController,
+                    AppBarConfiguration(navController.graph, drawerLayout)
+                )
+                // navController.navigateUp()
+            }
+        }
+
+
+//        toolbar?.setNavigationOnClickListener {
+//            log("setNavigationOnClickListener")
+//        }
     }
+
+//    fun setupWithNavController(
+//        toolbar: Toolbar,
+//        navController: NavController,
+//        configuration: AppBarConfiguration
+//    ) {
+//        navController.addOnDestinationChangedListener(
+//            ToolbarOnDestinationChangedListener(toolbar, configuration)
+//        )
+//        toolbar.setNavigationOnClickListener {
+//            NavigationUI.navigateUp(
+//                navController,
+//                configuration
+//            )
+//        }
+//    }
 
 
     @SuppressLint("CheckResult")
@@ -214,11 +265,11 @@ class MainActivity : BaseActivity(), Navigator {
             drawerToggle.syncState()
         log("PostCreate")
         // Single.timer(1, TimeUnit.SECONDS)
-        Single.just(R.id.nav_home).delay(1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread()).subscribe { a ->
-                //EventBus.getDefault().postSticky(NotifyEvent(a, null))
-                //navigateFragment(a)
-            }
+//        Single.just(R.id.nav_home).delay(1, TimeUnit.SECONDS)
+//            .observeOn(AndroidSchedulers.mainThread()).subscribe { a ->
+//                //EventBus.getDefault().postSticky(NotifyEvent(a, null))
+//                //navigateFragment(a)
+//            }
     }
 
     fun setToolbar(drawerLayout: DrawerLayout) {
@@ -277,7 +328,6 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    val REQUEST_ENABLE_BT = 1022
     var manager: CommunicationManager? = null
     private fun startManager() {
         log("getScanning started")
@@ -285,17 +335,9 @@ class MainActivity : BaseActivity(), Navigator {
 
         val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         wifi?.isWifiEnabled = true
-        val lock = wifi.createMulticastLock("MulticastMibo")
+        val lock = wifi.createMulticastLock("MIBO Cast")
         lock.setReferenceCounted(true)
         lock?.acquire()
-
-        val bl = BluetoothAdapter.getDefaultAdapter()
-        if (bl != null && !bl.isEnabled) {
-            startActivityForResult(
-                Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-                REQUEST_ENABLE_BT
-            )
-        }
 
 
 
@@ -748,6 +790,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             CLEAR_HOME -> {
                 popup(R.id.navigation_home)
+                navigation?.setCheckedItem(R.id.nav_home)
                 isHome = true
             }
             HOME_VIEW -> {
@@ -774,6 +817,14 @@ class MainActivity : BaseActivity(), Navigator {
                 }
             }
             RXL_DETAILS -> {
+
+                if (data is RXLPrograms.Program) {
+                    val args = Bundle()
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(0, R.id.navigation_rxl_details, args, getNavOptions())
+                    updateBar(true)
+                    return
+                }
 
                 if (data is ReflexModel) {
                     val args = Bundle()
@@ -854,6 +905,7 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.nav_home -> {
                 popup(R.id.navigation_home)
                 isHome = true
+                navigation?.setCheckedItem(R.id.nav_home)
             }
             R.id.nav_ch6 -> {
                 navigate(HomeItem.Type.BOOSTER)
@@ -1000,7 +1052,8 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.PROFILE -> {
-                navigate(0, R.id.navigation_profile)
+                if (DEBUG)
+                    navigate(0, R.id.navigation_profile)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
 
@@ -1048,9 +1101,15 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        //menuInflater.inflate(R.menu.main, menu)
+        log("onCreateOptionsMenu ")
+        return true
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         //Toasty.info(this, "drawer clicked").show()
+        log("onOptionsItemSelected $item")
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -1058,7 +1117,7 @@ class MainActivity : BaseActivity(), Navigator {
         if (item.itemId == R.id.home) {
 
         }
-        log("onOptionsItemSelected $item")
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -1072,7 +1131,8 @@ class MainActivity : BaseActivity(), Navigator {
 
     override fun onDestroy() {
         Database.getInstance(this).clearAll()
-        commHandler.unregister()
+        if (::commHandler.isInitialized)
+            commHandler.unregister()
         super.onDestroy()
         manager?.onDestroy()
     }
@@ -1091,6 +1151,18 @@ class MainActivity : BaseActivity(), Navigator {
         return super.onSupportNavigateUp()
     }
 
+    private fun childBackPressed(): Boolean {
+        val base =
+            supportFragmentManager?.primaryNavigationFragment?.childFragmentManager?.fragments?.get(
+                0
+            )
+        if (base is BaseFragment) {
+            return base.onBackPressed()
+        }
+
+        return true
+    }
+
 
     override fun onBackPressed() {
         log("onBackPressed")
@@ -1098,19 +1170,14 @@ class MainActivity : BaseActivity(), Navigator {
             drawerLayout.closeDrawer(GravityCompat.START)
             return
         }
-        val base =
-            supportFragmentManager?.primaryNavigationFragment?.childFragmentManager?.fragments?.get(
-                0
-            )
-        if (base is BaseFragment) {
-            if (!base.onBackPressed())
-                return
-        }
-        Navigation.findNavController(this, R.id.nav_host_fragment)
+        if (!childBackPressed())
+            return
+        // Navigation.findNavController(this, R.id.nav_host_fragment)
         if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()) {
             lastId = -1
             return
         }
+        navigation?.setCheckedItem(R.id.nav_home)
 //        if (navController.popBackStack(R.id.navigation_home, true))
 //            return;
         isHome = true
@@ -1182,4 +1249,13 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        try {
+            if (isHome)
+                updateBar(true)
+        } catch (e: java.lang.Exception) {
+
+        }
+    }
 }

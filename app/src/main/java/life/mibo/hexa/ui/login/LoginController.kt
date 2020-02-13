@@ -50,7 +50,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
         if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
             //usr = "test@mibo.life"
             //usr = "christie.ffrench@gmail.com"
-           // usr = "diana@gmail.com"
+            //usr = "diana@gmail.com"
             usr = "max@gmail.com"
            // usr = "alisher@mibo.life"
             pwd = "123456"

@@ -9,17 +9,35 @@ package life.mibo.hexa.ui.rxl.create
 
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.fragment_rxl_create.*
 import life.mibo.hexa.R
+import life.mibo.hexa.core.API
+import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.core.toIntOrZero
+import life.mibo.hexa.models.base.ResponseData
+import life.mibo.hexa.models.rxl.Data
+import life.mibo.hexa.models.rxl.SaveRXLProgram
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.main.MiboEvent
+import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.impl.CourseCreateImpl
 import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
 import life.mibo.hexa.ui.rxl.impl.ReflexDialog
+import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
 
@@ -101,10 +119,36 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_time?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.DURATION)
         }
+        tv_select_action?.setOnClickListener {
+            viewImpl.showDialog(CourseCreateImpl.Type.ACTION)
+        }
+        et_course_structure?.setOnClickListener {
+            viewImpl.showDialog(CourseCreateImpl.Type.STRUCTURE)
+        }
         viewImpl.listener = this
 
         initTitles()
+        navigate(Navigator.HOME_VIEW, true)
+        btn_save?.setOnClickListener {
+            validate()
+        }
+
+        et_course_desc?.setOnTouchListener { v, event ->
+
+            if (et_course_desc.hasFocus()) {
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                when (event.action and MotionEvent.ACTION_MASK) {
+                    MotionEvent.ACTION_SCROLL -> {
+                        v.parent.requestDisallowInterceptTouchEvent(false)
+                        return@setOnTouchListener true
+                    }
+                }
+            }
+            return@setOnTouchListener false
+        }
     }
+
+    private var checked = 1
 
     private fun initTitles() {
         tv_select_stations?.text = viewImpl.getTitle(CourseCreateImpl.Type.STATIONS)
@@ -114,23 +158,27 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_delay?.text = viewImpl.getTitle(CourseCreateImpl.Type.DELAY)
         tv_select_time?.text = viewImpl.getTitle(CourseCreateImpl.Type.DURATION)
         tv_select_players?.text = viewImpl.getTitle(CourseCreateImpl.Type.PLAYERS)
+        tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
 
         radio_group?.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.radio_start_sensor -> {
                     //fluidSlider?.visibility = View.VISIBLE
-                    Utils.slideUp(fluidSlider)
+                    //Utils.slideUp(fluidSlider)
                     nestedScrollView?.post {
                         nestedScrollView?.fullScroll(View.FOCUS_DOWN)
                     }
+                    checked = 3
                 }
                 R.id.radio_start_now -> {
-                    Utils.slideDown(fluidSlider)
+                    //Utils.slideDown(fluidSlider)
                     //fluidSlider?.visibility = View.GONE
+                    checked = 1
                 }
                 R.id.radio_start_tap -> {
+                    checked = 2
                     //fluidSlider?.visibility = View.GONE
-                    Utils.slideDown(fluidSlider)
+                    //Utils.slideDown(fluidSlider)
                 }
 
             }
@@ -165,6 +213,12 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             CourseCreateImpl.Type.DURATION.type -> {
                 tv_select_time?.text = title?.replace("seconds", "sec")
             }
+            CourseCreateImpl.Type.ACTION.type -> {
+                tv_select_action?.text = title?.replace("seconds", "sec")
+            }
+            CourseCreateImpl.Type.STRUCTURE.type -> {
+                et_course_structure?.text = title
+            }
         }
     }
 
@@ -194,30 +248,112 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         }
     }
 
-    fun getType(type: CourseCreateImpl.Type) {
-        when (type) {
-            CourseCreateImpl.Type.STATIONS -> {
+    private fun showError(error: Int, editText: EditText?) {
+        showError(context?.getString(error), editText)
+    }
 
-            }
-            CourseCreateImpl.Type.CYCLES -> {
+    private fun showError(error: String?, editText: TextView?) {
+        editText?.error = error
+        editText?.addTextChangedListener(object : TextWatcher {
 
-            }
-            CourseCreateImpl.Type.PODS -> {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-            }
-            CourseCreateImpl.Type.LIGHT_LOGIC -> {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
+            override fun afterTextChanged(s: Editable) {
+                if (editText?.error != null)
+                    editText?.error = null
             }
-            CourseCreateImpl.Type.PLAYERS -> {
+        })
+    }
 
-            }
-            CourseCreateImpl.Type.DELAY -> {
+    private fun validate() {
+        val member = Prefs.get(context).member ?: return
 
-            }
-            CourseCreateImpl.Type.DURATION -> {
-
-            }
+        if (Utils.isEmpty(et_course_name?.text)) {
+            showError("Enter Course Name", et_course_name)
+            return
         }
+        if (Utils.isEmpty(et_course_structure?.text)) {
+            showError("Enter Course Structure", et_course_structure)
+            return
+        }
+        if (Utils.isEmpty(et_course_desc?.text)) {
+            showError("Enter Course Description", et_course_desc)
+            return
+        }
+
+        val images = arrayOf(
+            "http://test.mibo.world/assets/images/rxl.jpg",
+            "http://test.mibo.world/assets/images/rxl.jpg",
+            "http://test.mibo.world/assets/images/rxl.jpg",
+            "http://test.mibo.world/assets/images/rxl.jpg"
+        )
+        val data = Data(
+            "no",
+            getInt(tv_select_action.text),
+            getInt(tv_select_cycles.text),
+            getInt(tv_select_delay.text),
+            et_course_desc?.text.toString(),
+            images.contentToString(),
+            tv_select_lights?.text?.toString(),
+            member.id(),
+            et_course_name.text?.toString(),
+            getInt(tv_select_players.text),
+            getInt(tv_select_pods.text),
+            tv_title.text?.toString(),
+            checked,
+            "",
+            et_course_structure?.text.toString(),
+            getInt(tv_select_time.text),
+            "",
+            getInt(tv_select_stations.text)
+        )
+        val program = SaveRXLProgram(data, member.accessToken)
+        saveProgram(program)
+
+    }
+
+    fun getInt(text: CharSequence): Int = text.toString().toIntOrZero()
+
+    private fun saveProgram(program: SaveRXLProgram?) {
+        if (program == null) {
+            return
+        }
+        getDialog()?.show()
+        API.request.getApi()
+            .saveRXLProgram(program)
+            .enqueue(object : Callback<ResponseData> {
+
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(context!!, R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+                            data.data?.message?.let {
+                                Toasty.info(context!!, it).show()
+                            }
+
+                        } else if (data.status.equals("error", true)) {
+                            checkSession(data)
+                        }
+                    } else {
+
+                    }
+                }
+            })
     }
 
     override fun onStop() {

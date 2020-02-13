@@ -1,4 +1,4 @@
-package life.mibo.hexa.ui.rxl.impl.model
+package life.mibo.hexa.ui.rxl.adapter
 
 import androidx.navigation.Navigator
 import java.io.Serializable
@@ -28,10 +28,6 @@ data class ReflexModel(val id: Int) : Serializable {
 
     var title: String = ""
     var image: Int = 0
-    var typeImage: Int = 0
-    var userImage: Int = 0
-    var timeImage: Int = 0
-    var podsImage: Int = 0
     var typeText: String = ""
     var userText: String = ""
     var timeText: String = ""

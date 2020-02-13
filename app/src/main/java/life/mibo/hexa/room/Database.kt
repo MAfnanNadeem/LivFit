@@ -19,11 +19,13 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hexa.models.program.Program
+import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.ui.main.MiboEvent
 import java.util.concurrent.Callable
 
 @androidx.room.Database(
-    entities = [Member::class, Device::class, UserDetails::class, Program::class],
-    version = 6,
+    entities = [Member::class, Device::class, UserDetails::class, Program::class, RXLPrograms.Program::class],
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class, ProgramConverter::class)
@@ -32,16 +34,24 @@ abstract class Database : RoomDatabase() {
     abstract fun memberDao(): MemberDao
     abstract fun deviceDao(): DevicesDao
     abstract fun programDao(): ProgramDao
+    abstract fun rxlProgramDao(): RxlProgramDao
 
     companion object {
 
         @Volatile
         private var INSTANCE: Database? = null
+        private var TEMP: Database? = null
 
         fun getInstance(context: Context): Database =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
+
+        fun getTempDb(context: Context): Database =
+            TEMP ?: synchronized(this) {
+                TEMP ?: buildTempDatabase(context).also { TEMP = it }
+            }
+
 
         private fun buildDatabase(context: Context) =
             androidx.room.Room.databaseBuilder(
@@ -50,9 +60,19 @@ abstract class Database : RoomDatabase() {
                 "MIBOHEXA"
             ).fallbackToDestructiveMigration().build()
 
+        private fun buildTempDatabase(context: Context) =
+            androidx.room.Room.databaseBuilder(
+                context.applicationContext,
+                Database::class.java,
+                "MIBOTEMP"
+            ).fallbackToDestructiveMigration().build()
+
         fun execute(action: Action): Disposable {
             return Observable.empty<String>().observeOn(Schedulers.io())
                 .doOnComplete(action)
+                .doOnError {
+                    MiboEvent.log(it)
+                }
                 .subscribe()
         }
 

@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.rxl.impl.RxlViewModel
-import life.mibo.hexa.ui.rxl.impl.model.ReflexAdapter
-import life.mibo.hexa.ui.rxl.impl.model.ReflexFilterAdapter
-import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
+import life.mibo.hexa.ui.rxl.adapter.ReflexFilterAdapter
 import life.mibo.views.dialog.SheetMenu
 
 class ReactionLightFragment : Fragment() {
@@ -31,7 +29,7 @@ class ReactionLightFragment : Fragment() {
         rxl.text.observe(this, Observer {
             //    textView.text = ""//it
         })
-        setFilters(root.findViewById(R.id.recyclerViewFilters))
+        //setFilters(root.findViewById(R.id.recyclerViewFilters))
         setRecycler(recycler)
         return root
     }
@@ -66,15 +64,15 @@ class ReactionLightFragment : Fragment() {
     }
 
     fun setRecycler(view: RecyclerView) {
-        val list = ArrayList<ReflexModel>();
-        for (i in 1..50
-        ) {
-            list.add(ReflexModel(i))
-        }
-        val adapter = ReflexAdapter(list)
-        val manager = LinearLayoutManager(this@ReactionLightFragment.activity)
-        view.layoutManager = manager
-        view.adapter = adapter
+//        val list = ArrayList<ReflexModel>();
+//        for (i in 1..50
+//        ) {
+//            list.add(ReflexModel(i))
+//        }
+//        val adapter = ReflexAdapter(list)
+//        val manager = LinearLayoutManager(this@ReactionLightFragment.activity)
+//        view.layoutManager = manager
+//        view.adapter = adapter
     }
 
     fun showFilterOptions(data: ReflexFilterAdapter.ReflexFilterModel?) {

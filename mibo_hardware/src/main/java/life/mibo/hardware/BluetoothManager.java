@@ -2,7 +2,10 @@ package life.mibo.hardware;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -24,13 +27,19 @@ import java.util.Set;
 import java.util.UUID;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
+import life.mibo.hardware.bluetooth.BleScanCallback;
 import life.mibo.hardware.bluetooth.CharacteristicChangeListener;
+import life.mibo.hardware.bluetooth.OnBleCharChanged;
+import life.mibo.hardware.bluetooth.OnBleDeviceDiscovered;
 import life.mibo.hardware.bluetooth.operations.GattCharacteristicWriteOperation;
 import life.mibo.hardware.bluetooth.operations.GattDisconnectOperation;
 import life.mibo.hardware.bluetooth.operations.GattSetNotificationOperation;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
 import life.mibo.hardware.encryption.Encryption;
+import life.mibo.hardware.models.BleDevice;
+import life.mibo.hardware.models.Device;
+import life.mibo.hardware.models.DeviceTypes;
 
 /**
  * Created by Fer on 08/04/2019.
@@ -44,34 +53,20 @@ public class BluetoothManager {
     private ArrayList<BluetoothDevice> devicesHRBle;
     private ArrayList<BluetoothDevice> devicesScaleBle;
     private ArrayList<BluetoothDevice> devicesConnectedBle;
+    private ArrayList<BluetoothDevice> devices;
 
     private static final long SCAN_PERIOD = 5000;
     //private Handler mHandlerScan;
+    private Context activity;
     private BluetoothLeScanner bluetoothLeScanner;
     private BluetoothAdapter mBluetoothAdapter;
     private OnBleDeviceDiscovered listener = null;
     private OnBleCharChanged onBleCharChanged = null;
+    //private BleScanCallback bleScanCallback;
     private BleGattManager.OnConnection bleGatListener = null;
-    private Context activity;
     private BleGattManager mGattManager;
     private int rxlCount = 0;
 
-
-    public interface OnBleDeviceDiscovered {
-        void bleHrDeviceDiscovered(String uid, String serial);
-
-        void bleBoosterDeviceDiscovered(String uid, String serial);
-
-        void bleRXLDiscovered(String uid, String serial, String name);
-
-        void bleScaleDeviceDiscovered(String uid, String serial);
-    }
-
-    public interface OnBleCharChanged {
-        void bleHrChanged(int hr, String uid);
-
-        void bleBoosterChanged(byte[] data, String uid);
-    }
 
     public void setBleGatListener(BleGattManager.OnConnection bleGatListener) {
         this.bleGatListener = bleGatListener;
@@ -132,7 +127,7 @@ public class BluetoothManager {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scanDevice(BleScanCallback callback) {
-        this.bleScanCallback = callback;
+        //this.bleScanCallback = callback;
         scanDevice();
     }
 
@@ -145,9 +140,9 @@ public class BluetoothManager {
         getDevicesBoosterBle().clear();
         getDevicesHRBle().clear();
         getDevicesScaleBle().clear();
-        getDevicesConnectedBle().clear();
+        getDevicesConnectedBle();
         getDevicesRxl().clear();
-        rxlCount = 0;
+        //rxlCount = rxlCount();
         //reset();
         // initBlueTooth();
 //
@@ -173,6 +168,40 @@ public class BluetoothManager {
             if (bluetoothLeScanner != null)
                 bluetoothLeScanner.stopScan(mLeHrSensorScanCallback);
         }
+    }
+
+    private synchronized void addDevices(BluetoothDevice device) {
+        log("addBleDevice........ ");
+        if (devices == null)
+            devices = new ArrayList<>();
+
+        String uid = BleDevice.getUid(device.getName());
+        for (BluetoothDevice d : devices) {
+            if (d.getName().contains(uid)) {
+                log("addBleDevice found........... ");
+                return;
+            }
+        }
+        //String name = "New Device";
+        //DeviceTypes type = BleDevice.getDeviceType(device.getName());
+        //BleDevice ble = new BleDevice(name, device.getName(), device, type);
+        devices.add(device);
+        log("mDiscoveredDevices Device added............. --- " + device);
+        //if (bleScanCallback != null)
+       //     bleScanCallback.onDevice(device);
+        try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //
+    public ArrayList<BluetoothDevice> getDevices() {
+        if (devices == null)
+            devices = new ArrayList<>();
+        return devices;
     }
 
     private ArrayList<BluetoothDevice> getDevicesScaleBle() {
@@ -226,6 +255,17 @@ public class BluetoothManager {
         rxlCount = 0;
     }
 
+    private int rxlCount() {
+        int count = 0;
+        if (devicesConnectedBle.size() > 0) {
+            for (BluetoothDevice d : devicesConnectedBle) {
+                if (d.getName().contains("MBRXL"))
+                    count++;
+            }
+        }
+        return count;
+    }
+
     //    private BluetoothAdapter.LeScanCallback mLeHrSensorScanCallback =
 //            new BluetoothAdapter.LeScanCallback() {
 //                @Override
@@ -245,12 +285,6 @@ public class BluetoothManager {
 //                }
 //            };
 
-    interface BleScanCallback {
-        void onDevice(ScanResult result);
-    }
-
-    private BleScanCallback bleScanCallback;
-
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private ScanCallback mLeHrSensorScanCallback = new ScanCallback() {
@@ -258,10 +292,11 @@ public class BluetoothManager {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            if (bleScanCallback != null)
-                bleScanCallback.onDevice(result);
+            //if (bleScanCallback != null)
+            //    bleScanCallback.onDevice(B);
             log("BluetoothManager onScanResult " + result);
             BluetoothDevice device = result.getDevice();
+            //mBluetoothAdapter.getRemoteDevice(result)
 
             if (!devicesHRBle.contains(device) && device.getName() != null && (device.getName().contains("HW") || device.getName().contains("Geonaute"))) {
                 devicesHRBle.add(device);
@@ -271,9 +306,9 @@ public class BluetoothManager {
 
             // TODO Session is Boosted/Wifi remove later isBoosterMode()
             if (!devicesBoosterBle.contains(device) && device.getName() != null && device.getName().contains("MBRXL")) {
-                rxlCount++;
+                //rxlCount++;
                 devicesBoosterBle.add(device);
-                listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL " + rxlCount);
+                listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "");
                 //  listener.bleBoosterDeviceDiscovered(device.toString(), device.getName());
                 log(" onScanResult3 " + device.getName() + "   " + device.getClass());
             }
@@ -321,6 +356,7 @@ public class BluetoothManager {
             log("BluetoothManager onScanFailed " + errorCode);
         }
     };
+
 
     public void connectHrGattDevice(String Id) {
         boolean newDevice = true;
@@ -405,6 +441,10 @@ public class BluetoothManager {
 
     void connectRXLGattDevice(String Id) {
         log("connectRXLGattDevice id " + Id);
+//        if (isTest) {
+//            testBleConnection(Id);
+//            return;
+//        }
         boolean newDevice = true;
         for (BluetoothDevice t : devicesConnectedBle) {
             if (t.getName() != null)
@@ -432,18 +472,92 @@ public class BluetoothManager {
                                 BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
                                 new byte[0]));
                         addGattListenerRXL2(mGattManager, d);
-                        log("connectRXLGattDevice " + Id);
+                        //log("connectRXLGattDevice " + Id);
 //                        mGattManager.queue(new GattSetNotificationOperation(d,
 //                                BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
 //                                BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID,
 //                                BleGattManager.CLIENT_UUID));
 
 
-                        log("connectRXLGattDevice booster charr add " + Id);
+                        log("connectRXLGattDevice RXL connected " + Id);
                     }
                 }
             }
         }
+
+    }
+
+    private boolean isTest = true;
+
+    BluetoothGattCallback testGatt = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+            log("BluetoothGattCallback onConnectionStateChange " + newState + " : " + status);
+            if (newState == BluetoothProfile.STATE_CONNECTED) {
+                gatt.discoverServices();
+            }
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            log("BluetoothGattCallback onServicesDiscovered status " + status);
+            super.onServicesDiscovered(gatt, status);
+            BluetoothGattCharacteristic characteristic =
+                    gatt.getService(BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID)
+                            .getCharacteristic(BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID);
+            gatt.setCharacteristicNotification(characteristic, true);
+
+
+            BluetoothGattDescriptor descriptor =
+                    characteristic.getDescriptor(BleGattManager.CLIENT_UUID);
+
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            gatt.writeDescriptor(descriptor);
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicRead(gatt, characteristic, status);
+            log("BluetoothGattCallback onCharacteristicRead status " + status);
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+            log("BluetoothGattCallback onCharacteristicWrite status " + status);
+            log("BluetoothGattCallback onCharacteristicWrite characteristic " + characteristic);
+
+//            BluetoothGattCharacteristic characteristic =
+//                    gatt.getService(BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID)
+//                            .getCharacteristic(BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID);
+
+            if (characteristic != null) {
+                characteristic.setValue(new byte[]{1, 1});
+                gatt.writeCharacteristic(characteristic);
+            }
+        }
+
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            super.onCharacteristicChanged(gatt, characteristic);
+            log("BluetoothGattCallback onCharacteristicChanged status " + characteristic);
+        }
+
+    };
+
+
+    private void testBleConnection(String device) {
+        log("testBleConnection started......... " + device);
+        for (BluetoothDevice d : devicesBoosterBle) {
+            if (d.getName() != null && d.getName().toLowerCase().contains(device.toLowerCase())) {
+                log("testBleConnection found and connecting......... " + device);
+                BluetoothGatt gatt = d.connectGatt(activity, true, testGatt);
+            }
+
+        }
+        //BluetoothGatt gatt = device.connectGatt(activity, true, testGatt);
+        log("testBleConnection gatt......... ");
 
     }
 

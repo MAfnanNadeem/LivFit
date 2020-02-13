@@ -20,4 +20,10 @@ public class GattOperationBundle {
         return operations;
     }
 
+    @Override
+    public String toString() {
+        return "GattOperationBundle{" +
+                "operations=" + operations +
+                '}';
+    }
 }

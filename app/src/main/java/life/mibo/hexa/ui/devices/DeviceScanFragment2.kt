@@ -175,7 +175,9 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         //loadTest()
         //testSignals()
 
+        isBluetoothEnable()
     }
+
 
     private fun scanDevices() {
         log("scanDevices $isScanning")
@@ -412,7 +414,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public fun onDeviceEvent(event: DeviceStatusEvent) {
-        log("DeviceStatusEvent Device $event")
+        log("DeviceStatusEvent Device ${event.device?.uid}")
 
         availabeAdapter?.updateDevice(event.device)
         if (!isConnected || button_next?.visibility != View.VISIBLE) {
@@ -506,6 +508,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
                 override fun onNext(t: Device) {
                     if (t.isPod && t.statusConnected != 1) {
                         connectionListener?.onConnectClicked(t)
+                        // Thread.currentThread().sleep(100)
                         Thread.sleep(80)
                     }
                 }
@@ -565,12 +568,23 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         // BluetoothManager.Manager
     }
 
-    fun locationSettings() {
+    private fun locationSettings() {
         val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivityForResult(enableLocationIntent, REQUEST_BLUETOOTH);
     }
 
-    fun isLocationEnabled(): Boolean {
+    private fun isBluetoothEnable() {
+        val REQUEST_ENABLE_BT = 1022
+        val bl = BluetoothAdapter.getDefaultAdapter()
+        if (bl != null && !bl.isEnabled) {
+            startActivityForResult(
+                Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                REQUEST_ENABLE_BT
+            )
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
         var mode = 0;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

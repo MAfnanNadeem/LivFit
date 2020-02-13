@@ -152,41 +152,48 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     private fun startOtpListener() {
-        smsBroadcast = SMSBroadcastReceiver()
+        try {
+            smsBroadcast = SMSBroadcastReceiver()
+            val client: SmsRetrieverClient = SmsRetriever.getClient(context)
 
-        val client: SmsRetrieverClient = SmsRetriever.getClient(context)
+            client.startSmsRetriever()
+                .addOnSuccessListener {
+                    // otpTxtView.text = "Waiting for OTP"
+                    // Toasty.info(context, "SMS Retriever starts ").show()
+                }.addOnFailureListener {
+                    //  otpTxtView.text = "Cannot Start SMS Retriever"
+                    Toasty.info(
+                        context,
+                        "SMSBroadcastReceiver Error " + it?.message,
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
 
-        client.startSmsRetriever()
-            .addOnSuccessListener {
-                // otpTxtView.text = "Waiting for OTP"
-                // Toasty.info(context, "SMS Retriever starts ").show()
-            }.addOnFailureListener {
-                //  otpTxtView.text = "Cannot Start SMS Retriever"
-                Toasty.info(context, "SMSBroadcastReceiver Error " + it?.message, Toast.LENGTH_LONG)
-                    .show()
-            }
 
+            smsBroadcast.init(object : SMSBroadcastReceiver.OTPReceiveListener {
+                override fun onOTPReceived(otp: String?) {
+                    Toasty.info(context, "SMS OTP Received $otp").show()
+                    observer.otpReceived(otp)
+                }
 
-        smsBroadcast.init(object : SMSBroadcastReceiver.OTPReceiveListener{
-            override fun onOTPReceived(otp: String?) {
-                Toasty.info(context, "SMS OTP Received $otp").show()
-                observer.otpReceived(otp)
-            }
+                override fun onOTPTimeOut() {
+                    Toasty.info(context, "SMS OTP TimeOut").show()
+                }
 
-            override fun onOTPTimeOut() {
-                Toasty.info(context, "SMS OTP TimeOut").show()
-            }
+            })
 
-        })
+            val intentFilter = IntentFilter()
+            intentFilter.addAction(SmsRetriever.SMS_RETRIEVED_ACTION)
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(SmsRetriever.SMS_RETRIEVED_ACTION)
+            context.registerReceiver(smsBroadcast, intentFilter)
 
-        context.registerReceiver(smsBroadcast, intentFilter)
+            //Used to generate hash signature
+            //O2KCiTrZWLq
+            Logger.e("RegisterController appSignatures ${AppSignatureHelper(context).appSignatures?.toArray()?.contentToString()}")
+        } catch (e: java.lang.Exception) {
 
-        //Used to generate hash signature
-        //O2KCiTrZWLq
-        Logger.e("RegisterController appSignatures ${AppSignatureHelper(context).appSignatures?.toArray()?.contentToString()}")
+        }
     }
 
     private fun startSMSListener() {
@@ -354,18 +361,19 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 call: Call<RegisterResponse>,
                 response: Response<RegisterResponse>
             ) {
-                context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
+                    context.getDialog()?.dismiss()
                     error(getString(R.string.error_occurred))
                     return
                 }
                 when {
-                    data.status == "success" -> {
+                    data.status?.toLowerCase() == "success" -> {
                         memberData = registerData
                         userId = data.data?.userId!!
-                        success(R.string.regestered)
-                        updateNumber(1)
+                        //success(R.string.regestered)
+                        //updateNumber(1)
+                        sendOtp(registerData.data!!.phone)
                         isOtp = true
                         //Prefs.get(this@RegisterController.context).member = Member(data)
                         Prefs.get(this@RegisterController.context)
@@ -374,6 +382,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                             .set("user_email", registerData.data?.email)
                         MiboEvent.registerSuccess("${data.data?.userId}")
                         isBack = false
+                        return
                     }
 
 
@@ -394,6 +403,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         "Register: " + response.body()
                     ).show()
                 }
+                context.getDialog()?.dismiss()
             }
 
         })
@@ -458,7 +468,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                     return
                 }
                 when {
-                    data.status == "success" -> {
+                    data.status?.toLowerCase() == "success" -> {
                         success(R.string.otp_sent, Toast.LENGTH_LONG)
                         if (resend) {
                             resend = false
@@ -466,7 +476,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         }
                         updateNumber(2)
                     }
-                    data.status == "error" -> {
+                    data.status?.toLowerCase() == "error" -> {
                         error("${data.errors?.get(0)?.message}")
 
                     }
@@ -519,7 +529,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                     return
                 }
                 when {
-                    data.status == "success" -> {
+                    data.status?.toLowerCase() == "success" -> {
                         //success("${data.data?.message}")
                         success(context.getString(R.string.number_verified))
                         //updateNumber(3)

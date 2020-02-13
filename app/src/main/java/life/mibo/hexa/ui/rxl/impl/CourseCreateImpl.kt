@@ -20,7 +20,8 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
     //var listener: Listener? = null
 
     enum class Type(val type: Int) {
-        STATIONS(1), CYCLES(2), PODS(3), LIGHT_LOGIC(4), PLAYERS(5), DELAY(6), DURATION(7), ACTION(8)
+        STATIONS(1), CYCLES(2), PODS(3), LIGHT_LOGIC(4), PLAYERS(5), DELAY(6),
+        DURATION(7), ACTION(8), STRUCTURE(9)
     }
 
     fun bindViews(root: View) {
@@ -45,10 +46,13 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
                 return "1"
             }
             Type.DELAY -> {
-                return "10 Sec"
+                return "0 sec"
             }
             Type.DURATION -> {
                 return "30 Sec"
+            }
+            Type.ACTION -> {
+                return "1 sec"
             }
             else -> {
                 return ""
@@ -96,8 +100,7 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
             }
             Type.DELAY -> {
                 title = "Choose Delay (Seconds)"
-                list.add(ReflexDialog.Item(0, "No Delay"))
-                for (i in 1..10) {
+                for (i in 0..10) {
                     list.add(ReflexDialog.Item(i, "$i seconds"))
                 }
             }
@@ -112,7 +115,24 @@ class CourseCreateImpl(var fragment: BaseFragment, var listener: Listener? = nul
                 for (i in 1..5) {
                     list.add(ReflexDialog.Item(i, "$i seconds"))
                 }
-                title = "Total Duration (Seconds)"
+                title = "Action Duration (Seconds)"
+            }
+            Type.STRUCTURE -> {
+                list.add(ReflexDialog.Item(21, "Agility"))
+                list.add(ReflexDialog.Item(22, "Balanced"))
+                list.add(ReflexDialog.Item(23, "Core"))
+                list.add(ReflexDialog.Item(29, "Cardio"))
+                list.add(ReflexDialog.Item(29, "Coordination"))
+                list.add(ReflexDialog.Item(29, "Fitness Test"))
+                list.add(ReflexDialog.Item(24, "Flexibility"))
+                list.add(ReflexDialog.Item(29, "Functional"))
+                list.add(ReflexDialog.Item(29, "Power"))
+                list.add(ReflexDialog.Item(26, "Reaction Time"))
+                list.add(ReflexDialog.Item(27, "Speed"))
+                list.add(ReflexDialog.Item(28, "Stamina"))
+                list.add(ReflexDialog.Item(29, "Strength"))
+                list.add(ReflexDialog.Item(29, "Suspension"))
+                title = "Select Structure"
             }
         }
         showDialog(list, title, type.type)

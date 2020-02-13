@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
+import life.mibo.hardware.bluetooth.BleScanCallback;
+import life.mibo.hardware.bluetooth.OnBleCharChanged;
+import life.mibo.hardware.bluetooth.OnBleDeviceDiscovered;
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
@@ -34,6 +37,7 @@ import life.mibo.hardware.events.SendDeviceStopEvent;
 import life.mibo.hardware.events.SendMainLevelEvent;
 import life.mibo.hardware.events.SendProgramChangesHotEvent;
 import life.mibo.hardware.events.SendProgramEvent;
+import life.mibo.hardware.models.BleDevice;
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Circuit;
@@ -260,7 +264,7 @@ public class CommunicationManager {
         }
     };
 
-    private BluetoothManager.OnBleDeviceDiscovered bleListener = new BluetoothManager.OnBleDeviceDiscovered() {
+    private OnBleDeviceDiscovered bleListener = new OnBleDeviceDiscovered() {
         @Override
         public void bleHrDeviceDiscovered(String uid, String serial) {
             log("BluetoothManager bleHrDeviceDiscovered " + uid + " IP " + serial);
@@ -289,7 +293,7 @@ public class CommunicationManager {
         }
     };
 
-    private BluetoothManager.OnBleCharChanged bleCharChanged = new BluetoothManager.OnBleCharChanged() {
+    private OnBleCharChanged bleCharChanged = new OnBleCharChanged() {
         @Override
         public void bleHrChanged(int hr, String serial) {
             log("BluetoothManager bleHrChanged " + hr + " IP " + serial);
@@ -321,7 +325,7 @@ public class CommunicationManager {
             udpServer = new UDPServer();
         }
         udpServer.addListener(wifiListener);
-        udpServer.start(context);
+        udpServer.start();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -337,17 +341,10 @@ public class CommunicationManager {
         bluetoothManager.setListener(bleListener);
         bluetoothManager.setOnBleCharChanged(bleCharChanged);
         bluetoothManager.setBleGatListener(bleConnection);
-        bluetoothManager.scanDevice(bleScanCallback);
+        bluetoothManager.scanDevice();
         //bluetoothManager.scanDevice();
     }
 
-    private BluetoothManager.BleScanCallback bleScanCallback = new BluetoothManager.BleScanCallback() {
-        @Override
-        public void onDevice(ScanResult result) {
-            if (listener != null)
-                listener.onBluetoothDeviceFound(result);
-        }
-    };
 
     public static void log(String s) {
         Logger.e("CommunicationManager: " + s);
@@ -392,7 +389,12 @@ public class CommunicationManager {
 
     public void stopBleDiscoveryServer() {
         if (bluetoothManager != null) {
-            bluetoothManager.stopScanDevice();
+            try {
+                bluetoothManager.stopScanDevice();
+            }
+            catch (Exception e){
+
+            }
         }
         // bluetoothManager = null;
     }

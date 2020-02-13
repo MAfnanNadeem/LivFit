@@ -132,9 +132,7 @@ public class AndroidLikeButton extends FrameLayout implements View.OnClickListen
 
 
     public interface OnLikeEventListener {
-        void onLikeClicked(AndroidLikeButton androidLikeButton);
-
-        void onUnlikeClicked(AndroidLikeButton androidLikeButton);
+        void onClicked(boolean liked);
     }
 
     public void setOnLikeEventListener(OnLikeEventListener onLikeEventListener) {
@@ -215,11 +213,11 @@ public class AndroidLikeButton extends FrameLayout implements View.OnClickListen
             animatorSet.start();
 
             if (onLikeEventListener != null) {
-                onLikeEventListener.onLikeClicked(AndroidLikeButton.this);
+                onLikeEventListener.onClicked(true);
             }
         } else {
             if (onLikeEventListener != null) {
-                onLikeEventListener.onUnlikeClicked(AndroidLikeButton.this);
+                onLikeEventListener.onClicked(false);
             }
         }
     }
@@ -338,6 +336,9 @@ public class AndroidLikeButton extends FrameLayout implements View.OnClickListen
         setLikeButtonImage();
     }
 
+    public boolean isLiked() {
+        return isLiked;
+    }
 
     private Bitmap getDrawableToBitmap(Drawable drawable) {
 

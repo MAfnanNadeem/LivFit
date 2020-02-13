@@ -11,10 +11,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_rxl_initial.*
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
+import java.util.concurrent.TimeUnit
 
 class ReflexSelectFragment : BaseFragment() {
 
@@ -37,6 +40,10 @@ class ReflexSelectFragment : BaseFragment() {
         btn_create.setOnClickListener {
             navigate(Navigator.RXL_COURSE_SELECT, null)
         }
+
+//        Single.just("").delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+//            navigate(Navigator.HOME_VIEW, true)
+//        }.subscribe()
 
     }
 

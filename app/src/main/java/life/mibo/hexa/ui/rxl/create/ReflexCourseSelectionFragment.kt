@@ -62,6 +62,7 @@ class ReflexCourseSelectionFragment : BaseFragment() {
         log("onViewCreated")
         //recyclerView?.startViewTransition()
         startPostponedEnterTransition()
+        navigate(Navigator.HOME_VIEW, true)
         //initCourses()
         //recyclerView.startViewTransition(view)
 
@@ -72,9 +73,17 @@ class ReflexCourseSelectionFragment : BaseFragment() {
 
         list.add(
             CreateCourseAdapter.Course(
+                5,
+                "Sequence",
+                "The Reaction Lights turns on in sequence.",
+                R.drawable.ic_reflex_sequence
+            )
+        )
+        list.add(
+            CreateCourseAdapter.Course(
                 1,
                 "Random",
-                "The Rxl light randomly",
+                "The Rxl light randomly.",
                 R.drawable.ic_reflex_random_icon
             )
         )
@@ -82,7 +91,7 @@ class ReflexCourseSelectionFragment : BaseFragment() {
             CreateCourseAdapter.Course(
                 2,
                 "All at once",
-                "Multiple Rxl light at once",
+                "Multiple Rxl light at once.",
                 R.drawable.ic_reflex_all_at_once
             )
         )
@@ -90,26 +99,19 @@ class ReflexCourseSelectionFragment : BaseFragment() {
             CreateCourseAdapter.Course(
                 3,
                 "Focus",
-                "Focus only on your color, not the distracting ones",
+                "Focus only on your color, not the distracting ones.",
                 R.drawable.ic_reflex_focus_only
             )
         )
         list.add(
             CreateCourseAdapter.Course(
                 4,
-                "Focus",
-                "Return to home after each random Rxl",
+                "Focus Return",
+                "Return to home after each random Rxl.",
                 R.drawable.ic_reflex_focus_return
             )
         )
-        list.add(
-            CreateCourseAdapter.Course(
-                5,
-                "Sequence",
-                "Focus only on your color, not the distracting ones",
-                R.drawable.ic_reflex_sequence
-            )
-        )
+
 
         val adapter =
             CreateCourseAdapter(

@@ -1,21 +1,28 @@
-package life.mibo.hexa.ui.rxl.impl.model
+/*
+ *  Created by Sumeet Kumar on 2/11/20 2:11 PM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 2/11/20 12:46 PM
+ *  Mibo Hexa - app
+ */
 
-import android.graphics.Color
+package life.mibo.hexa.ui.rxl.adapter
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
 
 
-class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
+class ReflexAdapter(var list: ArrayList<RXLPrograms.Program>?) :
     RecyclerView.Adapter<ReflexHolder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: ItemClickListener<ReflexModel>? = null
+    private var listener: ItemClickListener<RXLPrograms.Program>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReflexHolder {
         return ReflexHolder(
@@ -27,7 +34,7 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
         )
     }
 
-    fun setListener(listener: ItemClickListener<ReflexModel>) {
+    fun setListener(listener: ItemClickListener<RXLPrograms.Program>) {
         this.listener = listener
     }
 
@@ -37,19 +44,16 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
         return 0
     }
 
-    private fun getItem(position: Int): ReflexModel? {
+    private fun getItem(position: Int): RXLPrograms.Program? {
         return list?.get(position)
     }
 
     override fun onBindViewHolder(holder: ReflexHolder, position: Int) {
+        Logger.e("ReflexAdapter: onBindViewHolder $position")
+
         holder.bind(getItem(position), listener)
     }
 
-
-    fun getRandomColor(): Int {
-        val rnd = Random()
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-    }
 
     fun notify(id: Int) {
 //        Observable.fromArray(list).flatMapIterable { x -> x }.subscribeOn(Schedulers.computation())
@@ -66,14 +70,21 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
         }
     }
 
-    fun updateData(newList: ArrayList<ReflexModel>) {
-//        list?.observe(this, androidx.lifecycle.Observer {
-//            it.clear()
-//            it.addAll(newList)
-//        })
+    fun delete(program: RXLPrograms.Program) {
+        var pos = -1
+        list?.forEachIndexed { index, item ->
+            if (item.id == program.id) {
+                pos = index
+            }
+        }
+        if (pos != -1) {
+            list?.removeAt(pos)
+            notifyItemRemoved(pos)
+        }
     }
 
-    fun update(newList: ArrayList<ReflexModel>) {
+
+    fun update(newList: ArrayList<RXLPrograms.Program>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()
@@ -101,34 +112,6 @@ class ReflexAdapter(var list: ArrayList<ReflexModel>?) :
         list = newList
         result.dispatchUpdatesTo(this)
 
-    }
-
-    fun updateList(items: ArrayList<ReflexModel>?) {
-        Logger.e("updateList")
-        if (items == null || items.isEmpty()!!) {
-            return
-        }
-        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return items[newItem].id == list!![oldItem].id
-            }
-
-            override fun getOldListSize(): Int {
-                return list!!.size
-            }
-
-            override fun getNewListSize(): Int {
-                return items.size
-            }
-
-            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return true
-            }
-
-        })
-        list = items
-        result.dispatchUpdatesTo(this)
-        Logger.e("updateList dispatchUpdatesTo")
     }
 
 }

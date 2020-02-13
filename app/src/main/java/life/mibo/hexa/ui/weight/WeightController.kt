@@ -92,7 +92,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
             ) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     parseData(data)
                 } else {
 

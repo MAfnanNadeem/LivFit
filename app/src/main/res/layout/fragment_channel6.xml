@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="96dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/login_bg"
+        android:src="@drawable/ic_person_black_24dp"
         app:layout_constraintEnd_toStartOf="@+id/iv_plus"
         app:layout_constraintStart_toEndOf="@+id/iv_play"
         app:layout_constraintTop_toTopOf="parent"

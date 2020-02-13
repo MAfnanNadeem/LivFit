@@ -3,55 +3,42 @@ package life.mibo.hexa.ui.rxl
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.hexa.R
+import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.rxl.adapter.ReflexAdapter
+import life.mibo.hexa.ui.rxl.adapter.ReflexFilterAdapter
+import life.mibo.hexa.ui.rxl.impl.ReactionObserver
 import life.mibo.hexa.ui.rxl.impl.RxlViewModel
-import life.mibo.hexa.ui.rxl.impl.model.ReflexAdapter
-import life.mibo.hexa.ui.rxl.impl.model.ReflexFilterAdapter
-import life.mibo.hexa.ui.rxl.impl.model.ReflexModel
 import life.mibo.hexa.utils.Toasty
 import life.mibo.views.backdrop.BackdropBehavior
 import life.mibo.views.dialog.SheetMenu
 
-fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.run {
-    if (this !is CoordinatorLayout.LayoutParams) throw IllegalArgumentException("View's layout params should be CoordinatorLayout.LayoutParams")
 
-    (layoutParams as CoordinatorLayout.LayoutParams).behavior as? T
-        ?: throw IllegalArgumentException("Layout's behavior is not current behavior")
-}
+class ReactionLightFragment2 : BaseFragment(),
+    ReactionObserver {
 
-class ReactionLightFragment2 : BaseFragment() {
-
-    interface Listener {
-
-    }
 
     private lateinit var rxl: RxlViewModel
     private lateinit var controller: ReactionLightController
+    var recycler: RecyclerView? = null
 
     private lateinit var backdropBehavior: BackdropBehavior
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        val root = inflater.inflate(R.layout.fragment_rxl_backdrop, container, false)
-        return root
+    override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
+        return i.inflate(R.layout.fragment_rxl_backdrop, c, false)
     }
 
     override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
@@ -65,20 +52,23 @@ class ReactionLightFragment2 : BaseFragment() {
 //            setTitle(R.string.app_name)
 //        }
 
-        controller = ReactionLightController(this)
-        rxl = ViewModelProviders.of(this).get(RxlViewModel::class.java)
+        controller = ReactionLightController(this, this)
+        //ViewModelProvider(this).get(RxlViewModel::class.java)
+        rxl = ViewModelProvider(this).get(RxlViewModel::class.java)
+        // rxl = ViewModelProviders.of(this).get(RxlViewModel::class.java)d
 
-        val recycler: RecyclerView = root.findViewById(R.id.recyclerView)
+        recycler = root.findViewById(R.id.recyclerView)
         rxl.text.observe(this, Observer {
             //    textView.text = ""//it
         })
+        navigate(Navigator.HOME_VIEW, true)
         setFilters(root.findViewById(R.id.recyclerViewTypes), 1)
         setFilters(root.findViewById(R.id.recyclerViewPods), 2)
         setFilters(root.findViewById(R.id.recyclerViewLogic), 3)
         setFilters(root.findViewById(R.id.recyclerViewPlayers), 4)
         setFilters(root.findViewById(R.id.recyclerViewAcces), 5)
-        root.findViewById<View?>(R.id.recyclerViewFilters)?.visibility = View.GONE
-        setRecycler(recycler)
+        // root.findViewById<View?>(R.id.recyclerViewFilters)?.visibility = View.GONE
+        ///setRecycler(recycler)
         setHasOptionsMenu(true)
         backdropBehavior?.addOnDropListener(object : BackdropBehavior.OnDropListener {
             override fun onDrop(dropState: BackdropBehavior.DropState, fromUser: Boolean) {
@@ -90,7 +80,7 @@ class ReactionLightFragment2 : BaseFragment() {
                             "closed " + selectedItems.keys.toIntArray().contentToString()
                             , Toasty.LENGTH_SHORT, false
                         ).show()
-                        shuffle()
+                        //shuffle()
                     }
                     log("closed" + selectedItems.keys.toIntArray().contentToString())
                 } else if (dropState == BackdropBehavior.DropState.OPEN) {
@@ -100,12 +90,39 @@ class ReactionLightFragment2 : BaseFragment() {
                 (activity as MainActivity?)?.supportActionBar?.invalidateOptionsMenu()
             }
         })
-
         controller.onStart()
-        //controller.getPrograms()
+        controller.getPrograms()
+        log("NO_OF_PODS ${Filter.LIGHT_LOGIC.range.first}")
+        swipeToRefresh?.setOnRefreshListener {
+            if (isRefresh)
+                return@setOnRefreshListener
+            isRefresh = true
+            controller.getProgramsServer()
+        }
+        swipeToRefresh?.setColorSchemeResources(
+            R.color.colorPrimary,
+            R.color.colorAccent,
+            R.color.colorPrimaryDark,
+            R.color.infoColor2,
+            R.color.successColor
+        )
 
     }
 
+    var isRefresh = false
+
+    // TODO Filters...........
+    //val NO_OF_PODS = IntRange(1, 20)
+    //    val NO_OF_PODS = 1..20
+    ////    val PROGRAM_TYPE : IntRange = 21..29
+    ////    val LIGHT_LOGIC : IntRange = 21..29
+    enum class Filter(val range: IntRange) {
+        NO_OF_PODS(1..20),
+        PROGRAM_TYPE(21..29),
+        LIGHT_LOGIC(IntRange(31, 35)),
+        PLAYERS(41..44),
+        ACCESSORIES(51..61)
+    }
 
 
     @SuppressLint("CheckResult")
@@ -130,7 +147,7 @@ class ReactionLightFragment2 : BaseFragment() {
                 }
                 2 -> {
                     for (i in 1..16) {
-                        list.add(ReflexFilterAdapter.ReflexFilterModel(i.plus(100), "$i"))
+                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i"))
                     }
                 }
                 3 -> {
@@ -166,14 +183,15 @@ class ReactionLightFragment2 : BaseFragment() {
                 }
             }
         }.subscribe {
-            val adapter = ReflexFilterAdapter(list, 3)
+            val adapter =
+                ReflexFilterAdapter(list, 3)
             val manager = LinearLayoutManager(
                 this@ReactionLightFragment2.activity,
                 LinearLayoutManager.HORIZONTAL,
                 false
             )
 
-            adapter.setListener(fliterListener)
+            adapter.setListener(filterListener)
             view.layoutManager = manager
             view.adapter = adapter
             view.isNestedScrollingEnabled = false
@@ -195,7 +213,7 @@ class ReactionLightFragment2 : BaseFragment() {
     val selectedItems = HashMap<Int, ReflexFilterAdapter.ReflexFilterModel>()
 
 
-    private val fliterListener = object : ReflexFilterAdapter.Listener {
+    private val filterListener = object : ReflexFilterAdapter.Listener {
         override fun onClick(data: ReflexFilterAdapter.ReflexFilterModel?) {
             if (data != null)
                 selectedItems[data.id] = data
@@ -208,57 +226,120 @@ class ReactionLightFragment2 : BaseFragment() {
     fun applyFilters() {
         if (selectedItems.size == 0)
             return
+
         selectedItems.forEach {
-            if(it.value.isSelected){
+            if (it.value.isSelected) {
 
             }
         }
-
     }
 
-    private fun shuffle() {
-        list.shuffle()
-        adapter?.notifyDataSetChanged()
-    }
 
-    val list = ArrayList<ReflexModel>()
-    var adapter: ReflexAdapter? = null
-    @SuppressLint("CheckResult")
-    private fun setRecycler(view: RecyclerView) {
-        Single.fromCallable<ArrayList<ReflexModel>> {
-            //            for (i in 1..50
-//            ) {
-//                list.add(ReflexModel(i))
-//            }
-            list.clear()
-            list.add(ReflexModel(1))
-            list.add(ReflexModel(2))
-            list
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe { it ->
-            adapter = ReflexAdapter(it)
-            val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
-            view.layoutManager = manager
-            view.adapter = adapter
-            view.isNestedScrollingEnabled = false
-            adapter?.setListener(object : ItemClickListener<ReflexModel> {
-                override fun onItemClicked(item: ReflexModel?, position: Int) {
-                    navigate(Navigator.RXL_DETAILS, item)
+    private fun filterList(type: Int): ArrayList<RXLPrograms.Program> {
+        var list = ArrayList<RXLPrograms.Program>()
+        var result = ArrayList<RXLPrograms.Program>()
+        when (type) {
+            in Filter.NO_OF_PODS.range -> {
+                list.forEach {
+                    if (it.numberOfRxl == type) {
+                        result.add(it.copy())
+                    }
                 }
 
-            })
-        }
-//        val list = ArrayList<ReflexModel>();
-//        for (i in 1..50
-//        ) {
-//            list.add(ReflexModel(i))
-//        }
-//        val adapter = ReflexAdapter(list)
-//        val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
-//        view.layoutManager = manager
-//        view.adapter = adapter
-//        view.isNestedScrollingEnabled = false
+            }
+            in Filter.PROGRAM_TYPE.range -> {
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(21, "Agility"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(22, "Balanced"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(23, "Core"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(24, "Flexibility"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(25, "Power"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(26, "Reaction Time"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(27, "Speed"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(28, "Stamina"))
+//                list.add(ReflexFilterAdapter.ReflexFilterModel(29, "Strength"))
+                when (type) {
+                    21 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    22 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    23 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    24 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    25 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    26 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    27 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    28 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                    29 -> {
+                        list.forEach {
+                            if (it.programType == "Agility") {
+                                result.add(it.copy())
+                            }
+                        }
+                    }
+                }
+            }
+            in Filter.LIGHT_LOGIC.range -> {
 
+
+            }
+            in Filter.PLAYERS.range -> {
+
+
+            }
+            in Filter.ACCESSORIES.range -> {
+
+
+            }
+
+        }
+        return result
     }
+
 
     fun showFilterOptions(data: ReflexFilterAdapter.ReflexFilterModel?) {
         if (data == null)
@@ -286,15 +367,15 @@ class ReactionLightFragment2 : BaseFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when {
-            item.itemId == R.id.action_filter -> {
+        when (item.itemId) {
+            R.id.action_filter -> {
                 backdropBehavior.toggle()
             }
-            item.itemId == R.id.action_filter_cancel -> {
+            R.id.action_filter_cancel -> {
                 isFilterDone = false
                 backdropBehavior.close()
             }
-            item.itemId == R.id.action_filter_done -> {
+            R.id.action_filter_done -> {
                 isFilterDone = true
                 backdropBehavior.close()
             }
@@ -304,4 +385,85 @@ class ReactionLightFragment2 : BaseFragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    val list = ArrayList<RXLPrograms.Program>()
+    var adapter: ReflexAdapter? = null
+
+    override fun onDataReceived(programs: ArrayList<RXLPrograms.Program>) {
+        isRefresh = false
+        swipeToRefresh?.isRefreshing = false
+        log("onDataReceived ${programs.size}")
+
+        if (programs.isEmpty()) {
+            // this will not happen in final release, because we have at-least few public programs
+            Toasty.info(requireContext(), "No programs found").show()
+        }
+
+        list.clear()
+        list.addAll(programs)
+
+        adapter = ReflexAdapter(list)
+        val manager = LinearLayoutManager(this@ReactionLightFragment2.activity)
+        recycler?.layoutManager = manager
+        recycler?.adapter = adapter
+        recycler?.isNestedScrollingEnabled = false
+        adapter?.setListener(object : ItemClickListener<RXLPrograms.Program> {
+            override fun onItemClicked(item: RXLPrograms.Program?, position: Int) {
+                log("onDataReceived onItemClicked ${item?.name}")
+                if (position > 1000) {
+                    when (position) {
+                        2001 -> {
+                            val items =
+                                arrayOf<CharSequence>("Update", "Delete")
+
+                            AlertDialog.Builder(requireContext()).setTitle("Select Option")
+                                .setItems(items) { dialog, i ->
+                                    if (i == 1) {
+                                        item?.let {
+                                            adapter?.delete(it)
+                                        }
+                                    }
+                                }.show()
+                        }
+                        1001 -> {
+                            controller.updateProgram(item, true)
+                        }
+                        1002 -> {
+                            controller.updateProgram(item, false)
+                        }
+                    }
+                    return
+                }
+                navigate(Navigator.RXL_DETAILS, item)
+            }
+
+        })
+        adapter?.notifyDataSetChanged()
+        log("onDataReceived notifyDataSetChanged ${adapter?.list?.size}")
+
+    }
+
+    fun delete(item: RXLPrograms.Program){
+
+    }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        return super.onContextItemSelected(item)
+    }
+
+}
+
+fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.run {
+    if (this !is CoordinatorLayout.LayoutParams) throw IllegalArgumentException("View's layout params should be CoordinatorLayout.LayoutParams")
+
+    (layoutParams as CoordinatorLayout.LayoutParams).behavior as? T
+        ?: throw IllegalArgumentException("Layout's behavior is not current behavior")
 }

@@ -71,8 +71,6 @@ public class Device implements Serializable, BaseModel {
 
     private int active = 1;
 
-
-
     private int deviceSessionTimer = 0;
 
     private boolean isStarted = false;
@@ -87,6 +85,7 @@ public class Device implements Serializable, BaseModel {
 
     private int batteryLevel = 0;
     private int signalLevel = 0;
+    private Object data = null;
 
     private boolean[] deviceChannelAlarms = new boolean[]{false, false, false, false, false, false, false, false, false, false};
 
@@ -476,5 +475,29 @@ public class Device implements Serializable, BaseModel {
                 ", deviceChannelAlarms=" + Arrays.toString(deviceChannelAlarms) +
                 ", statusConnected=" + statusConnected +
                 '}';
+    }
+
+    public void update(Device device) {
+        if (device != null) {
+            this.colorPalet = device.colorPalet;
+            this.connectionType = device.connectionType;
+            this.isStarted = device.isStarted;
+            this.selected = device.selected;
+            this.assigned = device.assigned;
+            this.userAsigned = device.userAsigned;
+            this.batteryLevel = device.batteryLevel;
+            this.signalLevel = device.signalLevel;
+            this.deviceChannelAlarms = device.deviceChannelAlarms;
+
+
+        }
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

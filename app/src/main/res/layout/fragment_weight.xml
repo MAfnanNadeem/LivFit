@@ -79,6 +79,7 @@
             android:textColor="@color/textColor_weight"
             android:textSize="@dimen/text_size_large"
             android:textStyle="bold"
+            android:text="0"
             app:layout_constraintBottom_toBottomOf="@+id/hexaImage"
             app:layout_constraintEnd_toEndOf="@+id/hexaImage"
             app:layout_constraintStart_toStartOf="@+id/hexaImage"

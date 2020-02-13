@@ -64,6 +64,7 @@ android {
         exclude 'META-INF/library_release.kotlin_module'
     }
 
+    dynamicFeatures = [":reflex"]
 }
 
 dependencies {
@@ -123,7 +124,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
 
     // image loading (picasso, glide, coil-kotlin)
-    implementation 'io.coil-kt:coil:0.8.0'
+    //implementation 'io.coil-kt:coil:0.8.0'
+    implementation 'io.coil-kt:coil:0.9.5'
     //implementation 'com.mindvalley.android:hexagonrecyclerview:1.0.1'
 
     // Unit, Mock, Espresso Test..

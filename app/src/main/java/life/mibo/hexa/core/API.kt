@@ -1,7 +1,6 @@
 package life.mibo.hexa.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.core.gson.GsonConverterFactory
 import life.mibo.hexa.models.base.PostData
 import life.mibo.hexa.models.base.ResponseData
@@ -13,11 +12,13 @@ import life.mibo.hexa.models.create_session.BookSessionPost
 import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
-import life.mibo.hexa.models.password.ChangePassword
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.models.register.RegisterMember
 import life.mibo.hexa.models.register.RegisterResponse
+import life.mibo.hexa.models.rxl.GetRXLProgram
+import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.SaveRXLProgram
 import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
 import life.mibo.hexa.models.session.SessionDetails
@@ -52,12 +53,13 @@ class API {
 //                .addQueryParam("MIBO-Query", "0").build()
 //        ).build()
 
-        okhttp = if (BuildConfig.DEBUG) {
+        okhttp = if (MiboApplication.DEBUG) {
             OkHttpClient.Builder().addInterceptor(ChuckerInterceptor(MiboApplication.context!!))
                 .build()
         } else {
             OkHttpClient.Builder().build()
         }
+
     }
 
 
@@ -165,5 +167,13 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("searchCircuit")
         fun getCircuits(@Body data: SearchCircuit): Call<CircuitResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveRXLProgram")
+        fun saveRXLProgram(@Body data: SaveRXLProgram): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getRXLProgram")
+        fun getRXLProgram(@Body data: GetRXLProgram): Call<RXLPrograms>
     }
 }

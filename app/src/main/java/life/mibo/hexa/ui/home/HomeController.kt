@@ -94,7 +94,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     if (data.report != null) {
                         fragment.log("getDashboard onResponse data.report not null")
                         Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
@@ -102,16 +102,20 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                     }
                     fragment.log("getDashboard onResponse data.report")
                 } else {
-
                     val err = data?.error?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.context!!, R.string.error_occurred).show()
                     else {
-                        Toasty.error(fragment.context!!, err, Toasty.LENGTH_SHORT).show()
-                        if (err.contains("No Schedules Found", true)) {
+                        if (err.contains(
+                                "No Data Found",
+                                true
+                            ) || 404 == data.error?.get(0)?.code
+                        ) {
                             Prefs.get(fragment.context)
                                 .settJson(Prefs.SESSION, Report(null, null, null, null, "0"))
                             parseDefaults()
+                        } else {
+                            Toasty.error(fragment.context!!, err, Toasty.LENGTH_SHORT).show()
                         }
                     }
                 }

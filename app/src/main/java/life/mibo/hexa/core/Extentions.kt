@@ -31,7 +31,7 @@ fun <T> String.to(type: Class<T>): T where T : Serializable? {
     return Gson().fromJson(this, type)
 }
 
-fun String.toIntOrZero(): Int = if (this.isEmpty()) 0 else this.toInt()
+fun String.toIntOrZero(): Int = if (this.isNullOrEmpty()) 0 else this.replace(Regex("\\D+"),"").toInt()
 
 fun Color.PRIMARY():Int {
     return Color.parseColor("#09B189")

@@ -1,4 +1,11 @@
-package life.mibo.hexa.ui.rxl.impl.model
+/*
+ *  Created by Sumeet Kumar on 2/11/20 2:11 PM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 1/27/20 10:05 AM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.hexa.ui.rxl.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater

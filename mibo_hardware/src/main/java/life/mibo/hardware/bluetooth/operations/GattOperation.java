@@ -21,7 +21,7 @@ public abstract class GattOperation {
         return mDevice;
     }
 
-    public int getTimoutInMillis() {
+    public int getTimeoutInMillis() {
         return DEFAULT_TIMEOUT_IN_MILLIS;
     }
 
@@ -37,5 +37,13 @@ public abstract class GattOperation {
 
     void log(String msg) {
         CommunicationManager.log("GattOperation: " + msg);
+    }
+
+    @Override
+    public String toString() {
+        return "GattOperation{" +
+                "mDevice=" + mDevice +
+                ", mBundle=" + mBundle +
+                '}';
     }
 }

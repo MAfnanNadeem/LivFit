@@ -62,8 +62,10 @@ class WeightFragment : BaseFragment(), WeightObserver {
         if (medical != null) {
             no_data_layout?.visibility = View.GONE
             constraintLayout1?.visibility = View.VISIBLE
-            weight_value.text = "${medical.weight} ${medical.weightUnit}"
-
+            if (medical.weight.isNullOrEmpty())
+                weight_value.text = "0"
+            else
+                weight_value.text = "${medical.weight} ${medical.weightUnit}"
             try {
                 val weight: Double? = medical.weight?.toDoubleOrNull()
                 var bmi: Double? = medical.height?.toDouble()?.div(100)
@@ -76,7 +78,10 @@ class WeightFragment : BaseFragment(), WeightObserver {
 
             }
         } else {
+            weight_value.text = "0"
+            tv_bmi_value.text = "0.0"
             no_data_layout?.visibility = View.VISIBLE
+
         }
     }
 

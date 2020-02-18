@@ -3,6 +3,8 @@ package life.mibo.hardware.models;
 import android.bluetooth.BluetoothDevice;
 import android.os.CountDownTimer;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 
 import life.mibo.hardware.core.DataParser;
@@ -427,6 +429,15 @@ public class UserSession implements BaseModel {
             }
         }
         return list;
+    }
+
+    public @Nullable Device getRxt() {
+        if (!connectedDevices.isEmpty()) {
+            if (connectedDevices.get(0).getType() == DeviceTypes.RXT_WIFI) {
+                return connectedDevices.get(0);
+            }
+        }
+        return null;
     }
 
     public String getLocationId() {

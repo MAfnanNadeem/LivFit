@@ -26,6 +26,7 @@ import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_STOP_C
 public class DataParser {
     public final static int BOOSTER = 0;
     public final static int RXL = 1;
+    public final static int RXT = 2;
 
     public static void transformSignedToUnsignedBytes(byte[] message) {
         for (int i = 0; i < message.length; i++) {
@@ -205,6 +206,25 @@ public class DataParser {
 
     }
 
+    public static byte[] sendRxtColor(int tileId, int color, int time, int type) {
+        try {
+            int id = (tileId) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            Logger.e("sendRXTColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{6}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRXTColor " + color + " : " + time, e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
     public static byte[] sendRxlColor(byte[] color, int type) {
         return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, color, type);
     }
@@ -354,6 +374,8 @@ public class DataParser {
         byte[] header;
         if (type == RXL) {
             header = getRxlHeader();
+        } else if (type == RXT) {
+            header = getRxtHeader();
         } else {
             header = getBoosterHeader();
         }
@@ -397,6 +419,17 @@ public class DataParser {
         header[2] = 'R';
         header[3] = 'X';
         header[4] = 'L';
+        header[5] = '\0';
+        return header;
+    }
+
+    private static byte[] getRxtHeader() {
+        byte[] header = new byte[6];
+        header[0] = 'M';
+        header[1] = 'B';
+        header[2] = 'R';
+        header[3] = 'X';
+        header[4] = 'T';
         header[5] = '\0';
         return header;
     }

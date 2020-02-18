@@ -1,5 +1,7 @@
 package life.mibo.hardware.events;
 
+import androidx.annotation.Nullable;
+
 import life.mibo.hardware.models.Device;
 
 /**
@@ -45,5 +47,15 @@ public class ChangeColorEvent {
                 ", time=" + time +
                 ", uid='" + uid + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        try {
+            return obj != null && uid.equals(((ChangeColorEvent) obj).uid);
+        } catch (Exception e) {
+
+        }
+        return super.equals(obj);
     }
 }

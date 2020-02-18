@@ -22,6 +22,7 @@ import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.GENERIC;
 import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
+import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 
@@ -249,6 +250,10 @@ public class Device implements Serializable, BaseModel {
 
     public boolean isPod() {
         return type == RXL_BLE || type == RXL_WIFI;
+    }
+
+    public boolean isTile() {
+        return type == RXT_WIFI;
     }
 
     public int type() {

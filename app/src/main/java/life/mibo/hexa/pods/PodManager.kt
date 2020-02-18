@@ -22,6 +22,7 @@ import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.pods.pod.Pod
 import life.mibo.hexa.pods.pod.PodType
+import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.ui.main.MiboEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

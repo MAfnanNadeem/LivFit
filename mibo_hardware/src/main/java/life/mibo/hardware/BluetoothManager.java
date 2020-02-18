@@ -38,8 +38,6 @@ import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
 import life.mibo.hardware.encryption.Encryption;
 import life.mibo.hardware.models.BleDevice;
-import life.mibo.hardware.models.Device;
-import life.mibo.hardware.models.DeviceTypes;
 
 /**
  * Created by Fer on 08/04/2019.
@@ -285,6 +283,16 @@ public class BluetoothManager {
 //                }
 //            };
 
+    public boolean contains(String uid) {
+        if (devicesBoosterBle != null && devicesBoosterBle.size() > 0) {
+            for (BluetoothDevice t : devicesConnectedBle) {
+                if (t.getName() != null)
+                    return t.getName().contains(uid);
+            }
+        }
+        return false;
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private ScanCallback mLeHrSensorScanCallback = new ScanCallback() {
@@ -296,6 +304,9 @@ public class BluetoothManager {
             //    bleScanCallback.onDevice(B);
             log("BluetoothManager onScanResult " + result);
             BluetoothDevice device = result.getDevice();
+            if(device == null)
+                return;
+            log("BluetoothManager getName " + result.getDevice().getName());
             //mBluetoothAdapter.getRemoteDevice(result)
 
             if (!devicesHRBle.contains(device) && device.getName() != null && (device.getName().contains("HW") || device.getName().contains("Geonaute"))) {
@@ -308,7 +319,7 @@ public class BluetoothManager {
             if (!devicesBoosterBle.contains(device) && device.getName() != null && device.getName().contains("MBRXL")) {
                 //rxlCount++;
                 devicesBoosterBle.add(device);
-                listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "");
+                listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL " + ++rxlCount);
                 //  listener.bleBoosterDeviceDiscovered(device.toString(), device.getName());
                 log(" onScanResult3 " + device.getName() + "   " + device.getClass());
             }

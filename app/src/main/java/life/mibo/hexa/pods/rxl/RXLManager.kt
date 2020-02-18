@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 1/27/20 2:11 PM
+ *  Created by Sumeet Kumar on 2/16/20 8:59 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/27/20 2:01 PM
+ *  Last modified 2/13/20 5:21 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods
+package life.mibo.hexa.pods.rxl
 
 import android.graphics.Color
 import io.reactivex.Observable
@@ -21,8 +21,10 @@ import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
+import life.mibo.hexa.pods.Event
 import life.mibo.hexa.pods.pod.PodType
 import life.mibo.hexa.ui.main.MiboEvent
+import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
@@ -30,6 +32,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.random.Random
+
 
 class RXLManager private constructor() {
 
@@ -52,10 +55,14 @@ class RXLManager private constructor() {
         @Volatile
         private var INSTANCE: RXLManager? = null
 
+        @Volatile
+        private var receivedFocusAll = false
+
         fun getInstance(): RXLManager =
             INSTANCE ?: synchronized(this) {
                 life.mibo.hardware.core.Logger.e("RXLManager INSTANCE init ")
-                INSTANCE = RXLManager()
+                INSTANCE =
+                    RXLManager()
                 INSTANCE!!
             }
     }
@@ -63,7 +70,10 @@ class RXLManager private constructor() {
 
     var listener: Listener? = null
     var devices = ArrayList<Device>()
+    private var devicesUids = ArrayList<DeviceEvent>()
     var events = ArrayList<Event>()
+    var wrongEvents = ArrayList<Event>()
+    private var colors = ArrayList<RxlColor>()
 
     private var lastActivePod = -1
     var program: RxlProgram? = null
@@ -87,7 +97,7 @@ class RXLManager private constructor() {
         return this
     }
 
-    fun refresh() {
+    private fun refresh() {
         devices.clear()
         events.clear()
     }
@@ -107,8 +117,12 @@ class RXLManager private constructor() {
     private var observers: CompositeDisposable? = null
     private var disposable: Disposable? = null
     private var delayDisposable: Disposable? = null
-    var isRandom = false
-    var exerciseType = 0
+    //var isRandom = false
+    var lightLogic = 1 // 1= Sequence, 2 = Random, 3 = Focus, 4 = Focus at All
+    //var lightLogic : RxlLight = RxlLight.SEQUENCE // todo enum may be costly for performance, using int
+    var activeColor: Int = 0
+    var colorPosition: Int = 0
+    //var exerciseType = 0
     private var unitTest = false
     private var cycles = 0L
     private var currentCycle = 1
@@ -132,6 +146,11 @@ class RXLManager private constructor() {
         isStarted = false
         isInternalStarted = false
         isRunning = false
+        colorSent = false
+        isFocus = false
+        receivedFocusAll = false
+        publisher?.unsubscribeOn(Schedulers.io())
+        publisher = null
     }
 
     fun startTest(program: RxlProgram) {
@@ -154,7 +173,7 @@ class RXLManager private constructor() {
 
         cycles = getCycles().toLong()
         currentCycle = 1
-        startObserver(currentCycle, program!!.getNext().cycleDuration)
+        startObserver(currentCycle, program.getNext().cycleDuration)
     }
 
     fun startOnTap() {
@@ -177,7 +196,11 @@ class RXLManager private constructor() {
     private fun createTapPublish() {
         publisher = PublishSubject.create<RxlStatusEvent>()
         publisher!!.subscribeOn(Schedulers.io()).doOnNext {
-            log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
+            logi("publisherTap RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid  receivedFocusAll $receivedFocusAll isFocus $isFocus")
+            if (isFocus) {
+                nextFocusEvent(it)
+                return@doOnNext
+            }
 
             if (it.uid == lastUid) {
                 if (!isInternalStarted) {
@@ -198,6 +221,8 @@ class RXLManager private constructor() {
         }.subscribe()
 
         if (isInternalStarted)
+            return
+        if (isFocus)
             return
         log("RxlStatusEvent2 isStarted >> $isInternalStarted ")
         if (devices.isNotEmpty()) {
@@ -223,7 +248,11 @@ class RXLManager private constructor() {
     private fun createNowPublish() {
         publisher = PublishSubject.create<RxlStatusEvent>()
         publisher!!.subscribeOn(Schedulers.io()).doOnNext {
-            log("publisher RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid")
+            logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid  receivedFocusAll $receivedFocusAll isFocus $isFocus")
+            if (isFocus) {
+                nextFocusEvent(it)
+                return@doOnNext
+            }
 
             if (it.uid == lastUid) {
                 log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
@@ -236,8 +265,72 @@ class RXLManager private constructor() {
 
     private fun nextEvent(time: Int) {
         colorSent = false
-        events.add(Event(events.size + 1, getAction(), time))
-        lightOnDynamic()
+        events.add(Event(events.size + 1, actionTime, time))
+        nextLightEvent()
+    }
+
+
+    private fun nextFocusEvent(it: RxlStatusEvent) {
+        logi("nextFocusEvent receivedFocusAll.............. $receivedFocusAll ${it.uid}")
+        if (receivedFocusAll) {
+            return
+        }
+        log("nextFocusEvent RxlStatusEvent >> ${it.uid} == $lastUid valid=$focusValid light=$lightLogic receivedFocusAll $receivedFocusAll")
+        if (lightLogic == 4) {
+            receivedFocusAll = true
+            Observable.fromIterable(devices).subscribeOn(Schedulers.io()).doOnNext {
+                //it.colorPalet = 0
+                EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, 0))
+                log("nextFocusEvent2 onChangeColorEvent Observable OFF = ${it.uid}")
+            }.doOnComplete {
+                //Thread.sleep(50)
+                if (it.uid == lastUid) {
+                    log("nextFocusEvent2 doOnComplete ID MATCHED  >> ${it.uid} == $lastUid ")
+                    events.add(Event(events.size + 1, actionTime, it.time))
+                } else {
+                    wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                    log("nextFocusEvent2 doOnComplete NOT MATCH >> ${it.uid} == $lastUid ")
+                }
+                colorSent = false
+                nextFocusLightEvent()
+                //receivedFocusAll = false
+            }.subscribe()
+
+        } else {
+            if (it.uid == lastUid) {
+                colorSent = false
+                if (focusValid)
+                    events.add(Event(events.size + 1, actionTime, it.time))
+                else {
+                    wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                    log("nextFocusEvent wrong focus device tapped >> ${it.uid} == $lastUid ")
+                }
+                nextFocusLightEvent()
+            } else {
+                //wrongEvents.add(Event(events.size + 1, getAction(), it.time))
+                log("nextFocusEvent UID NOT Matched >> ${it.uid} == $lastUid ")
+            }
+        }
+    }
+
+    private fun focusAllResponse(it: RxlStatusEvent) {
+        receivedFocusAll = true
+        log("set receivedFocusAll $receivedFocusAll")
+        Observable.fromArray(devices).flatMapIterable { x -> x }.doOnNext {
+            it.colorPalet = 0x00000000.toInt()
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, 0))
+            log("Observable.fromArray OFF = ${it.uid} receivedFocusAll $receivedFocusAll")
+        }.doOnComplete {
+            Thread.sleep(100)
+            if (it.uid == lastUid) {
+                events.add(Event(events.size + 1, actionTime, it.time))
+                log("nextFocusEvent2 match >> ${it.uid} == $lastUid ")
+            } else {
+                wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                log("nextFocusEvent2 no match >> ${it.uid} == $lastUid ")
+            }
+            nextFocusLightEvent()
+        }.subscribe()
     }
 
     // Private Functions
@@ -251,6 +344,7 @@ class RXLManager private constructor() {
 
     private fun startInternal() {
         isInternalStarted = true
+        colorSent = false
         log("startInternal..........")
         log(
             "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
@@ -264,14 +358,36 @@ class RXLManager private constructor() {
         if (observers == null || observers?.isDisposed == true)
             observers = CompositeDisposable()
         unitTest = false
-        startExercise(0, 0)
-        // isRandom = exercise?.logic == LightLogic.RANDOM
+        //isRandom = program!!.isRandom()
+        lightLogic = program!!.lightLogic()
+        activeColor = program!!.getActiveColor()
+        colorPosition = program!!.getActivePosition()
         cycles = program!!.getCyclesCount().toLong()
         actionTime = program?.getAction()?.times(1000) ?: 0
         pauseTime = program!!.getPause()
         currentCycle = 1
+        if (lightLogic == 3 || lightLogic == 4)
+            setColors()
         events.clear()
+        startExercise(0, 0)
         startObserver(currentCycle, program!!.getDuration())
+    }
+
+    private fun setColors() {
+        val list = Utils.getColors()
+        colors.clear()
+        list.forEach {
+            it.id?.let { c ->
+                colors.add(RxlColor(c))
+            }
+        }
+        isFocus = true
+
+        devicesUids.clear()
+        devices.forEach {
+            devicesUids.add(DeviceEvent(it.uid, false))
+        }
+
     }
 
 
@@ -342,6 +458,7 @@ class RXLManager private constructor() {
 
         delayDisposable = Single.timer(getAction().toLong().plus(1), TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io()).doOnSuccess {
+                receivedFocusAll = false
                 onEvent(RxlStatusEvent(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), lastUid))
                 log("RxlStatusEvent delayObserver doOnComplete")
             }.doOnDispose {
@@ -412,10 +529,11 @@ class RXLManager private constructor() {
     private fun startCycle(cycle: Int, time: Int = 0) {
         log(".......... startCycle .......... " + getTime())
         listener?.onCycleStart(cycle, time)
+        colorSent = false
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
         isStarted = true
         lastPod = 0
-        lightOnDynamic()
+        nextLightEvent()
         //publisher.onNext("startCycle")
     }
 
@@ -471,7 +589,13 @@ class RXLManager private constructor() {
         EventBus.getDefault()
             .post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
         dispose()
-        publisher?.onComplete()
+
+        try {
+            publisher?.onComplete()
+            publisher?.unsubscribeOn(Schedulers.io())
+            publisher = null
+        } catch (e: Exception) {
+        }
         //publisher.onNext("completeExercise")
     }
 
@@ -495,8 +619,6 @@ class RXLManager private constructor() {
             log("test1 Observable subscribe $it")
         }
     }
-
-
 
 
     private fun random(): Int {
@@ -534,52 +656,87 @@ class RXLManager private constructor() {
     }
 
     private var isException = false
-    private fun lightOnDynamic() {
-        log("lightOnDynamic random $isRandom  $lastPod $isStarted ")
+    private fun nextLightEvent() {
+        log("nextLightEvent lightLogic $lightLogic  lastPod $lastPod isStarted $isStarted ")
         if (devices.size > 0 && isStarted) {
             try {
-                if (isRandom) {
-                    lightOnRandom()
-                    return
-                } else
-                    lightOnSequence()
+                when (lightLogic) {
+                    1 -> {
+                        lightOnSequence()
+                    }
+                    2 -> {
+                        lightOnRandom()
+                    }
+                    3 -> {
+                        lightOnFocus()
+                    }
+                    4 -> {
+                        lightOnAllAtOnce()
+                    }
 
+                }
+//                if (isRandom) {
+//                    lightOnRandom()
+//                    return
+//                } else
+//                    lightOnSequence()
                 isException = false
                 return
             } catch (e: Exception) {
                 log("lightOnDynamic Error " + e.message)
                 if (!isException)
-                    lightOnDynamic()
+                    nextLightEvent()
                 e.printStackTrace()
                 isException = true
             }
         }
-        log("lights signals (random=$isRandom) sent to $lastPod")
     }
 
-    private var nextPod = 0
+    private fun nextFocusLightEvent() {
+        log("nextFocusLightEvent lightLogic $lightLogic  lastPod $lastPod isStarted $isStarted ")
+        if (devices.size > 0 && isStarted) {
+            try {
+                when (lightLogic) {
+                    3 -> {
+                        lightOnFocus()
+                    }
+                    4 -> {
+                        lightOnAllAtOnce()
+                    }
+
+                }
+                isException = false
+                return
+            } catch (e: Exception) {
+                log("lightOnDynamic Error " + e.message)
+                if (!isException)
+                    nextLightEvent()
+                e.printStackTrace()
+                isException = true
+            }
+        }
+    }
+
+    //private var nextPod = 0
     private var lastPod = 0
     private var lastUid = ""
-    @Synchronized
-    private fun lightOnSequence() {
-        if (lastPod >= devices.size)
-            lastPod = 0
-        sendColorEvent(devices[lastPod])
-
-        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
-
-        lastPod++
-    }
-
-    var random: Random? = null
+    //private var random: Random? = null
     private fun nextRandom(): Int {
         return Random.nextInt(devices.size)
     }
 
     @Synchronized
+    private fun lightOnSequence() {
+        if (lastPod >= devices.size)
+            lastPod = 0
+        sendColorEvent(devices[lastPod], activeColor)
+        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
+        lastPod++
+    }
+
+    @Synchronized
     private fun lightOnRandom() {
         val id = nextRandom()
-        log("nextRandom  $lastPod  == $id")
 
         lastPod = if (id == lastPod)
             nextRandom()
@@ -589,16 +746,162 @@ class RXLManager private constructor() {
         if (lastPod >= devices.size)
             lastPod = nextRandom()
 
-        sendColorEvent(devices[lastPod])
+        sendColorEvent(devices[lastPod], activeColor)
+    }
 
-        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
-        //log("lights random sent $lastPod  == $id")
-        //lastPod++
+    private var focusCount = 0
+    private var focusValid = false
+    private var isFocus = false
+
+    private fun isNextFocus(): Boolean {
+        //val id = nextRandom()
+        //val id = nextRandom()
+        //return id == 1
+        //return Random.nextInt(50) % 2 == 0
+        return Random.nextInt(50) % 3 == 0
+    }
+
+    @Synchronized
+    private fun lightOnFocus() {
+        log("lightOnFocus")
+        if (isNextFocus()) {
+            focusValid = true
+            sendToFocusLight()
+        } else {
+            focusValid = false
+            sendToNonFocusLight()
+        }
+    }
+
+    private fun nextRandomColor(): Int {
+        var i = Random.nextInt(colors.size)
+        //var c = colors[i].activeColor
+        log("nextRandomColor i $i , colorPosition $colorPosition")
+        if (i == colorPosition && i < colors.size - 1)
+            i++
+
+        return colors[i].activeColor
+//        log("nextRandomColor activeColor $activeColor newColor $c , i $i")
+//        if (c == activeColor) {
+//            log("nextRandomColor color matched")
+//            c = if (i > 0)
+//                colors[i.minus(1)].activeColor
+//            else colors[i.plus(1)].activeColor
+//        }
+//        return c
+    }
+
+
+    private fun sendToFocusLight() {
+        val id = nextRandom()
+
+        lastPod = if (id == lastPod)
+            nextRandom()
+        else
+            id
+
+        if (lastPod >= devices.size)
+            lastPod = nextRandom()
+
+        sendColorEvent(devices[lastPod], activeColor)
+    }
+
+    private fun sendToNonFocusLight() {
+        val id = nextRandom()
+
+        lastPod = if (id == lastPod)
+            nextRandom()
+        else
+            id
+
+        if (lastPod >= devices.size)
+            lastPod = nextRandom()
+
+        sendColorEvent(devices[lastPod], nextRandomColor())
+    }
+
+    @Synchronized
+    private fun lightOnAllAtOnce() {
+        log("lightOnAllAtOnce")
+        if (colorSent) {
+            log("lightOnAllAtOnce color is already sent.......")
+            return
+        }
+        val id = nextRandom()
+
+        lastPod = if (id == lastPod)
+            nextRandom()
+        else
+            id
+
+        if (lastPod >= devices.size)
+            lastPod = nextRandom()
+
+        val uid = devices[lastPod].uid
+        //sendColorEvent(devices[lastPod], activeColor)
+//        Observable.fromIterable(devices).zipWith(
+//            Observable.interval(50, TimeUnit.MILLISECONDS),
+//            BiFunction<Device, Long, Device> { item, t ->
+//                log("Observable.fromIterable BiFunction ${item.uid} $t")
+//                item
+//
+//            }).doOnNext {
+//            log("Observable.fromIterable doOnNext ")
+//            if (it.uid == uid)
+//                sendColorEvent(it, activeColor)
+//            else {
+//                it.colorPalet = nextRandomColor()
+//                EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime))
+//            }
+//        }.doOnComplete {
+//
+//        }.subscribe()
+        receivedFocusAll = false
+        Observable.fromIterable(devices).subscribeOn(Schedulers.io()).doOnNext {
+            if (it.uid == uid) {
+                delayObserver()
+                it.colorPalet = activeColor
+                lastUid = it.uid
+                //sendColorEvent(it, activeColor)
+            } else {
+                it.colorPalet = nextRandomColor()
+            }
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime))
+            log("nextFocusEvent onChangeColorEvent Observable ON = ${it.uid}")
+        }.doOnComplete {
+
+        }.subscribe()
+
+//        Observable.just("", "", "", "")
+//            .zipWith(
+//                Observable.interval(
+//                    500,
+//                    TimeUnit.MILLISECONDS
+//                ),
+//                BiFunction<String, Long, String> { item: String?, interval: Long? -> item }
+//            )
+//            .subscribe { x: String? -> println(x) }.dispose()
+    }
+
+//    fun <T> Observable<T>.delayEach(interval: Long, timeUnit: TimeUnit): Observable<T> =
+//        Observable.zip(
+//            this,
+//            Observable.interval(interval, timeUnit),
+//            BiFunction { item, _ -> item }
+//        )
+
+    private fun clearDevicesColor() {
+        Observable.fromArray(devices).flatMapIterable { x -> x }.doOnNext {
+            it.colorPalet = 0x000000
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, 0))
+        }.doOnComplete {
+
+        }.subscribe()
     }
 
     private var colorSent = false
 
-    private fun sendColorEvent(device: Device?) {
+    private fun sendColorEvent(device: Device?, color: Int) {
         if (colorSent) {
             log("sendColorEvent color is already sent.......")
             return
@@ -613,7 +916,7 @@ class RXLManager private constructor() {
             return
         }
         device?.let {
-            it.colorPalet = getColor()
+            it.colorPalet = color
             lastUid = it.uid
             EventBus.getDefault()
                 .postSticky(
@@ -628,18 +931,11 @@ class RXLManager private constructor() {
     }
 
     fun sendColor(d: Device?, color: Int) {
-            d?.let {
-                it.colorPalet = color
-                EventBus.getDefault()
-                    .postSticky(
-                        ChangeColorEvent(
-                            it,
-                            it.uid,
-                            getAction().times(1000)
-                        )
-                    )
-            }
-            lastPod++
+        d?.let {
+            it.colorPalet = color
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime))
+        }
+        //lastPod++
     }
 
 
@@ -716,14 +1012,28 @@ class RXLManager private constructor() {
         life.mibo.hardware.core.Logger.e("RXLManager $currentCycle - $msg")
     }
 
+    private fun logi(msg: String?) {
+        life.mibo.hardware.core.Logger.i("RXLManager $currentCycle - $msg")
+    }
+
     @Subscribe
     fun onResponse(event: PodResponseEvent) {
-        events.add(Event(devices.size.plus(1), getAction(), event.tapTime))
+        events.add(
+            Event(
+                devices.size.plus(1),
+                getAction(),
+                event.tapTime
+            )
+        )
     }
 
     @Subscribe
     fun onEvent(event: RxlStatusEvent) {
         EventBus.getDefault().removeStickyEvent(event)
+        if (receivedFocusAll) {
+            log("nextFocusEvent receivedFocusAll.............. ")
+            return
+        }
         publisher?.onNext(event)
     }
 
@@ -754,6 +1064,14 @@ class RXLManager private constructor() {
         b.append("\n")
         b.append("You missed   ")
         b.append(missed)
+        if (isFocus) {
+            b.append("\n")
+            b.append("\n")
+            b.append("Total Attempts ")
+            b.append(wrongEvents.size)
+            b.append(" + ")
+            b.append(events.size)
+        }
         //return String(b)
         return b.toString()
         // return ""
@@ -763,4 +1081,10 @@ class RXLManager private constructor() {
     fun test(s: String) {
         log("test $s")
     }
+
+    private data class DeviceEvent(
+        var uid: String,
+        var recieved: Boolean = false,
+        var data: Any? = null
+    )
 }

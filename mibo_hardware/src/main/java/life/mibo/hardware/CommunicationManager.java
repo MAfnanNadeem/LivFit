@@ -2,7 +2,6 @@ package life.mibo.hardware;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
-import life.mibo.hardware.bluetooth.BleScanCallback;
 import life.mibo.hardware.bluetooth.OnBleCharChanged;
 import life.mibo.hardware.bluetooth.OnBleDeviceDiscovered;
 import life.mibo.hardware.core.DataParser;
@@ -37,7 +35,6 @@ import life.mibo.hardware.events.SendDeviceStopEvent;
 import life.mibo.hardware.events.SendMainLevelEvent;
 import life.mibo.hardware.events.SendProgramChangesHotEvent;
 import life.mibo.hardware.events.SendProgramEvent;
-import life.mibo.hardware.models.BleDevice;
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Circuit;
@@ -74,6 +71,7 @@ import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
 import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
+import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
@@ -236,6 +234,7 @@ public class CommunicationManager {
     public synchronized void startScanning(final Activity context, boolean isWifi) {
         this.isWifi = isWifi;
         log("Starting scanning...." + isWifi);
+        rxlCount = 0;
         if (isWifi)
             scanWifi(context);
         else
@@ -407,7 +406,7 @@ public class CommunicationManager {
         return message.length > 4 && message[0] == 77 && message[1] == 66 && message[2] == 82 && message[3] == 88 && message[4] == 76;
     }
 
-    private void broadcastConsumer(byte[] message, InetAddress ip) {
+    private synchronized void broadcastConsumer(byte[] message, InetAddress ip) {
         log("broadcastConsumer encrypted " + Arrays.toString(message));
         debugCommands("broadcastConsumer", message);
         Encryption.mbp_decrypt(message, message.length);
@@ -429,16 +428,30 @@ public class CommunicationManager {
                         checkBoosterDevice(command, ip);
                         break;
                     }
-                } else if (message[i] == 77 && message[i + 1] == 66 && message[i + 2] == 82 && message[i + 3] == 88 && message[i + 4] == 76) {
-                    if (message.length > (i + message[i + 6] + 8)) {
-                        byte[] command = new byte[message[i + 6] + 2];
-                        for (int j = 0; j < message[i + 6] + 2; j++) {
-                            command[j] = message[i + 5 + j];
-                        }
+                } else if (message[i] == 'M' && message[i + 1] == 'B' && message[i + 2] == 'R' && message[i + 3] == 'X') {
+                    if (message[i + 4] == 'L') {
+                        if (message.length > (i + message[i + 6] + 8)) {
+                            byte[] command = new byte[message[i + 6] + 2];
+                            for (int j = 0; j < message[i + 6] + 2; j++) {
+                                command[j] = message[i + 5 + j];
+                            }
 
-                        logi("broadcastConsumer checkRxlDevice " + ip);
-                        checkRxlDevice(ip);
-                        break;
+                            logi("broadcastConsumer checkRxlDevice " + ip);
+                            checkRxlDevice(ip);
+                            break;
+                        }
+                    }
+                    if (message[i + 4] == 'T') {
+                        if (message.length > (i + message[i + 6] + 8)) {
+                            byte[] command = new byte[message[i + 6] + 2];
+                            for (int j = 0; j < message[i + 6] + 2; j++) {
+                                command[j] = message[i + 5 + j];
+                            }
+
+                            logi("broadcastConsumer checkRxlDevice " + ip);
+                            checkRxtDevice(ip);
+                            break;
+                        }
                     }
                 }
             }
@@ -555,6 +568,7 @@ public class CommunicationManager {
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
     }
 
+    private int rxlCount = 0;
     private synchronized void checkRxlDevice(InetAddress ip) {
         log("checkRxlDevice --- " + ip);
         for (Device d : mDiscoveredDevices) {
@@ -563,7 +577,18 @@ public class CommunicationManager {
                 return;
             }
         }
-        add(new Device("", DataParser.getUIDRxl(ip.getAddress()), ip, RXL_WIFI));
+        add(new Device("RXL " + ++rxlCount, DataParser.getUIDRxl(ip.getAddress()), ip, RXL_WIFI));
+    }
+
+    private synchronized void checkRxtDevice(InetAddress ip) {
+        log("checkRxlDevice --- " + ip);
+        for (Device d : mDiscoveredDevices) {
+            if (d.getIp().equals(ip)) {
+                log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
+                return;
+            }
+        }
+        add(new Device("RXT", DataParser.getUIDRxl(ip.getAddress()), ip, RXT_WIFI));
     }
 
     private void checkNewDevice(byte[] command, InetAddress ip) {
@@ -604,6 +629,10 @@ public class CommunicationManager {
         log("mDiscoveredDevices add Device............. --- " + device);
         if (mDiscoveredDevices == null)
             mDiscoveredDevices = new ArrayList<>();
+        if (bluetoothManager != null) {
+            // if (bluetoothManager.contains(device.getUid()))
+            //    return;
+        }
         for (Device d : mDiscoveredDevices) {
             if (d.getUid().equalsIgnoreCase(device.getUid())) {
 //                if (d.getType() == device.getType()) {
@@ -734,6 +763,14 @@ public class CommunicationManager {
             }
             break;
 
+            case RXT_WIFI: {
+                log("RXT_WIFI connect " + device.getIp());
+                connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), DataParser.RXT);
+                SessionManager.getInstance().getUserSession().addDevice(device);
+                device.setStatusConnected(DEVICE_CONNECTING);
+            }
+            break;
+
             case RXL_BLE: {
                 log("connectDevice RXL_BLE " + bluetoothManager);
                 if (bluetoothManager != null) {
@@ -780,6 +817,11 @@ public class CommunicationManager {
                 pos = disconnectTCPDevice(device.getUid(), false);
             }
         } else if (device.getType() == RXL_WIFI) {
+            if (device.getIp() != null) {
+                pos = disconnectTCPDevice(device.getUid(), true);
+            }
+
+        } else if (device.getType() == RXT_WIFI) {
             if (device.getIp() != null) {
                 pos = disconnectTCPDevice(device.getUid(), true);
             }
@@ -889,18 +931,32 @@ public class CommunicationManager {
                                 //log("receiveCommands i "+i);
                                 return;
                             }
-                        }
-                        else if (message[i] == 77 && message[i + 1] == 66 && message[i + 2] == 82 && message[i + 3] == 88 && message[i + 4] == 76) {
-                            if (message.length > (i + message[i + 6] + 8)) {
-                                byte[] command = new byte[message[i + 7] + 2];
-                                for (int j = 0; j < message[i + 7] + 2; j++) {
-                                    command[j] = message[i + 6 + j];
-                                    //log("parseCommandsRxl parsing  " + j + " : " + (message[i + 6 + j] & 0xFF));
-                                }
+                        } else if (message[i] == 77 && message[i + 1] == 66 && message[i + 2] == 82 && message[i + 3] == 88) {
+                            if (message[i + 4] == 76) {
+                                if (message.length > (i + message[i + 6] + 8)) {
+                                    byte[] command = new byte[message[i + 7] + 2];
+                                    for (int j = 0; j < message[i + 7] + 2; j++) {
+                                        command[j] = message[i + 6 + j];
+                                        //log("parseCommandsRxl parsing  " + j + " : " + (message[i + 6 + j] & 0xFF));
+                                    }
 
-                                parseCommandsRxl(command, uid);
-                                //log("receiveCommands2 i " + i);
-                                return;
+                                    parseCommandsRxl(command, uid);
+                                    //log("receiveCommands2 i " + i);
+                                    return;
+                                }
+                            }
+                            if (message[i + 4] == 'T') {
+                                if (message.length > (i + message[i + 6] + 8)) {
+                                    byte[] command = new byte[message[i + 7] + 2];
+                                    for (int j = 0; j < message[i + 7] + 2; j++) {
+                                        command[j] = message[i + 6 + j];
+                                        //log("parseCommandsRxl parsing  " + j + " : " + (message[i + 6 + j] & 0xFF));
+                                    }
+
+                                    parseCommandsRxt(command, uid);
+                                    //log("receiveCommands2 i " + i);
+                                    return;
+                                }
                             }
                         }
                     }
@@ -922,6 +978,13 @@ public class CommunicationManager {
     private void parseCommandsRxl(byte[] command, String uid) {
         log("parseCommandsRxl msg " + Utils.getChars(command) + " : UID " + uid);
         log("parseCommandsRxl msg " + Utils.getBytes(command) + " : UID " + uid);
+        if (listener != null)
+            listener.onCommandReceived(DataParser.getCommand(command), command, uid);
+    }
+
+    private void parseCommandsRxt(byte[] command, String uid) {
+        log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + uid);
+        log("parseCommandsRXT msg " + Utils.getBytes(command) + " : UID " + uid);
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid);
     }
@@ -1163,13 +1226,15 @@ public class CommunicationManager {
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onChangeColorEvent(ChangeColorEvent event) {
+    public synchronized void onChangeColorEvent(ChangeColorEvent event) {
         log("onChangeColorEvent "+event);
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
                 if (event.getDevice().getType() == RXL_WIFI) {
                     t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
+                } else if (event.getDevice().getType() == RXT_WIFI) {
+                    t.sendMessage(DataParser.sendRxtColor(Integer.parseInt(event.getDevice().getData().toString()), event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onRXTColorChange");
                 } else {
                     t.sendMessage(DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), t.getType()), "onChangeColorEvent");
                 }
@@ -1186,7 +1251,7 @@ public class CommunicationManager {
 
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        Log.e("CommManager", "Color EVENT");
+        log("onChangeColorEvent color changed..................... " + event.getUid());
 
     }
 

@@ -12,6 +12,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -46,6 +48,7 @@ import life.mibo.hexa.ui.main.MessageDialog
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
+import life.mibo.views.loadingbutton.presentation.State
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -124,7 +127,8 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 ////            }
 //        }
         //bindProgressButton(tv_scan)
-        button_next?.visibility = View.INVISIBLE
+//        /button_next?.visibility = View.INVISIBLE
+        button_next?.isEnabled = false
         button_next?.setOnClickListener {
             val member = Prefs.get(this.context).member
             if (member != null) {
@@ -160,16 +164,21 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
                 //else
             }
         }
-        button_next?.isEnabled = false
+
 
         scanDevices()
         isRxl = arguments?.getBoolean("is_rxl") ?: false
         if (isRxl)
-            button_next?.text = "NEXT"
+            button_next?.text = getString(R.string.next)
 
-        tv_connect_all?.setOnClickListener {
-            connectAllRxl()
+        button_connect_all?.setOnClickListener {
+            if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED)
+                connectAllDevices(isRxl)
         }
+
+//        button_connect_all?.setListener {
+//
+//        }
 
         //loadTest()
         //loadTest()
@@ -178,6 +187,49 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         isBluetoothEnable()
     }
 
+    var isConnectTrigger = false
+    @SuppressLint("CheckResult")
+    fun revertNextButton(time: Long = 1000) {
+        Single.timer(time, TimeUnit.MILLISECONDS)
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                if (isConnectTrigger) {
+                    val b = BitmapFactory.decodeResource(resources, R.drawable.ic_done_white)
+                    log("button_next doOnSuccess $b")
+//                    button_connect_all.doneLoadingAnimation(
+//                        ContextCompat.getColor(
+//                            context!!,
+//                            R.color.color_button_yellow
+//                        ), b
+//                    )
+                    if (b != null)
+                        button_connect_all.doneLoadingAnimation(0xFFFFA000.toInt(), b)
+                }
+            }.doOnSuccess {
+                isConnectTrigger = false
+                log("testNextButton doOnSuccess $it")
+                button_connect_all.revertAnimation {
+                    availabeAdapter?.list?.size?.let { size ->
+                        if (size > 1)
+                            button_connect_all?.text = getString(R.string.connect_all)
+                        else
+                            button_connect_all?.text = getString(R.string.connect)
+                        button_connect_all?.background =
+                            ContextCompat.getDrawable(context!!, R.drawable.button_shape_rounded)
+                        //else tv_connect_all?.visibility = View.GONE
+                    }
+
+                    //button_next.background
+                    //if (isRxl)
+                    //    button_next?.text = getString(R.string.next)
+                    //  else
+                    //   button_next?.text = getString(R.string.select_program)
+                }
+            }.subscribe { i ->
+                log("testNextButton subscribe $i")
+            }
+    }
 
     private fun scanDevices() {
         log("scanDevices $isScanning")
@@ -186,6 +238,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         text_type?.text = if (isWifi) getString(R.string.wifi) else getString(R.string.bluetooth)
         isScanning = true
         val size = availabeList.size
+        availabeAdapter?.resetRxlCount()
         availabeList.clear()
         availabeAdapter?.notifyItemRangeRemoved(0, size)
         // CommunicationManager.getInstance().discoveredDevices.clear()
@@ -490,39 +543,66 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 
     private fun showConnectAll() {
         availabeAdapter?.list?.size?.let {
-            if (it > 2) {
-                if (tv_connect_all?.visibility != View.VISIBLE)
-                    tv_connect_all?.visibility = View.VISIBLE
-            } else tv_connect_all?.visibility = View.GONE
+            if (it > 1) {
+                activity?.runOnUiThread {
+                    button_connect_all?.text = getString(R.string.connect_all)
+                    log("showConnectAll size $it")
+                }
+                //if (button_connect_all?.visibility != View.VISIBLE)
+                //    tv_connect_all?.visibility = View.VISIBLE
+            }
+            //else tv_connect_all?.visibility = View.GONE
         }
 
     }
 
-    private fun connectAllRxl() {
-        Observable.fromArray(availabeAdapter!!.list!!).flatMapIterable { x -> x }
-            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.Observer<Device> {
-                override fun onSubscribe(d: Disposable) {
-                }
+    private fun connectAllDevices(rxl: Boolean = false) {
+        if (availabeAdapter!!.list!!.size > 0) {
+            Observable.fromIterable(availabeAdapter!!.list!!).subscribeOn(Schedulers.io())
+                .subscribe(object : io.reactivex.Observer<Device> {
+                    override fun onSubscribe(d: Disposable) {
+                        button_connect_all?.startAnimation {
 
-                override fun onNext(t: Device) {
-                    if (t.isPod && t.statusConnected != 1) {
-                        connectionListener?.onConnectClicked(t)
-                        // Thread.currentThread().sleep(100)
-                        Thread.sleep(80)
+                        }
                     }
-                }
 
-                override fun onError(e: Throwable) {
-                    log("iv_plus onError", e)
-                    e.printStackTrace()
-                }
+                    override fun onNext(t: Device) {
+                        log("connectAllDevices onNext")
+                        if (rxl) {
+                            if (t.isPod && t.statusConnected != 1) {
+                                connectionListener?.onConnectClicked(t)
+                                // Thread.currentThread().sleep(100)
+                                isConnectTrigger = true
+                                Thread.sleep(100)
+                                log("connectAllDevices statusConnected ${t.statusConnected}")
+                            }
+                        } else {
+                            if (t.isBooster && t.statusConnected != 1) {
+                                connectionListener?.onConnectClicked(t)
+                                isConnectTrigger = true
+                                Thread.sleep(100)
+                            }
 
-                override fun onComplete() {
-                    //adapter?.notifyDataSetChanged()
+                        }
+                    }
 
-                }
-            })
+                    override fun onError(e: Throwable) {
+                        log("iv_plus onError", e)
+                        e.printStackTrace()
+                    }
+
+                    override fun onComplete() {
+                        //adapter?.notifyDataSetChanged()
+                        Single.timer(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess {
+                                revertNextButton()
+
+                            }.subscribe()
+
+                    }
+                })
+
+        }
 
     }
 
@@ -670,6 +750,11 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         EventBus.getDefault().unregister(this)
         controller.onStop()
         log("onStop")
+    }
+
+    override fun onDestroy() {
+        button_next?.dispose()
+        super.onDestroy()
     }
 
 

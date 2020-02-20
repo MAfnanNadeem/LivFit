@@ -117,17 +117,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_connect_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Connect All"
-            android:textColor="@color/white"
-            android:padding="@dimen/grid_1x"
-            android:textSize="@dimen/text_size_small"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_connect_all"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:padding="@dimen/grid_1x"-->
+        <!--            android:text="Connect All"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:textSize="@dimen/text_size_small"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 
         <TextView
@@ -149,21 +149,60 @@
             android:layout_height="0dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="@dimen/grid_1x"
-            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toTopOf="@+id/button_next"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_connect_all" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_next"
-            android:layout_width="wrap_content"
+        <life.mibo.views.loadingbutton.customViews.CircularProgressButton
+            android:id="@+id/button_connect_all"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
+            android:background="@drawable/button_shape_rounded"
+            android:text="@string/connect"
+            android:textColor="@color/white"
+            app:finalCornerAngle="32dp"
+            app:initialCornerAngle="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_next"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.45"
+            app:spinning_bar_color="#FFF"
+            app:spinning_bar_padding="6dp"
+            app:spinning_bar_width="4dp" />
+
+        <life.mibo.views.loadingbutton.customViews.CircularProgressButton
+            android:id="@+id/button_next"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:background="@drawable/button_shape_rounded"
+            android:enabled="false"
             android:text="@string/select_program"
+            android:textColor="@color/white"
+            app:finalCornerAngle="32dp"
+            app:initialCornerAngle="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/button_connect_all"
+            app:layout_constraintWidth_percent="0.45"
+            app:spinning_bar_color="#FFF"
+            app:spinning_bar_padding="6dp"
+            app:spinning_bar_width="4dp" />
+
+        <!--        <androidx.appcompat.widget.AppCompatButton-->
+        <!--            android:id="@+id/button_next"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_margin="@dimen/grid_1x"-->
+        <!--            android:visibility="invisible"-->
+        <!--            android:text="@string/select_program"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

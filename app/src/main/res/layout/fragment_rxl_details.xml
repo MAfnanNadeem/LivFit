@@ -30,9 +30,9 @@
             <life.mibo.hexa.ui.rxl.slider.SliderView
                 android:id="@+id/iv_icon"
                 android:layout_width="0dp"
-                android:layout_height="220dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_height="240dp"
                 android:layout_margin="@dimen/grid_1x"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="1" />
@@ -64,16 +64,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_icon" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switch_sensor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/proximity_off"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_desc_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_icon" />
 
             <life.mibo.views.text.ExpandableTextView
                 android:id="@+id/tv_desc"
@@ -113,11 +103,11 @@
             <ImageView
                 android:id="@+id/iv_stations"
                 style="@style/rxl_create_icon"
-                android:src="@drawable/ic_reflex_stations"
                 android:layout_marginStart="@dimen/grid_1x"
+                android:src="@drawable/ic_reflex_stations"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.35"
-                app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_stations"
+                app:layout_constraintWidth_percent="0.35" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -126,10 +116,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/grid_2x"
                 android:background="@drawable/login_edittext"
+                android:gravity="center"
                 android:minWidth="100dp"
                 android:padding="@dimen/grid_1x"
                 android:text="1"
-                android:gravity="center"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_stations"
@@ -152,12 +142,12 @@
                 android:id="@+id/iv_cycles"
                 style="@style/rxl_create_icon"
                 android:layout_marginStart="@dimen/grid_1x"
-                android:src="@drawable/ic_reflex_lights_out"
                 android:layout_marginEnd="18dp"
+                android:src="@drawable/ic_reflex_lights_out"
                 app:layout_constraintEnd_toEndOf="@+id/iv_stations"
-                app:layout_constraintWidth_percent="0.35"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_lights" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_lights"
+                app:layout_constraintWidth_percent="0.35" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -169,20 +159,20 @@
                 android:minWidth="100dp"
                 android:padding="@dimen/grid_1x"
                 android:text="Sequence"
+                android:gravity="center"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/iv_cycles" />
 
-
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_activity"
+                android:id="@+id/tv_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/grid_1x"
                 android:layout_marginTop="@dimen/grid_2x"
-                android:text="ACTIVITY SETTINGS"
+                android:text="Color"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
@@ -195,23 +185,61 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="@dimen/grid_2x"
                 app:cv_color="#0F0"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_activity"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_color"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_activity" />
+                app:layout_constraintTop_toTopOf="@+id/tv_color" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_switch_sensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:text="@string/proximity_off"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:textSize="@dimen/text_size_medium"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_select_color" />
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_sensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_switch_sensor"
+                app:layout_constraintTop_toTopOf="@+id/tv_switch_sensor" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="ACTIVITY SETTINGS"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/switch_sensor"
+                app:layout_constraintWidth_percent="1" />
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_customize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/grid_2x"
                 android:layout_marginEnd="@dimen/grid_2x"
-                android:text="Customize"
+                android:text="@string/customize"
                 android:textColor="@color/colorDeviceColorRed"
                 android:textSize="@dimen/text_size_medium"
-                android:visibility="gone"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_activity"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_cycles"
-                app:layout_constraintWidth_percent="1" />
+                app:layout_constraintTop_toTopOf="@+id/tv_activity" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
@@ -354,10 +382,10 @@
                 android:id="@+id/constraintLayout6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="@dimen/grid_2x"
                 android:layout_marginBottom="@dimen/grid_1x"
                 android:paddingBottom="@dimen/grid_2x"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_activity"
                 app:layout_constraintWidth_percent="0.5">
 

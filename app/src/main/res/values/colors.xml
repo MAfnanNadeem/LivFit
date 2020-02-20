@@ -39,5 +39,7 @@
     <color name="radio_button_checked_bg">#09B189</color>
     <color name="radio_button_uncheck_bg">#FfF</color>
 
+    <color name="color_button_yellow">#FFA000</color>
+
 
 </resources>

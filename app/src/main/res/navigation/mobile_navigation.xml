@@ -152,5 +152,15 @@
         android:name="life.mibo.hexa.ui.profile.ProfileFragment"
         android:label="@string/profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_rxl_tabs"
+        android:name="life.mibo.hexa.ui.rxl.RxlTabFragment"
+        android:label="@string/rxl_title"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_rxl_tabs2"
+        android:name="life.mibo.hexa.ui.rxl.RxlTabFragment2"
+        android:label="@string/rxl_title"
+        tools:layout="@layout/fragment_profile" />
 
 </navigation>

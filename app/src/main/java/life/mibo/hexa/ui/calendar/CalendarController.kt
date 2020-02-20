@@ -118,7 +118,7 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
 
                 fragment.getDialog()?.dismiss()
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     parseData(data)
                 } else {
                     val err = data?.errors?.get(0)?.message

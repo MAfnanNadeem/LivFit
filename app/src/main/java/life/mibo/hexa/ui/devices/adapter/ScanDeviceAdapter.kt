@@ -26,6 +26,10 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     private val HEADER = 1
     private var listener: Listener? = null
 
+    companion object {
+        var RxlCount = 0
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == HEADER)
             return Header(
@@ -118,7 +122,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
 
             if (item.isPod) {
-                name?.text = "RXL  ${adapterPosition.plus(1)}"
+                name?.text = item.name
                 address?.text = item.serial
             }
             else {
@@ -196,6 +200,8 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
             } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
                 image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
+            } else if (item.type == DeviceTypes.RXT_WIFI) {
+                image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
             }
 
             if (isWifi) {
@@ -232,6 +238,10 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 //            )
 
         }
+    }
+
+    fun resetRxlCount(){
+        RxlCount = 0
     }
 
 

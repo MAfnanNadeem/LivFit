@@ -2,9 +2,7 @@ package life.mibo.hexa.ui.ch6
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +14,7 @@ import life.mibo.hardware.events.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -30,6 +29,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
     var recyclerView: RecyclerView? = null
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
+        log("onCreateView")
         viewModel =
             ViewModelProviders.of(this).get(Channel6ViewModel::class.java)
         val root = i.inflate(R.layout.fragment_channel6, c, false)
@@ -45,13 +45,14 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         //setRecycler(recyclerView!!)
         //retainInstance = true
         //SessionManager.getInstance().session = Session()
-       // setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
         return root
     }
 
     var test = true
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        log("onViewCreated")
         //controller = Channel6Controller(this@Channel6Fragment)
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
         controller.onViewCreated(view)
@@ -86,6 +87,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
             controller.onMainStopClicked()
         }
 
+        Utils.loadImage(hexagonImageView, "", R.drawable.ic_person_black_24dp)
     }
 
 
@@ -160,28 +162,32 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
 
 
     override fun onStart() {
+        log("onStart")
         super.onStart()
         EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
+        log("onStop")
         EventBus.getDefault().unregister(this)
         controller.onStop()
         super.onStop()
     }
 
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.menu_channel_fragment, menu)
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        log("onCreateOptionsMenu")
+        //inflater.inflate(R.menu.menu_channel_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        log("onOptionsItemSelected")
 //        if(item.itemId == R.id.item_scan){
 //            navigate(R.id.nav_scan, null)
 //        }
-//        return super.onOptionsItemSelected(item)
-//    }
+        return super.onOptionsItemSelected(item)
+    }
 
     interface Listener {
         fun onMainPlusClicked()
@@ -192,7 +198,12 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         fun onViewCreated(view: View)
     }
 
+    override fun onNavBackPressed(): Boolean {
+        return onBackPressed()
+    }
+
     override fun onBackPressed(): Boolean {
+        log("onBackPressed")
         //Toasty.info(context!!, "onBackPressed").show()
         if (controller.onBackPressed()) {
             navigate(life.mibo.hexa.ui.main.Navigator.POST, arguments)

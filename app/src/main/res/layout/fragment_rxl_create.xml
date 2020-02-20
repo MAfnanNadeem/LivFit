@@ -135,6 +135,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
 
 
+
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_select_lights"
                 android:layout_width="wrap_content"
@@ -151,6 +153,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/iv_stations" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewSequence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_cycles"
@@ -162,7 +172,7 @@
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintEnd_toEndOf="@+id/iv_cycles"
                 app:layout_constraintStart_toStartOf="@+id/iv_cycles"
-                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence" />
 
             <ImageView
                 android:id="@+id/iv_cycles"
@@ -216,7 +226,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
-                    android:text="ReFlex"
+                    android:text="@string/pods"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
                     app:layout_constraintEnd_toEndOf="@+id/iv_pods"

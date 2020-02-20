@@ -16,12 +16,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Random;
 
 import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import life.mibo.hexa.R;
+import life.mibo.hexa.models.program.Program;
 import life.mibo.hexa.ui.main.MiboEvent;
 
 public class Utils {
@@ -267,6 +269,26 @@ public class Utils {
             }
         });
         view.startAnimation(animate);
+    }
+
+    public static ArrayList<Program> getColors() {
+        ArrayList<Program> list = new ArrayList<>();
+        list.add(new Program(0xFFFF0000));
+        list.add(new Program(0xFF00FF00));
+        list.add(new Program(0xFF0000FF));
+        list.add(new Program(0xFFFFFF00));
+        list.add(new Program(0xFFFF00FF));
+        list.add(new Program(0xFF00b75b));
+        list.add(new Program(0xFF800000));
+        list.add(new Program(0xFF808000));
+        list.add(new Program(0xFF000080));
+        list.add(new Program(0xFF800080));
+        list.add(new Program(0xFF008080));
+        list.add(new Program(0xFFa7d129));
+        list.add(new Program(0xFF111111));
+        list.add(new Program(0xFFfa8072));
+        list.add(new Program(0xFFFFFFFF));
+        return list;
     }
 
 }

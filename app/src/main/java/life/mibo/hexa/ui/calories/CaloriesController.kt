@@ -52,7 +52,7 @@ class CaloriesController(val fragment: CaloriesFragment, val observer: CaloriesO
 
                 fragment.getDialog()?.dismiss()
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     parseData(data)
                 } else {
                     val err = data?.errors?.get(0)?.message

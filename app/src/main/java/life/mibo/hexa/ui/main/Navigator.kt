@@ -19,6 +19,8 @@ interface Navigator {
         const val RXL_COURSE_SELECT = 112;
         const val RXL_COURSE_CREATE = 113;
         const val RXL_DETAILS = 114;
+        const val RXL_TABS = 115;
+        const val RXL_TABS_2 = 116;
         const val POST = 201;
 
         //var SELECT_REFLEX = 106;

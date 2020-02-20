@@ -1,12 +1,11 @@
 package life.mibo.hexa.ui.login
 
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import kotlinx.android.synthetic.main.activity_login.*
-import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.room.Database
@@ -86,6 +85,16 @@ class LoginActivity : BaseActivity() {
                 return@setOnLongClickListener true
             }
         }
+        videoBg()
+    }
+
+    private fun videoBg() {
+        val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.login_video)
+        videoView.setVideoURI(uri)
+        videoView.start()
+        videoView?.setOnPreparedListener {
+            it.isLooping = true
+        }
 
     }
 
@@ -115,6 +124,21 @@ class LoginActivity : BaseActivity() {
     fun clear(){
         Prefs.get(this).clear()
         Database.getInstance(this).clearAll()
+    }
+
+    override fun onPause() {
+        videoView?.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        videoView?.start()
+    }
+
+    override fun onStop() {
+        videoView?.stopPlayback()
+        super.onStop()
     }
 
     override fun onBackPressed() {

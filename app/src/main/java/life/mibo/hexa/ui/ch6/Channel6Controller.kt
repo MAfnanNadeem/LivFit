@@ -424,15 +424,21 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 )
             )
             countTimer?.cancel()
-            fragment?.activity?.runOnUiThread {
-                progressBar!!.visibility = View.GONE
-            }
+
+
             //countTimer?.onFinish()
 //            SessionManager.getInstance().userSession.booster.isStarted = true
 //            EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
 //            SessionManager.getInstance().userSession.currentSessionStatus = 1
             isPaused = false;
             observer.updatePlayButton(isPaused);
+            Single.just(lastFrom).subscribeOn(AndroidSchedulers.mainThread()).delay(200, TimeUnit.MILLISECONDS).doOnSuccess {
+                fragment?.activity?.runOnUiThread {
+                    progressBar!!.visibility = View.GONE
+                }
+                lastFrom = -1
+            }.subscribe()
+
 //            log("pauseUserSession")
             // Toasty.info(fragment?.requireContext(), "Pause functionality is remaining").show()
 
@@ -763,6 +769,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     private var currentDuration = 0L
     private var countTimer: CountDownTimer? = null
     private fun startTimer(seconds: Int) {
+        log("startTimer.............. $seconds")
         // SessionManager.getInstance().userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
         totalDuration = seconds.toLong()
         cancelTimer()
@@ -1128,7 +1135,6 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             sessionId.toIntOrZero(), startTime, 0
         )
 
-
         API.request.getApi()
             .saveSessionReport(SaveSessionPost(post = session, auth = member.accessToken!!))
             .enqueue(object : Callback<ResponseData> {
@@ -1289,7 +1295,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     data.data?.medicalHistory?.weight?.let {
                         userWeight = it.toIntOrZero()
                         //return userWeight

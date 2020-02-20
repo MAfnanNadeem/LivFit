@@ -84,7 +84,7 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
         return 0f
     }
 
-    fun fetchHeartRateData() {
+    private fun fetchHeartRateData() {
         val member =
             Prefs.get(this.fragment.context).member
                 ?: return
@@ -100,7 +100,7 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
             override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
                     parseData(data)
                 } else {

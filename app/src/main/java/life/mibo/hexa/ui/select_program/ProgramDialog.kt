@@ -21,6 +21,7 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.utils.Utils
 
 class ProgramDialog(
     c: Context,
@@ -83,21 +84,22 @@ class ProgramDialog(
 
     private fun getColors() {
         list.clear()
-        list.add(Program(0xFFFF0000.toInt()))
-        list.add(Program(0xFF00FF00.toInt()))
-        list.add(Program(0xFF0000FF.toInt()))
-        list.add(Program(0xFFFFFF00.toInt()))
-        list.add(Program(0xFFFF00FF.toInt()))
-        list.add(Program(0xFF00b75b.toInt()))
-        list.add(Program(0xFF800000.toInt()))
-        list.add(Program(0xFF808000.toInt()))
-        list.add(Program(0xFF000080.toInt()))
-        list.add(Program(0xFF800080.toInt()))
-        list.add(Program(0xFF008080.toInt()))
-        list.add(Program(0xFFa7d129.toInt()))
-        list.add(Program(0xFF111111.toInt()))
-        list.add(Program(0xFFfa8072.toInt()))
-        list.add(Program(0xFFFFFFFF.toInt()))
+        list.addAll(Utils.getColors())
+//        list.add(Program(0xFFFF0000.toInt()))
+//        list.add(Program(0xFF00FF00.toInt()))
+//        list.add(Program(0xFF0000FF.toInt()))
+//        list.add(Program(0xFFFFFF00.toInt()))
+//        list.add(Program(0xFFFF00FF.toInt()))
+//        list.add(Program(0xFF00b75b.toInt()))
+//        list.add(Program(0xFF800000.toInt()))
+//        list.add(Program(0xFF808000.toInt()))
+//        list.add(Program(0xFF000080.toInt()))
+//        list.add(Program(0xFF800080.toInt()))
+//        list.add(Program(0xFF008080.toInt()))
+//        list.add(Program(0xFFa7d129.toInt()))
+//        list.add(Program(0xFF111111.toInt()))
+//        list.add(Program(0xFFfa8072.toInt()))
+//        list.add(Program(0xFFFFFFFF.toInt()))
     }
 
 

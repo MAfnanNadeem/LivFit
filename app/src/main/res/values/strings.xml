@@ -110,6 +110,8 @@
     <string name="heart_rate">Heart Rate</string>
     <string name="weight">Weight</string>
     <string name="select_program">Select Program</string>
+    <string name="connect">Connect</string>
+    <string name="connect_all">Connect All</string>
     <string name="reflex">ReFlex</string>
     <string name="rxl_title">Reaction Lights</string>
     <string name="rxl_select">RXL Select</string>
@@ -131,13 +133,15 @@
     <string name="title_reflex">Reaction Lights</string>
     <string name="duration">Duration</string>
     <string name="random">Random</string>
-    <string name="proximity_on">Proximity On</string>
-    <string name="proximity_off">Proximity Off</string>
+    <string name="proximity_on">Proximity Enable</string>
+    <string name="proximity_off">Proximity Disabled</string>
     <string name="pods">Pods</string>
     <string name="activity_duration">Activity Duration</string>
     <string name="action">Action</string>
     <string name="delay">Delay</string>
     <string name="description">Description</string>
     <string name="course_description">Course Description</string>
+    <string name="customize"><u> Customize </u></string>
+    <string name="next">NEXT</string>
 
 </resources>

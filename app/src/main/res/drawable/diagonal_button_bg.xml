@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 2/15/20 12:24 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 2/15/20 12:24 PM
+  ~  Mibo Hexa - app
+  -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:gravity="end"
+        android:left="8dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#3B5998" />
+            <corners android:radius="3dp" />
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/diagonal_button"
+        android:gravity="start"
+        android:right="20dp" />
+
+    <item
+        android:drawable="@drawable/ic_rxl_pods_icon"
+        android:gravity="end|center_vertical"
+        android:right="4dp" />
+
+</layer-list>

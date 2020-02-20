@@ -61,6 +61,7 @@
             android:id="@+id/bottom_bar"
             android:layout_width="0dp"
             android:layout_height="56dp"
+            android:visibility="gone"
             android:background="@drawable/bottom_bar_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

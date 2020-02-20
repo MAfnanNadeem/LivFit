@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 2/19/20 4:29 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 2/19/20 4:29 PM
+  ~  Mibo Hexa - app
+  -->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    android:background="@drawable/bg_create_sequence"
+    android:padding="12dp"
+    android:text="2"
+    android:textColor="@color/white"
+    android:textSize="@dimen/text_size_large"
+    android:textStyle="bold" />

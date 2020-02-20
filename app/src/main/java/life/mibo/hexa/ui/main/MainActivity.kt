@@ -74,6 +74,8 @@ import life.mibo.hexa.ui.main.Navigator.Companion.RXL_COURSE_SELECT
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_DETAILS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_EXERCISE
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_HOME
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS_2
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
@@ -133,7 +135,7 @@ class MainActivity : BaseActivity(), Navigator {
             //startManager()
             commHandler.register()
 
-            setBottomBar()
+            //setBottomBar()
 
             log("OnCreate end")
         } else {
@@ -803,6 +805,13 @@ class MainActivity : BaseActivity(), Navigator {
             RXL_EXERCISE -> {
                 navigate(0, R.id.navigation_reflex2)
             }
+            RXL_TABS -> {
+                navigate(0, R.id.navigation_rxl_tabs)
+            }
+
+            RXL_TABS_2 -> {
+                navigate(0, R.id.navigation_rxl_tabs2)
+            }
             RXL_COURSE_SELECT -> {
                 // val t = FragmentNavigator.Extras.Builder().addSharedElement(image!!, "course_icon") .addSharedElement(title!!, "course_title").build()
                 navigate(0, R.id.navigation_select_rxl_course)
@@ -813,6 +822,11 @@ class MainActivity : BaseActivity(), Navigator {
                     val args = Bundle()
                     args.putSerializable(ReflexCourseCreateFragment.DATA, data)
                     navigate(0, R.id.navigation_create_course, args, getNavOptions(), data.extras)
+                    updateBar(true)
+                } else if (data is RXLPrograms.Program) {
+                    val args = Bundle()
+                    args.putSerializable(ReflexCourseCreateFragment.DATA_PROGRAM, data)
+                    navigate(0, R.id.navigation_create_course, args, getNavOptions())
                     updateBar(true)
                 }
             }
@@ -870,11 +884,11 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     private fun updateBar(hide: Boolean) {
-        if (hide) {
-            bottomBarHelper.hide()
-        } else {
-            bottomBarHelper.show()
-        }
+//        if (hide) {
+//            bottomBarHelper.hide()
+//        } else {
+//            bottomBarHelper.show()
+//        }
     }
 
     private fun getNavOptions(): NavOptions {
@@ -945,6 +959,10 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_rxl_test -> {
                 navigate(0, R.id.navigation_rxl_test)
 
+            }
+
+            R.id.nav_test4 -> {
+                navigate(0, R.id.navigation_rxl_test)
             }
             R.id.nav_logout -> {
                 lastId = -1

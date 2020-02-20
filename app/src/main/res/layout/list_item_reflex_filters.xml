@@ -10,7 +10,7 @@
         android:layout_gravity="center"
         android:layout_margin="8dp"
         android:src="@drawable/ic_rxl_heart_selected"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_filter"

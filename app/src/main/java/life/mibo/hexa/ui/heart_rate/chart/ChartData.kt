@@ -401,7 +401,7 @@ class ChartData {
             override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
 
                 val data = response.body()
-                if (data != null && data.status.equals("success")) {
+                if (data != null && data.status.equals("success", true)) {
                     Prefs.get(chart?.context).settJson(Prefs.SESSION, data.report)
                     //parseData(data)
                     val report: Report? = data.report

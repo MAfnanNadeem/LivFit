@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.transition.TransitionInflater
+import coil.api.load
 import kotlinx.android.synthetic.main.fragment_rxl_create.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
@@ -25,6 +26,7 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.rxl.Data
+import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.models.rxl.SaveRXLProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.MiboEvent
@@ -32,6 +34,7 @@ import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.impl.CourseCreateImpl
 import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
 import life.mibo.hexa.ui.rxl.impl.ReflexDialog
+import life.mibo.hexa.utils.Constants
 import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
 import retrofit2.Call
@@ -42,7 +45,8 @@ import retrofit2.Response
 class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
 
     companion object {
-        const val DATA = "course_data"
+        const val DATA = Constants.BUNDLE_DATA
+        const val DATA_PROGRAM = "course_program"
     }
 
     lateinit var viewImpl: CourseCreateImpl
@@ -96,7 +100,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
 //            ViewCompat.setTransitionName(title!!, "title_$adapterPosition")
         }
 
-        viewImpl = CourseCreateImpl(this)
+        viewImpl = CourseCreateImpl(requireContext())
 
         tv_select_stations?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.STATIONS)
@@ -116,10 +120,10 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_delay?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.DELAY)
         }
-        tv_select_time?.setOnClickListener {
+        tv_select_action?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.DURATION)
         }
-        tv_select_action?.setOnClickListener {
+        tv_select_pause?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.ACTION)
         }
         et_course_structure?.setOnClickListener {
@@ -127,8 +131,29 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         }
         viewImpl.listener = this
 
-        initTitles()
+
         navigate(Navigator.HOME_VIEW, true)
+        if (data == null) {
+            val program = arguments?.getSerializable(DATA_PROGRAM)
+            if (program is RXLPrograms.Program) {
+                tv_title?.text = program.lightsLogic
+                loadImage(program.image)
+                et_course_structure?.text = program.structure
+                et_course_desc?.setText(program.description)
+                tv_select_stations?.text = "${program.workingStations}"
+                tv_select_cycles?.text = "${program.cycles}"
+                tv_select_pods?.text = "${program.numberOfRxl}"
+                tv_select_lights?.text = "${program.lightsLogic}"
+                tv_select_delay?.text = "${program.delayPause} sec"
+                tv_select_action?.text = "${program.totalDurations} sec"
+                tv_select_players?.text = "${program.numberOfPlayers}"
+                tv_select_pause?.text = "${program.actionDuration} sec"
+            } else {
+                initTitles()
+            }
+        } else {
+            initTitles()
+        }
         btn_save?.setOnClickListener {
             validate()
         }
@@ -146,6 +171,20 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             }
             return@setOnTouchListener false
         }
+
+      //  if(tv_select_lights.equals("sequence"))
+     //  viewImpl.createSequenceList(recyclerViewSequence)
+    }
+
+    private fun loadImage(images: String?) {
+        if (images == null)
+            return
+        try {
+            val img = images.split(",")
+            iv_icon?.load(img[0].replace("[", ""))
+        } catch (e: Exception) {
+            iv_icon?.setImageResource(R.drawable.ic_rxl_pods_icon)
+        }
     }
 
     private var checked = 1
@@ -156,9 +195,9 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_pods?.text = viewImpl.getTitle(CourseCreateImpl.Type.PODS)
         tv_select_lights?.text = viewImpl.getTitle(CourseCreateImpl.Type.LIGHT_LOGIC)
         tv_select_delay?.text = viewImpl.getTitle(CourseCreateImpl.Type.DELAY)
-        tv_select_time?.text = viewImpl.getTitle(CourseCreateImpl.Type.DURATION)
+        tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.DURATION)
         tv_select_players?.text = viewImpl.getTitle(CourseCreateImpl.Type.PLAYERS)
-        tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
+        tv_select_pause?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
 
         radio_group?.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
@@ -211,10 +250,10 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
                 tv_select_delay?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.DURATION.type -> {
-                tv_select_time?.text = title?.replace("seconds", "sec")
+                tv_select_action?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.ACTION.type -> {
-                tv_select_action?.text = title?.replace("seconds", "sec")
+                tv_select_pause?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.STRUCTURE.type -> {
                 et_course_structure?.text = title
@@ -291,7 +330,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         )
         val data = Data(
             "no",
-            getInt(tv_select_action.text),
+            getInt(tv_select_pause.text),
             getInt(tv_select_cycles.text),
             getInt(tv_select_delay.text),
             et_course_desc?.text.toString(),
@@ -305,7 +344,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             checked,
             "",
             et_course_structure?.text.toString(),
-            getInt(tv_select_time.text),
+            getInt(tv_select_action.text),
             "",
             getInt(tv_select_stations.text)
         )
@@ -344,6 +383,12 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
                         if (data.status.equals("success", true)) {
                             data.data?.message?.let {
                                 Toasty.info(context!!, it).show()
+                            }
+                            try {
+                                Prefs.get(context).set("rxl_saved", true)
+                            }
+                            catch (e: Exception){
+                                MiboEvent.log(e)
                             }
 
                         } else if (data.status.equals("error", true)) {

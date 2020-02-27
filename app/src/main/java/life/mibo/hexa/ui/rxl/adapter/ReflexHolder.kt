@@ -13,6 +13,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -37,7 +38,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var title: TextView? = itemView.findViewById(R.id.tv_title)
     var type: TextView? = itemView.findViewById(R.id.tv_type)
     var users: TextView? = itemView.findViewById(R.id.tv_users)
-    var time: TextView? = itemView.findViewById(R.id.tv_time)
+    var time: TextView? = itemView.findViewById(R.id.tv_action)
     var likeed: AndroidLikeButton? = itemView.findViewById(R.id.likeButton)
     var devices: TextView? = itemView.findViewById(R.id.tv_pods)
 
@@ -60,13 +61,16 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             Logger.e("ReflexHolder list: $img")
             Logger.e("ReflexHolder 0: ${img[0]}")
             Logger.e("ReflexHolder ImageLoader start")
-            image?.load(img[0].replace("[", ""))
-            image?.load(img[0].replace("[", "")) {
+            // image?.load(img[0].replace("[", ""))
+            val url = img[0].replace("[", "")
+            item.urlIcon = url
+
+            image?.load(url) {
                 Logger.e("ReflexHolder ImageLoader.. $this")
                 target {
                     Logger.e("ReflexHolder ImageLoader loaded.. $it")
                     setGradient(imageBg, it)
-
+                    image?.setImageDrawable(it)
                 }
 
             }
@@ -76,8 +80,19 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             listener?.onItemClicked(item, if (it) 1001 else 1002)
         }
 
+        if (Build.VERSION.SDK_INT >= 21) {
+            image?.transitionName = item.getTransitionIcon()
+            title!!.transitionName = item.getTransitionTitle()
+        }
+
         //setBg(imageBg, image)
         itemView?.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 21) {
+//                item.extras =
+//                    FragmentNavigator.Extras.Builder()
+//                        .addSharedElement(image!!, image!!.transitionName)
+//                        .addSharedElement(title!!, title!!.transitionName).build()
+            }
             listener?.onItemClicked(item, adapterPosition)
         }
         itemView?.setOnLongClickListener {

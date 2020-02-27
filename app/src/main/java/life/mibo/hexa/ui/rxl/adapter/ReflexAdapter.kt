@@ -70,7 +70,9 @@ class ReflexAdapter(var list: ArrayList<RXLPrograms.Program>?) :
         }
     }
 
-    fun delete(program: RXLPrograms.Program) {
+    fun delete(program: RXLPrograms.Program?) {
+        if (program == null)
+            return
         var pos = -1
         list?.forEachIndexed { index, item ->
             if (item.id == program.id) {
@@ -85,6 +87,36 @@ class ReflexAdapter(var list: ArrayList<RXLPrograms.Program>?) :
 
 
     fun update(newList: ArrayList<RXLPrograms.Program>) {
+        if (list == null || list?.isEmpty()!!) {
+            list = newList
+            notifyDataSetChanged()
+            return
+        }
+
+        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
+                return newList[newItem].id == list!![oldItem].id
+            }
+
+            override fun getOldListSize(): Int {
+                return list!!.size
+            }
+
+            override fun getNewListSize(): Int {
+                return newList.size
+            }
+
+            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
+                return true
+            }
+
+        })
+        list = newList
+        result.dispatchUpdatesTo(this)
+
+    }
+
+    fun filterUpdate(newList: ArrayList<RXLPrograms.Program>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()

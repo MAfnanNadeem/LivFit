@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import java.util.*
 
@@ -72,7 +73,7 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
         fun bind(item: ReflexFilterModel?, listener: Listener?, type: Int = 0) {
             if (item == null)
                 return
-
+            Logger.e("ReflexFilterAdapter $type  item = $item")
             when (item.type) {
                 2 -> {
                     heart?.visibility = View.VISIBLE
@@ -87,6 +88,28 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
 
                 }
                 else -> {
+                    if (type == 5) {
+                        heart?.visibility = View.GONE
+                        switch_?.visibility = View.GONE
+                        view?.visibility = View.VISIBLE
+                        text?.visibility = View.VISIBLE
+                        text?.text = item.title
+                        arrow?.visibility = View.GONE
+                        if (item.isSelected) {
+                            view?.setBackgroundResource(R.drawable.item_rxl_filters_selected4)
+                            text?.setTextColor(Color.WHITE)
+                        } else {
+                            view?.setBackgroundResource(R.drawable.item_rxl_filters)
+                            text?.setTextColor(Color.BLACK)
+                        }
+                        view?.setOnClickListener {
+                            item.isSelected = !item.isSelected
+                            listener?.onClick(item)
+                            updateView(item, 5)
+
+                        }
+                        return
+                    }
                     heart?.visibility = View.GONE
                     switch_?.visibility = View.GONE
                     view?.visibility = View.VISIBLE
@@ -94,11 +117,22 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
                     if (type == 3) {
                         arrow?.visibility = View.GONE
                         if (item.isSelected) {
-                            view?.setBackgroundResource(R.drawable.item_rxl_filters_selected2)
-                            text?.setTextColor(Color.DKGRAY)
+                            if (type == 5) {
+                                view?.setBackgroundResource(R.drawable.item_rxl_filters_selected4)
+                                text?.setTextColor(Color.WHITE)
+                            } else {
+                                view?.setBackgroundResource(R.drawable.item_rxl_filters_selected2)
+                                text?.setTextColor(Color.DKGRAY)
+                            }
                         } else {
-                            view?.setBackgroundResource(R.drawable.item_rxl_filters)
-                            text?.setTextColor(Color.WHITE)
+                            if (type == 5) {
+                                view?.setBackgroundResource(R.drawable.item_rxl_filters)
+                                text?.setTextColor(Color.BLACK)
+                            } else {
+                                view?.setBackgroundResource(R.drawable.item_rxl_filters)
+                                text?.setTextColor(Color.WHITE)
+                            }
+
                         }
                     } else {
                         if (item.isSelected)
@@ -117,7 +151,7 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
             }
         }
 
-        fun updateView(item: ReflexFilterModel, type: Int) {
+        private fun updateView(item: ReflexFilterModel, type: Int) {
             if (type == 3) {
                 arrow?.visibility = View.GONE
                 if (item.isSelected) {
@@ -126,6 +160,14 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
                 } else {
                     view?.setBackgroundResource(R.drawable.item_rxl_filters)
                     text?.setTextColor(Color.WHITE)
+                }
+            } else if (type == 5) {
+                if (item.isSelected) {
+                    view?.setBackgroundResource(R.drawable.item_rxl_filters_selected4)
+                    text?.setTextColor(Color.WHITE)
+                } else {
+                    view?.setBackgroundResource(R.drawable.item_rxl_filters)
+                    text?.setTextColor(Color.BLACK)
                 }
             } else {
                 if (item.isSelected)
@@ -155,6 +197,10 @@ class ReflexFilterAdapter(var list: ArrayList<ReflexFilterModel>?, val type: Int
 
         override fun hashCode(): Int {
             return id
+        }
+
+        override fun toString(): String {
+            return "FilterModel($id, $title)"
         }
     }
 }

@@ -103,14 +103,14 @@ class ReflexCourseSelectionFragment : BaseFragment() {
                 R.drawable.ic_reflex_focus_only
             )
         )
-        list.add(
-            CreateCourseAdapter.Course(
-                4,
-                "Focus Return",
-                "Return to home after each random Rxl.",
-                R.drawable.ic_reflex_focus_return
-            )
-        )
+//        list.add(
+//            CreateCourseAdapter.Course(
+//                4,
+//                "Focus Return",
+//                "Return to home after each random Rxl.",
+//                R.drawable.ic_reflex_focus_return
+//            )
+//        )
 
 
         val adapter =

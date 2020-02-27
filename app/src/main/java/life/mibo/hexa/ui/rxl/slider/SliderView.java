@@ -4,7 +4,6 @@
  *  Last modified 2/15/20 11:25 AM
  *  Mibo Hexa - app
  */
-
 package life.mibo.hexa.ui.rxl.slider;
 
 import android.content.Context;
@@ -24,8 +23,11 @@ import life.mibo.hexa.R;
 
 public class SliderView extends LinearLayout{
     private ArrayList<Integer> IMAGES;
+    private ArrayList<String> URLs;
+    TimerTask updatePage;
     SliderAdapter sliderAdapter;
     int currentPage=0;
+    int type;
     ViewPager viewPager;
     TabLayout tabDots;
     public SliderView(Context context, @Nullable AttributeSet attrs) {
@@ -47,4 +49,28 @@ public class SliderView extends LinearLayout{
         viewPager.setAdapter(sliderAdapter);
     }
 
+    public void setUrls(ArrayList<String> URLs){
+        this.URLs=URLs;
+        sliderAdapter.setUrls(URLs);
+        viewPager.setAdapter(sliderAdapter);
+        type =1;
+    }
+    public TimerTask getTimerTask(){
+        final Handler handler = new Handler();
+        final Runnable Update = new Runnable() {
+            public void run() {
+                if (currentPage == 3) {
+                    currentPage = 0;
+                }
+                viewPager.setCurrentItem(currentPage++, true);
+            }
+        };
+        updatePage=new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(Update);
+            }
+        };
+        return updatePage;
+    }
 }

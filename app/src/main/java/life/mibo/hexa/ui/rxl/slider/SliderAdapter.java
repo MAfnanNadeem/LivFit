@@ -27,7 +27,9 @@ import life.mibo.hexa.R;
 
 public class SliderAdapter extends PagerAdapter {
     private ArrayList<Integer> IMAGES;
+    private ArrayList<String> URLs;
     private LayoutInflater inflater;
+    //TimerTask updatePage;
     int currentPage=0;
     int type =0;
     TabLayout tabDots;
@@ -46,7 +48,12 @@ public class SliderAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return IMAGES.size();
+        if(type ==0) {
+            return IMAGES.size();
+        }
+        else{
+            return URLs.size();
+        }
     }
 
     @Override
@@ -57,7 +64,13 @@ public class SliderAdapter extends PagerAdapter {
         final ImageView imageView = imageLayout
                 .findViewById(R.id.image);
 
-        imageView.setImageResource(IMAGES.get(position));
+        if(type ==0) {
+            imageView.setImageResource(IMAGES.get(position));
+        }
+        if(type ==1){
+            //Picasso.get().load(URLs.get(position)).into(imageView);
+        }
+
 
         view.addView(imageLayout, 0);
 
@@ -83,6 +96,10 @@ public class SliderAdapter extends PagerAdapter {
         this.IMAGES=IMAGES;
     }
 
+    public void setUrls(ArrayList<String> URLs){
+        this.URLs=URLs;
+        type =1;
+    }
 
 
 

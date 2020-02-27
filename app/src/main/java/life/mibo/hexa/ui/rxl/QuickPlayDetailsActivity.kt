@@ -22,9 +22,10 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.pods.rxl.RxlLight
+import life.mibo.hexa.pods.rxl.RxlPlayer
 import life.mibo.hexa.pods.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -43,7 +44,7 @@ import org.greenrobot.eventbus.ThreadMode
 class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCreateImpl.Listener {
 
     private lateinit var delegate: CourseCreateImpl
-    private var program: RXLPrograms.Program? = null
+    private var program: RxlExercises.Program? = null
     private var isUser = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +60,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 //        }
 
         val appbar = findViewById<AppBarLayout?>(R.id.appBar)
+        program =
+            intent?.getSerializableExtra(Constants.BUNDLE_DATA) as RxlExercises.Program?
+        isUser = !program?.memberId.isNullOrEmpty()
         if (isUser) {
 //            // val heightDp = Utils.dpToPixel(72, this)
 //            // appbar?.setExpanded(false, false)
@@ -89,9 +93,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 ////            }, 200)
 
             appbar?.setExpanded(false, false)
-           // appbar?.setLiftable(false)
+            // appbar?.setLiftable(false)
             nestedScrollView?.isNestedScrollingEnabled = false
-           // disableCollapseBar()
+            // disableCollapseBar()
 
             //val behavior = lp.behavior as AppBarLayout.Behavior?
             //behavior?.onNestedFling(coordinatorLayout, appbar, appbar, 0f, 10000f, true)
@@ -101,8 +105,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
                 appbar?.layoutParams as CoordinatorLayout.LayoutParams
             lp.height = heightDp.toInt()
         }
-        program =
-            intent?.getSerializableExtra(Constants.BUNDLE_DATA) as RXLPrograms.Program?
+
         createView()
         log("program >> $program")
         //iv_icon.setFreezesAnimation()
@@ -124,7 +127,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         behaviour.onNestedFling(coordinatorLayout, appBar, collapsingToolbar, 0f, 10000f, true)
         val lp = collapsingToolbar?.layoutParams as AppBarLayout.LayoutParams
         lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
-       // lp.scrollFlags = -1
+        // lp.scrollFlags = -1
     }
 
     private fun createView() {
@@ -196,6 +199,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             uids.add(d.uid)
         }
 
+        val players = SessionManager.getInstance().userSession.rxlPlayers
+
         RXLManager.getInstance().with(
             RxlProgram.getExercise(
                 getDuration(),
@@ -219,12 +224,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         collapsingToolbar?.title = program?.name
         program?.let {
             //tv_select_stations?.text = "${it.workingStations}"
-            tv_select_cycles?.text = "${it.cycles}"
-            tv_select_duration?.text = "${it.totalDurations} sec"
-            tv_select_pause?.text = "${it.delayPause} sec"
+            tv_select_cycles?.text = "${it.cycle}"
+            tv_select_duration?.text = "${it.totalDuration} sec"
+            tv_select_pause?.text = "${it.pause} sec"
             //tv_select_delay?.text = "0 sec"
             //tv_select_lights?.text = "${it.lightsLogic}"
-            tv_select_action?.text = "${it.actionDuration} sec"
+            tv_select_action?.text = "${it.action} sec"
             //tv_select_pause?.text = "${it.actionDuration} sec"
             //tv_select_players?.text = "${it.numberOfPlayers}"
             //tv_desc?.text = "${it.description}"
@@ -236,8 +241,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         }
     }
 
+    val rxlPlayers = ArrayList<RxlPlayer>()
     var playersCount = 0
     private fun setPlayers() {
+        rxlPlayers.clear()
         val players = SessionManager.getInstance().userSession.rxlPlayers
         log("players >> $players")
         if (players is List<*>) {
@@ -259,9 +266,21 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
                 list?.forEachIndexed { index, player ->
                     setPlayer(player, index, podsSize, pods)
+                    //rxlPlayers.add(createRxlPlayer(player))
                 }
             }
         }
+    }
+
+    fun createRxlPlayer(player: PlayersAdapter.PlayerItem, pods: Int): RxlPlayer {
+        return RxlPlayer(
+            player.id,
+            player.playerName,
+            player.playerColor,
+            0,
+            pods,
+            ArrayList<String>()
+        )
     }
 
     private fun setPlayer(player: PlayersAdapter.PlayerItem?, type: Int, pods: Int, max: Int) {
@@ -438,7 +457,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             return pods.size
         }
 
-        return 8
+        return 0
     }
 
     private fun checkPlayersPods(): Boolean {
@@ -520,7 +539,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             return
         } else {
             this.let {
-                MessageDialog.info(it, "Reaction Lights", getString(R.string.three_pods_required))
+                MessageDialog.info(
+                    it,
+                    getString(R.string.rxl_title),
+                    getString(R.string.three_pods_required)
+                )
             }
 //            Toasty.warning(
 //                context!!,
@@ -570,15 +593,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
     }
 
     private fun isRandom(): Boolean =
-        program?.lightsLogic?.toLowerCase()?.contains("random") ?: false
+        program?.type()?.toLowerCase()?.contains("random") ?: false
 
     private fun getLightLogic(): RxlLight {
-        return when {
-            program?.lightsLogic?.toLowerCase() == "random" -> RxlLight.RANDOM
-            program?.lightsLogic?.toLowerCase() == "focus" -> RxlLight.FOCUS
-            program?.lightsLogic?.toLowerCase() == "all at once" -> RxlLight.ALL_AT_ONCE
-            else -> RxlLight.SEQUENCE
+        program?.let {
+            return it.lightLogic()
         }
+        return RxlLight.UNKNOWN
     }
 
 

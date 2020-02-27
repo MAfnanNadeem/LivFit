@@ -29,6 +29,7 @@ import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.pods.rxl.RxlLight
 import life.mibo.hexa.pods.rxl.RxlProgram
@@ -58,7 +59,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
     private lateinit var delegate: CourseCreateImpl
 
-    private var program: RXLPrograms.Program? = null
+    private var program: RxlExercises.Program? = null
     //val manager = RXLManager.getInstance()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,7 +68,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
         val arg = arguments
         if (arg != null) {
-            program = arg.getSerializable(Constants.BUNDLE_DATA) as RXLPrograms.Program?
+            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlExercises.Program?
             setProgram()
         }
         navigate(Navigator.HOME_VIEW, true)
@@ -109,13 +110,13 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
     private fun setProgram() {
         program?.let {
-            tv_select_stations?.text = "${it.workingStations}"
-            tv_select_cycles?.text = "${it.cycles}"
-            tv_select_action?.text = "${it.totalDurations} sec"
-            tv_select_delay?.text = "${it.delayPause} sec"
-            tv_select_lights?.text = "${it.lightsLogic}"
-            tv_select_pause?.text = "${it.actionDuration} sec"
-            tv_select_players?.text = "${it.numberOfPlayers}"
+            tv_select_stations?.text = "${it.workStation}"
+            tv_select_cycles?.text = "${it.cycle}"
+            tv_select_action?.text = "${it.totalDuration} sec"
+            tv_select_delay?.text = "${it.pause} sec"
+            tv_select_lights?.text = "${it.type()}"
+            tv_select_pause?.text = "${it.action} sec"
+            tv_select_players?.text = "${it.pods}"
             tv_desc?.text = "${it.description}"
             //val images = it.image!!.split(",")
             //images[0].replace("[", "")

@@ -26,7 +26,7 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.rxl.Data
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.models.rxl.SaveRXLProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.MiboEvent
@@ -135,19 +135,19 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         navigate(Navigator.HOME_VIEW, true)
         if (data == null) {
             val program = arguments?.getSerializable(DATA_PROGRAM)
-            if (program is RXLPrograms.Program) {
-                tv_title?.text = program.lightsLogic
-                loadImage(program.image)
-                et_course_structure?.text = program.structure
+            if (program is RxlExercises.Program) {
+                tv_title?.text = program.type()
+                //loadImage(program.image)
+                et_course_structure?.text = program.category
                 et_course_desc?.setText(program.description)
-                tv_select_stations?.text = "${program.workingStations}"
-                tv_select_cycles?.text = "${program.cycles}"
-                tv_select_pods?.text = "${program.numberOfRxl}"
-                tv_select_lights?.text = "${program.lightsLogic}"
-                tv_select_delay?.text = "${program.delayPause} sec"
-                tv_select_action?.text = "${program.totalDurations} sec"
-                tv_select_players?.text = "${program.numberOfPlayers}"
-                tv_select_pause?.text = "${program.actionDuration} sec"
+                tv_select_stations?.text = "${program.workStation}"
+                tv_select_cycles?.text = "${program.cycle}"
+                tv_select_pods?.text = "${program.pods}"
+                tv_select_lights?.text = "${program.type()}"
+                tv_select_delay?.text = "${program.pause} sec"
+                tv_select_action?.text = "${program.totalDuration} sec"
+                tv_select_players?.text = "${program.players}"
+                tv_select_pause?.text = "${program.action} sec"
             } else {
                 initTitles()
             }

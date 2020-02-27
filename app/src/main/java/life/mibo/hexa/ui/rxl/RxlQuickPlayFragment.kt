@@ -2,7 +2,6 @@ package life.mibo.hexa.ui.rxl
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -12,7 +11,7 @@ import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MainActivity
@@ -20,6 +19,7 @@ import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.adapter.ReflexAdapter
 import life.mibo.hexa.ui.rxl.impl.ReactionObserver
 import life.mibo.hexa.ui.rxl.impl.RxlViewModel
+import life.mibo.hexa.utils.Constants
 import life.mibo.hexa.utils.Toasty
 import life.mibo.views.backdrop.BackdropBehavior
 
@@ -47,6 +47,8 @@ class RxlQuickPlayFragment : BaseFragment(),
         return i.inflate(R.layout.fragment_rxl_backdrop, c, false)
     }
 
+    var playersCount = 1
+
     override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
         super.onViewCreated(root, savedInstanceState)
         backdropBehavior = root.findViewById<View>(R.id.frontLayout).findRxlBehavior()
@@ -67,18 +69,25 @@ class RxlQuickPlayFragment : BaseFragment(),
         rxl.text.observe(this.viewLifecycleOwner, Observer {
             //    textView.text = ""//it
         })
+
+        val types = arguments?.getSerializable(Constants.BUNDLE_DATA)
+
+        if (types is List<*>) {
+            playersCount = types.size
+        }
+
         navigate(Navigator.HOME_VIEW, true)
         setFilters(root)
         setHasOptionsMenu(true)
         setBackdrop()
         controller.onStart()
-        controller.getPrograms()
+        controller.getPrograms("")
         //log("NO_OF_PODS ${ReactionLightController.Filter.LIGHT_LOGIC.range.first}")
         swipeToRefresh?.setOnRefreshListener {
             if (isRefresh)
                 return@setOnRefreshListener
             isRefresh = true
-            controller.getProgramsServer()
+            controller.getRxlExercisesServer("")
         }
         swipeToRefresh?.setColorSchemeResources(
             R.color.colorPrimary,
@@ -87,6 +96,7 @@ class RxlQuickPlayFragment : BaseFragment(),
             R.color.infoColor2,
             R.color.successColor
         )
+
 
     }
 
@@ -176,10 +186,10 @@ class RxlQuickPlayFragment : BaseFragment(),
         return super.onOptionsItemSelected(item)
     }
 
-    val list = ArrayList<RXLPrograms.Program>()
+    val list = ArrayList<RxlExercises.Program>()
     var adapter: ReflexAdapter? = null
 
-    override fun onDataReceived(programs: ArrayList<RXLPrograms.Program>) {
+    override fun onDataReceived(programs: ArrayList<RxlExercises.Program>) {
         isRefresh = false
         swipeToRefresh?.isRefreshing = false
         log("onDataReceived ${programs.size}")
@@ -194,35 +204,29 @@ class RxlQuickPlayFragment : BaseFragment(),
         }
 
         list.clear()
-        list.addAll(programs)
+
+        programs.forEach {
+            log("it.players == playersCount ${it.players} == $playersCount")
+            if (it.players == playersCount)
+                list.add(it)
+        }
+
+        if (list.isEmpty()) {
+            empty_view?.visibility = View.VISIBLE
+            tv_empty?.text = """No Exercise found for selected player ($playersCount)"""
+        }
+        //list.addAll(programs)
 
         adapter = ReflexAdapter(list)
         val manager = LinearLayoutManager(this@RxlQuickPlayFragment.activity)
         recycler?.layoutManager = manager
         recycler?.adapter = adapter
         recycler?.isNestedScrollingEnabled = false
-        adapter?.setListener(object : ItemClickListener<RXLPrograms.Program> {
-            override fun onItemClicked(item: RXLPrograms.Program?, position: Int) {
+        adapter?.setListener(object : ItemClickListener<RxlExercises.Program> {
+            override fun onItemClicked(item: RxlExercises.Program?, position: Int) {
                 log("onDataReceived onItemClicked ${item?.name}")
                 if (position > 1000) {
                     when (position) {
-                        2001 -> {
-                            val items =
-                                arrayOf<CharSequence>("Update", "Delete")
-
-                            AlertDialog.Builder(requireContext()).setTitle("Select Option")
-                                .setItems(items) { dialog, i ->
-                                    if (i == 1) {
-                                        log("delete $item")
-                                        controller.deleteProgram(item) {
-                                            activity?.runOnUiThread {
-                                                log("delete2 $it")
-                                                adapter?.delete(it)
-                                            }
-                                        }
-                                    }
-                                }.show()
-                        }
                         1001 -> {
                             controller.updateProgram(item, true)
                         }
@@ -241,11 +245,11 @@ class RxlQuickPlayFragment : BaseFragment(),
 
     }
 
-    override fun onUpdateList(programs: ArrayList<RXLPrograms.Program>) {
+    override fun onUpdateList(programs: ArrayList<RxlExercises.Program>) {
         adapter?.filterUpdate(programs)
     }
 
-    fun delete(item: RXLPrograms.Program) {
+    fun delete(item: RxlExercises.Program) {
 
     }
 

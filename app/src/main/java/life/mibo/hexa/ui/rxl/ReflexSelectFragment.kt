@@ -24,6 +24,7 @@ import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import life.mibo.hexa.ui.select_program.ProgramDialog
+import life.mibo.hexa.utils.Utils
 
 class ReflexSelectFragment : BaseFragment() {
 
@@ -116,6 +117,7 @@ class ReflexSelectFragment : BaseFragment() {
 
     private fun onNextClicked() {
         //var next = false
+
         var error = false
         var id = -1
         val list = adapter?.list
@@ -135,6 +137,7 @@ class ReflexSelectFragment : BaseFragment() {
             adapter?.updateError(id, getError(id))
         } else {
             // SessionManager.initUser()
+            Utils.hideKeyboard(this.activity)
             SessionManager.getInstance().userSession.rxlPlayers = list
             navigate(Navigator.RXL_TABS, list)
         }

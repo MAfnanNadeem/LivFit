@@ -18,18 +18,18 @@ import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Constants
 
 
-class RxlQuickPlayDetailsFragment : BaseFragment() {
+class RxlProgramDetailsFragment : BaseFragment() {
 
 
     private lateinit var controller: ReactionLightController
     private var code = 23456
-    private var program: RXLPrograms.Program? = null
+    private var program: RxlExercises.Program? = null
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
 //        val transition =
@@ -71,17 +71,30 @@ class RxlQuickPlayDetailsFragment : BaseFragment() {
 
         val arg = arguments
         if (arg != null) {
-            program = arg.getSerializable(Constants.BUNDLE_DATA) as RXLPrograms.Program?
+            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlExercises.Program?
         }
         log("program >> $program")
 
         tv_title?.text = program?.name
+        // activity?.title = program?.name
+        activity?.title = getString(R.string.program_detail)
         tv_desc?.text = program?.description
-        iv_icon?.load(program?.urlIcon)
-        activity?.title = program?.name
-        tv_select_stations?.text = "${program?.workingStations}"
+        // iv_icon?.load(program?.urlIcon)
+
+        if (program?.avatarBase64.isNullOrEmpty()) {
+            iv_icon?.setImageResource(R.drawable.ic_rxl_pods_icon)
+            // image?.setColorFilter(Constants.PRIMARY)
+            // setGradient(imageBg, image?.drawable)
+        } else {
+            val bitmap =
+                life.mibo.hexa.utils.Utils.convertStringImagetoBitmap(program?.avatarBase64)
+            iv_icon?.load(bitmap)
+
+        }
+
+        tv_select_stations?.text = "${program?.workStation}"
         //tv_select_pods?.text = "${program?}"
-        tv_select_lights?.text = "${program?.lightsLogic}"
+        tv_select_lights?.text = "${program?.tapProximity?.toUpperCase()}"
         getPods()
     }
 

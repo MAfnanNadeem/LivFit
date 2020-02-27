@@ -13,13 +13,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.hexa.R
+import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.adapter.ReflexAdapter
 import life.mibo.hexa.ui.rxl.impl.ReactionObserver
-import life.mibo.hexa.utils.Toasty
 
 
 class RxlMyPlayFragment : BaseFragment(),
@@ -38,13 +39,13 @@ class RxlMyPlayFragment : BaseFragment(),
         navigate(Navigator.HOME_VIEW, true)
         setHasOptionsMenu(true)
         controller.onStart()
-        controller.getPrograms()
+        controller.getPrograms(Prefs.get(context).member?.id()!!)
         //log("NO_OF_PODS ${ReactionLightController.Filter.LIGHT_LOGIC.range.first}")
         swipeToRefresh?.setOnRefreshListener {
             if (isRefresh)
                 return@setOnRefreshListener
             isRefresh = true
-            controller.getProgramsServer()
+            controller.getRxlExercisesServer(Prefs.get(context).member?.id()!!)
         }
         swipeToRefresh?.setColorSchemeResources(
             R.color.colorPrimary,
@@ -74,37 +75,46 @@ class RxlMyPlayFragment : BaseFragment(),
         return super.onOptionsItemSelected(item)
     }
 
-    val list = ArrayList<RXLPrograms.Program>()
+    val list = ArrayList<RxlExercises.Program>()
     var adapter: ReflexAdapter? = null
 
-    override fun onDataReceived(programs: ArrayList<RXLPrograms.Program>) {
+    override fun onDataReceived(programs: ArrayList<RxlExercises.Program>) {
         isRefresh = false
         swipeToRefresh?.isRefreshing = false
         log("onDataReceived ${programs.size}")
 
         if (programs.isEmpty()) {
             // this will not happen in final release, because we have at-least few public programs
-            Toasty.info(requireContext(), "No programs found").show()
+            //Toasty.info(requireContext(), "No programs found").show()
+            empty_view?.visibility = View.VISIBLE
+            // tv_empty?.text = getString(R.string.no_program)
+        } else {
+            empty_view?.visibility = View.GONE
         }
 
         list.clear()
         list.addAll(programs)
+
 
         adapter = ReflexAdapter(list)
         val manager = LinearLayoutManager(this@RxlMyPlayFragment.activity)
         recyclerView?.layoutManager = manager
         recyclerView?.adapter = adapter
         recyclerView?.isNestedScrollingEnabled = false
-        adapter?.setListener(object : ItemClickListener<RXLPrograms.Program> {
-            override fun onItemClicked(item: RXLPrograms.Program?, position: Int) {
+        adapter?.setListener(object : ItemClickListener<RxlExercises.Program> {
+            override fun onItemClicked(item: RxlExercises.Program?, position: Int) {
                 log("onDataReceived onItemClicked ${item?.name}")
                 if (position > 1000) {
                     when (position) {
                         2001 -> {
                             val items =
-                                arrayOf<CharSequence>("Update", "Delete")
+                                arrayOf<CharSequence>(
+                                    getString(R.string.update),
+                                    getString(R.string.delete)
+                                )
 
-                            AlertDialog.Builder(requireContext()).setTitle("Select Option")
+                            AlertDialog.Builder(requireContext())
+                                .setTitle(getString(R.string.select_option))
                                 .setItems(items) { dialog, i ->
                                     if (i == 1) {
                                         log("delete $item")
@@ -126,7 +136,7 @@ class RxlMyPlayFragment : BaseFragment(),
                     }
                     return
                 }
-                navigate(Navigator.RXL_DETAILS, item)
+                navigate(Navigator.RXL_QUICKPLAY_DETAILS, item)
             }
 
         })
@@ -135,7 +145,7 @@ class RxlMyPlayFragment : BaseFragment(),
 
     }
 
-    override fun onUpdateList(programs: ArrayList<RXLPrograms.Program>) {
+    override fun onUpdateList(programs: ArrayList<RxlExercises.Program>) {
         adapter?.filterUpdate(programs)
     }
 

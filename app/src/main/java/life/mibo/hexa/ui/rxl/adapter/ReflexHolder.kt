@@ -26,8 +26,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.utils.Constants
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
 
@@ -42,30 +43,37 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var likeed: AndroidLikeButton? = itemView.findViewById(R.id.likeButton)
     var devices: TextView? = itemView.findViewById(R.id.tv_pods)
 
-    var data: RXLPrograms.Program? = null
+    var data: RxlExercises.Program? = null
 
-    fun bind(item: RXLPrograms.Program?, listener: ItemClickListener<RXLPrograms.Program>?) {
+    fun bind(item: RxlExercises.Program?, listener: ItemClickListener<RxlExercises.Program>?) {
         Logger.e("ReflexHolder $item")
         if (item == null)
             return
         title?.text = item.name
-        type?.text = item.lightsLogic
-        users?.text = "${item.numberOfPlayers}"
-        devices?.text = "${item.numberOfRxl}"
-        time?.text = "${item.totalDurations}"
-        if (item.image.isNullOrEmpty()) {
+        type?.text = "${item.type()}"
+        users?.text = "${item.players}"
+        devices?.text = "${item.pods}"
+        time?.text = "${item.totalDuration}"
 
+        if (item.avatarBase64.isNullOrEmpty()) {
+            image?.setImageResource(R.drawable.ic_rxl_pods_icon)
+            image?.scaleType = ImageView.ScaleType.FIT_CENTER
+           // image?.setColorFilter(Constants.PRIMARY)
+           // setGradient(imageBg, image?.drawable)
         } else {
-            val img = item.image!!.split(",")
-            Logger.e("ReflexHolder size: ${img.size}")
-            Logger.e("ReflexHolder list: $img")
-            Logger.e("ReflexHolder 0: ${img[0]}")
-            Logger.e("ReflexHolder ImageLoader start")
-            // image?.load(img[0].replace("[", ""))
-            val url = img[0].replace("[", "")
-            item.urlIcon = url
+//            val img = item.avatarBase64!!.split(",")
+//            Logger.e("ReflexHolder size: ${img.size}")
+//            Logger.e("ReflexHolder list: $img")
+//            Logger.e("ReflexHolder 0: ${img[0]}")
+//            Logger.e("ReflexHolder ImageLoader start")
+//            // image?.load(img[0].replace("[", ""))
+//            val url = img[0].replace("[", "")
+//            item.urlIcon = url
+//
 
-            image?.load(url) {
+
+            val bitmap = life.mibo.hexa.utils.Utils.convertStringImagetoBitmap(item.avatarBase64)
+            image?.load(bitmap) {
                 Logger.e("ReflexHolder ImageLoader.. $this")
                 target {
                     Logger.e("ReflexHolder ImageLoader loaded.. $it")
@@ -74,6 +82,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 }
 
             }
+
         }
         likeed?.setCurrentlyLiked(item.isFavourite)
         likeed?.setOnLikeEventListener {

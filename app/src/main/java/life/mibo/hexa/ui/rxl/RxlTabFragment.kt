@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_rxl_backdrop_tabs.*
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
-import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.main.MiboApplication.Companion.context
 
 
 class RxlTabFragment : BaseFragment() {
@@ -33,7 +33,7 @@ class RxlTabFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewPager2.adapter = RxlTabAdapter(childFragmentManager)
+        viewPager2.adapter = RxlTabAdapter(childFragmentManager, arguments)
         //tabLayout.setupWithViewPager(viewPager2)
         smartTabLayout.setViewPager(viewPager2)
         //viewPager2
@@ -45,13 +45,15 @@ class RxlTabFragment : BaseFragment() {
     }
 
 
-    class RxlTabAdapter(val fragment: FragmentManager) :
+    class RxlTabAdapter(val fragment: FragmentManager, var bundle: Bundle?) :
         FragmentPagerAdapter(fragment, BEHAVIOR_SET_USER_VISIBLE_HINT) {
 
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                    return RxlQuickPlayFragment()
+                    val frg = RxlQuickPlayFragment()
+                    frg?.arguments = bundle
+                    return frg
                 }
                 1 -> {
                     return RxlMyPlayFragment()
@@ -67,13 +69,13 @@ class RxlTabFragment : BaseFragment() {
         override fun getPageTitle(position: Int): CharSequence? {
             when (position) {
                 0 -> {
-                    return "Quick Play"
+                    return context?.getString(R.string.quick_play) ?: "Quick Play"
                 }
                 1 -> {
-                    return "My Play"
+                    return context?.getString(R.string.my_play) ?: "My Play"
                 }
             }
-            return "Default"
+            return ""
         }
 
 
@@ -87,7 +89,7 @@ class RxlTabFragment : BaseFragment() {
     }
 
     override fun onBackPressed(): Boolean {
-        navigate(Navigator.CLEAR_HOME, null)
-        return false
+        //navigate(Navigator.CLEAR_HOME, null)
+        return super.onBackPressed()
     }
 }

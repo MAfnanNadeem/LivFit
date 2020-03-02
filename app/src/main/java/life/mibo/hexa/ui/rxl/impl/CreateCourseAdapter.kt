@@ -108,7 +108,7 @@ class CreateCourseAdapter(
         }
     }
 
-    data class Course(
+    class Course(
         var id: Int,
         var title: String,
         var desc: String, @DrawableRes var icon: Int,

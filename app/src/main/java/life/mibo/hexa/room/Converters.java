@@ -9,14 +9,14 @@ package life.mibo.hexa.room;
 
 import androidx.room.TypeConverter;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import life.mibo.hardware.core.Logger;
 
 public class Converters {
     @TypeConverter
@@ -43,6 +43,52 @@ public class Converters {
     public static String fromInetAddress(InetAddress value) {
         return value == null ? null : value.getHostAddress();
     }
+
+    @TypeConverter
+    public List<String> stringToList(String list) {
+       // Logger.e("Converters : stringToList " + list);
+        try {
+            if (list != null && list.length() > 0) {
+                return Arrays.asList(list.split("\\s*,\\s*"));
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList<>();
+    }
+
+    @TypeConverter
+    public String listToString(List<String> list) {
+       // Logger.e("Converters : listToString " + list);
+        String value = "";
+        try {
+            if (list != null && list.size() > 0) {
+                for (String lang : list)
+                    value += lang + ",";
+            }
+        } catch (Exception e) {
+
+        }
+
+      //  Logger.e("Converters : languagesToStoredString return > " + value);
+
+        return value;
+    }
+
+//    @TypeConverter
+//    public static FragmentNavigator.Extras toExtras(String value) {
+//        try {
+//            return value == null ? null : InetAddress.getByName(value);
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//    @TypeConverter
+//    public static String fromInetAddress(FragmentNavigator.Extras value) {
+//        return value == null ? null : value.getSharedElements().entrySet().toString()
+//    }
 
 //    @TypeConverter
 //    public static <A> List<A> fromObject(String value) {

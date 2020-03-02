@@ -15,9 +15,7 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.models.base.MemberPost
 import life.mibo.hexa.models.base.ResponseData
-import life.mibo.hexa.models.rxl.DeleteRXLProgram
-import life.mibo.hexa.models.rxl.RXLPrograms
-import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.*
 import life.mibo.hexa.room.Database
 import life.mibo.hexa.ui.base.BaseController
 import life.mibo.hexa.ui.base.BaseFragment
@@ -52,7 +50,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
 
     private fun getProgramsDb(memberId: String) {
         try {
-            if (Prefs.get(fragment.context).get("rxl_saved", false)) {
+            if (memberId.isNotEmpty() && Prefs.get(fragment.context).get("rxl_saved", false)) {
                 // later implement if list is 2 weeks old than refresh
                 getRxlExercisesServer(memberId)
                 return
@@ -135,10 +133,11 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         val member = Prefs.get(fragment.context).member ?: return
 
         fragment?.activity?.runOnUiThread {
-            fragment.getDialog()?.show()
+            if (memberId.isEmpty())
+                fragment.getDialog()?.show()
         }
 
-        API.request.getApi().getRXLExerciseProgram(MemberPost(memberId, member.accessToken!!))
+        API.request.getApi().getRXLExerciseProgram(MemberPost(memberId, member.accessToken!!, "GetRXLExerciseProgram"))
             .enqueue(object : Callback<RxlExercises> {
 
                 override fun onFailure(call: Call<RxlExercises>, t: Throwable) {
@@ -162,8 +161,9 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
                     val data = response.body()
                     if (data != null) {
                         if (data.status.equals("success", true)) {
+
                             parsePrograms(data.data)
-                            savePrograms(data.data)
+                           savePrograms(data.data)
 
                         } else if (data.status.equals("error", true)) {
                             parsePrograms(ArrayList())
@@ -178,7 +178,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
             })
     }
 
-    fun updateProgram(program: RxlExercises.Program?, like: Boolean) {
+    fun updateProgram(program: RxlProgram?, like: Boolean) {
         if (program == null)
             return
         Database.execute(Action {
@@ -188,7 +188,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         })
     }
 
-    private fun savePrograms(programs: List<RxlExercises.Program?>?) {
+    private fun savePrograms(programs: List<RxlProgram?>?) {
         if (programs == null)
             return
         Database.execute(Action {
@@ -206,15 +206,15 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         }
     }
 
-    private val programList = ArrayList<RxlExercises.Program>()
+    private val programList = ArrayList<RxlProgram>()
 
-    private fun parsePrograms(programs: List<RxlExercises.Program?>?) {
+    private fun parsePrograms(programs: List<RxlProgram?>?) {
         programList.clear()
         if (programs == null || programs.isEmpty()) {
             observer?.onDataReceived(ArrayList())
             return
         }
-        val list = ArrayList<RxlExercises.Program>()
+        val list = ArrayList<RxlProgram>()
         programs.forEach {
             it?.let { item ->
                 list.add(item)
@@ -224,7 +224,65 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         observer?.onDataReceived(list)
     }
 
-    fun deleteProgram(program: RxlExercises.Program?, action: (RxlExercises.Program?) -> Unit) {
+    fun deleteProgram(program: RxlProgram?, action: (RxlProgram?) -> Unit) {
+        if (program == null)
+            return
+        fragment.log("getProgramsServer()")
+        val member = Prefs.get(fragment.context).member ?: return
+
+        fragment?.activity?.runOnUiThread {
+            fragment.getDialog()?.show()
+        }
+
+        API.request.getApi()
+            .deleteRXLExerciseProgram(
+                DeleteRxlExercise(
+                    DeleteRxlExercise.Data(
+                        member.id(),
+                        "${program.id}"
+                    ), member.accessToken!!
+                )
+            )
+            .enqueue(object : Callback<ResponseData> {
+
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    fragment?.activity?.runOnUiThread {
+                        fragment.getDialog()?.dismiss()
+                    }
+                    t.printStackTrace()
+                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    fragment?.activity?.runOnUiThread {
+                        fragment.getDialog()?.dismiss()
+                    }
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+                            data.response?.message?.let {
+                                Toasty.error(fragment.requireContext(), it).show()
+                            }
+                            deleteProgramFromDb(program, action)
+
+                        } else if (data.status.equals("error", true)) {
+                            checkError(data)
+                        }
+                    } else {
+                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+                        fragment.log("deletePrograms : " + response?.errorBody()?.toString())
+                    }
+                }
+            })
+    }
+
+    fun deleteProgram2(program: RxlProgram?, action: (RxlProgram?) -> Unit) {
         if (program == null)
             return
         fragment.log("getProgramsServer()")
@@ -276,8 +334,8 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
     }
 
     fun deleteProgramFromDb(
-        program: RxlExercises.Program?,
-        action: (RxlExercises.Program?) -> Unit
+        program: RxlProgram?,
+        action: (RxlProgram?) -> Unit
     ) {
         if (program == null)
             return
@@ -370,6 +428,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
             val adapter = ReflexFilterAdapter(list, 3)
             val manager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
             view.isNestedScrollingEnabled = false
+            //view.requestDisallowInterceptTouchEvent(true)
 
             adapter.setListener(filterListener)
             view.layoutManager = manager
@@ -431,7 +490,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
     }
 
     private fun updateFilterList() {
-        val filterList = ArrayList<RxlExercises.Program?>()
+        val filterList = ArrayList<RxlProgram?>()
         if (programList.size > 0) {
             programList?.forEach { program ->
                 selectedItems.forEach { key, value ->
@@ -498,8 +557,8 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         val accessories = ArrayList<ReflexFilterModel>()
         val prgs = ArrayList<ReflexFilterModel>()
         val players = ArrayList<ReflexFilterModel>()
-        val filterList = ArrayList<RxlExercises.Program>()
-        val filterMap = SparseArray<RxlExercises.Program>()
+        val filterList = ArrayList<RxlProgram>()
+        val filterMap = SparseArray<RxlProgram>()
         selectedItems.forEach { key, value ->
             if (value.isSelected) {
                 when (key) {
@@ -557,7 +616,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
 
             if (logics.isNotEmpty()) {
                 logics.forEach {
-                    if (prg?.type()?.contains(it.title) == true)
+                    if (prg?.logicType()?.contains(it.title) == true)
                         filterMap.put(prg.id!!, prg)
                 }
             }

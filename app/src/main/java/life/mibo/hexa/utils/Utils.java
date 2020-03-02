@@ -1,5 +1,6 @@
 package life.mibo.hexa.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -289,6 +291,32 @@ public class Utils {
         list.add(new Program(0xFFfa8072));
         list.add(new Program(0xFFFFFFFF));
         return list;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        try {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            View view = activity.getCurrentFocus();
+            if (view == null) {
+                view = new View(activity);
+            }
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            //imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        } catch (Exception ee) {
+            MiboEvent.INSTANCE.log(ee);
+        }
+    }
+
+    public static void hideKeyboard(View view, Activity activity) {
+        try {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            //imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        } catch (Exception ee) {
+            MiboEvent.INSTANCE.log(ee);
+        }
     }
 
 }

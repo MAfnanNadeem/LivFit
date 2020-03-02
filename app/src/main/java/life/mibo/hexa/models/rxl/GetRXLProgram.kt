@@ -8,6 +8,7 @@
 package life.mibo.hexa.models.rxl
 
 import life.mibo.hexa.models.base.BasePost
+import life.mibo.hexa.models.base.MemberID
 
 class GetRXLProgram(member: MemberID, token: String?, requestType: String = "GetRXLProgram") :
     BasePost<MemberID>(member, requestType, token) {

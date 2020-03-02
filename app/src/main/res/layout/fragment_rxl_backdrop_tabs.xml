@@ -25,7 +25,7 @@
         app:stl_defaultTabTextColor="#FC000000"
         app:stl_defaultTabTextHorizontalPadding="16dp"
         app:stl_defaultTabTextMinWidth="0dp"
-        app:stl_defaultTabTextSize="12sp"
+        app:stl_defaultTabTextSize="@dimen/text_size_small"
         app:stl_distributeEvenly="true"
         app:stl_dividerColor="#4D000000"
         app:stl_dividerThickness="1dp"
@@ -61,7 +61,7 @@
 <!--        app:tabSelectedTextColor="@color/white"-->
 <!--        app:tabTextColor="@color/grey_ddd" />-->
 
-    <androidx.viewpager.widget.ViewPager
+    <life.mibo.views.RxlPager
         android:id="@+id/viewPager2"
         android:layout_width="0dp"
         android:layout_height="0dp"

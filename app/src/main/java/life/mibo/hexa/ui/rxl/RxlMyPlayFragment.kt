@@ -16,6 +16,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator
@@ -75,10 +76,10 @@ class RxlMyPlayFragment : BaseFragment(),
         return super.onOptionsItemSelected(item)
     }
 
-    val list = ArrayList<RxlExercises.Program>()
+    val list = ArrayList<RxlProgram>()
     var adapter: ReflexAdapter? = null
 
-    override fun onDataReceived(programs: ArrayList<RxlExercises.Program>) {
+    override fun onDataReceived(programs: ArrayList<RxlProgram>) {
         isRefresh = false
         swipeToRefresh?.isRefreshing = false
         log("onDataReceived ${programs.size}")
@@ -101,22 +102,22 @@ class RxlMyPlayFragment : BaseFragment(),
         recyclerView?.layoutManager = manager
         recyclerView?.adapter = adapter
         recyclerView?.isNestedScrollingEnabled = false
-        adapter?.setListener(object : ItemClickListener<RxlExercises.Program> {
-            override fun onItemClicked(item: RxlExercises.Program?, position: Int) {
+        adapter?.setListener(object : ItemClickListener<RxlProgram> {
+            override fun onItemClicked(item: RxlProgram?, position: Int) {
                 log("onDataReceived onItemClicked ${item?.name}")
                 if (position > 1000) {
                     when (position) {
                         2001 -> {
                             val items =
                                 arrayOf<CharSequence>(
-                                    getString(R.string.update),
-                                    getString(R.string.delete)
+                                    getString(R.string.delete),
+                                    getString(R.string.cancel)
                                 )
 
                             AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.select_option))
+                                .setTitle(getString(R.string.delete_option))
                                 .setItems(items) { dialog, i ->
-                                    if (i == 1) {
+                                    if (i == 0) {
                                         log("delete $item")
                                         controller.deleteProgram(item) {
                                             activity?.runOnUiThread {
@@ -145,13 +146,11 @@ class RxlMyPlayFragment : BaseFragment(),
 
     }
 
-    override fun onUpdateList(programs: ArrayList<RxlExercises.Program>) {
+    override fun onUpdateList(programs: ArrayList<RxlProgram>) {
         adapter?.filterUpdate(programs)
     }
 
-    fun delete(item: RXLPrograms.Program) {
 
-    }
 
     override fun onCreateContextMenu(
         menu: ContextMenu,

@@ -56,7 +56,7 @@ class PlayersAdapter(var list: ArrayList<PlayerItem>, var listener: ItemClickLis
         }
     }
 
-    fun updateColor(item: PlayerItem, color: Int) {
+    fun updateColor(item: PlayerItem, color: Int, colorId: Int) {
         Logger.e("updateColor id $item , color $color")
         if (list.isNotEmpty()) {
             var pos = -1
@@ -64,6 +64,7 @@ class PlayersAdapter(var list: ArrayList<PlayerItem>, var listener: ItemClickLis
                 Logger.e("updateColor match.... id $item , it.id ${it.id}")
                 if (it.id == item.id) {
                     it.playerColor = color
+                    it.playerColorId = colorId
                     it.playerName = item.playerName
                     pos = i
                 }
@@ -167,12 +168,13 @@ class PlayersAdapter(var list: ArrayList<PlayerItem>, var listener: ItemClickLis
 //        }
     }
 
-    data class PlayerItem(
+    class PlayerItem(
         var id: Int,
         var playerName: String,
         var playerHint: String,
         var playerError: Int = 0,
-        var playerColor: Int = 0
+        var playerColor: Int = 0,
+        var playerColorId: Int = 0
     ) : Serializable
 
 }

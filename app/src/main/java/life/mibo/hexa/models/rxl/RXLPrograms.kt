@@ -8,20 +8,22 @@
 package life.mibo.hexa.models.rxl
 
 
+import androidx.navigation.fragment.FragmentNavigator
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import life.mibo.hexa.models.base.BaseResponse
 import java.io.Serializable
 
-class RXLPrograms(data: RXLPrograms.Data?) : BaseResponse<RXLPrograms.Data?>(data) {
+class RXLPrograms(data: Data?) : BaseResponse<RXLPrograms.Data?>(data) {
 
     data class Data(
         @SerializedName("Programs")
         var programs: ArrayList<Program?>?
     )
 
-    @Entity(tableName = "rxl_programs")
+    @Entity(tableName = "rxl_program_old")
     data class Program(
         @SerializedName("accessories")
         var accessories: String?,
@@ -67,7 +69,82 @@ class RXLPrograms(data: RXLPrograms.Data?) : BaseResponse<RXLPrograms.Data?>(dat
         @SerializedName("working_stations")
         var workingStations: Int?,
         var isFavourite: Boolean = false
-    ) : Serializable {
+    ) : Serializable, androidx.core.util.Predicate<Program> {
+
+        var urlIcon: String? = null
+
+        @Ignore
+        var extras : FragmentNavigator.Extras? = null
+
+        fun getTransitionTitle(): String {
+            return String.format("ttitle_%02d", id)
+        }
+
+        fun getTransitionIcon(): String {
+            return String.format("iicon_%02d", id)
+        }
+
+        override fun test(t: Program?): Boolean {
+
+            return false
+        }
+
+
+        fun match(
+            type: String?,
+            pods: Int,
+            players: Int,
+            logic: String?,
+            accessories: String?
+        ): Boolean {
+            var matched = false
+
+            type?.let {
+                matched = this.numberOfRxl == pods
+            }
+
+            return matched
+        }
+
+        fun matchPod(pods: Int?): Boolean {
+            var matched = false
+            pods?.let {
+                if (it > 0) {
+                    matched = numberOfRxl == it
+                }
+            }
+            return matched
+        }
+
+        fun matchPlayer(p: Int?): Boolean {
+            var matched = false
+            p?.let {
+                if (it > 0) {
+                    matched = numberOfPlayers == it
+                }
+            }
+            return matched
+        }
+
+        fun matchLogic(logic: String?): Boolean {
+            var matched = false
+            logic?.let {
+                if (it != "") {
+                    matched = lightsLogic?.contains(it) ?: false
+                }
+            }
+            return matched
+        }
+
+        fun matchProgram(prg: String?): Boolean {
+            var matched = false
+            prg?.let {
+                if (it != "") {
+                    matched = programType?.contains(it) ?: false
+                }
+            }
+            return matched
+        }
 //        fun copy(){
 //
 //        }

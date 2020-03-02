@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -25,14 +27,23 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-        android:networkSecurityConfig="@xml/network_config"
         android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <activity
+            android:name=".ui.rxl.QuickPlayDetailsActivity"
+            android:keepScreenOn="true"
+            android:label="@string/title_activity_quick_play_details"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <activity
             android:name=".ui.login.LoginActivity"
@@ -49,70 +60,25 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name=".ui.main.MainActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service
-            android:name="com.onecoder.devicelib.base.control.manage.BluetoothLeService"
-            android:enabled="true" />
+        <!--        <service-->
+        <!--            android:name="com.onecoder.devicelib.base.control.manage.BluetoothLeService"-->
+        <!--            android:enabled="true" />-->
 
-        <!-- ringcaptcha sdk activities|receivers -->
-        <activity
-            android:name="com.thrivecom.ringcaptcha.SetNumberActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
-            android:windowSoftInputMode="stateVisible|adjustPan|adjustResize"
-            android:screenOrientation="sensor">
-        </activity>
-
-        <activity
-            android:name="com.thrivecom.ringcaptcha.HelpActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensor">
-        </activity>
-        <activity
-            android:name="com.thrivecom.ringcaptcha.VerifyActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensor">
-        </activity>
-        <activity
-            android:name="com.thrivecom.ringcaptcha.CountryListActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensor">
-        </activity>
-
-        <activity
-            android:name="com.thrivecom.ringcaptcha.OnboardActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensor">
-        </activity>
-
-        <activity
-            android:name="com.thrivecom.ringcaptcha.CodeActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensor"
-            android:windowSoftInputMode="stateVisible|adjustPan|adjustResize">
-        </activity>
 
         <receiver
-            android:name="com.thrivecom.ringcaptcha.RingcaptchaAPIController"
-            android:enabled="true"
-            android:exported="true" >
-            <intent-filter android:priority="999">
-                <action
-                    android:name="android.provider.Telephony.SMS_RECEIVED"
-                    android:scheme="sms" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="life.mibo.hexa.receiver.SMSBroadcastReceiver"
+            android:name=".receiver.SMSBroadcastReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="life.mibo.hexa.receiver.MyVerificationReceiver" >
+        <receiver android:name=".receiver.MyVerificationReceiver">
             <intent-filter>
                 <action android:name="com.twilio.verification.current_status" />
             </intent-filter>

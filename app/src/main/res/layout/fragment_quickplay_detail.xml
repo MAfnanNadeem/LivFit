@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 2/25/20 2:38 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 2/25/20 11:06 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:fillViewport="true">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/iv_icon_giff"
+            android:layout_width="0dp"
+            android:layout_height="96dp"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:padding="@dimen/grid_1x"
+            android:src="@drawable/ic_reflex_random_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.4" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:padding="@dimen/grid_1x"
+            android:text="@string/rxl_title"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_icon_giff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_icon_giff"
+            app:layout_constraintTop_toTopOf="@id/iv_icon_giff" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ll_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/rxl_desc_bg"
+            android:minHeight="200dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_icon_giff">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_desc_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x"
+                android:text="@string/description"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <life.mibo.views.text.ExpandableTextView
+                android:id="@+id/tv_desc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:padding="@dimen/grid_1x"
+                android:text="@string/terms_of_agreement"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_desc_title" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_cycle_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/ll_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ll_desc" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_fixed_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/general_settings"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_desc"
+            app:layout_constraintWidth_percent="1" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_stations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/working_station"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_stations"
+            app:layout_constraintStart_toStartOf="@+id/iv_stations"
+            app:layout_constraintTop_toBottomOf="@id/tv_fixed_set" />
+
+        <ImageView
+            android:id="@+id/iv_stations"
+            style="@style/rxl_create_icon"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_reflex_stations"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_stations"
+            app:layout_constraintWidth_percent="0.35" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_stations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/grid_1x"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_stations"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_stations"
+            app:layout_constraintWidth_percent="0.4" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_pods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/no_ofpods"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_pods"
+            app:layout_constraintStart_toStartOf="@+id/iv_pods"
+            app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+
+        <ImageView
+            android:id="@+id/iv_pods"
+            style="@style/rxl_create_icon"
+            android:layout_width="0dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_rxl_pods_icon"
+            android:layout_marginStart="@dimen/grid_1x"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_pods"
+            app:layout_constraintWidth_percent="0.35" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_pods"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/grid_1x"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_pods"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_pods"
+            app:layout_constraintWidth_percent="0.4" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_lights"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:gravity="center"
+            android:text="@string/lights_out"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_cycles"
+            app:layout_constraintStart_toStartOf="@+id/iv_cycles"
+            app:layout_constraintTop_toBottomOf="@id/iv_pods"
+            app:layout_constraintWidth_percent="0.35" />
+
+        <ImageView
+            android:id="@+id/iv_cycles"
+            style="@style/rxl_create_icon"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="@dimen/grid_4x"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_reflex_lights_out"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_lights"
+            app:layout_constraintWidth_percent="0.35" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_lights"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/grid_1x"
+            android:text="PROXIMITY"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_cycles"
+            app:layout_constraintWidth_percent="0.4" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_next"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/button_shape_rounded"
+            android:text="@string/next"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_cycles"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

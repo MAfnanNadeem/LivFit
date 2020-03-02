@@ -34,10 +34,10 @@
             android:id="@+id/nav_test3"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/rxl_title" />
-        <item
-            android:id="@+id/nav_test4"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="RXT Test" />
+<!--        <item-->
+<!--            android:id="@+id/nav_test4"-->
+<!--            android:icon="@drawable/ic_menu_manage"-->
+<!--            android:title="RXT Test" />-->
 
     </group>
 

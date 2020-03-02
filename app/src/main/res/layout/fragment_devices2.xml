@@ -43,7 +43,7 @@
                     app:isw_active_tint_icon_left="#00F"
                     app:isw_active_tint_icon_right="#0F0"
                     app:isw_background_color="@color/grey"
-                    app:isw_default_selection="right"
+                    app:isw_default_selection="left"
                     app:isw_icon_left="@drawable/ic_bluetooth_black_24dp"
                     app:isw_icon_right="@drawable/ic_wifi_black_24dp"
                     app:isw_icon_size="20dp"
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="WI-FI"
+                android:text="@string/bluetooth"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintBottom_toBottomOf="@+id/wifi_switch"
@@ -88,7 +88,7 @@
                 android:layout_height="8dp"
                 android:layout_gravity="bottom"
                 android:indeterminate="true"
-                android:visibility="visible"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -154,24 +154,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <life.mibo.views.loadingbutton.customViews.CircularProgressButton
-            android:id="@+id/button_connect_all"
+
+        <RelativeLayout
+            android:id="@+id/rl_connect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_1x"
-            android:background="@drawable/button_shape_rounded"
-            android:text="@string/connect"
-            android:textColor="@color/white"
-            app:finalCornerAngle="32dp"
-            app:initialCornerAngle="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_next"
             app:layout_constraintHorizontal_bias="0.5"
+            android:layout_margin="@dimen/grid_1x"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintWidth_percent="0.45"
-            app:spinning_bar_color="#FFF"
-            app:spinning_bar_padding="6dp"
-            app:spinning_bar_width="4dp" />
+            app:layout_constraintWidth_percent="0.45">
+
+            <life.mibo.views.loadingbutton.customViews.CircularProgressButton
+                android:id="@+id/button_connect_all"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/button_shape_rounded"
+                android:text="@string/connect"
+                android:textColor="@color/white"
+                app:finalCornerAngle="32dp"
+                app:initialCornerAngle="0dp"
+                app:spinning_bar_color="#FFF"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
+        </RelativeLayout>
+
 
         <life.mibo.views.loadingbutton.customViews.CircularProgressButton
             android:id="@+id/button_next"
@@ -187,7 +196,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button_connect_all"
+            app:layout_constraintStart_toEndOf="@+id/rl_connect"
             app:layout_constraintWidth_percent="0.45"
             app:spinning_bar_color="#FFF"
             app:spinning_bar_padding="6dp"

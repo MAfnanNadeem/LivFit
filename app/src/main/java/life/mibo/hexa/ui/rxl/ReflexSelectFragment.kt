@@ -117,7 +117,7 @@ class ReflexSelectFragment : BaseFragment() {
 
     private fun onNextClicked() {
         //var next = false
-
+        Utils.hideKeyboard(recyclerView, this.activity)
         var error = false
         var id = -1
         val list = adapter?.list
@@ -137,7 +137,8 @@ class ReflexSelectFragment : BaseFragment() {
             adapter?.updateError(id, getError(id))
         } else {
             // SessionManager.initUser()
-            Utils.hideKeyboard(this.activity)
+            //Utils.hideKeyboard(this.activity)
+            Thread.sleep(60)
             SessionManager.getInstance().userSession.rxlPlayers = list
             navigate(Navigator.RXL_TABS, list)
         }
@@ -191,7 +192,7 @@ class ReflexSelectFragment : BaseFragment() {
             override fun onItemClicked(item: Program?, position: Int) {
                 log("ProgramDialog Colors color = ${item?.id}  position $position & id $id")
                 item?.id?.let {
-                    adapter?.updateColor(id, it)
+                    adapter?.updateColor(id, it, position)
                     log("ProgramDialog Colors Changed")
 
                 }

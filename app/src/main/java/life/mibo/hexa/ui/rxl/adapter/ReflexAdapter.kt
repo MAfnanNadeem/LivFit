@@ -13,17 +13,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RXLPrograms
-import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
 
 
-class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
+class ReflexAdapter(var list: ArrayList<RxlProgram>?) :
     RecyclerView.Adapter<ReflexHolder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: ItemClickListener<RxlExercises.Program>? = null
+    private var listener: ItemClickListener<RxlProgram>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReflexHolder {
         return ReflexHolder(
@@ -35,7 +34,7 @@ class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
         )
     }
 
-    fun setListener(listener: ItemClickListener<RxlExercises.Program>) {
+    fun setListener(listener: ItemClickListener<RxlProgram>) {
         this.listener = listener
     }
 
@@ -45,7 +44,7 @@ class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
         return 0
     }
 
-    private fun getItem(position: Int): RxlExercises.Program? {
+    private fun getItem(position: Int): RxlProgram? {
         return list?.get(position)
     }
 
@@ -71,7 +70,7 @@ class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
         }
     }
 
-    fun delete(program: RxlExercises.Program?) {
+    fun delete(program: RxlProgram?) {
         if (program == null)
             return
         var pos = -1
@@ -87,7 +86,7 @@ class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
     }
 
 
-    fun update(newList: ArrayList<RxlExercises.Program>) {
+    fun update(newList: ArrayList<RxlProgram>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()
@@ -117,7 +116,7 @@ class ReflexAdapter(var list: ArrayList<RxlExercises.Program>?) :
 
     }
 
-    fun filterUpdate(newList: ArrayList<RxlExercises.Program>) {
+    fun filterUpdate(newList: ArrayList<RxlProgram>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()

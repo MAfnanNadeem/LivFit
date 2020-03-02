@@ -2,6 +2,7 @@ package life.mibo.hexa.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import life.mibo.hexa.core.gson.GsonConverterFactory
+import life.mibo.hexa.models.base.MemberPost
 import life.mibo.hexa.models.base.PostData
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.calories.Calories
@@ -12,13 +13,12 @@ import life.mibo.hexa.models.create_session.BookSessionPost
 import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
+import life.mibo.hexa.models.member.MemberAvatar
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.models.register.RegisterMember
 import life.mibo.hexa.models.register.RegisterResponse
-import life.mibo.hexa.models.rxl.GetRXLProgram
-import life.mibo.hexa.models.rxl.RXLPrograms
-import life.mibo.hexa.models.rxl.SaveRXLProgram
+import life.mibo.hexa.models.rxl.*
 import life.mibo.hexa.models.send_otp.SendOTP
 import life.mibo.hexa.models.send_otp.SendOtpResponse
 import life.mibo.hexa.models.session.SessionDetails
@@ -175,5 +175,25 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getRXLProgram")
         fun getRXLProgram(@Body data: GetRXLProgram): Call<RXLPrograms>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("deleteRXLProgram")
+        fun deleteRXLProgram(@Body data: DeleteRXLProgram): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("memberAvatar")
+        fun uploadAvatar(@Body data: MemberAvatar): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getRXLExerciseProgram")
+        fun getRXLExerciseProgram(@Body data: MemberPost): Call<RxlExercises>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveRXLExerciseProgram")
+        fun saveRXLExerciseProgram(@Body data: SaveRxlExercise): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("deleteRXLExerciseProgram")
+        fun deleteRXLExerciseProgram(@Body data: DeleteRxlExercise): Call<ResponseData>
     }
 }

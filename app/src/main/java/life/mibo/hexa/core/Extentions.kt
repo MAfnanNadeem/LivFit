@@ -8,7 +8,9 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.View
 import androidx.annotation.IdRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -100,3 +102,9 @@ fun NavController.navigateSafe(
         navigate(fragmentId, args, navOptions, navExtras)
 }
 
+fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.run {
+    if (this !is CoordinatorLayout.LayoutParams) throw IllegalArgumentException("View's layout params should be CoordinatorLayout.LayoutParams")
+
+    (layoutParams as CoordinatorLayout.LayoutParams).behavior as? T
+        ?: throw IllegalArgumentException("Layout's behavior is not current behavior")
+}

@@ -27,8 +27,8 @@ import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.ItemClickListener
-import life.mibo.hexa.utils.Constants
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
 
@@ -43,14 +43,14 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var likeed: AndroidLikeButton? = itemView.findViewById(R.id.likeButton)
     var devices: TextView? = itemView.findViewById(R.id.tv_pods)
 
-    var data: RxlExercises.Program? = null
+    var data: RxlProgram? = null
 
-    fun bind(item: RxlExercises.Program?, listener: ItemClickListener<RxlExercises.Program>?) {
+    fun bind(item: RxlProgram?, listener: ItemClickListener<RxlProgram>?) {
         Logger.e("ReflexHolder $item")
         if (item == null)
             return
         title?.text = item.name
-        type?.text = "${item.type()}"
+        type?.text = "${item.logicType()}"
         users?.text = "${item.players}"
         devices?.text = "${item.pods}"
         time?.text = "${item.totalDuration}"
@@ -70,7 +70,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //            val url = img[0].replace("[", "")
 //            item.urlIcon = url
 //
-
+            image?.scaleType = ImageView.ScaleType.CENTER_CROP
 
             val bitmap = life.mibo.hexa.utils.Utils.convertStringImagetoBitmap(item.avatarBase64)
             image?.load(bitmap) {
@@ -89,10 +89,10 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             listener?.onItemClicked(item, if (it) 1001 else 1002)
         }
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            image?.transitionName = item.getTransitionIcon()
-            title!!.transitionName = item.getTransitionTitle()
-        }
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            image?.transitionName = item.getTransitionIcon()
+//            title!!.transitionName = item.getTransitionTitle()
+//        }
 
         //setBg(imageBg, image)
         itemView?.setOnClickListener {
@@ -130,7 +130,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     private fun setGradient(imageBg: ImageView?, drawable: Drawable?) {
-        Logger.e("ReflexHolder setGradient")
+        Logger.e("ReflexHolder setGradient $drawable")
         if (drawable == null || imageBg == null)
             return
 
@@ -150,8 +150,8 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                         color = palette.getDominantColor(
                             ContextCompat.getColor(image?.context!!, R.color.grey)
                         )
-                        Logger.e("ReflexHolder dominantColor $color")
-                        //imageBg.setBackgroundColor(color)
+                        Logger.e("ReflexHolder setGradient applied dominantColor $color")
+                        imageBg.setBackgroundColor(color)
                         //return@let color
                     }
                 }

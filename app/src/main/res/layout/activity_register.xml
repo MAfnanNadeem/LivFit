@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
-        android:src="@drawable/login_bg" />
+        android:src="@drawable/bg_gradient" />
 
     <ImageView
         android:layout_width="match_parent"

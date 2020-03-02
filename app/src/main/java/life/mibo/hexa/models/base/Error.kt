@@ -19,4 +19,4 @@ public data class Error(
     var code: Int?,
     @SerializedName("message")
     var message: String?
-)
+) : BaseModel

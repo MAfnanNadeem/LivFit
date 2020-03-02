@@ -19,13 +19,13 @@
         android:text="Random"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_small"
-        app:layout_constraintEnd_toEndOf="@+id/iv_icon"
+        app:layout_constraintEnd_toEndOf="@+id/iv_icon_giff"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="1" />
 
     <ImageView
-        android:id="@+id/iv_icon"
+        android:id="@+id/iv_icon_giff"
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:layout_marginStart="@dimen/grid_2x"
@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/grid_2x"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_icon_giff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_title" />
 

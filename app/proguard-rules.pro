@@ -29,6 +29,7 @@
 }
 
 -keep public class * extends life.mibo.hexa.models.base.BaseModel
+-keep public class * implements life.mibo.hexa.models.base.BaseModel
 -keepclassmembers class * extends life.mibo.hexa.models.base.BaseModel {
     <fields>;
 }
@@ -59,6 +60,13 @@
 -keepclassmembers enum * { *; }
 -keep class com.github.mikephil.charting.** { *; }
 -dontwarn io.realm.**
+
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
 
 
 

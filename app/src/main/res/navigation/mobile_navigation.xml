@@ -162,5 +162,15 @@
         android:name="life.mibo.hexa.ui.rxl.RxlTabFragment2"
         android:label="@string/rxl_title"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_quickplay_details"
+        android:name="life.mibo.hexa.ui.rxl.RxlProgramDetailsFragment"
+        android:label="@string/rxl_title"
+        tools:layout="@layout/fragment_profile" />
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_quickplay_details_play"-->
+<!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->
+<!--        android:label="@string/rxl_title"-->
+<!--        tools:layout="@layout/fragment_profile" />-->
 
 </navigation>

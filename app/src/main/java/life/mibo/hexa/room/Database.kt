@@ -19,13 +19,14 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.rxl.RXLPrograms
+import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
 import java.util.concurrent.Callable
 
 @androidx.room.Database(
-    entities = [Member::class, Device::class, UserDetails::class, Program::class, RXLPrograms.Program::class],
-    version = 8,
+    entities = [Member::class, Device::class, UserDetails::class, Program::class, RxlProgram::class],
+    version = 13,
     exportSchema = false
 )
 @TypeConverters(Converters::class, ProgramConverter::class)

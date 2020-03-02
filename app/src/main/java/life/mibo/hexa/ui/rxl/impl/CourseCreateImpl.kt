@@ -115,7 +115,8 @@ class CourseCreateImpl(var context: Context, var listener: Listener? = null) {
                 list.add(ReflexDialog.Item(1, "Sequence"))
                 list.add(ReflexDialog.Item(2, "Random"))
                 list.add(ReflexDialog.Item(3, "Focus"))
-                list.add(ReflexDialog.Item(4, "All at once"))
+                list.add(ReflexDialog.Item(4, "All at Once"))
+                list.add(ReflexDialog.Item(4, "Tap at once"))
             }
             Type.PLAYERS -> {
                 title = "Select Players"

@@ -43,7 +43,7 @@
                 app:layout_constraintWidth_percent="1" />
 
             <ImageView
-                android:id="@+id/iv_icon"
+                android:id="@+id/iv_icon_giff"
                 android:layout_width="0dp"
                 android:layout_height="76dp"
                 android:src="@drawable/ic_reflex_random_icon"
@@ -153,14 +153,28 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/iv_stations" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/recyclerViewSequence_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="drag to re-arrange sequence"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewSequence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence_text" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_cycles"
@@ -329,7 +343,7 @@
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@id/iv_players"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_play" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_players" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -343,25 +357,25 @@
                 app:layout_constraintWidth_percent="0.5">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_action"
+                    android:id="@+id/tv_pause"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
                     android:text="Action"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
-                    app:layout_constraintStart_toStartOf="@+id/iv_action"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pause"
+                    app:layout_constraintStart_toStartOf="@+id/iv_pause"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/iv_action"
+                    android:id="@+id/iv_pause"
                     style="@style/rxl_create_icon"
                     android:layout_marginEnd="1dp"
                     android:src="@drawable/ic_access_time_black_24dp"
                     app:layout_constraintEnd_toStartOf="@+id/tv_select_action"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_action" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_pause" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -376,9 +390,9 @@
                     android:text="1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_action"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_pause"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_action" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_pause" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -389,9 +403,9 @@
                     android:text="Delay"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pause"
                     app:layout_constraintStart_toStartOf="@+id/iv_delay"
-                    app:layout_constraintTop_toBottomOf="@id/iv_action" />
+                    app:layout_constraintTop_toBottomOf="@id/iv_pause" />
 
                 <ImageView
                     android:id="@+id/iv_delay"
@@ -419,29 +433,29 @@
                     app:layout_constraintTop_toTopOf="@+id/iv_delay" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_time"
+                    android:id="@+id/tv_action"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
                     android:text="@string/duration"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_time"
-                    app:layout_constraintStart_toStartOf="@+id/iv_time"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
+                    app:layout_constraintStart_toStartOf="@+id/iv_action"
                     app:layout_constraintTop_toBottomOf="@id/tv_select_delay" />
 
                 <ImageView
-                    android:id="@+id/iv_time"
+                    android:id="@+id/iv_action"
                     style="@style/rxl_create_icon"
                     android:layout_marginEnd="1dp"
                     android:src="@drawable/ic_reflex_time"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_select_time"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_duration"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_time" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_action" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_time"
+                    android:id="@+id/tv_select_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/login_edittext"
@@ -452,9 +466,9 @@
                     android:text="30 sec"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_time"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_action"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_time" />
+                    app:layout_constraintTop_toTopOf="@+id/iv_action" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

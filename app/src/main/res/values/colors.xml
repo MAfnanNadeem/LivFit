@@ -4,6 +4,7 @@
     <color name="colorPrimaryTranslucent">#8009B189</color>
     <color name="colorPrimaryUnselected">#1009B189</color>
     <color name="colorPrimaryDark">#09B189</color>
+    <color name="colorPrimaryDark2">#078d6d</color>
     <color name="colorAccent">#D81B60</color>
     <color name="white">#FFF</color>
     <color name="transparent">#00000000</color>

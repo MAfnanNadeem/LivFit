@@ -58,7 +58,7 @@
     <string name="transition_title">course_title</string>
     <string name="working_station">Working station</string>
     <string name="lights_out">Lights out</string>
-    <string name="cycles">Cycles</string>
+    <string name="cycles">Rounds</string>
     <string name="players">Players</string>
     <string name="three_pods_required">Please connect at least 3 Reaction Lights</string>
     <string name="forgot_pwd">Forgot Password? </string>
@@ -114,7 +114,7 @@
     <string name="connect_all">Connect All</string>
     <string name="reflex">ReFlex</string>
     <string name="rxl_title">Reaction Lights</string>
-    <string name="rxl_select">RXL Select</string>
+    <string name="rxl_select">RXL Select Players</string>
     <string name="rxl_select_course">RXL Course Select</string>
     <string name="profile">Profile</string>
     <string name="rxl_details">RXL Exercise Details</string>
@@ -135,6 +135,7 @@
     <string name="random">Random</string>
     <string name="proximity_on">Proximity Enable</string>
     <string name="proximity_off">Proximity Disabled</string>
+    <string name="no_ofpods">Number of Pods</string>
     <string name="pods">Pods</string>
     <string name="activity_duration">Activity Duration</string>
     <string name="action">Action</string>
@@ -143,5 +144,34 @@
     <string name="course_description">Course Description</string>
     <string name="customize"><u> Customize </u></string>
     <string name="next">NEXT</string>
+    <string name="quick_play">Quick Play</string>
+    <string name="my_play">My Play</string>
+    <string name="players_2">2 Players</string>
+    <string name="players_3">3 Players</string>
+    <string name="players_4">4 Players</string>
+    <string name="player_1">1 Player</string>
+    <string name="player_1_error">Enter Player 1 Name</string>
+    <string name="player_2_error">Enter Player 2 Name</string>
+    <string name="player_3_error">Enter Player 3 Name</string>
+    <string name="player_4_error">Enter Player 4 Name</string>
+    <string name="player_1_color_error">Select Player 1 Color</string>
+    <string name="player_2_color_error">Select Player 2 Color</string>
+    <string name="player_3_color_error">Select Player 3 Color</string>
+    <string name="player_4_color_error">Select Player 4 Color</string>
+    <string name="hit_to_start_rxl">Hit Reaction Light to start</string>
+    <string name="title_activity_quick_play_details">QuickPlayDetailsActivity</string>
+    <string name="pause">Pause</string>
+    <string name="types">Types</string>
+    <string name="categories">Categories</string>
+    <string name="no_exercise_created">You have not created any exercise yet \n click on <b>+</b> button to create.</string>
+    <string name="no_program">No programs found</string>
+    <string name="select_option">Select Option</string>
+    <string name="delete_option">Are you sure to delete?</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
+    <string name="program_detail">Program Details</string>
+    <string name="general_settings">GENERAL SETTINGS</string>
+    <string name="activity_settings">ACTIVITY SETTINGS</string>
+    <string name="_1_sec">1 sec</string>
 
 </resources>

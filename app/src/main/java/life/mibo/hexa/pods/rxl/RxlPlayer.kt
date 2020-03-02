@@ -7,6 +7,19 @@
 
 package life.mibo.hexa.pods.rxl
 
-enum class RxlPlayer {
-    SINGLE, TWO_PLAYER, MULTI_PLAYERS
+class RxlPlayer(
+    var id: Int,
+    var name: String,
+    var color: Int,
+    var colorId: Int,
+    var noOfPods: Int,
+    var podsUids: ArrayList<String>
+) {
+
+
+    var station = RxlStation().addColor(color, 0, colorId)
+
+    enum class Player {
+        SINGLE, TWO_PLAYER, MULTI_PLAYERS;
+    }
 }

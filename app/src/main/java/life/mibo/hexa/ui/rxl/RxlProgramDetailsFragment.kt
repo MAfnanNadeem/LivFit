@@ -19,6 +19,7 @@ import life.mibo.hardware.SessionManager
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Constants
@@ -29,7 +30,7 @@ class RxlProgramDetailsFragment : BaseFragment() {
 
     private lateinit var controller: ReactionLightController
     private var code = 23456
-    private var program: RxlExercises.Program? = null
+    private var program: RxlProgram? = null
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
 //        val transition =
@@ -71,7 +72,7 @@ class RxlProgramDetailsFragment : BaseFragment() {
 
         val arg = arguments
         if (arg != null) {
-            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlExercises.Program?
+            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlProgram?
         }
         log("program >> $program")
 
@@ -82,13 +83,13 @@ class RxlProgramDetailsFragment : BaseFragment() {
         // iv_icon?.load(program?.urlIcon)
 
         if (program?.avatarBase64.isNullOrEmpty()) {
-            iv_icon?.setImageResource(R.drawable.ic_rxl_pods_icon)
+            iv_icon_giff?.setImageResource(R.drawable.ic_rxl_pods_icon)
             // image?.setColorFilter(Constants.PRIMARY)
             // setGradient(imageBg, image?.drawable)
         } else {
             val bitmap =
                 life.mibo.hexa.utils.Utils.convertStringImagetoBitmap(program?.avatarBase64)
-            iv_icon?.load(bitmap)
+            iv_icon_giff?.load(bitmap)
 
         }
 

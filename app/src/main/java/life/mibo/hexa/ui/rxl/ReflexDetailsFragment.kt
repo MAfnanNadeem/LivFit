@@ -28,7 +28,6 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.pods.rxl.RxlLight
@@ -59,7 +58,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
     private lateinit var delegate: CourseCreateImpl
 
-    private var program: RxlExercises.Program? = null
+    private var program: life.mibo.hexa.models.rxl.RxlProgram? = null
     //val manager = RXLManager.getInstance()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,7 +67,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
         val arg = arguments
         if (arg != null) {
-            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlExercises.Program?
+            program = arg.getSerializable(Constants.BUNDLE_DATA) as life.mibo.hexa.models.rxl.RxlProgram?
             setProgram()
         }
         navigate(Navigator.HOME_VIEW, true)
@@ -112,10 +111,10 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         program?.let {
             tv_select_stations?.text = "${it.workStation}"
             tv_select_cycles?.text = "${it.cycle}"
-            tv_select_action?.text = "${it.totalDuration} sec"
+            tv_select_duration?.text = "${it.totalDuration} sec"
             tv_select_delay?.text = "${it.pause} sec"
-            tv_select_lights?.text = "${it.type()}"
-            tv_select_pause?.text = "${it.action} sec"
+            tv_select_lights?.text = "${it.logicType()}"
+            tv_select_action?.text = "${it.action} sec"
             tv_select_players?.text = "${it.pods}"
             tv_desc?.text = "${it.description}"
             //val images = it.image!!.split(",")
@@ -132,7 +131,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
             R.drawable.ic_reflex_sequence,
             R.drawable.ic_reflex_focus_only
         )
-        iv_icon.setImages(list)
+        iv_icon_giff.setImages(list)
     }
 
     private fun setPickers() {
@@ -142,7 +141,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         tv_select_cycles?.setOnClickListener {
             //  delegate.showDialog(CourseCreateImpl.Type.CYCLES)
         }
-        tv_select_action?.setOnClickListener {
+        tv_select_duration?.setOnClickListener {
             //  delegate.showDialog(CourseCreateImpl.Type.DURATION)
         }
 
@@ -409,7 +408,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
                 else tv_select_delay?.text = item.title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.DURATION.type -> {
-                tv_select_action?.text = item.title?.replace("seconds", "sec")
+                tv_select_duration?.text = item.title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.ACTION.type -> {
                 tv_select_players?.text = item.title?.replace("seconds", "sec")
@@ -443,7 +442,7 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
     }
 
     private fun getDuration(): Int {
-        return getInt(tv_select_action?.text)
+        return getInt(tv_select_duration?.text)
     }
 
     private fun getPause(): Int {

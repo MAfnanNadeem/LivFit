@@ -7,8 +7,8 @@
 
 package life.mibo.hexa.pods.pod
 
-enum class LightLogic {
-        RANDOM, SEQUENCE, ALL_AT_ONCE, FOCUS, HOME_BASED, UNKNOWN
+enum class LightLogic(val type: String) {
+        RANDOM(""), SEQUENCE(""), ALL_AT_ONCE(""), ALL_AT_ALL(""), FOCUS(""), HOME_BASED(""), UNKNOWN("")
     }
 
 

@@ -11,4 +11,7 @@ import android.graphics.Color;
 
 public class Constants {
     public final static int PRIMARY = Color.parseColor("#09B189");
+    public final static String BUNDLE_DATA = "bundle_data";
+
+
 }

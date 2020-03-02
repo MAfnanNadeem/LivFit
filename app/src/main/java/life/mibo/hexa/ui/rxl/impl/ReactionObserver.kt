@@ -9,8 +9,9 @@ package life.mibo.hexa.ui.rxl.impl
 
 import life.mibo.hexa.models.rxl.RXLPrograms
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 
 interface ReactionObserver {
-    fun onDataReceived(programs: ArrayList<RxlExercises.Program>)
-    fun onUpdateList(programs: ArrayList<RxlExercises.Program>)
+    fun onDataReceived(programs: ArrayList<RxlProgram>)
+    fun onUpdateList(programs: ArrayList<RxlProgram>)
 }

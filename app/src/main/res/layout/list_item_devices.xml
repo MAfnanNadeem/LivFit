@@ -84,12 +84,13 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/iv_wifi"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.15"
             android:src="@drawable/ic_bluetooth_black_24dp"
-            android:tint="@color/grey" />
+            android:tint="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_wifi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.15" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_wifi"
@@ -97,48 +98,75 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/iv_battery"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.15"
             android:src="@drawable/ic_wifi_black_24dp"
-            android:tint="@color/grey" />
+            android:tint="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_battery"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_bl"
+            app:layout_constraintWidth_percent="0.15" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_battery"
+        <!--        <androidx.appcompat.widget.AppCompatImageView-->
+        <!--            android:id="@+id/iv_battery"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="@null"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintRight_toLeftOf="@id/button_connect"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            android:layout_marginEnd="4dp"-->
+        <!--            android:tint="#0F0"-->
+        <!--            app:layout_constraintWidth_percent="0.15"-->
+        <!--            android:scaleType="centerInside" />-->
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_battery"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@null"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:paddingStart="1dp"
+            android:paddingEnd="2dp"
+            android:singleLine="true"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/button_connect"
+            app:layout_constraintStart_toEndOf="@+id/iv_wifi"
+            app:layout_constraintEnd_toStartOf="@id/button_connect"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="4dp"
-            android:tint="#0F0"
-            app:layout_constraintWidth_percent="0.15"
-            android:scaleType="centerInside" />
+            app:layout_constraintWidth_percent="0.15" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/button_connect"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@null"
             android:scaleType="fitCenter"
             android:layout_marginEnd="4dp"
             android:src="@drawable/ic_check_circle"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.25"
             app:layout_constraintRight_toLeftOf="@id/button_disconnect"
             app:layout_constraintTop_toTopOf="parent"
             android:tint="@color/grey_ddd" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/button_disconnect"
-            android:layout_width="48dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@null"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_cancel_circle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintWidth_percent="0.25"
             app:layout_constraintTop_toTopOf="parent"
             android:tint="@color/grey" />
 

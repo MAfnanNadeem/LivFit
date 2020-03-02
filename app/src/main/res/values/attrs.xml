@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="HexagonRecyclerView">
+        <attr name="items_horizontal_spacing" format="dimension" />
+        <attr name="items_vertical_spacing" format="dimension" />
+        <attr name="items_count_in_row" format="integer" />
+        <attr name="orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LikeButton">
+        <attr name="dot_color_1" format="color" />
+        <attr name="dot_color_2" format="color" />
+        <attr name="circle_startColor" format="color" />
+        <attr name="circle_endColor" format="color" />
+        <attr name="like_icon" format="reference" />
+        <attr name="unlike_icon" format="reference" />
+        <attr name="liked" format="boolean" />
+        <attr name="dot_active" format="boolean" />
+        <attr name="circle_active" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="DashboardItem">
+        <attr name="item_image" format="reference" />
+        <attr name="item_icon" format="reference" />
+        <attr name="item_text" format="string" />
+        <attr name="item_gravity" format="enum">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="BackdropLayout">
+        <attr name="front_layout" format="reference" />
+        <attr name="back_layout" format="reference" />
+        <attr name="toolbarId" format="reference" />
+        <attr name="peekHeight" format="dimension" />
+        <attr name="menuDrawable" format="reference" />
+        <attr name="closeDrawable" format="reference" />
+        <attr name="animationDuration" format="integer" />
+        <attr name="disable_when_open" format="boolean" />
+    </declare-styleable>
+
+
+    <declare-styleable name="OtpEditText">
+        <attr name="oev_length" format="integer|reference" />
+        <attr name="oev_primary_color" format="color|reference" />
+        <attr name="oev_secondary_color" format="color|reference" />
+        <attr name="oev_text_color" format="color|reference" />
+        <attr name="oev_box_style" format="string|reference" />
+        <attr name="oev_mask_input" format="boolean" />
+        <attr name="oev_mask_character" format="string|reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ColorSeekBar">
+        <attr name="colorSeeds" format="reference" />
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="barHeight" format="dimension" />
+        <attr name="thumbBorder" format="dimension" />
+        <attr name="thumbBorderColor" format="color" />
+    </declare-styleable>
+
+
+    <declare-styleable name="IconSwitch">
+        <attr name="isw_icon_left" format="reference" />
+        <attr name="isw_icon_right" format="reference" />
+
+        <attr name="isw_icon_size" format="dimension" />
+
+        <attr name="isw_background_color" format="color" />
+        <attr name="isw_thumb_color_left" format="color" />
+        <attr name="isw_thumb_color_right" format="color" />
+        <attr name="isw_inactive_tint_icon_left" format="color" />
+        <attr name="isw_inactive_tint_icon_right" format="color" />
+        <attr name="isw_active_tint_icon_left" format="color" />
+        <attr name="isw_active_tint_icon_right" format="color" />
+
+        <attr name="isw_default_selection" format="enum">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+
+    </declare-styleable>
+    <declare-styleable name="CircleView">
+        <attr name="cv_color" format="color" />
+        <attr name="cv_color_start" format="color" />
+        <attr name="cv_color_end" format="color" />
+        <attr name="cv_color_direction">
+            <flag name="left_to_right" value="1" />
+            <flag name="right_to_left" value="2" />
+            <flag name="top_to_bottom" value="3" />
+            <flag name="bottom_to_top" value="4" />
+        </attr>
+        <attr name="cv_border" format="boolean" />
+        <attr name="cv_border_width" format="dimension" />
+        <attr name="cv_border_color" format="color" />
+        <attr name="cv_border_color_start" format="color" />
+        <attr name="cv_border_color_end" format="color" />
+        <attr name="cv_border_color_direction">
+            <flag name="left_to_right" value="1" />
+            <flag name="right_to_left" value="2" />
+            <flag name="top_to_bottom" value="3" />
+            <flag name="bottom_to_top" value="4" />
+        </attr>
+        <attr name="cv_shadow" format="boolean" />
+        <attr name="cv_shadow_color" format="color" />
+        <attr name="cv_shadow_radius" format="float" />
+        <attr name="cv_shadow_gravity">
+            <flag name="center" value="1" />
+            <flag name="top" value="2" />
+            <flag name="bottom" value="3" />
+            <flag name="start" value="4" />
+            <flag name="end" value="5" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="CalendarDayView">
+        <attr name="dayHeight" format="dimension" />
+        <attr name="debug" format="boolean" />
+        <attr name="eventMarginLeft" format="dimension" />
+        <attr name="lineColor" format="color" />
+        <attr name="textHourSize" format="dimension" />
+        <attr name="startHour" format="integer" />
+        <attr name="endHour" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="SegmentedGroup">
+        <attr name="sc_corner_radius" format="dimension" />
+        <attr name="sc_border_width" format="dimension" />
+        <attr name="sc_tint_color" format="color" />
+        <attr name="sc_checked_text_color" format="color" />
+        <attr name="sc_unchecked_tint_color" format="color" />
+    </declare-styleable>
+
+
+    <declare-styleable name="FrissonView">
+        <attr name="scaleType">
+            <enum name="centerCrop" value="0" />
+            <enum name="fitXY" value="1" />
+        </attr>
+        <attr name="src" format="reference" />
+        <attr name="tintColor" format="color" />
+        <attr name="tideCount" format="integer" />
+        <attr name="autoTint" format="boolean" />
+        <attr name="tideHeight" format="dimension" />
+        <attr name="alphaValue" format="integer" />
+        <attr name="gradientType">
+            <enum name="linear" value="0" />
+            <enum name="radial" value="1" />
+        </attr>
+        <attr name="gradientAngle" format="integer" />
+        <attr name="gradient_startColor" format="color" />
+        <attr name="gradient_endColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="FluidSlider">
+        <attr name="slider_bar_color" format="color" />
+        <attr name="slider_bubble_color" format="color" />
+        <attr name="slider_bar_text_color" format="color" />
+        <attr name="slider_bubble_text_color" format="color" />
+        <attr name="slider_start_text" format="string" />
+        <attr name="slider_end_text" format="string" />
+        <attr name="slider_text_size" format="dimension" />
+        <attr name="slider_duration" format="integer" />
+        <!-- Initial position in range from 0.0 to 1.0 -->
+        <attr name="slider_initial_position" format="float" />
+        <attr name="slider_size" format="enum">
+            <enum name="small" value="0" />
+            <enum name="normal" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <!--Diagonal View -->
+
+    <declare-styleable name="DiagonalView">
+        <attr name="angle" format="integer" />
+        <attr name="tint" format="color" />
+        <attr name="solidColor" format="color" />
+        <attr name="fillColor" format="color" />
+        <attr name="diagonalDirection">
+            <enum name="left_to_right" value="0" />
+            <enum name="right_to_left" value="1" />
+            <enum name="top_to_bottom" value="2" />
+            <enum name="bottom_to_top" value="3" />
+        </attr>
+        <attr name="gravity">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+            <enum name="top" value="2" />
+            <enum name="bottom" value="3" />
+        </attr>
+    </declare-styleable>
+
+
+    <declare-styleable name="CircularProgressButton">
+        <attr name="spinning_bar_width" format="dimension"/>
+        <attr name="spinning_bar_color" format="color"/>
+        <attr name="spinning_bar_padding" format="dimension"/>
+        <attr name="initialCornerAngle" format="dimension"/>
+        <attr name="finalCornerAngle" format="dimension"/>
+    </declare-styleable>
+
+</resources>

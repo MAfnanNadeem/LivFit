@@ -25,9 +25,10 @@ import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.models.base.ResponseData
-import life.mibo.hexa.models.rxl.Data
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.models.rxl.SaveRXLProgram
+import life.mibo.hexa.models.rxl.SaveRxlExercise
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
@@ -79,7 +80,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         if (Build.VERSION.SDK_INT >= 21) {
             val item = arguments?.getSerializable(DATA)
             if (item != null && item is CreateCourseAdapter.Course) {
-                root.findViewById<View?>(R.id.iv_icon)?.transitionName = item.getTransitionIcon()
+                root.findViewById<View?>(R.id.iv_icon_giff)?.transitionName = item.getTransitionIcon()
                 root.findViewById<View?>(R.id.tv_title)?.transitionName = item.getTransitionTitle()
             }
         }
@@ -88,13 +89,14 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         return root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val data = arguments?.getSerializable(DATA)
         if (data is CreateCourseAdapter.Course) {
             tv_title?.text = data?.title
-            iv_icon?.setImageResource(data.icon)
+            iv_icon_giff?.setImageResource(data.icon)
 //            ViewCompat.setTransitionName(tv_title!!, data?.transitionTitle)
 //            ViewCompat.setTransitionName(tv_title!!, data?.transitionTitle)
 //            ViewCompat.setTransitionName(title!!, "title_$adapterPosition")
@@ -120,10 +122,10 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_delay?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.DELAY)
         }
-        tv_select_action?.setOnClickListener {
+        tv_select_duration?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.DURATION)
         }
-        tv_select_pause?.setOnClickListener {
+        tv_select_action?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.ACTION)
         }
         et_course_structure?.setOnClickListener {
@@ -135,19 +137,20 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         navigate(Navigator.HOME_VIEW, true)
         if (data == null) {
             val program = arguments?.getSerializable(DATA_PROGRAM)
-            if (program is RxlExercises.Program) {
-                tv_title?.text = program.type()
+            if (program is RxlProgram) {
+                tv_title?.text = program.logicType()
                 //loadImage(program.image)
                 et_course_structure?.text = program.category
                 et_course_desc?.setText(program.description)
                 tv_select_stations?.text = "${program.workStation}"
                 tv_select_cycles?.text = "${program.cycle}"
                 tv_select_pods?.text = "${program.pods}"
-                tv_select_lights?.text = "${program.type()}"
+                tv_select_lights?.text = "${program.logicType()}"
                 tv_select_delay?.text = "${program.pause} sec"
-                tv_select_action?.text = "${program.totalDuration} sec"
+                tv_select_duration?.text = "${program.totalDuration} sec"
                 tv_select_players?.text = "${program.players}"
-                tv_select_pause?.text = "${program.action} sec"
+                tv_select_action?.text = "${program.action} sec"
+                avatarBase64 = program?.avatarBase64 ?: ""
             } else {
                 initTitles()
             }
@@ -181,9 +184,9 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             return
         try {
             val img = images.split(",")
-            iv_icon?.load(img[0].replace("[", ""))
+            iv_icon_giff?.load(img[0].replace("[", ""))
         } catch (e: Exception) {
-            iv_icon?.setImageResource(R.drawable.ic_rxl_pods_icon)
+            iv_icon_giff?.setImageResource(R.drawable.ic_rxl_pods_icon)
         }
     }
 
@@ -195,9 +198,9 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_pods?.text = viewImpl.getTitle(CourseCreateImpl.Type.PODS)
         tv_select_lights?.text = viewImpl.getTitle(CourseCreateImpl.Type.LIGHT_LOGIC)
         tv_select_delay?.text = viewImpl.getTitle(CourseCreateImpl.Type.DELAY)
-        tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.DURATION)
+        tv_select_duration?.text = viewImpl.getTitle(CourseCreateImpl.Type.DURATION)
         tv_select_players?.text = viewImpl.getTitle(CourseCreateImpl.Type.PLAYERS)
-        tv_select_pause?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
+        tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
 
         radio_group?.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
@@ -250,10 +253,10 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
                 tv_select_delay?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.DURATION.type -> {
-                tv_select_action?.text = title?.replace("seconds", "sec")
+                tv_select_duration?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.ACTION.type -> {
-                tv_select_pause?.text = title?.replace("seconds", "sec")
+                tv_select_action?.text = title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.STRUCTURE.type -> {
                 et_course_structure?.text = title
@@ -328,32 +331,75 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             "http://test.mibo.world/assets/images/rxl.jpg",
             "http://test.mibo.world/assets/images/rxl.jpg"
         )
-        val data = Data(
-            "no",
-            getInt(tv_select_pause.text),
-            getInt(tv_select_cycles.text),
-            getInt(tv_select_delay.text),
-            et_course_desc?.text.toString(),
-            images.contentToString(),
-            tv_select_lights?.text?.toString(),
-            member.id(),
-            et_course_name.text?.toString(),
-            getInt(tv_select_players.text),
-            getInt(tv_select_pods.text),
-            tv_title.text?.toString(),
-            checked,
-            "",
-            et_course_structure?.text.toString(),
-            getInt(tv_select_action.text),
-            "",
-            getInt(tv_select_stations.text)
-        )
-        val program = SaveRXLProgram(data, member.accessToken)
-        saveProgram(program)
+
+        saveExerciseProgram(member.id(), member.accessToken)
+
+//        val data = Data(
+//            "no",
+//            getInt(tv_select_action.text),
+//            getInt(tv_select_cycles.text),
+//            getInt(tv_select_delay.text),
+//            et_course_desc?.text.toString(),
+//            images.contentToString(),
+//            tv_select_lights?.text?.toString(),
+//            member.id(),
+//            et_course_name.text?.toString(),
+//            getInt(tv_select_players.text),
+//            getInt(tv_select_pods.text),
+//            tv_title.text?.toString(),
+//            checked,
+//            "",
+//            et_course_structure?.text.toString(),
+//            getInt(tv_select_duration.text),
+//            "",
+//            getInt(tv_select_stations.text)
+//        )
+//
+//        val program = SaveRXLProgram(data, member.accessToken)
+//        saveProgram(program)
 
     }
 
+    private fun saveExerciseProgram(
+        memberId: String,
+        token: String?,
+        tap: String = "TAP",
+        proximity: Int = 0
+    ) {
+        val program = SaveRxlExercise.Program(
+            "no",
+            getInt(tv_select_action.text),
+            avatarBase64,
+            "",
+            memberId,
+            getInt(tv_select_cycles.text),
+            0,
+            et_course_desc?.text.toString(),
+            memberId,
+            et_course_name.text?.toString(),
+            "",
+            "",
+            getInt(tv_select_players.text),
+            getInt(tv_select_pods.text),
+            "",
+            tv_select_delay.text?.toString(),
+            "$proximity",
+            "$tap",
+            "$tap",
+            getInt(tv_select_duration.text),
+            "",
+            getType(),
+            getInt(tv_select_stations.text)
+        )
+
+        val data = SaveRxlExercise(program, token)
+        saveProgram(data)
+    }
+
+    private var avatarBase64 = ""
+
     fun getInt(text: CharSequence): Int = text.toString().toIntOrZero()
+    private fun getType(): Int = RxlExercises.getType(tv_select_lights?.text?.toString())
 
     private fun saveProgram(program: SaveRXLProgram?) {
         if (program == null) {
@@ -390,6 +436,52 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
                             catch (e: Exception){
                                 MiboEvent.log(e)
                             }
+
+                        } else if (data.status.equals("error", true)) {
+                            checkSession(data)
+                        }
+                    } else {
+
+                    }
+                }
+            })
+    }
+
+    private fun saveProgram(program: SaveRxlExercise?) {
+        if (program == null) {
+            return
+        }
+        getDialog()?.show()
+        API.request.getApi()
+            .saveRXLExerciseProgram(program)
+            .enqueue(object : Callback<ResponseData> {
+
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(context!!, R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+                            data.data?.message?.let {
+                                Toasty.info(context!!, it).show()
+                            }
+                            try {
+                                Prefs.get(context).set("rxl_saved", true)
+                            } catch (e: Exception) {
+                                MiboEvent.log(e)
+                            }
+                            navigate(Navigator.RXL_HOME, null)
 
                         } else if (data.status.equals("error", true)) {
                             checkSession(data)

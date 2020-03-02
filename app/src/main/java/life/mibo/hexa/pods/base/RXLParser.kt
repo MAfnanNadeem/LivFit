@@ -7,13 +7,25 @@
 
 package life.mibo.hexa.pods.base
 
+import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hexa.pods.pod.LightLogic
 import life.mibo.hexa.pods.pod.Players
-import life.mibo.hexa.pods.pod.Program
+import life.mibo.hexa.pods.rxl.RxlLight
+import life.mibo.hexa.pods.rxl.RxlPlayer
 
 interface RXLParser {
-    fun type(): LightLogic
+    fun type(): RxlLight
     fun name(): String
-    fun player(): Players
+    fun player(): RxlPlayer.Player
     //fun program(): Program
+    fun onEvent(event: RxlStatusEvent)
+
+    fun onStart()
+    fun onStop()
+    fun onReset()
+
+    fun startPublish(){
+
+
+    }
 }

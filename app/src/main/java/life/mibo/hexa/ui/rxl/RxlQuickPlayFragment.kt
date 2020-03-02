@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.hexa.R
 import life.mibo.hexa.models.rxl.RxlExercises
+import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MainActivity
@@ -126,6 +127,8 @@ class RxlQuickPlayFragment : BaseFragment(),
     }
 
     private fun setFilters(root: View) {
+       //recyclerViewTypes.requestDisallowInterceptTouchEvent(true);
+
         controller.setFilters(
             root.findViewById(R.id.recyclerViewTypes),
             ReactionLightController.Filter.PROGRAM_TYPE
@@ -186,10 +189,10 @@ class RxlQuickPlayFragment : BaseFragment(),
         return super.onOptionsItemSelected(item)
     }
 
-    val list = ArrayList<RxlExercises.Program>()
+    val list = ArrayList<RxlProgram>()
     var adapter: ReflexAdapter? = null
 
-    override fun onDataReceived(programs: ArrayList<RxlExercises.Program>) {
+    override fun onDataReceived(programs: ArrayList<RxlProgram>) {
         isRefresh = false
         swipeToRefresh?.isRefreshing = false
         log("onDataReceived ${programs.size}")
@@ -222,8 +225,8 @@ class RxlQuickPlayFragment : BaseFragment(),
         recycler?.layoutManager = manager
         recycler?.adapter = adapter
         recycler?.isNestedScrollingEnabled = false
-        adapter?.setListener(object : ItemClickListener<RxlExercises.Program> {
-            override fun onItemClicked(item: RxlExercises.Program?, position: Int) {
+        adapter?.setListener(object : ItemClickListener<RxlProgram> {
+            override fun onItemClicked(item: RxlProgram?, position: Int) {
                 log("onDataReceived onItemClicked ${item?.name}")
                 if (position > 1000) {
                     when (position) {
@@ -245,11 +248,11 @@ class RxlQuickPlayFragment : BaseFragment(),
 
     }
 
-    override fun onUpdateList(programs: ArrayList<RxlExercises.Program>) {
+    override fun onUpdateList(programs: ArrayList<RxlProgram>) {
         adapter?.filterUpdate(programs)
     }
 
-    fun delete(item: RxlExercises.Program) {
+    fun delete(item: RxlProgram) {
 
     }
 

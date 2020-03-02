@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.room;
+package life.mibo.hexa.database;
 
 import androidx.room.TypeConverter;
 

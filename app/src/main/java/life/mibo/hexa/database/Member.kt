@@ -9,7 +9,7 @@
  * $Created by $Sumeet $Kumar 2020.
  */
 
-package life.mibo.hexa.room
+package life.mibo.hexa.database
 
 
 import androidx.room.Entity

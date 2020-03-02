@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.room
+package life.mibo.hexa.database
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -19,7 +19,6 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
 import java.util.concurrent.Callable

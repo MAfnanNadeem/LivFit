@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.room;
+package life.mibo.hexa.database;
 
 import androidx.room.TypeConverter;
 
@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import life.mibo.hardware.core.Logger;
 
 public class Converters {
     @TypeConverter

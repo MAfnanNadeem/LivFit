@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.room
+package life.mibo.hexa.database
 
 import androidx.room.*
 //import life.mibo.hexa.models.rxl.RxlExercises.Program

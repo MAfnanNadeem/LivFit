@@ -7,13 +7,15 @@
 
 package life.mibo.hexa.pods.rxl
 
+import life.mibo.hardware.models.Device
+
 class RxlPlayer(
     var id: Int,
     var name: String,
     var color: Int,
     var colorId: Int,
     var noOfPods: Int,
-    var podsUids: ArrayList<String>
+    var pods: ArrayList<Device>
 ) {
 
 

@@ -16,7 +16,7 @@ import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.models.base.MemberPost
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.rxl.*
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseController
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.MiboEvent

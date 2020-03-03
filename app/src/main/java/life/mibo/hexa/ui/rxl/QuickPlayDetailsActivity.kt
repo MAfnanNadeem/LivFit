@@ -4,8 +4,10 @@ import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Html
 import android.view.MenuItem
 import android.view.View
+import android.view.View.*
 import android.view.WindowManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.bumptech.glide.Glide
@@ -22,11 +24,12 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_quickplay_detail_2.*
+import kotlinx.android.synthetic.main.fragment_quickplay_detail_play.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.events.ProximityEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
@@ -39,6 +42,7 @@ import life.mibo.hexa.pods.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import life.mibo.hexa.ui.rxl.impl.CourseCreateImpl
 import life.mibo.hexa.ui.rxl.impl.ReflexDialog
@@ -46,8 +50,6 @@ import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Constants
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 
 class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCreateImpl.Listener {
@@ -55,13 +57,15 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
     private lateinit var delegate: CourseCreateImpl
     private var program: life.mibo.hexa.models.rxl.RxlProgram? = null
     private var isUser = false
+    private val rxlPlayers = ArrayList<RxlPlayer>()
+    private val userDevices = ArrayList<Device>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setContentView(R.layout.fragment_quickplay_detail_2)
+        setContentView(R.layout.fragment_quickplay_detail_play)
         setSupportActionBar(toolbar)
-
+        createTestDevices()
         supportActionBar?.setDisplayHomeAsUpEnabled(true);
         supportActionBar?.setDisplayShowHomeEnabled(true);
 //        fab.setOnClickListener { view ->
@@ -112,7 +116,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 ////            }, 200)
 
 
-            giffVideoView?.visibility = View.GONE
+            giffVideoView?.visibility = GONE
             //simple_drawee_view?.visibility = View.GONE
             appbar?.setExpanded(false, false)
             // appbar?.setLiftable(false)
@@ -256,7 +260,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
         //delegate.listener = this
 
-
+        userDevices.clear()
+        userDevices.addAll(SessionManager.getInstance().userSession.devices)
+        SessionManager.getInstance().userSession.isRxl = true
         setProgram()
         //navigate(Navigator.HOME_VIEW, true)
 
@@ -266,6 +272,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
         btn_start_hit?.setOnClickListener {
             startHitClicked()
+        }
+
+        btn_stop?.setOnClickListener {
+            canBack()
         }
 
 //        switch_sensor?.setOnCheckedChangeListener { _, isChecked ->
@@ -278,7 +288,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 //            }
 //        }
 
-        SessionManager.getInstance().userSession.isRxl = true
+
 //        iv_select_color?.setOnClickListener {
 //            showColors()
 //        }
@@ -323,18 +333,19 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
         log("isRandom " + isRandom())
         //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
-        if (checkPlayersPods())
-            checkStartCondition { it ->
-                startProgram(false, it)
-            }
+        //if (checkPlayersPods())
+        checkStartCondition {
+            startProgram(false, it)
+        }
 
     }
 
+    //val players = ArrayList<RxlPlayer>()
     private fun startProgram(tap: Boolean, devices: ArrayList<Device>) {
-        val uids = ArrayList<String>()
-        devices.forEach { d ->
-            uids.add(d.uid)
-        }
+//        val uids = ArrayList<String>()
+//        devices.forEach { d ->
+//            uids.add(d.uid)
+//        }
 
         val players = SessionManager.getInstance().userSession.rxlPlayers
 
@@ -346,7 +357,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
                 getCycles(),
                 selectedColor,
                 selectedColorId,
-                uids,
+                devices,
                 getLightLogic()
             )
         ).addDevices(devices).withListener(this).start(tap)
@@ -378,47 +389,37 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         }
     }
 
-    val rxlPlayers = ArrayList<RxlPlayer>()
+
     var playersCount = 0
     private fun setPlayers() {
         rxlPlayers.clear()
         val players = SessionManager.getInstance().userSession.rxlPlayers
-        log("players >> $players")
+        log("setPlayers >> $players")
         if (players is List<*>) {
-            log("players >>> ${players.size}")
+            log("setPlayers >>> ${players.size}")
             val list = ArrayList<PlayersAdapter.PlayerItem>()
             for (p in players) {
                 list.add(p as PlayersAdapter.PlayerItem)
             }
             playersCount = list.size
+            log("setPlayers >> playersCount $playersCount")
             if (playersCount > 0) {
 
                 val pods = getPods()
 
                 val podsSize = pods.div(playersCount)
-                groupPlayer1.visibility = View.GONE
-                groupPlayer2.visibility = View.GONE
-                groupPlayer3.visibility = View.GONE
-                groupPlayer4.visibility = View.GONE
+                groupPlayer1.visibility = GONE
+                groupPlayer2.visibility = GONE
+                groupPlayer3.visibility = GONE
+                groupPlayer4.visibility = GONE
 
 
                 list?.forEachIndexed { index, player ->
                     setPlayer(player, index, podsSize, pods)
-                    //rxlPlayers.add(createRxlPlayer(player))
+
                 }
             }
         }
-    }
-
-    fun createRxlPlayer(player: PlayersAdapter.PlayerItem, pods: Int): RxlPlayer {
-        return RxlPlayer(
-            player.id,
-            player.playerName,
-            player.playerColor,
-            0,
-            pods,
-            ArrayList<String>()
-        )
     }
 
     private fun setPlayer(player: PlayersAdapter.PlayerItem?, type: Int, pods: Int, max: Int) {
@@ -427,10 +428,336 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             when (type.plus(1)) {
                 1 -> {
                     groupPlayer1.visibility = View.VISIBLE
-                    players_one_color?.circleColor = it.playerColor
-                    players_one_name.text = it.playerName
+                    players_1_color?.circleColor = it.playerColor
+                    players_1_name.text = it.playerName
                     if (playersCount > 1) {
-                        players_one_pods?.setOnClickListener {
+                        players_1_pods?.setOnClickListener {
+                            delegate.showPlayers(CourseCreateImpl.Type.PLAYER_1, max)
+                        }
+                    } else {
+                        // players_one_pods?.setCompoundDrawables(null, null, null, null)
+
+                    }
+                    players_1_light?.setOnClickListener {
+                        blinkPods(1)
+                    }
+                    //players_one_pods.text = "$pods"
+                    players_1_pods.text = "$max"
+                    //playersCount = type
+                    selectedColor = player.playerColor
+                    selectedColorId = player.playerColorId
+                    //selectedColorId
+                }
+                2 -> {
+                    groupPlayer2.visibility = View.VISIBLE
+                    players_2_color?.circleColor = it.playerColor
+                    players_2_name.text = it.playerName
+                    players_2_pods?.setOnClickListener {
+                        delegate.showPlayers(CourseCreateImpl.Type.PLAYER_2, max)
+                    }
+                    //players_2_pods.text = "$pods"
+                    players_2_pods.text = "0"
+                    //playersCount = type
+                    players_2_light?.setOnClickListener {
+                        blinkPods(2)
+                    }
+
+                }
+                3 -> {
+                    groupPlayer3.visibility = View.VISIBLE
+                    players_3_color?.circleColor = it.playerColor
+                    players_3_name.text = it.playerName
+                    players_3_pods?.setOnClickListener {
+                        delegate.showPlayers(CourseCreateImpl.Type.PLAYER_3, max)
+                    }
+                    //players_3_pods.text = "$pods"
+                    players_3_pods.text = "0"
+                    //playersCount = type
+                    players_3_light?.setOnClickListener {
+                        blinkPods(3)
+                    }
+
+                }
+                4 -> {
+                    groupPlayer4.visibility = View.VISIBLE
+                    players_4_color?.circleColor = it.playerColor
+                    players_4_name.text = it.playerName
+                    players_4_pods?.setOnClickListener {
+                        delegate.showPlayers(CourseCreateImpl.Type.PLAYER_4, max)
+                    }
+                    //players_4_pods.text = "$pods"
+                    players_4_pods.text = "0"
+                    // playersCount = type
+                    players_4_light?.setOnClickListener {
+                        blinkPods(4)
+                    }
+
+                }
+                else -> {
+
+                }
+            }
+        }
+    }
+
+    private fun blinkPods(playerId: Int) {
+
+    }
+
+    private fun updateBlink() {
+
+    }
+
+    private fun updateBlink(enable: Boolean) {
+
+        if (rxlPlayers.size > 0) {
+            players_1_light?.isEnabled = enable
+            if (enable) {
+                players_1_light?.setColorFilter(
+                    rxlPlayers[0].color,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                players_1_light?.setColorFilter(
+                    Color.GRAY,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
+
+        if (rxlPlayers.size > 1) {
+            players_2_light?.isEnabled = enable
+            if (enable) {
+                players_2_light?.setColorFilter(
+                    rxlPlayers[1].color,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                players_2_light?.setColorFilter(
+                    Color.GRAY,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
+
+        if (rxlPlayers.size > 2) {
+            players_3_light?.isEnabled = enable
+            if (enable) {
+                players_3_light?.setColorFilter(
+                    rxlPlayers[2].color,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                players_3_light?.setColorFilter(
+                    Color.GRAY,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
+
+        if (rxlPlayers.size > 3) {
+            players_4_light?.isEnabled = enable
+            if (enable) {
+                players_4_light?.setColorFilter(
+                    rxlPlayers[3].color,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                players_4_light?.setColorFilter(
+                    Color.GRAY,
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
+    }
+
+    // assigning pods as FIFO
+    private fun createPlayers(connected: ArrayList<Device>, assigned: Int): Boolean {
+        val playersMap = ArrayList<RxlPlayer?>()
+        if (connected.size == assigned && connected.size > 0) {
+
+            val rxlPlayers = SessionManager.getInstance().userSession.rxlPlayers
+            log("players >> $rxlPlayers")
+            if (rxlPlayers is List<*>) {
+                log("players >>> ${rxlPlayers.size}")
+                var from = 0
+                var to: Int
+                rxlPlayers.forEach {
+                    if (it is PlayersAdapter.PlayerItem) {
+                        // playersMap.put(it.id, createPlayer(it, pods, from))
+                        to = getPlayerPods(it.id)
+                        playersMap.add(createPlayer(it, connected, from, to))
+                        from = to
+
+                    }
+                }
+
+                log("createPlayers Player assigned :: playersMap ${playersMap.size}, rxlPlayers ${rxlPlayers.size}")
+                log("createPlayers Player assigned : playersMap: $playersMap")
+            }
+
+        } else {
+            Toasty.error(
+                this,
+                Html.fromHtml(
+                    String.format(
+                        getString(R.string.assigned_pods),
+                        connected.size,
+                        assigned
+                    )
+                )
+            ).show()
+        }
+        return false
+    }
+
+    private fun getPlayerPods(player: Int): Int {
+        log("getPlayerPods: player $player")
+        return when (player) {
+            1 -> {
+                getInt(players_1_pods.text)
+            }
+            2 -> {
+                getInt(players_2_pods.text)
+            }
+            3 -> {
+                getInt(players_3_pods.text)
+            }
+            4 -> {
+                getInt(players_4_pods.text)
+            }
+            else -> {
+                0
+            }
+        }
+    }
+
+
+    private fun createPlayer(
+        player: PlayersAdapter.PlayerItem, pods: ArrayList<Device>, from: Int, to: Int
+    ): RxlPlayer? {
+
+        log("createPlayer player $player, pods.size ${pods.size}, from $from, to $to")
+        val devices = ArrayList<Device>()
+        //var to = getPlayerPods(player.id)
+        log("createPlayer : to $to")
+        val end = to.plus(from)
+        log("createPlayer : end $end")
+        if (end < pods.size && end > from) {
+            val list = ArrayList<Device>(pods.size)
+            pods.forEachIndexed { index, device ->
+                // if(index > to)
+                //     break
+                if (index in from..end) {
+                    list.add(device)
+                }
+
+
+            }
+            log("createPlayer : user devices size = ${list.size} : from $from, to $to")
+            return RxlPlayer(
+                player.id, player.playerName, player.playerColor,
+                player.playerColorId, list.size, list
+            )
+            //for (i in from..to) {
+            //  list.add(pods[i])
+            //}
+
+
+        }
+
+        log("createPlayer : something went wrong, return NULL from $from, to $to size ${pods.size}")
+
+        return null
+    }
+
+    // Todo delete
+    fun createPlayers(): Boolean {
+
+        //val playersMap = SparseArray<RxlPlayer>()
+        val playersMap = ArrayList<RxlPlayer?>()
+        //val totalPods = ArrayList<String>()
+        val pods = ArrayList<Device>()
+
+        if (userDevices.size > 0) {
+            userDevices.forEach {
+                if (it.isPod) {
+                    pods.add(it)
+                }
+            }
+        }
+
+        var assigned = 0
+
+        if (pods.size > 0) {
+
+            when (playersCount) {
+                1 -> {
+                    assigned = getInt(players_1_pods.text)
+                }
+                2 -> {
+                    assigned = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+                }
+                3 -> {
+                    assigned = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+                        .plus(getInt(players_3_pods.text))
+                }
+                4 -> {
+                    assigned = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+                        .plus(getInt(players_3_pods.text)).plus(getInt(players_4_pods.text))
+                }
+            }
+
+
+            if (pods.size == assigned) {
+
+                val rxlPlayers = SessionManager.getInstance().userSession.rxlPlayers
+                log("players >> $rxlPlayers")
+                if (rxlPlayers is List<*>) {
+                    log("players >>> ${rxlPlayers.size}")
+                    var from = 0
+                    var to = 0
+                    rxlPlayers.forEach {
+                        if (it is PlayersAdapter.PlayerItem) {
+                            // playersMap.put(it.id, createPlayer(it, pods, from))
+                            to = getPlayerPods(it.id)
+                            playersMap.add(createPlayer(it, pods, from, to))
+                            from = to
+
+                        }
+                    }
+                }
+
+            } else {
+                Toasty.error(
+                    this,
+                    Html.fromHtml(String.format(getString(R.string.assigned_pods), pods, assigned))
+                ).show()
+            }
+
+        }
+
+        // rxlPlayers.add(createRxlPlayer(player))
+
+        return false
+    }
+
+    // Todo delete
+    private fun createRxlPlayer(
+        player: PlayersAdapter.PlayerItem?,
+        type: Int,
+        pods: Int,
+        max: Int
+    ) {
+        log("setPlayer >>> $type  , $pods")
+        player?.let {
+            when (type.plus(1)) {
+                1 -> {
+                    groupPlayer1.visibility = View.VISIBLE
+                    players_1_color?.circleColor = it.playerColor
+                    players_1_name.text = it.playerName
+                    if (playersCount > 1) {
+                        players_1_pods?.setOnClickListener {
                             delegate.showPlayers(CourseCreateImpl.Type.PLAYER_1, max)
                         }
                     } else {
@@ -438,7 +765,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
                     }
                     //players_one_pods.text = "$pods"
-                    players_one_pods.text = "$max"
+                    players_1_pods.text = "$max"
                     //playersCount = type
                     selectedColor = player.playerColor
                     selectedColorId = player.playerColorId
@@ -485,7 +812,6 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         }
     }
 
-
     private fun setSlider() {
         val list = arrayListOf(
             R.drawable.ic_reflex_random_icon,
@@ -508,9 +834,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
     private fun changeSensor(value: Int) {
         log("changeSensor $value")
-        val list = SessionManager.getInstance().userSession.devices
-        if (list.size > 0) {
-            Observable.fromIterable(list)
+        if (userDevices.size > 0) {
+            Observable.fromIterable(userDevices)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : io.reactivex.Observer<Device> {
 
@@ -579,6 +904,29 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         colorDialog?.showColors()
     }
 
+    var isTest = true
+
+    private fun getTestDevice(id: Int) =
+        Device("$id", "name $id", "${id.times(id)}", DeviceTypes.RXT_WIFI)
+
+    private fun createTestDevices() {
+        log("createTestDevices ...... $isTest")
+        if (isTest) {
+            userDevices.clear()
+            userDevices.add(getTestDevice(1))
+            userDevices.add(getTestDevice(12))
+            userDevices.add(getTestDevice(13))
+            userDevices.add(getTestDevice(14))
+            userDevices.add(getTestDevice(15))
+            userDevices.add(getTestDevice(16))
+            userDevices.add(getTestDevice(17))
+            userDevices.add(getTestDevice(18))
+            userDevices.add(getTestDevice(19))
+            userDevices.add(getTestDevice(21))
+            log("createTestDevices created...... ${SessionManager.getInstance().userSession.devices.size}")
+        }
+    }
+
     private fun getPods(): Int {
         //tv_desc?.text = ""
 //        val list = SessionManager.getInstance().userSession.devices
@@ -611,45 +959,60 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
     }
 
     private fun checkPlayersPods(): Boolean {
-//        val pods = getPods()
-//        var size = 0
-//
-//        when (playersCount) {
-//            1 -> {
-//                size = getInt(players_one_pods.text)
-//            }
-//            2 -> {
-//                size = getInt(players_one_pods.text).plus(getInt(players_2_pods.text))
-//            }
-//            3 -> {
-//                size = getInt(players_one_pods.text).plus(getInt(players_2_pods.text))
-//                    .plus(getInt(players_3_pods.text))
-//            }
-//            4 -> {
-//                size = getInt(players_one_pods.text).plus(getInt(players_2_pods.text))
-//                    .plus(getInt(players_3_pods.text)).plus(getInt(players_4_pods.text))
-//            }
-//        }
-//        if (pods == size)
-//            return true
+        //val pods = getPods()
+        val pods = ArrayList<Device>()
+        val list = SessionManager.getInstance().userSession.devices
+        if (list.size > 0) {
+            list.forEach {
+                if (it.isPod) {
+                    pods.add(it)
+                }
+            }
+        }
+        var size = 0
+
+        when (playersCount) {
+            1 -> {
+                size = getInt(players_1_pods.text)
+            }
+            2 -> {
+                size = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+            }
+            3 -> {
+                size = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+                    .plus(getInt(players_3_pods.text))
+            }
+            4 -> {
+                size = getInt(players_1_pods.text).plus(getInt(players_2_pods.text))
+                    .plus(getInt(players_3_pods.text)).plus(getInt(players_4_pods.text))
+            }
+        }
+        if (pods.size == size) {
+            createPlayers(pods, size)
+            tv_required_pods?.visibility = GONE
+            return true
+        }
+        tv_required_pods?.visibility = VISIBLE
+        tv_required_pods?.text =
+            Html.fromHtml(String.format(getString(R.string.assigned_pods), pods, size))
 //        MessageDialog.info(
 //            this, "RXL Requirement",
 //            "Devices are mis-configured, total available devices are $pods and assigned devices to players are $size "
 //        )
 
-        return true
+        return false
     }
 
     // Todo test, disable in production
     private fun startUnitTest(devices: ArrayList<Device>) {
-        RXLManager.getInstance().withListener(this).startTest(
-            RxlProgram.getExercise(
-                getDuration(), getAction(),
-                getPause(), getCycles(),
-                selectedColor, selectedColorId,
-                ArrayList<String>(), getLightLogic()
-            )
-        )
+//        RXLManager.getInstance().withListener(this).startTest(
+//            RxlProgram.getExercise(
+//                getDuration(), getAction(),
+//                getPause(), getCycles(),
+//                selectedColor, selectedColorId,
+//                ArrayList<String>(), getLightLogic()
+//            )
+//        )
     }
 
     private var size = 2
@@ -738,7 +1101,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
 
             CourseCreateImpl.Type.PLAYER_1.type -> {
-                players_one_pods.text = "${item.title}"
+                players_1_pods.text = "${item.title}"
             }
             CourseCreateImpl.Type.PLAYER_2.type -> {
                 players_2_pods.text = "${item.title}"
@@ -794,7 +1157,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
     }
 
     val builder = StringBuilder("")
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    //@Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(notify: NotifyEvent) {
         log("onEvent $notify")
         val data = notify.data
@@ -835,16 +1198,26 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
     var disposable: Disposable? = null
 
+    private fun endProgram(user: Boolean) {
+        try {
+            RXLManager.getInstance().stopProgram()
+        } catch (e: java.lang.Exception) {
+            MiboEvent.log("Error occurred while stopping RXL Program user=$user" + e?.message)
+            MiboEvent.log(e)
+        }
+    }
 
     override fun onExerciseStart() {
         log("onExerciseStart")
-
     }
 
     override fun onExerciseEnd() {
         log("onExerciseEnd")
         //progress(0, 100, 0, 2)
+        isSessionActive = false
         runOnUiThread {
+            constraint_bottom_stop?.visibility = INVISIBLE
+            constraint_bottom?.visibility = VISIBLE
             btn_start_now?.isEnabled = true
             btn_start_hit?.isEnabled = true
             //tv_desc?.text = "Completed..."
@@ -853,7 +1226,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
                 "Completed",
                 "Exercise finished " + RXLManager.getInstance().getHits()
             )
-            progressBar!!.visibility = View.GONE
+            progressBar!!.visibility = GONE
+            tv_cycle_heading?.visibility = INVISIBLE
             tv_cycle_count?.text = ""
         }
 
@@ -866,17 +1240,17 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
 
     override fun onCycleStart(cycle: Int, duration: Int) {
         log("onCycleStart")
+        isSessionActive = true
         runOnUiThread {
-            btn_start_now?.isEnabled = false
-            btn_start_hit?.isEnabled = false
+            constraint_bottom_stop?.visibility = VISIBLE
+            constraint_bottom?.visibility = INVISIBLE
+            btn_pause?.isEnabled = false
+            //btn_start_now?.isEnabled = false
+            //btn_start_hit?.isEnabled = false
+            tv_cycle_heading?.visibility = VISIBLE
             tv_cycle_count?.text = "$cycle"
         }
         progress(0, 100, duration.times(1000), 1)
-    }
-
-    override fun onCycleEnd(cycle: Int) {
-
-        log("onCycleEnd")
     }
 
     override fun onCyclePaused(cycle: Int, time: Int) {
@@ -885,7 +1259,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
     }
 
     override fun onCycleResumed(cycle: Int) {
+        // not calling
         log("onCycleResumed")
+    }
+
+    override fun onCycleEnd(cycle: Int) {
+
+        log("onCycleEnd")
     }
 
     override fun onPod(podId: Int, time: Int) {
@@ -896,7 +1276,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
         Toasty.info(this, getString(R.string.hit_to_start_rxl)).show()
     }
 
-    var lastFrom = -1
+    // var lastFrom = -1
     fun progress(valueFrom: Int, valueTo: Int, duration: Int, type: Int) {
         //  if (lastFrom == valueFrom)
         //      return
@@ -909,10 +1289,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
                 log("progress $valueFrom : $valueTo :: $duration")
                 if (duration == 0) {
-                    progressBar!!.visibility = View.GONE
+                    progressBar!!.visibility = GONE
                     return@doOnSuccess
                 } else
-                    progressBar!!.visibility = View.VISIBLE
+                    progressBar!!.visibility = VISIBLE
 
                 if (type == 1)
                     progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
@@ -925,11 +1305,40 @@ class QuickPlayDetailsActivity : BaseActivity(), RXLManager.Listener, CourseCrea
             }.subscribe()
     }
 
+
+    var isSessionActive = false
+    override fun onBackPressed() {
+        if (canBack())
+            super.onBackPressed()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            finish()
+            if (canBack())
+                finish()
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun canBack(): Boolean {
+        if (isSessionActive) {
+            MessageDialog(
+                this,
+                getString(R.string.stop_session),
+                getString(R.string.stop_session_message_rxl),
+                getString(R.string.stop_anyway),
+                getString(R.string.dialog_continue),
+                object : MessageDialog.Listener {
+                    override fun onClick(button: Int) {
+                        if (button == MessageDialog.NEGATIVE)
+                            endProgram(true)
+                    }
+
+                }).show()
+            return false
+        }
+        return true
+    }
+
 
 }

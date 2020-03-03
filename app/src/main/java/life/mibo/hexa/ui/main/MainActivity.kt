@@ -45,7 +45,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
-import life.mibo.hardware.constants.CommunicationConstants.*
+import life.mibo.hardware.constants.Config.*
 import life.mibo.hardware.core.DataParser
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
@@ -56,8 +56,8 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.ScanComplete
-import life.mibo.hexa.models.rxl.RXLPrograms
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.models.rxl.RxlProgram
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -74,6 +74,7 @@ import life.mibo.hexa.ui.main.Navigator.Companion.RXL_COURSE_SELECT
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_DETAILS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_EXERCISE
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_HOME
+import life.mibo.hexa.ui.main.Navigator.Companion.RXL_QUICKPLAY_DETAILS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS_2
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
@@ -83,9 +84,11 @@ import life.mibo.hexa.ui.main.Navigator.Companion.SESSION_POP
 import life.mibo.hexa.ui.rxl.adapter.ReflexModel
 import life.mibo.hexa.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.hexa.ui.rxl.impl.CreateCourseAdapter
+import life.mibo.hexa.utils.Constants
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import java.net.InetAddress
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -449,9 +452,6 @@ class MainActivity : BaseActivity(), Navigator {
     private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseCommands $code : data " + command.contentToString())
         when (code) {
-            COMMAND_PING_RESPONSE -> {
-                logw("parseCommands COMMAND_PING_RESPONSE")
-            }
             COMMAND_DEVICE_STATUS_RESPONSE -> {
                 // code -126
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE $uid")
@@ -529,16 +529,6 @@ class MainActivity : BaseActivity(), Navigator {
                 }
 
             }
-            COMMAND_FIRMWARE_REVISION_RESPONSE -> {
-                logw("parseCommands COMMAND_FIRMWARE_REVISION_RESPONSE")
-            }
-            COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
-                logw("parseCommands COMMAND_SET_DEVICE_COLOR_RESPONSE")
-                //color response code -125
-            }
-            COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE -> {
-                logw("parseCommands COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE")
-            }
             COMMAND_SET_MAIN_LEVEL_RESPONSE -> {
                 logw("parseCommands COMMAND_SET_MAIN_LEVEL_RESPONSE")
                 EventBus.getDefault()
@@ -562,26 +552,13 @@ class MainActivity : BaseActivity(), Navigator {
                 //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
             }
-            COMMAND_RESET_CURRENT_CYCLE_RESPONSE -> {
-                logw("parseCommands COMMAND_RESET_CURRENT_CYCLE_RESPONSE")
-            }
             ASYNC_PROGRAM_STATUS -> {
-                logw("parseCommands ASYNC_PROGRAM_STATUS")
+                // RXL_TAP_EVENT
+                logw("parseCommands ASYNC_PROGRAM_STATUS ${command.contentToString()}")
                 if (SessionManager.getInstance().userSession.isBooster) {
                     SessionManager.getInstance().userSession.booster.deviceSessionTimer =
                         DataParser.getProgramStatusTime(command)
                     EventBus.getDefault().postSticky(ProgramStatusEvent(command, uid))
-
-//                    EventBus.getDefault().postSticky(
-//                        ProgramStatusEvent(
-//                            DataParser.getProgramStatusTime(command),
-//                            DataParser.getProgramStatusAction(command),
-//                            DataParser.getProgramStatusPause(command),
-//                            DataParser.getProgramStatusCurrentBlock(command),
-//                            DataParser.getProgramStatusCurrentProgram(command),
-//                            uid
-//                        )
-//                    )
                     SessionManager.getInstance().userSession.booster?.deviceSessionTimer =
                         DataParser.getProgramStatusTime(command)
                 } else if (SessionManager.getInstance().userSession.isRxl) {
@@ -610,26 +587,43 @@ class MainActivity : BaseActivity(), Navigator {
 
             }
             else -> {
-                logw("parseCommands DEFAULTS")
+                if (DEBUG) {
+                    logw("parseCommandsExtra")
+                    parseCommandsExtra(code, command, uid)
+                }
             }
         }
 
-        //  Log.e("commManager", "Receiver PING");
-        //Log.e("commManager", "Receiver PROGRAM");
-        //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
-        //EventBus.getDefault().postSticky(new GetLevelsEvent(uid));
-        //  Log.e("commManager", "Receiver LEVELS");
-        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-        //Log.e("commManager", "Receiver START");
-        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-        //Log.e("commManager", "Receiver PAUSE");
-        //Log.e("commManager", "Receiver RESET");
-        //  Log.e("commManager", "Receiver ASYNC PROGRAM STATUS");
-        //Log.e("commManager", "Receiver ASYNC MAINLEVEL");
-        //  EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-        //Log.e("commManager", "Receiver ASYNC Pause");
-        //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-        //Log.e("commManager", "Receiver ASYNC Pause");
+    }
+
+    private fun parseCommandsExtra(code: Int, command: ByteArray, uid: String?) {
+        when (code) {
+            COMMAND_PING_RESPONSE -> {
+                logw("parseCommandsExtra COMMAND_PING_RESPONSE")
+            }
+            COMMAND_GET_FIRMWARE_REVISION -> {
+                logw("parseCommandsExtra COMMAND_FIRMWARE_GET_REVISION")
+            }
+            COMMAND_FIRMWARE_REVISION_RESPONSE -> {
+                logw("parseCommandsExtra COMMAND_FIRMWARE_REVISION_RESPONSE")
+            }
+            COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
+                logw("parseCommandsExtra COMMAND_SET_DEVICE_COLOR_RESPONSE")
+                //color response code -125
+            }
+            COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE -> {
+                logw("parseCommandsExtra COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE")
+            }
+            COMMAND_RESET_CURRENT_CYCLE_RESPONSE -> {
+                logw("parseCommandsExtra COMMAND_RESET_CURRENT_CYCLE_RESPONSE")
+            }
+            RXL_TAP_EVENT -> {
+                logw("parseCommandsExtra RXL_TAP_EVENT")
+            }
+            else -> {
+                logw("parseCommandsExtra DEFAULTS ${command?.contentToString()}")
+            }
+        }
     }
 
     private fun checkDeviceStatus(user: UserSession, status: BooleanArray, uid: String?) {
@@ -806,7 +800,14 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_reflex2)
             }
             RXL_TABS -> {
-                navigate(0, R.id.navigation_rxl_tabs)
+                val bundle = Bundle()
+                if (data != null) {
+                    if (data is ArrayList<*>) {
+                        bundle.putSerializable(Constants.BUNDLE_DATA, data)
+                    }
+                }
+
+                navigate(0, R.id.navigation_rxl_tabs, bundle)
             }
 
             RXL_TABS_2 -> {
@@ -823,7 +824,7 @@ class MainActivity : BaseActivity(), Navigator {
                     args.putSerializable(ReflexCourseCreateFragment.DATA, data)
                     navigate(0, R.id.navigation_create_course, args, getNavOptions(), data.extras)
                     updateBar(true)
-                } else if (data is RXLPrograms.Program) {
+                } else if (data is RxlProgram) {
                     val args = Bundle()
                     args.putSerializable(ReflexCourseCreateFragment.DATA_PROGRAM, data)
                     navigate(0, R.id.navigation_create_course, args, getNavOptions())
@@ -832,7 +833,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
             RXL_DETAILS -> {
 
-                if (data is RXLPrograms.Program) {
+                if (data is RxlProgram) {
                     val args = Bundle()
                     args.putSerializable(ReflexCourseCreateFragment.DATA, data)
                     navigate(0, R.id.navigation_rxl_details, args, getNavOptions())
@@ -860,6 +861,25 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_channels, bundle)
                 updateBar(true)
             }
+            RXL_QUICKPLAY_DETAILS -> {
+                val args = Bundle()
+                if (data is RxlProgram) {
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(
+                        0,
+                        R.id.navigation_quickplay_details,
+                        args,
+                        getNavOptions()
+                    )
+                }
+            }
+//            RXL_QUICKPLAY_DETAILS_PLAY -> {
+//                val args = Bundle()
+//                if (data is RxlProgram) {
+//                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+//                }
+//                navigate(0, R.id.navigation_quickplay_details_play, args)
+//            }
             SESSION_POP -> {
 //                var bundle: Bundle? = null
 //                if (data is Bundle)
@@ -961,9 +981,9 @@ class MainActivity : BaseActivity(), Navigator {
 
             }
 
-            R.id.nav_test4 -> {
-                navigate(0, R.id.navigation_rxl_test)
-            }
+//            R.id.nav_test4 -> {
+//                navigate(0, R.id.navigation_rxl_test)
+//            }
             R.id.nav_logout -> {
                 lastId = -1
                 AlertDialog.Builder(this).setTitle(getString(R.string.logout))
@@ -1088,7 +1108,10 @@ class MainActivity : BaseActivity(), Navigator {
         options: NavOptions? = getNavOptions(),
         extras: androidx.navigation.Navigator.Extras? = null
     ) {
+
         try {
+            if (!::navController.isInitialized)
+                navController = Navigation.findNavController(this, R.id.nav_host_fragment)
             if (actionId != 0) {
                 val action = navController.currentDestination?.getAction(actionId)
                     ?: navController.graph.getAction(actionId)
@@ -1101,6 +1124,7 @@ class MainActivity : BaseActivity(), Navigator {
                 navController.navigate(fragmentId, args, options, extras)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            MiboEvent.log(e)
             //IllegalAccessException when action id not match in fragment
             try {
                 Toasty.info(this, R.string.error_occurred, Toasty.LENGTH_SHORT, false).show()
@@ -1244,7 +1268,7 @@ class MainActivity : BaseActivity(), Navigator {
             log("RoomDatabase memberDao3 doOnComplete")
             val m = Prefs.get(this@MainActivity).member
             log("RoomDatabase memberDao3 $m")
-            val m2 = life.mibo.hexa.room.Member.from(m!!)
+            val m2 = life.mibo.hexa.database.Member.from(m!!)
             log("RoomDatabase memberDao3 - $m2")
             val id = Database.getInstance(this@MainActivity).memberDao().add(m2)
             log("RoomDatabase memberDao3 - added $id")
@@ -1258,7 +1282,7 @@ class MainActivity : BaseActivity(), Navigator {
             log("RoomDatabase memberDao4 doOnComplete")
             val m = Prefs.get(this@MainActivity).member
             log("RoomDatabase memberDao4 $m")
-            val m2 = life.mibo.hexa.room.Member.from(m!!)
+            val m2 = life.mibo.hexa.database.Member.from(m!!)
             log("RoomDatabase memberDao4 - $m2")
             val id = Database.getInstance(this@MainActivity).memberDao().add(m2)
             log("RoomDatabase memberDao4 - added $id")

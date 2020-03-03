@@ -27,7 +27,7 @@ import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator

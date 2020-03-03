@@ -12,6 +12,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,16 +25,13 @@ import life.mibo.hardware.events.ColorReceivedEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
+import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Toasty
 import life.mibo.views.ColorSeekBar
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import android.widget.ProgressBar
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import org.greenrobot.eventbus.ThreadMode
 
 
 class RxlTestFragment : BaseFragment() {
@@ -58,6 +58,11 @@ class RxlTestFragment : BaseFragment() {
                     return
                 }
                 tv_device_color?.setTextColor(color)
+                val rxt = SessionManager.getInstance().userSession.rxt
+                if (rxt != null) {
+                    onRxtColorChange(rxt, color)
+                    return
+                }
                 if (selectPosition != -1 && selectPosition < list.size) {
                     val d: Device? = list[selectPosition]
                     d?.let {
@@ -108,6 +113,15 @@ class RxlTestFragment : BaseFragment() {
             SessionManager.getInstance().userSession.isRxl = true
 
         //progressBar.progress = 50f
+    }
+
+    fun onRxtColorChange(device: Device, color: Int) {
+        log("onRxtColorChange $color")
+        var tileId = edittext_type?.text?.toString()?.toIntOrZero()
+        device.colorPalet = color
+        device.data = tileId
+        EventBus.getDefault()
+            .postSticky(ChangeColorEvent(device, device.uid, getTime()))
     }
 
     private var lastTime = 0

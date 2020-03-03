@@ -8,12 +8,14 @@
 package life.mibo.hexa.models.rxl
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
-import life.mibo.hardware.models.BaseModel
+import life.mibo.hexa.database.Converters
+import life.mibo.hexa.models.base.BaseModel
 import life.mibo.hexa.pods.rxl.RxlLight
-import life.mibo.hexa.room.Converters
+import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import java.io.Serializable
 
 @Entity(tableName = "rxl_programs")
@@ -76,52 +78,15 @@ data class RxlProgram(
 
     var isFavourite: Boolean = false
 
+    @Ignore
+    var selectedPlayers: ArrayList<PlayersAdapter.PlayerItem>? = null
+
 
     fun logicType(): String {
-        when (type) {
-            1 -> {
-                return "Sequence"
-            }
-            2 -> {
-                return "Random"
-            }
-            3 -> {
-                return "Focus"
-            }
-            4 -> {
-                return "All at once - Tap one"
-            }
-            5 -> {
-                return "Tap at Once"
-            }
-
-        }
-
-        return ""
+        return RxlExercises.getType(type)
     }
 
     fun lightLogic(): RxlLight {
-        when (type) {
-            1 -> {
-                return RxlLight.SEQUENCE
-            }
-            2 -> {
-                return RxlLight.RANDOM
-            }
-            3 -> {
-                return RxlLight.FOCUS
-            }
-            4 -> {
-                return RxlLight.ALL_AT_ONCE
-            }
-            5 -> {
-                return RxlLight.TAP_AT_ONCE
-            }
-            6 -> {
-                return RxlLight.ALL_AT_ALL
-            }
-        }
-
-        return RxlLight.UNKNOWN
+        return RxlExercises.lightLogic(type)
     }
 }

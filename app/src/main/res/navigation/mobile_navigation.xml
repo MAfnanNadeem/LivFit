@@ -49,11 +49,6 @@
 
     <fragment
         android:id="@+id/navigation_devices"
-        android:name="life.mibo.hexa.ui.devices.DeviceScanFragment2"
-        android:label="@string/scan_devices"
-        tools:layout="@layout/fragment_devices" />
- <fragment
-        android:id="@+id/navigation_devices2"
         android:name="life.mibo.hexa.ui.devices.DeviceScanFragment"
         android:label="@string/scan_devices"
         tools:layout="@layout/fragment_devices" />

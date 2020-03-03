@@ -8,6 +8,7 @@
 package life.mibo.hexa.ui.rxl.slider
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import android.widget.VideoView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -90,6 +92,8 @@ class GiffVideoSlider(
     class VideoGiffFragment : Fragment() {
         var video: VideoView? = null
         var play: View? = null
+        var tutorial: View? = null
+        var progress: View? = null
         var image: AppCompatImageView? = null
 
         companion object {
@@ -104,6 +108,7 @@ class GiffVideoSlider(
             }
         }
 
+        private var data: Any? = null
         var type = 0;
         var url = ""
         var isImage = false;
@@ -132,15 +137,26 @@ class GiffVideoSlider(
             } else if (isVideo) {
                 root?.findViewById<View>(R.id.videoContainer)?.visibility = View.VISIBLE
                 video = root?.findViewById(R.id.videoView)
-                play = root?.findViewById(R.id.playView)
             }
+            play = root?.findViewById(R.id.playView)
+            tutorial = root?.findViewById(R.id.tutorialView)
+            progress = root?.findViewById(R.id.progressView)
+
             return root
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            Logger.e("VideoGiffFragment onViewCreated type $type url $url")
+            log("onViewCreated type $type url $url")
+
+            play?.setOnClickListener {
+                playClicked()
+            }
+        }
+
+        private fun playClicked() {
+            log("onViewCreated playClicked url $url")
             if (url.isEmpty()) {
                 image = view?.findViewById(R.id.imageView)
                 //image?.visibility = View.VISIBLE
@@ -155,24 +171,74 @@ class GiffVideoSlider(
                 image?.let {
                     loadGlide(url, it)
                 }
-            } else if (isVideo) {
-                Logger.e("VideoGiffFragment onViewCreated VIDEO type $type url $url")
-                play?.setOnClickListener {
-                    video?.setVideoPath(url)
-                    play?.visibility = View.INVISIBLE
-                    video?.start()
+            }
+
+            if (isVideo) {
+                log("onViewCreated VIDEO type $type url $url")
+                if (url.isEmpty()) {
+                    return
+                }
+                video?.setVideoPath(url)
+
+                video?.setOnPreparedListener {
+                    progress?.visibility = View.GONE
+                    // it.data
                 }
 
                 video?.setOnCompletionListener {
-                    play?.visibility = View.VISIBLE
+                    updatePlayButton(true)
                 }
 
                 video?.setOnErrorListener { mp, what, extra ->
 
                     false
                 }
+
+                video?.start()
+                progress?.visibility = View.VISIBLE
+            }
+
+            progress?.visibility = View.VISIBLE
+            updatePlayButton(false)
+        }
+
+        private fun updatePlayButton(visible: Boolean) {
+            if (visible) {
+                play?.visibility = View.VISIBLE
+                tutorial?.visibility = View.VISIBLE
+                progress?.visibility = View.GONE
+            } else {
+                play?.visibility = View.INVISIBLE
+                tutorial?.visibility = View.INVISIBLE
+
             }
         }
+
+        fun loadImage() {
+            if (url.isEmpty()) {
+                image = view?.findViewById(R.id.imageView)
+                //image?.visibility = View.VISIBLE
+                image?.let {
+                    loadGlide("", it)
+                }
+
+                return
+            }
+
+            if (isImage) {
+                image?.let {
+                    loadGlide(url, it)
+                }
+            }
+        }
+
+        fun loadVideo() {
+            if (url.isNotEmpty()) {
+                video?.setVideoPath(url)
+                video?.start()
+            }
+        }
+
 
         private fun loadGlide(url: String?, view: ImageView) {
             val request = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -180,6 +246,7 @@ class GiffVideoSlider(
             view?.visibility = View.VISIBLE
             if (url.isNullOrEmpty()) {
                 Glide.with(this).asGif().load(R.drawable.rxl_agility_test_1)
+                    .listener(glideListener)
                     .apply(request)
                     .into(view)
                 return
@@ -189,37 +256,15 @@ class GiffVideoSlider(
             if (type.contains("gif")) {
 
                 Glide.with(this).asGif().load(url)
-                    .addListener(object : RequestListener<GifDrawable> {
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<GifDrawable>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            log("Glide onLoadFailed")
-                            return true
-                        }
-
-                        override fun onResourceReady(
-                            resource: GifDrawable?,
-                            model: Any?,
-                            target: Target<GifDrawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            log("Glide onResourceReady")
-
-                            return false
-                        }
-
-                    })
-                    //.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .listener(glideListener)
                     .apply(request)
                     .placeholder(R.drawable.dialog_spinner)
                     .into(view)
+                //.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
 
             } else if (type.contains("mp4")) {
                 Glide.with(this).asGif().load(R.drawable.rxl_agility_test_1)
+                    .listener(glideListener)
                     .apply(request)
                     .into(view)
             }
@@ -227,7 +272,47 @@ class GiffVideoSlider(
         }
 
         fun log(msg: String) {
-            Logger.e("msg $msg")
+            Logger.e("VideoGiffFragment: $msg")
+        }
+
+        private var glideListener = object : RequestListener<GifDrawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<GifDrawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                log("Glide onLoadFailed")
+                progress?.visibility = View.GONE
+                return true
+            }
+
+            override fun onResourceReady(
+                resource: GifDrawable?,
+                model: Any?,
+                target: Target<GifDrawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                log("Glide onResourceReady")
+                //data = resource
+                progress?.visibility = View.GONE
+                resource?.setLoopCount(1)
+                resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                    override fun onAnimationStart(drawable: Drawable?) {
+                        super.onAnimationStart(drawable)
+                        log("Glide giff onAnimationStart registerAnimationCallback")
+                    }
+
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        super.onAnimationEnd(drawable)
+                        log("Glide giff onAnimationEnd registerAnimationCallback")
+                        updatePlayButton(true)
+                    }
+                })
+                return false
+            }
+
         }
     }
 

@@ -7,6 +7,7 @@
 
 package life.mibo.hexa.pods.rxl
 
+import life.mibo.hardware.models.Device
 import life.mibo.hexa.pods.rxl.parser.RxlParser
 import life.mibo.hexa.pods.rxl.parser.SequenceParser
 
@@ -245,7 +246,7 @@ class RxlProgram() {
     companion object {
         fun getExercise(
             duration: Int, action: Int, pause: Int, cycle: Int,
-            color: Int, colorId: Int, pods: ArrayList<String>, type: RxlLight
+            color: Int, colorId: Int, pods: ArrayList<Device>, type: RxlLight
         ): RxlProgram {
             // val station = RxlStation().add()
             return RxlProgram().addCycle(RxlCycle(duration, action, pause, 0, "", type))

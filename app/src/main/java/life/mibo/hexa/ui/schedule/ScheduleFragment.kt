@@ -26,7 +26,7 @@ import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.ProgramPostData
 import life.mibo.hexa.models.program.SearchPrograms
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -69,10 +69,10 @@ class ScheduleFragment : BaseFragment() {
         tv_date?.setOnClickListener {
             datePickerDialog()
         }
-        iv_time?.setOnClickListener {
+        iv_action?.setOnClickListener {
             timePickerDialog()
         }
-        tv_time?.setOnClickListener {
+        tv_action?.setOnClickListener {
             timePickerDialog()
         }
         select_program?.setOnClickListener {
@@ -85,7 +85,7 @@ class ScheduleFragment : BaseFragment() {
             "%02d/%02d/%d", now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.MONTH).plus(1), now.get(Calendar.YEAR)
         )
         val hours = now.get(Calendar.HOUR_OF_DAY)
-        tv_time?.text = String.format(
+        tv_action?.text = String.format(
             "%02d:%02d %s", now.get(Calendar.HOUR_OF_DAY) % 12, now.get(Calendar.MINUTE), if (hours > 12) "PM" else "AM"
         )
 
@@ -182,7 +182,7 @@ class ScheduleFragment : BaseFragment() {
         val dpd = TimePickerDialog.newInstance(
             { view, hourOfDay, minute, second ->
                 //var am = if (hourOfDay > 12) "PM" else "AM"
-                tv_time?.text = String.format(
+                tv_action?.text = String.format(
                     "%02d:%02d %s", hourOfDay % 12, minute, if (hourOfDay > 12) "PM" else "AM"
                 )
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)

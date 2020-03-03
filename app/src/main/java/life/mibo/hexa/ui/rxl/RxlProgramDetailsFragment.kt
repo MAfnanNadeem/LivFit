@@ -10,6 +10,7 @@ package life.mibo.hexa.ui.rxl
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,6 @@ import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.Navigator
@@ -102,8 +102,8 @@ class RxlProgramDetailsFragment : BaseFragment() {
     private fun getPods() {
         //tv_desc?.text = ""
         val list = SessionManager.getInstance().userSession.devices
+        val pods = ArrayList<Device>()
         if (list.size > 0) {
-            val pods = ArrayList<Device>()
             list.forEach {
                 if (it.isPod) {
                     pods.add(it)
@@ -114,10 +114,15 @@ class RxlProgramDetailsFragment : BaseFragment() {
             tv_select_pods?.text = "0"
         }
 
-
+        if (program?.pods == pods.size) {
+            tv_required_pods.visibility = View.GONE
+        } else {
+            tv_required_pods.visibility = View.VISIBLE
+            tv_required_pods?.text = Html.fromHtml(String.format(getString(R.string.required_pods), program?.pods))
+        }
     }
 
-    fun nextClicked() {
+    private fun nextClicked() {
         program?.let {
             val intent = Intent(context, QuickPlayDetailsActivity::class.java)
             intent.putExtra(Constants.BUNDLE_DATA, it)

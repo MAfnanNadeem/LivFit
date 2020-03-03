@@ -11,12 +11,12 @@ import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import life.mibo.hexa.ui.rxl.adapter.ReflexAdapter
 import life.mibo.hexa.ui.rxl.impl.ReactionObserver
 import life.mibo.hexa.ui.rxl.impl.RxlViewModel
@@ -49,6 +49,7 @@ class RxlQuickPlayFragment : BaseFragment(),
     }
 
     var playersCount = 1
+    var players: ArrayList<PlayersAdapter.PlayerItem>? = null
 
     override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
         super.onViewCreated(root, savedInstanceState)
@@ -75,6 +76,10 @@ class RxlQuickPlayFragment : BaseFragment(),
 
         if (types is List<*>) {
             playersCount = types.size
+            try {
+                players = types as ArrayList<PlayersAdapter.PlayerItem>?
+            } catch (e: Exception) {
+            }
         }
 
         navigate(Navigator.HOME_VIEW, true)
@@ -203,7 +208,9 @@ class RxlQuickPlayFragment : BaseFragment(),
             empty_view?.visibility = View.VISIBLE
             tv_empty?.text = getString(R.string.no_program)
         } else {
-            empty_view?.visibility = View.GONE
+            empty_view?.let {
+                it.visibility = View.GONE
+            }
         }
 
         list.clear()
@@ -239,6 +246,7 @@ class RxlQuickPlayFragment : BaseFragment(),
                     }
                     return
                 }
+                item?.selectedPlayers = players
                 navigate(Navigator.RXL_QUICKPLAY_DETAILS, item)
             }
 

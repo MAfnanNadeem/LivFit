@@ -55,7 +55,7 @@ import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
 
 
-class DeviceScanFragment2 : BaseFragment(), ScanObserver {
+class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     interface Listener : BaseListener {
         fun onScan(isWifi: Boolean)
@@ -76,7 +76,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         return root
     }
 
-    var isWifi = true
+    var isWifi = false
     var isScanning = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -85,12 +85,12 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 
         setRecycler()
         tv_scan?.setOnClickListener {
-            scanDevices()
+            checkAndScan()
             //loadTest()
         }
-        tv_scan?.text = getString(R.string.scanning)
+        //tv_scan?.text = getString(R.string.scanning)
         // checkbox_wifi?.isChecked = true
-        progress_circular?.visibility = View.VISIBLE
+        //progress_circular?.visibility = View.VISIBLE
         //AnimateView(tv_scan)
         recyclerViewAvailable?.isNestedScrollingEnabled = false
         //recyclerViewConnect?.isNestedScrollingEnabled = false
@@ -104,12 +104,12 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         wifi_switch?.setOnClickListener {
             log("wifi_switch clicked")
             //scanDialog()
-            checkPermissions()
+            checkPermissions(false)
         }
         wifi_switch_?.setOnClickListener {
             log("wifi_switch2 clicked")
             // scanDialog()
-            checkPermissions()
+            checkPermissions(false)
         }
         //wifi_switch_.isClickable = false
         //wifi_switch_.isEnabled = false
@@ -130,50 +130,19 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 //        /button_next?.visibility = View.INVISIBLE
         button_next?.isEnabled = false
         button_next?.setOnClickListener {
-            val member = Prefs.get(this.context).member
-            if (member != null) {
-                SessionManager.getInstance().userSession.user =
-                    User("${member.firstName}", "${member.lastName}", "${member.id}")
-
-                if (isRxl) {
-                    var navigate = false
-                    if (SessionManager.getInstance().userSession.devices.size > 0) {
-                        for (i in SessionManager.getInstance().userSession.devices) {
-                            if (i.isPod) {
-                                navigate = true
-                                break
-                            }
-                        }
-                        if (navigate)
-                            navigate(Navigator.RXL_HOME, null)
-                    }
-                } else {
-                    if (SessionManager.getInstance().userSession.devices.size > 0) {
-                        for (i in SessionManager.getInstance().userSession.devices) {
-                            if (i.isBooster) {
-                                SessionManager.getInstance().userSession.booster = i
-                                navigate(Navigator.SELECT_PROGRAM, null)
-                                return@setOnClickListener
-                            }
-                        }
-                    }
-                    Toasty.info(context!!, "No booster detected!").show()
-                }
-                //MessageDialog.info(this@DeviceScanFragment.requireContext(), "", "")
-                //   navigate(Navigator.HOME, HomeItem(HomeItem.Type.RXL))
-                //else
-            }
+            onNextClicked()
         }
 
 
-        scanDevices()
+        checkAndScan()
         isRxl = arguments?.getBoolean("is_rxl") ?: false
         if (isRxl)
             button_next?.text = getString(R.string.next)
 
         button_connect_all?.setOnClickListener {
-            if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED)
+            if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED) {
                 connectAllDevices(isRxl)
+            }
         }
 
 //        button_connect_all?.setListener {
@@ -184,7 +153,43 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         //loadTest()
         //testSignals()
 
-        isBluetoothEnable()
+        //isBluetoothEnable()
+    }
+
+    private fun onNextClicked() {
+        val member = Prefs.get(this.context).member
+        if (member != null) {
+            SessionManager.getInstance().userSession.user =
+                User("${member.firstName}", "${member.lastName}", "${member.id}")
+
+            if (isRxl) {
+                var navigate = false
+                if (SessionManager.getInstance().userSession.devices.size > 0) {
+                    for (i in SessionManager.getInstance().userSession.devices) {
+                        if (i.isPod) {
+                            navigate = true
+                            break
+                        }
+                    }
+                    if (navigate)
+                        navigate(Navigator.RXL_HOME, null)
+                }
+            } else {
+                if (SessionManager.getInstance().userSession.devices.size > 0) {
+                    for (i in SessionManager.getInstance().userSession.devices) {
+                        if (i.isBooster) {
+                            SessionManager.getInstance().userSession.booster = i
+                            navigate(Navigator.SELECT_PROGRAM, null)
+                            return
+                        }
+                    }
+                }
+                Toasty.info(context!!, "No booster detected!").show()
+            }
+            //MessageDialog.info(this@DeviceScanFragment.requireContext(), "", "")
+            //   navigate(Navigator.HOME, HomeItem(HomeItem.Type.RXL))
+            //else
+        }
     }
 
     var isConnectTrigger = false
@@ -243,6 +248,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         availabeAdapter?.notifyItemRangeRemoved(0, size)
         // CommunicationManager.getInstance().discoveredDevices.clear()
         progress_circular?.visibility = View.VISIBLE
+        //progress_circular?.visibility = View.VISIBLE
         navigate(Navigator.SCAN, isWifi)
         //wifi_switch?.checked = IconSwitch.Checked.RIGHT
         tv_scan?.text = getString(R.string.scanning) + " ..."
@@ -350,14 +356,14 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
             log("connectionListener onConnectClicked ")
             //SessionManager.getInstance().userSession = UserSession.from(device)
             try {
-                Prefs.get(this@DeviceScanFragment2.context).settJson(device?.uid, device)
+                Prefs.get(this@DeviceScanFragment.context).settJson(device?.uid, device)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
             if (device?.type == DeviceTypes.WIFI_STIMULATOR || device?.type == DeviceTypes.BLE_STIMULATOR) {
                 SessionManager.getInstance().userSession.uid = device.uid
                 //SessionManager.getInstance().userSession.addDevice(device)
-                Prefs.get(this@DeviceScanFragment2.activity)["user_uid"] = device.uid
+                Prefs.get(this@DeviceScanFragment.activity)["user_uid"] = device.uid
             }
             navigate(Navigator.CONNECT, device)
             button_next?.visibility = View.VISIBLE
@@ -430,7 +436,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 
         availabeAdapter?.setListener(connectionListener)
 
-        val manager = GridLayoutManager(this@DeviceScanFragment2.activity, 1)
+        val manager = GridLayoutManager(this@DeviceScanFragment.activity, 1)
         recyclerViewAvailable.layoutManager = manager
 
         recyclerViewAvailable.adapter = availabeAdapter
@@ -558,7 +564,7 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
 
     private fun connectAllDevices(rxl: Boolean = false) {
         if (availabeAdapter!!.list!!.size > 0) {
-            Observable.fromIterable(availabeAdapter!!.list!!).subscribeOn(Schedulers.io())
+            Observable.fromIterable(availabeAdapter!!.list!!).doOnError {  }.subscribeOn(Schedulers.io())
                 .subscribe(object : io.reactivex.Observer<Device> {
                     override fun onSubscribe(d: Disposable) {
                         button_connect_all?.startAnimation {
@@ -607,6 +613,11 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
     }
 
     private val REQUEST_BLUETOOTH = 1022
+    private val REQUEST_LOCATION = 1023
+
+    private val REQUEST_BLUETOOTH2 = 1032
+    private val REQUEST_LOCATION2 = 1033
+
     private val permissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -614,7 +625,44 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         Manifest.permission.BLUETOOTH_ADMIN
     )
 
-    private fun checkPermissions() {
+    private var isBluetooth = false
+    private var isLocation = false
+    private var checkScan = false
+
+    private fun checkAndScan() {
+        if (isWifi) {
+            scanDevices()
+            return
+        }
+
+        val bl = BluetoothAdapter.getDefaultAdapter()
+        if (bl != null && !bl.isEnabled) {
+            startActivityForResult(
+                Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                REQUEST_BLUETOOTH2
+            )
+            return
+        }
+
+        isBluetooth = true
+        if (isLocationEnabled()) {
+            isLocation = true
+            checkScan = true
+            PermissionHelper.requestPermission(this@DeviceScanFragment, permissions) {
+                scanDevices()
+            }
+        } else {
+            MessageDialog.info(
+                context!!,
+                "Location Required",
+                "Please enable location to scan BLE devices", "enable"
+            ) {
+                locationSettings(REQUEST_LOCATION2)
+            }
+        }
+    }
+
+    private fun checkPermissions(scan: Boolean) {
         if (!isWifi) {
             scanDialog()
             return
@@ -629,9 +677,11 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
             return
         }
 
-
+        isBluetooth = true
         if (isLocationEnabled()) {
-            PermissionHelper.requestPermission(this@DeviceScanFragment2, permissions) {
+            isLocation = true
+            checkScan = false
+            PermissionHelper.requestPermission(this@DeviceScanFragment, permissions) {
                 scanDialog()
             }
         } else {
@@ -648,9 +698,9 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
         // BluetoothManager.Manager
     }
 
-    private fun locationSettings() {
+    private fun locationSettings(code: Int = REQUEST_LOCATION) {
         val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivityForResult(enableLocationIntent, REQUEST_BLUETOOTH);
+        startActivityForResult(enableLocationIntent, code);
     }
 
     private fun isBluetoothEnable() {
@@ -704,24 +754,45 @@ class DeviceScanFragment2 : BaseFragment(), ScanObserver {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        PermissionHelper.permissionsResult(this@DeviceScanFragment2.activity!!,
+        PermissionHelper.permissionsResult(this@DeviceScanFragment.activity!!,
             permissions as Array<String>, requestCode, grantResults,
             {
-                checkPermissions()
+                if (checkScan)
+                    checkAndScan()
+                else
+                    checkPermissions(false)
             },
             {
                 Toasty.error(
-                    this@DeviceScanFragment2.context!!,
+                    this@DeviceScanFragment.context!!,
                     getString(R.string.permission_denied)
                 )
             })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        log("onActivityResult $requestCode  $resultCode  : $data")
         if (requestCode == REQUEST_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
-                checkPermissions()
+                //isBluetooth = true
+                checkPermissions(false)
             }
+        }
+        if (requestCode == REQUEST_LOCATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                // isLocation = true
+                checkPermissions(false)
+            }
+        }
+
+        if (requestCode == REQUEST_BLUETOOTH2) {
+            if (resultCode == Activity.RESULT_OK) {
+                //isBluetooth = true
+                checkAndScan()
+            }
+        }
+        if (requestCode == REQUEST_LOCATION2) {
+            checkAndScan()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

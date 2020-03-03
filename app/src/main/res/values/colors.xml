@@ -41,6 +41,7 @@
     <color name="radio_button_uncheck_bg">#FfF</color>
 
     <color name="color_button_yellow">#FFA000</color>
+    <color name="error_message_color">#A52A2A</color>
 
 
 </resources>

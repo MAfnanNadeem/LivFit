@@ -21,6 +21,8 @@ interface Navigator {
         const val RXL_DETAILS = 114;
         const val RXL_TABS = 115;
         const val RXL_TABS_2 = 116;
+        const val RXL_QUICKPLAY_DETAILS = 117;
+        const val RXL_QUICKPLAY_DETAILS_PLAY = 118;
         const val POST = 201;
 
         //var SELECT_REFLEX = 106;

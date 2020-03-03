@@ -301,18 +301,18 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
             uids.add(d.uid)
         }
 
-        RXLManager.getInstance().with(
-            RxlProgram.getExercise(
-                getDuration(),
-                getAction(),
-                getPause(),
-                getCycles(),
-                selectedColor,
-                selectedColorId,
-                uids,
-                getLightLogic()
-            )
-        ).addDevices(devices).withListener(this).start(tap)
+//        RXLManager.getInstance().with(
+//            RxlProgram.getExercise(
+//                getDuration(),
+//                getAction(),
+//                getPause(),
+//                getCycles(),
+//                selectedColor,
+//                selectedColorId,
+//                uids,
+//                getLightLogic()
+//            )
+//        ).addDevices(devices).withListener(this).start(tap)
 
         //if (tap)
         //   Toasty.info(context!!, "Tap Reaction Light to start").show()
@@ -320,14 +320,14 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
 
     // Todo test, disable in production
     private fun startUnitTest(devices: ArrayList<Device>) {
-        RXLManager.getInstance().withListener(this).startTest(
-            RxlProgram.getExercise(
-                getDuration(), getAction(),
-                getPause(), getCycles(),
-                selectedColor, selectedColorId,
-                ArrayList<String>(), getLightLogic()
-            )
-        )
+//        RXLManager.getInstance().withListener(this).startTest(
+//            RxlProgram.getExercise(
+//                getDuration(), getAction(),
+//                getPause(), getCycles(),
+//                selectedColor, selectedColorId,
+//                ArrayList<String>(), getLightLogic()
+//            )
+//        )
     }
 
     private var size = 2

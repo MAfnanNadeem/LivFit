@@ -19,7 +19,6 @@ import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.log
 
 
 class CourseCreateImpl(var context: Context, var listener: Listener? = null) {
@@ -116,7 +115,7 @@ class CourseCreateImpl(var context: Context, var listener: Listener? = null) {
                 list.add(ReflexDialog.Item(2, "Random"))
                 list.add(ReflexDialog.Item(3, "Focus"))
                 list.add(ReflexDialog.Item(4, "All at Once"))
-                list.add(ReflexDialog.Item(4, "Tap at once"))
+                list.add(ReflexDialog.Item(5, "Tap at All"))
             }
             Type.PLAYERS -> {
                 title = "Select Players"

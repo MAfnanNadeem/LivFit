@@ -46,8 +46,10 @@
     <string name="session_completed">Session Completed!</string>
     <string name="stop_session">Stop Session?</string>
     <string name="stop_session_message">Are you sure to want stop current session?</string>
+    <string name="stop_session_message_rxl">Are you sure to want stop current session?</string>
     <string name="dialog_continue">Continue</string>
     <string name="stop_anyway">Stop Anyway</string>
+    <string name="stop">Stop</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="send">Send</string>
@@ -136,6 +138,9 @@
     <string name="proximity_on">Proximity Enable</string>
     <string name="proximity_off">Proximity Disabled</string>
     <string name="no_ofpods">Number of Pods</string>
+    <string name="connected_pods">No. of connected Pods</string>
+    <string name="required_pods"><![CDATA[<b>%s</b> Pods required for this exercise]]></string>
+    <string name="assigned_pods"><![CDATA[Pods are mis-configured, total connected pods are <b>%s</b> and assigned pods to players are <b>%s</b> ]]></string>
     <string name="pods">Pods</string>
     <string name="activity_duration">Activity Duration</string>
     <string name="action">Action</string>
@@ -173,5 +178,6 @@
     <string name="general_settings">GENERAL SETTINGS</string>
     <string name="activity_settings">ACTIVITY SETTINGS</string>
     <string name="_1_sec">1 sec</string>
+    <string name="watch_tutorial">WATCH TUTORIAL</string>
 
 </resources>

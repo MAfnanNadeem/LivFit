@@ -48,6 +48,7 @@ class RXLManager private constructor() {
         fun onCyclePaused(cycle: Int, time: Int)
         fun onCycleResumed(cycle: Int)
         fun onPod(podId: Int, time: Int)
+        fun onTapColorSent()
     }
 
     companion object {
@@ -70,19 +71,26 @@ class RXLManager private constructor() {
 
     var listener: Listener? = null
     var devices = ArrayList<Device>()
-    private var devicesUids = ArrayList<DeviceEvent>()
+    // private var devicesUids = ArrayList<DeviceEvent>()
     var events = ArrayList<Event>()
     var wrongEvents = ArrayList<Event>()
     private var colors = ArrayList<RxlColor>()
+    private var players = ArrayList<RxlPlayer.Player>()
+    private var isMultiPlayer = false
 
     private var lastActivePod = -1
     var program: RxlProgram? = null
     var type: PodType = PodType.UNKNOWN
 
-
-    fun addDevices(pod: List<Device>): RXLManager {
+    private fun refresh() {
         devices.clear()
-        devices.addAll(pod)
+        events.clear()
+        players.clear()
+        wrongEvents.clear()
+    }
+
+    fun get(): RXLManager {
+        refresh()
         return this
     }
 
@@ -92,15 +100,28 @@ class RXLManager private constructor() {
         return this
     }
 
+    fun addDevices(pod: List<Device>): RXLManager {
+        devices.clear()
+        devices.addAll(pod)
+        return this
+    }
+
+    fun with(list: ArrayList<RxlPlayer.Player>): RXLManager {
+        this.players.clear()
+        this.players.addAll(list)
+        return this
+    }
+
+    fun addPlayer(player: RxlPlayer.Player): RXLManager {
+        this.players.add(player)
+        return this
+    }
+
     fun withListener(listener: Listener): RXLManager {
         this.listener = listener
         return this
     }
 
-    private fun refresh() {
-        devices.clear()
-        events.clear()
-    }
 
     fun getTime(): String {
         try {
@@ -149,6 +170,8 @@ class RXLManager private constructor() {
         colorSent = false
         isFocus = false
         receivedFocusAll = false
+        actionTime = 0
+        focusCount = 0
         publisher?.unsubscribeOn(Schedulers.io())
         publisher = null
     }
@@ -173,10 +196,18 @@ class RXLManager private constructor() {
 
         cycles = getCycles().toLong()
         currentCycle = 1
-        startObserver(currentCycle, program.getNext().cycleDuration)
+        startObserver(currentCycle, program.getCycle().cycleDuration)
     }
 
-    fun startOnTap() {
+
+    fun start(tap: Boolean) {
+        if (tap)
+            startOnTap()
+        else
+            startNow()
+    }
+
+    private fun startOnTap() {
         //isRandom = random
         //register()
         reset()
@@ -184,7 +215,7 @@ class RXLManager private constructor() {
         //startInternal()
     }
 
-    fun startNow() {
+    private fun startNow() {
         //isRandom = random
         //register()
         reset()
@@ -242,13 +273,14 @@ class RXLManager private constructor() {
             }
             lastPod = 1
             log("RxlStatusEvent2 ChangeColorEvent2 send To UID == $lastUid ")
+            listener?.onTapColorSent()
         }
     }
 
     private fun createNowPublish() {
         publisher = PublishSubject.create<RxlStatusEvent>()
         publisher!!.subscribeOn(Schedulers.io()).doOnNext {
-            logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid  receivedFocusAll $receivedFocusAll isFocus $isFocus")
+            logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid  receivedFocusAll $receivedFocusAll isFocus $isFocus data ${it.data}")
             if (isFocus) {
                 nextFocusEvent(it)
                 return@doOnNext
@@ -263,6 +295,7 @@ class RXLManager private constructor() {
         }.subscribe()
     }
 
+    @Synchronized
     private fun nextEvent(time: Int) {
         colorSent = false
         events.add(Event(events.size + 1, actionTime, time))
@@ -270,13 +303,20 @@ class RXLManager private constructor() {
     }
 
 
+    @Synchronized
     private fun nextFocusEvent(it: RxlStatusEvent) {
         logi("nextFocusEvent receivedFocusAll.............. $receivedFocusAll ${it.uid}")
         if (receivedFocusAll) {
             return
         }
+
         log("nextFocusEvent RxlStatusEvent >> ${it.uid} == $lastUid valid=$focusValid light=$lightLogic receivedFocusAll $receivedFocusAll")
         if (lightLogic == 4) {
+            if (focusCount != it.data) {
+                log("nextFocusEvent RxlStatusEvent >>> focusCount NOT MATCHED ${it.data} :: $focusCount ")
+                return
+            }
+            log("nextFocusEvent RxlStatusEvent >> focusCount MATCHED ${it.data} = $focusCount")
             receivedFocusAll = true
             Observable.fromIterable(devices).subscribeOn(Schedulers.io()).doOnNext {
                 //it.colorPalet = 0
@@ -295,6 +335,8 @@ class RXLManager private constructor() {
                 nextFocusLightEvent()
                 //receivedFocusAll = false
             }.subscribe()
+
+            Thread.sleep(20)
 
         } else {
             if (it.uid == lastUid) {
@@ -364,13 +406,19 @@ class RXLManager private constructor() {
         colorPosition = program!!.getActivePosition()
         cycles = program!!.getCyclesCount().toLong()
         actionTime = program?.getAction()?.times(1000) ?: 0
-        pauseTime = program!!.getPause()
+        pauseTime = program!!.getPause().times(1000)
         currentCycle = 1
-        if (lightLogic == 3 || lightLogic == 4)
+        if (players.size > 1)
+            isMultiPlayer = true
+
+        if (lightLogic > 2) {
+            isFocus = true
             setColors()
+        }
         events.clear()
         startExercise(0, 0)
         startObserver(currentCycle, program!!.getDuration())
+        log("startInternal >>> actionTime $actionTime : duration ${getDuration()} : cycles $cycles : pauseTime $pauseTime lightLogic $lightLogic")
     }
 
     private fun setColors() {
@@ -381,12 +429,11 @@ class RXLManager private constructor() {
                 colors.add(RxlColor(c))
             }
         }
-        isFocus = true
 
-        devicesUids.clear()
-        devices.forEach {
-            devicesUids.add(DeviceEvent(it.uid, false))
-        }
+//        devicesUids.clear()
+//        devices.forEach {
+//            devicesUids.add(DeviceEvent(it.uid, false))
+//        }
 
     }
 
@@ -459,7 +506,10 @@ class RXLManager private constructor() {
         delayDisposable = Single.timer(getAction().toLong().plus(1), TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io()).doOnSuccess {
                 receivedFocusAll = false
-                onEvent(RxlStatusEvent(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), lastUid))
+                //[-64, 3, 0, 0, 30]
+                onEvent(
+                    RxlStatusEvent(byteArrayOf(0, 3, 0, 0, focusCount.toByte(), 0, 0, 0), lastUid)
+                )
                 log("RxlStatusEvent delayObserver doOnComplete")
             }.doOnDispose {
                 log("RxlStatusEvent delayObserver doOnDispose")
@@ -476,54 +526,54 @@ class RXLManager private constructor() {
 //            }.subscribe()
     }
 
-    private fun startExercise() {
-        log("startExercise exercise $program")
-        if (unitTest) {
-            startExercise(0, 0)
-            currentCycle = 1
-            startObserver(currentCycle, getDuration())
-            return
-        }
-        //RXLManager.getInstance().with(PodExercise.getExercise1()).addPods(list).startExercise()
-        disposable?.dispose()
-        if (getDuration() > 0) {
-            cycles = getCycles().toLong()
-            disposable =
-                Observable.interval(getDuration().toLong(), TimeUnit.SECONDS)
-                    .concatMap { s ->
-                        log("Observable concatMap $s  -- " + getPause())
-                        pauseCycle(currentCycle)
-                        Observable.just(s).delay(getPause().toLong(), TimeUnit.SECONDS)
-                    }
-                    .doOnNext {
-                        log("Observable doOnNext $it")
-                        completeCycle(currentCycle)
-                        currentCycle++
-                        //lightOff(lastActivePod)
-                        // lightOn(next())
-                    }.takeUntil { i ->
-                        log("Observable takeUntil $i  == $cycles")
-                        i == cycles
-                    }.doOnComplete {
-                        completeExercise(currentCycle)
-                        disposable?.dispose()
-                        log("Observable doOnComplete {cycle complete}")
-                    }.doOnSubscribe {
-                        log("Observable doOnSubscribe {cycle complete}")
-                        startExercise(0, 0)
-                    }.subscribe {
-
-                        if (cycles > 1 && cycles < currentCycle) {
-                            startCycle(currentCycle)
-                            //pauseObserver(exercise?.duration!!.cycles.pause.value, currentCycle)
-                        }
-                        log("startExercise subscribe $it")
-                        log("startExercise cycles $cycles")
-                    }
-
-            // test1()
-        }
-    }
+//    private fun startExercise() {
+//        log("startExercise exercise $program")
+//        if (unitTest) {
+//            startExercise(0, 0)
+//            currentCycle = 1
+//            startObserver(currentCycle, getDuration())
+//            return
+//        }
+//        //RXLManager.getInstance().with(PodExercise.getExercise1()).addPods(list).startExercise()
+//        disposable?.dispose()
+//        if (getDuration() > 0) {
+//            cycles = getCycles().toLong()
+//            disposable =
+//                Observable.interval(getDuration().toLong(), TimeUnit.SECONDS)
+//                    .concatMap { s ->
+//                        log("Observable concatMap $s  -- " + getPause())
+//                        pauseCycle(currentCycle)
+//                        Observable.just(s).delay(getPause().toLong(), TimeUnit.SECONDS)
+//                    }
+//                    .doOnNext {
+//                        log("Observable doOnNext $it")
+//                        completeCycle(currentCycle)
+//                        currentCycle++
+//                        //lightOff(lastActivePod)
+//                        // lightOn(next())
+//                    }.takeUntil { i ->
+//                        log("Observable takeUntil $i  == $cycles")
+//                        i == cycles
+//                    }.doOnComplete {
+//                        completeExercise(currentCycle)
+//                        disposable?.dispose()
+//                        log("Observable doOnComplete {cycle complete}")
+//                    }.doOnSubscribe {
+//                        log("Observable doOnSubscribe {cycle complete}")
+//                        startExercise(0, 0)
+//                    }.subscribe {
+//
+//                        if (cycles > 1 && cycles < currentCycle) {
+//                            startCycle(currentCycle)
+//                            //pauseObserver(exercise?.duration!!.cycles.pause.value, currentCycle)
+//                        }
+//                        log("startExercise subscribe $it")
+//                        log("startExercise cycles $cycles")
+//                    }
+//
+//            // test1()
+//        }
+//    }
 
 
     private fun startCycle(cycle: Int, time: Int = 0) {
@@ -597,6 +647,16 @@ class RXLManager private constructor() {
         } catch (e: Exception) {
         }
         //publisher.onNext("completeExercise")
+    }
+
+    fun stopProgram() {
+        log(".......... stopProgram .......... ")
+        isStarted = false
+        delayDisposable?.dispose()
+        disposable?.dispose()
+        completeExercise(0, 0)
+        isStarted = false
+        log(".......... stopProgram .......... stopped")
     }
 
     // todo startObserver - end
@@ -749,7 +809,6 @@ class RXLManager private constructor() {
         sendColorEvent(devices[lastPod], activeColor)
     }
 
-    private var focusCount = 0
     private var focusValid = false
     private var isFocus = false
 
@@ -777,7 +836,7 @@ class RXLManager private constructor() {
         var i = Random.nextInt(colors.size)
         //var c = colors[i].activeColor
         log("nextRandomColor i $i , colorPosition $colorPosition")
-        if (i == colorPosition && i < colors.size - 1)
+        if (i == colorPosition && i < colors.size - 2)
             i++
 
         return colors[i].activeColor
@@ -820,6 +879,8 @@ class RXLManager private constructor() {
         sendColorEvent(devices[lastPod], nextRandomColor())
     }
 
+    //private var allFocus = 0
+    private var focusCount = 0
     @Synchronized
     private fun lightOnAllAtOnce() {
         log("lightOnAllAtOnce")
@@ -827,6 +888,7 @@ class RXLManager private constructor() {
             log("lightOnAllAtOnce color is already sent.......")
             return
         }
+        focusCount++
         val id = nextRandom()
 
         lastPod = if (id == lastPod)
@@ -866,7 +928,7 @@ class RXLManager private constructor() {
             } else {
                 it.colorPalet = nextRandomColor()
             }
-            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime))
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime, focusCount))
             log("nextFocusEvent onChangeColorEvent Observable ON = ${it.uid}")
         }.doOnComplete {
 
@@ -912,21 +974,14 @@ class RXLManager private constructor() {
         if (unitTest) {
             log("sendColorEvent test >> sent $lastPod")
             lastUid = "000002"
-            testObserver(getAction())
+            testObserver(actionTime)
             return
         }
         device?.let {
             it.colorPalet = color
             lastUid = it.uid
-            EventBus.getDefault()
-                .postSticky(
-                    ChangeColorEvent(
-                        it,
-                        it.uid,
-                        actionTime
-                    )
-                )
-            log("RxlStatusEvent ChangeColorEvent send To UID == $lastUid ")
+            EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, actionTime, lastPod))
+            log("RxlStatusEvent ChangeColorEvent send To UID == $lastUid - lastPod $lastPod")
         }
     }
 
@@ -950,7 +1005,7 @@ class RXLManager private constructor() {
             return
         EventBus.getDefault().postSticky(
             PodEvent(
-                pod.uid, getColor(), getAction(), false
+                pod.uid, getColor(), actionTime, false
             )
         )
         log("lightOn EventBus $pod")
@@ -1021,7 +1076,7 @@ class RXLManager private constructor() {
         events.add(
             Event(
                 devices.size.plus(1),
-                getAction(),
+                actionTime,
                 event.tapTime
             )
         )
@@ -1081,6 +1136,7 @@ class RXLManager private constructor() {
     fun test(s: String) {
         log("test $s")
     }
+
 
     private data class DeviceEvent(
         var uid: String,

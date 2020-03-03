@@ -10,6 +10,7 @@ package life.mibo.hexa.ui.main
 import android.app.Application
 import android.content.Context
 import coil.util.CoilLogger
+//import com.facebook.drawee.backends.pipeline.Fresco
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.hardware.BuildConfig
 import life.mibo.hardware.MIBO
@@ -32,6 +33,8 @@ class MiboApplication : Application() {
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
         MiboEvent.init(applicationContext)
+        //Fresco.initialize(this);
+
     }
 
     fun setHandler(){

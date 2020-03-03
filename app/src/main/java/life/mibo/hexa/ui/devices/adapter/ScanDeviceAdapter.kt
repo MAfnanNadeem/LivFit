@@ -94,7 +94,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         var name: TextView? = itemView.findViewById(R.id.tv_deviceName)
         var address: TextView? = itemView.findViewById(R.id.tv_deviceMac)
         var image: ImageView? = itemView.findViewById(R.id.iv_device)
-        var battery: ImageView? = itemView.findViewById(R.id.iv_battery)
+        var battery: TextView? = itemView.findViewById(R.id.tv_battery)
         var connect: ImageButton? = itemView.findViewById(R.id.button_connect)
         var disconnect: ImageButton? = itemView.findViewById(R.id.button_disconnect)
         var bluetooth: ImageView? = itemView.findViewById(R.id.iv_bl)
@@ -120,10 +120,11 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             if (item == null)
                 return
             val grey = ContextCompat.getColor(itemView?.context, R.color.grey_ddd)
-
+            battery?.text = ""
             if (item.isPod) {
                 name?.text = item.name
                 address?.text = item.serial
+                battery?.text = ""
             }
             else {
                 name?.text = item.name?.split("-")!![0]
@@ -181,13 +182,37 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     R.drawable.device_list_item_bg_selected
                 )
 
+
                 when {
-                    item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
-                    item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
-                    item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
-                    item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
-                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+                    item.batteryLevel > 20 -> {
+                        battery?.visibility = View.VISIBLE
+                        battery?.text = "${item.batteryLevel}"
+                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                        battery?.background?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
+//                        battery?.background?.let {
+//                            DrawableCompat.setTint(it, Color.GREEN)
+//                        }
+
+                    }
+                    item.batteryLevel > 0 -> {
+                        battery?.visibility = View.VISIBLE
+                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                        battery?.text = "${item.batteryLevel}"
+                        battery?.background?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP)
+                    }
+                    else -> {
+
+                        battery?.visibility = View.INVISIBLE
+                    }
                 }
+
+//                when {
+//                    item.batteryLevel > 70 -> battery?.setImageResource(R.drawable.ic_battery_80)
+//                    item.batteryLevel > 50 -> battery?.setImageResource(R.drawable.ic_battery_60)
+//                    item.batteryLevel > 30 -> battery?.setImageResource(R.drawable.ic_battery_40)
+//                    item.batteryLevel > 15 -> battery?.setImageResource(R.drawable.ic_battery_20)
+//                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
+//                }
             } else {
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(Color.GREEN)

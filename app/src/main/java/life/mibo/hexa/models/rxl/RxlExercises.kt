@@ -7,14 +7,11 @@
 
 package life.mibo.hexa.models.rxl
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import life.mibo.hexa.core.gson.AlwaysListTypeAdapterFactory
 import life.mibo.hexa.models.base.BaseModel
 import life.mibo.hexa.pods.rxl.RxlLight
-import java.io.Serializable
 
 class RxlExercises(
     @SerializedName("data")
@@ -42,7 +39,7 @@ class RxlExercises(
                     return "All at once - Tap one"
                 }
                 5 -> {
-                    return "All at once - Tap All"
+                    return "Tap All"
                 }
             }
 
@@ -82,6 +79,31 @@ class RxlExercises(
             }
 
             return 0
+        }
+
+        fun lightLogic(type: Int?): RxlLight {
+            when (type) {
+                1 -> {
+                    return RxlLight.SEQUENCE
+                }
+                2 -> {
+                    return RxlLight.RANDOM
+                }
+                3 -> {
+                    return RxlLight.FOCUS
+                }
+                4 -> {
+                    return RxlLight.ALL_AT_ONCE
+                }
+                5 -> {
+                    return RxlLight.TAP_AT_ONCE
+                }
+                6 -> {
+                    return RxlLight.ALL_AT_ALL
+                }
+            }
+
+            return RxlLight.UNKNOWN
         }
     }
 

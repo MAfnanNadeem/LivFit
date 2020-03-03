@@ -367,7 +367,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         proximity: Int = 0
     ) {
         val program = SaveRxlExercise.Program(
-            "no",
+            "no accessories",
             getInt(tv_select_action.text),
             avatarBase64,
             "",

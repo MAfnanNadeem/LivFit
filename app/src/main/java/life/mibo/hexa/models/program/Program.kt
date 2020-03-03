@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import life.mibo.hardware.core.Logger
-import life.mibo.hexa.room.ProgramConverter
+import life.mibo.hexa.database.ProgramConverter
 
 //@Parcelize
 @Entity(tableName = "programs")

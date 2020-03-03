@@ -11,6 +11,6 @@ package life.mibo.hexa.models.base
 import com.google.gson.annotations.SerializedName
 
 data class Post(
-    @SerializedName("UserID")
+    @SerializedName("UserID", alternate = ["MemberID"])
     var userid: String?
 )

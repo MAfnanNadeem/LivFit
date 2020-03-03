@@ -11,5 +11,5 @@
     android:shape="ring"
     android:thickness="8dp"
     android:useLevel="false">
-    <solid android:color="@color/colorAccent" />
+    <solid android:color="@color/colorPrimary" />
 </shape>

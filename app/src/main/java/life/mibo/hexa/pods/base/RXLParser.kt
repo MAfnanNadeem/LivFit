@@ -16,7 +16,7 @@ import life.mibo.hexa.pods.rxl.RxlPlayer
 interface RXLParser {
     fun type(): RxlLight
     fun name(): String
-    fun player(): RxlPlayer.Player
+    fun player(): PlayerType
     //fun program(): Program
     fun onEvent(event: RxlStatusEvent)
 

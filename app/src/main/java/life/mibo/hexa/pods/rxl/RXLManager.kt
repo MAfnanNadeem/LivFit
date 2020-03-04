@@ -23,6 +23,7 @@ import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.pods.Event
 import life.mibo.hexa.pods.pod.PodType
+import life.mibo.hexa.pods.rxl.parser.RXLHelper
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
@@ -75,7 +76,7 @@ class RXLManager private constructor() {
     var events = ArrayList<Event>()
     var wrongEvents = ArrayList<Event>()
     private var colors = ArrayList<RxlColor>()
-    private var players = ArrayList<RxlPlayer.Player>()
+    private var players = ArrayList<PlayerType>()
     private var isMultiPlayer = false
 
     private var lastActivePod = -1
@@ -106,13 +107,13 @@ class RXLManager private constructor() {
         return this
     }
 
-    fun with(list: ArrayList<RxlPlayer.Player>): RXLManager {
+    fun with(list: ArrayList<PlayerType>): RXLManager {
         this.players.clear()
         this.players.addAll(list)
         return this
     }
 
-    fun addPlayer(player: RxlPlayer.Player): RXLManager {
+    fun addPlayer(player: PlayerType): RXLManager {
         this.players.add(player)
         return this
     }
@@ -302,6 +303,13 @@ class RXLManager private constructor() {
         nextLightEvent()
     }
 
+    @Synchronized
+    private fun nextMultiPlayerEvent(time: Int) {
+        colorSent = false
+        events.add(Event(events.size + 1, actionTime, time))
+        nextLightEvent()
+    }
+
 
     @Synchronized
     private fun nextFocusEvent(it: RxlStatusEvent) {
@@ -385,7 +393,50 @@ class RXLManager private constructor() {
     }
 
     private fun startInternal() {
+        if (program!!.isMultiPlayer()) {
+            log("MULTI PLAYER RXL PROGRAM STARTED.............")
+            startInternalMulti()
+            return
+        }
         isInternalStarted = true
+        colorSent = false
+        log("startInternal..........")
+        log(
+            "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
+                    "action ${program?.getAction()} pause ${program?.getPause()}"
+        )
+        if (isRunning) {
+            log("exercise is already running")
+            disposable?.dispose()
+            return
+        }
+        if (observers == null || observers?.isDisposed == true)
+            observers = CompositeDisposable()
+        unitTest = false
+        //isRandom = program!!.isRandom()
+        lightLogic = program!!.lightLogic()
+        activeColor = program!!.getActiveColor()
+        colorPosition = program!!.getActivePosition()
+        cycles = program!!.getCyclesCount().toLong()
+        actionTime = program?.getAction()?.times(1000) ?: 0
+        pauseTime = program!!.getPause().times(1000)
+        currentCycle = 1
+        if (players.size > 1)
+            isMultiPlayer = true
+
+        if (lightLogic > 2) {
+            isFocus = true
+            setColors()
+        }
+        events.clear()
+        startExercise(0, 0)
+        startObserver(currentCycle, program!!.getDuration())
+        log("startInternal >>> actionTime $actionTime : duration ${getDuration()} : cycles $cycles : pauseTime $pauseTime lightLogic $lightLogic")
+    }
+
+    private fun startInternalMulti() {
+        isInternalStarted = true
+        isMultiPlayer = true
         colorSent = false
         log("startInternal..........")
         log(
@@ -636,8 +687,7 @@ class RXLManager private constructor() {
         isInternalStarted = false
         isRunning = false
         listener?.onExerciseEnd()
-        EventBus.getDefault()
-            .post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
+        //EventBus.getDefault().post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
         dispose()
 
         try {
@@ -1040,6 +1090,7 @@ class RXLManager private constructor() {
     fun register() {
         // if (!EventBus.getDefault().isRegistered(this))
         log("register")
+        RXLHelper.getInstance().register()
         try {
             EventBus.getDefault().register(this)
         } catch (e: java.lang.Exception) {
@@ -1048,6 +1099,7 @@ class RXLManager private constructor() {
     }
 
     fun unregister() {
+        RXLHelper.getInstance().unregister()
         EventBus.getDefault().unregister(this)
         isStarted = false
         isRunning = false

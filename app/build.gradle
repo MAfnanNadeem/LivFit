@@ -18,6 +18,7 @@ android {
         }
     }
 
+
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     useLibrary 'org.apache.http.legacy'
@@ -40,6 +41,8 @@ android {
             signingConfig signingConfigs.config
             // resValue "string", "app_name", "MiBo Hexa"
             buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
+            matchingFallbacks = ['release']
+
         }
         debug {
             applicationIdSuffix ".debug"
@@ -48,6 +51,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
             buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
+            matchingFallbacks = ['debug']
+
         }
 
     }
@@ -64,7 +69,7 @@ android {
         exclude 'META-INF/library_release.kotlin_module'
     }
 
-    dynamicFeatures = [":reflex"]
+    //dynamicFeatures = [":reflex"]
 }
 
 dependencies {

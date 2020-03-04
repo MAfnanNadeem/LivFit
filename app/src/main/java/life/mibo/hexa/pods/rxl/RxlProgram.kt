@@ -7,23 +7,22 @@
 
 package life.mibo.hexa.pods.rxl
 
+import android.util.SparseArray
+import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
-import life.mibo.hexa.pods.rxl.parser.RxlParser
-import life.mibo.hexa.pods.rxl.parser.SequenceParser
 
 class RxlProgram() {
-
 
     private var cycles: ArrayList<RxlCycle> = ArrayList()
     var players: ArrayList<RxlPlayer> = ArrayList()
     //var cycle: PodCycle? = null
     //var repeat = 0
     //var player: Players = Players.SINGLE
-    //val players = ArrayList<RxlPlayer.Player>()
+    //val players = ArrayList<PlayerType>()
     //var lightLogic: LightLogic = LightLogic.SEQUENCE
     var stations = 1
     //private var rounds = 0
-    var playerType: RxlPlayer.Player = RxlPlayer.Player.SINGLE
+    var playerType: PlayerType = PlayerType.SINGLE
     var devices = 0
     private var isDiffCycle = false
     private var lastCycle = -1
@@ -35,10 +34,12 @@ class RxlProgram() {
     private val currentCycle: Int = 0
     private var currentPlayer: Int = 0
 
-    private fun reset() {
+    private fun reset(): RxlProgram {
         repeat = 0
         lastCycle = -1
         players.clear()
+        cycles.clear()
+        return this
 
     }
 
@@ -51,12 +52,6 @@ class RxlProgram() {
         return this
     }
 
-    fun addPlayers(player: ArrayList<RxlPlayer>): RxlProgram {
-        players.clear()
-        players.addAll(player)
-        return this
-    }
-
     fun addCycle(cycle: RxlCycle): RxlProgram {
         cycles.add(cycle)
         return this
@@ -66,6 +61,27 @@ class RxlProgram() {
         players.add(player)
         return this
     }
+
+    fun addPlayers(player: ArrayList<RxlPlayer>): RxlProgram {
+        players.clear()
+        players.addAll(player)
+        return this
+    }
+
+    fun addPlayers(list: SparseArray<RxlPlayer>): RxlProgram {
+        Logger.e("RxlProgram: addPlayers size ${list.size()}")
+        players.clear()
+        for (i in 0 until list.size()) {
+            val player: RxlPlayer? = list.valueAt(i)
+            player?.let {
+                players.add(it)
+            }
+        }
+        Logger.e("RxlProgram: addPlayers added size ${players.size}")
+
+        return this
+    }
+
 
     fun repeat(repeat: Int): RxlProgram {
         this.repeat = repeat
@@ -140,6 +156,20 @@ class RxlProgram() {
 
         if (currentCycle < cycles.size)
             return cycles[currentCycle].cyclePause
+
+        return 0
+    }
+
+    fun getDelay(): Int {
+        if (isDiffCycle) {
+            cycles?.let {
+                if (lastCycle >= 0 && lastCycle < it.size)
+                    return it[lastCycle].actionDelay
+            }
+        }
+
+        if (currentCycle < cycles.size)
+            return cycles[currentCycle].actionDelay
 
         return 0
     }
@@ -236,12 +266,6 @@ class RxlProgram() {
     }
 
 
-    fun getParser(): RxlParser? {
-        if (cycles[currentCycle].lightType == RxlLight.SEQUENCE)
-            return SequenceParser(this)
-
-        return null
-    }
 
     companion object {
         fun getExercise(
@@ -251,6 +275,21 @@ class RxlProgram() {
             // val station = RxlStation().add()
             return RxlProgram().addCycle(RxlCycle(duration, action, pause, 0, "", type))
                 .addPlayer(RxlPlayer(1, "Player 1", color, colorId, pods.size, pods))
+                .repeat(cycle)
+        }
+
+        fun getExercise(
+            duration: Int,
+            action: Int,
+            pause: Int,
+            cycle: Int,
+            delay: Int = 0,
+            players: SparseArray<RxlPlayer>,
+            logic: RxlLight
+        ): RxlProgram {
+            // val station = RxlStation().add()
+            return RxlProgram().addCycle(RxlCycle(duration, action, pause, delay, "", logic))
+                .addPlayers(players)
                 .repeat(cycle)
         }
 

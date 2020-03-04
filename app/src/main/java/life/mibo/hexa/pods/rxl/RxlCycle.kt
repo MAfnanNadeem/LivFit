@@ -11,7 +11,9 @@ import life.mibo.hexa.core.toIntOrZero
 
 data class RxlCycle(
     var cycleDuration: Int, var cycleAction: Int, var cyclePause: Int,
-    var lightDelay: Int = 0, var sequence: String? = "", var lightType: RxlLight = RxlLight.SEQUENCE
+    var actionDelay: Int = 0,
+    var sequence: String? = "",
+    var lightType: RxlLight = RxlLight.SEQUENCE
 ) {
 
     companion object {
@@ -65,8 +67,8 @@ data class RxlCycle(
     }
 
     fun getDuration(): Int = cycleDuration
-    fun getAction(): Int = cycleAction
-    fun getPause(): Int = cyclePause
-    fun getDelay(): Int = lightDelay
+    fun getAction(): Int = cycleAction.times(1000)
+    fun getPause(): Int = cyclePause.times(1000)
+    fun getDelay(): Int = actionDelay.times(1000)
 
 }

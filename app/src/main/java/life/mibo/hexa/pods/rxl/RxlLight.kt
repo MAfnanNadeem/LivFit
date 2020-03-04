@@ -8,6 +8,6 @@
 package life.mibo.hexa.pods.rxl
 
 enum class RxlLight(var type: String) {
-    RANDOM(""), SEQUENCE(""), FOCUS(""), ALL_AT_ONCE(""), TAP_AT_ONCE(""),
+    RANDOM(""), SEQUENCE(""), FOCUS(""), ALL_AT_ONCE(""), TAP_AT_ONCE(""), TAP_AT_ALL(""),
     ALL_AT_ALL(""), HOME_BASED(""), UNKNOWN("")
 }

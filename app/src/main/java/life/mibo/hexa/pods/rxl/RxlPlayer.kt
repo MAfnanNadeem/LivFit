@@ -8,8 +8,10 @@
 package life.mibo.hexa.pods.rxl
 
 import life.mibo.hardware.models.Device
+import life.mibo.hexa.pods.Event
+import kotlin.random.Random
 
-class RxlPlayer(
+data class RxlPlayer(
     var id: Int,
     var name: String,
     var color: Int,
@@ -19,9 +21,30 @@ class RxlPlayer(
 ) {
 
 
-    var station = RxlStation().addColor(color, 0, colorId)
+    var lastPod = 0
+    var lastUid = ""
+    //var station = RxlStation().addColor(color, 0, colorId)
+    var events = ArrayList<Event>()
+    var wrongEvents = ArrayList<Event>()
+
+    fun inc() {
+        lastPod++
+    }
+
+    private fun podsUids(): String {
+        var uid = ""
+        pods?.forEach {
+            uid += ", ${it.uid}"
+        }
+        return uid
+    }
+
+    override fun toString(): String {
+        return "RxlPlayer(id=$id, name='$name', colorId=$colorId, noOfPods=$noOfPods, pods=${podsUids()}, lastPod=$lastPod, lastUid='$lastUid', events=${events.size}, wrongEvents=${wrongEvents.size})"
+    }
 
     enum class Player {
         SINGLE, TWO_PLAYER, MULTI_PLAYERS;
     }
+
 }

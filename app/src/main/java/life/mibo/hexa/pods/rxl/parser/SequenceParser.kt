@@ -1,98 +1,132 @@
 /*
- *  Created by Sumeet Kumar on 2/23/20 10:11 AM
+ *  Created by Sumeet Kumar on 3/2/20 11:59 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/23/20 9:32 AM
+ *  Last modified 2/25/20 8:45 AM
  *  Mibo Hexa - app
  */
 
 package life.mibo.hexa.pods.rxl.parser
 
+import io.reactivex.Single
 import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hexa.pods.rxl.RxlLight
+import life.mibo.hexa.pods.Event
 import life.mibo.hexa.pods.rxl.RxlPlayer
 import life.mibo.hexa.pods.rxl.RxlProgram
+import java.util.concurrent.TimeUnit
 
-class SequenceParser(var program: RxlProgram) : RxlParser() {
-    //private var player: life.mibo.hexa.pods.base.Players? = null
+class SequenceParser(program: RxlProgram, listener: Listener) :
+    RxlParser(program, listener, "TestParser") {
 
-    override fun type(): RxlLight {
-        return RxlLight.SEQUENCE
-    }
 
-    override fun name(): String {
-        return "SequenceParser"
-    }
-
-    override fun player(): RxlPlayer.Player {
-        return RxlPlayer.Player.SINGLE
-    }
-
-    override fun program(): RxlProgram {
-        return program
-    }
-
-    override fun onEvent(event: RxlStatusEvent, matched: Boolean) {
-        log("onEvent received.....")
-        if (matched)
-            lightOnSequence()
-    }
-
-    fun onEvent(event: RxlStatusEvent, lastUid: String) {
-        //lightOnSequence()
-    }
-
-    override fun exerciseStart() {
-        //register(this)
-        color = program.getActiveColor()
-        //lightOnSequence()
-    }
-
-    override fun exerciseEnd() {
-        unregister(this)
-    }
-
-    override fun cycleStart() {
-        log("startCycle.......2")
-        log("cycleStart.......2")
-        lightOnSequence()
-    }
-
-    override fun cycleEnd() {
+    fun create() {
 
     }
 
-    override fun cyclePause() {
+    fun nextEvent(event: RxlStatusEvent) {
+
+        players.forEach {
+            if (it.id == event.data) {
+                if (delayTime > 0) {
+                    Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess { _ ->
+                        lightOnSequence(it)
+                    }.subscribe()
+                } else {
+                    lightOnSequence(it)
+                }
+                return@forEach
+            }
+        }
 
     }
 
-    override fun cycleResume() {
-
+    fun hasNextCycle(): Boolean {
+        if (cycles > currentCycle) {
+            currentCycle++
+            return true
+        }
+        return false
     }
 
-    override fun onReset() {
-
-    }
-
-    override fun onStart(onTap: Boolean) {
-        super.onStart(onTap)
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    private var lastPod = 0
-    private var color = 0
+//    override fun startExercise() {
+//        startInternal()
+//    }
 
     @Synchronized
-    private fun lightOnSequence() {
-        log("lightOnSequence........... $lastPod - " + devices().size)
-        if (lastPod >= devices().size)
-            lastPod = 0
-        sendColor(devices()[lastPod], color)
-        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
-        lastPod++
+    override fun onCycleTapStart(playerId: Int) {
+        log("child STARTING PROGRAM")
+        for (p in players) {
+            if (p.id == playerId) {
+                lightOnSequence(p)
+                break
+            }
+        }
+    }
+
+    @Synchronized
+    override fun onCycleStart() {
+        log("child STARTING PROGRAM")
+        for (p in players) {
+            lightOnSequence(p)
+            Thread.sleep(50)
+        }
     }
 
 
+    @Synchronized
+    override fun onNext(player: RxlPlayer, event: RxlStatusEvent) {
+        log("child nextLightEvent called")
+        if (player.lastUid == event.uid) {
+            log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
+            player.events.add(Event(player.events.size + 1, actionTime, event.time))
+            if (delayTime > 0) {
+                Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
+                    lightOnSequence(player)
+                }.doOnError {
+                    lightOnSequence(player)
+                }.subscribe()
+            } else {
+                lightOnSequence(player)
+            }
+        } else {
+            log("RxlStatusEvent UID NOT Matched >> ${player.lastUid} == $lastUid ")
+            player.wrongEvents.add(Event(player.wrongEvents.size + 1, actionTime, event.time))
+        }
+
+
+//        for (p in players) {
+//            if (p.id == player.id) {
+//                lightOnSequence(player)
+//                break
+//            }
+//        }
+
+    }
+
+
+    private fun lightOnSequence(player: RxlPlayer) {
+        log("child lightOnSequence $player")
+        log("lightOnSequence lastPod ${player.lastPod}, size ${player.pods.size}")
+        if (player.lastPod >= player.pods.size)
+            player.lastPod = 0
+        val pod = player.pods[player.lastPod]
+        player.lastUid = pod.uid
+        listener.sendColorEvent(pod, player.color, actionTime, player.id, true)
+        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
+        player.inc()
+    }
+
+
+    override fun completeCycle() {
+        log("completeCycle")
+        if (cycles > currentCycle) {
+            currentCycle++
+            //pauseCycle(0, getPause())
+            log("completeCycle start new cycle")
+            listener.nextCycle(currentCycle, pauseTime, duration)
+            //resumeObserver(currentCycle, getPause(), duration)
+        } else {
+            log("completeCycle end program...")
+            listener.endProgram(0, 0)
+        }
+    }
 }

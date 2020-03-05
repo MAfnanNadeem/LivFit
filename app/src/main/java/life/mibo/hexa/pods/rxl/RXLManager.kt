@@ -23,7 +23,9 @@ import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.pods.Event
 import life.mibo.hexa.pods.pod.PodType
-import life.mibo.hexa.pods.rxl.parser.RXLHelper
+import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hexa.pods.rxl.program.RxlColor
+import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
@@ -41,16 +43,6 @@ class RXLManager private constructor() {
         life.mibo.hardware.core.Logger.e("RXLManager init for first time")
     }
 
-    interface Listener {
-        fun onExerciseStart()
-        fun onExerciseEnd()
-        fun onCycleStart(cycle: Int, duration: Int)
-        fun onCycleEnd(cycle: Int)
-        fun onCyclePaused(cycle: Int, time: Int)
-        fun onCycleResumed(cycle: Int)
-        fun onPod(podId: Int, time: Int)
-        fun onTapColorSent()
-    }
 
     companion object {
         val REFLEX = 10
@@ -70,7 +62,7 @@ class RXLManager private constructor() {
     }
 
 
-    var listener: Listener? = null
+    var listener: RxlListener? = null
     var devices = ArrayList<Device>()
     // private var devicesUids = ArrayList<DeviceEvent>()
     var events = ArrayList<Event>()
@@ -118,7 +110,7 @@ class RXLManager private constructor() {
         return this
     }
 
-    fun withListener(listener: Listener): RXLManager {
+    fun withListener(listener: RxlListener): RXLManager {
         this.listener = listener
         return this
     }
@@ -274,7 +266,7 @@ class RXLManager private constructor() {
             }
             lastPod = 1
             log("RxlStatusEvent2 ChangeColorEvent2 send To UID == $lastUid ")
-            listener?.onTapColorSent()
+            listener?.onTapColorSent(0)
         }
     }
 

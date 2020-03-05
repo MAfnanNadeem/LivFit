@@ -7,18 +7,27 @@
 
 package life.mibo.hexa.pods.rxl.parser
 
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
-import life.mibo.hexa.pods.rxl.RxlPlayer
-import life.mibo.hexa.pods.rxl.RxlProgram
+import life.mibo.hexa.pods.rxl.program.RxlPlayer
+import life.mibo.hexa.pods.rxl.program.RxlProgram
+import org.greenrobot.eventbus.EventBus
 import kotlin.random.Random
 
 abstract class RxlParser(
     var program: RxlProgram,
     var listener: Listener,
-    private val tagName: String
+    val tagName: String
 ) {
+
+
+    init {
+        // assignPlayers(program)
+    }
 
     interface Listener {
         fun onDispose()
@@ -65,11 +74,24 @@ abstract class RxlParser(
     }
 
     private fun assignPlayers(program: RxlProgram) {
-        players.clear()
-        program.players?.forEach {
-            it.events.clear()
-            it.wrongEvents.clear()
-            players.add(it)
+        if (players.size == 0) {
+            //players.clear()
+            program.players?.forEach {
+                it.events.clear()
+                it.wrongEvents.clear()
+                players.add(it)
+            }
+        }
+    }
+
+    fun createPlayers() {
+        if (players.size == 0) {
+            //players.clear()
+            program.players.forEach {
+                it.events.clear()
+                it.wrongEvents.clear()
+                players.add(it)
+            }
         }
     }
 
@@ -122,8 +144,14 @@ abstract class RxlParser(
         return false
     }
 
+    var isTap = false
+    fun startTapProgram(player: RxlPlayer) {
+        isTap = true
+        startInternal()
+    }
 
     fun startProgram() {
+        isTap = false
         startInternal()
     }
 
@@ -144,13 +172,13 @@ abstract class RxlParser(
 
         //isRandom = program!!.isRandom()
         lightLogic = program.lightLogic()
-        activeColor = program.getActiveColor()
-        colorPosition = program.getActivePosition()
-        cycles = program.getCyclesCount().toLong()
-        actionTime = program.getAction()
-        pauseTime = program.getPause()
-        duration = program.getDuration()
-        delayTime = program.getDelay()
+        activeColor = program.color()
+        colorPosition = program.colorPosition()
+        cycles = program.cycles().toLong()
+        duration = program.duration()
+        actionTime = program.action().times(1000)
+        pauseTime = program.pause().times(1000)
+        delayTime = program.delay().times(1000)
         currentCycle = 1
         if (players.size > 1)
             isMulti = true
@@ -162,9 +190,37 @@ abstract class RxlParser(
 
     // abstract
 
+    abstract fun onCycleStart(player: RxlPlayer)
     abstract fun onCycleStart()
     abstract fun onCycleTapStart(playerId: Int)
     abstract fun onNext(player: RxlPlayer, event: RxlStatusEvent)
     //abstract fun nextLightEvent()
     abstract fun completeCycle()
+
+    //abstract fun dispose()
+    fun dispose() {
+        // turnOff(players)
+    }
+
+    fun turnOff(players: ArrayList<RxlPlayer>) {
+        try {
+            Single.fromCallable {
+                if (players.isNotEmpty()) {
+                    players.forEach { p ->
+                        p.pods.forEach { d ->
+                            EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid, 0, 0))
+                            Thread.sleep(20)
+                        }
+                    }
+                }
+                ""
+            }.subscribeOn(Schedulers.io()).doOnSuccess {
+
+            }.doOnError {
+
+            }.subscribe()
+        } catch (e: java.lang.Exception) {
+
+        }
+    }
 }

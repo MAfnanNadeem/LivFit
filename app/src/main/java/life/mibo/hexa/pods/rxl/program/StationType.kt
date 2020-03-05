@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 enum class StationType {
         ONE, TWO, THREE, FOUR

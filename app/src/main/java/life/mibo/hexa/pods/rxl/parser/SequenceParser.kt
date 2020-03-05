@@ -10,12 +10,12 @@ package life.mibo.hexa.pods.rxl.parser
 import io.reactivex.Single
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hexa.pods.Event
-import life.mibo.hexa.pods.rxl.RxlPlayer
-import life.mibo.hexa.pods.rxl.RxlProgram
+import life.mibo.hexa.pods.rxl.program.RxlPlayer
+import life.mibo.hexa.pods.rxl.program.RxlProgram
 import java.util.concurrent.TimeUnit
 
 class SequenceParser(program: RxlProgram, listener: Listener) :
-    RxlParser(program, listener, "TestParser") {
+    RxlParser(program, listener, "SequenceParser") {
 
 
     fun create() {
@@ -62,6 +62,11 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
         }
     }
 
+    override fun onCycleStart(player: RxlPlayer) {
+        log("child STARTING PROGRAM")
+        lightOnSequence(player)
+    }
+
     @Synchronized
     override fun onCycleStart() {
         log("child STARTING PROGRAM")
@@ -78,7 +83,7 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
         if (player.lastUid == event.uid) {
             log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
             player.events.add(Event(player.events.size + 1, actionTime, event.time))
-            if (delayTime > 0) {
+            if (delayTime > 100) {
                 Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
                     lightOnSequence(player)
                 }.doOnError {

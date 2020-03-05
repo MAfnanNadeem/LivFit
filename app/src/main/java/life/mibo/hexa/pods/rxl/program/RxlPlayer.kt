@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.pods.Event
@@ -26,6 +26,21 @@ data class RxlPlayer(
     //var station = RxlStation().addColor(color, 0, colorId)
     var events = ArrayList<Event>()
     var wrongEvents = ArrayList<Event>()
+
+    fun next(): Int {
+        lastPod++
+        if (lastPod >= pods.size)
+            lastPod = 0
+        return lastPod
+    }
+
+    fun nextRandom(): Int {
+        val i = Random.nextInt(pods.size)
+        lastPod = if (lastPod == i) lastPod++ else i
+        if (lastPod >= pods.size)
+            lastPod = 0
+        return lastPod
+    }
 
     fun inc() {
         lastPod++

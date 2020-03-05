@@ -5,6 +5,6 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 class RxlColor(var activeColor: Int, var destructiveColor: Int = 0, var position : Int = 0)

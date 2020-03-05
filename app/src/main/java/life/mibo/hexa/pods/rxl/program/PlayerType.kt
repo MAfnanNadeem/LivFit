@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 enum class PlayerType {
     SINGLE, TWO_PLAYER, MULTI_PLAYERS;

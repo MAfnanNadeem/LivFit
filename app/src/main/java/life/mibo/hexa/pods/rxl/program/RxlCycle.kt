@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/16/20 9:00 AM
+ *  Created by Sumeet Kumar on 3/5/20 10:39 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/1/20 4:23 PM
+ *  Last modified 3/4/20 4:14 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 import life.mibo.hexa.core.toIntOrZero
 
@@ -66,9 +66,9 @@ data class RxlCycle(
         return pos
     }
 
-    fun getDuration(): Int = cycleDuration
-    fun getAction(): Int = cycleAction.times(1000)
-    fun getPause(): Int = cyclePause.times(1000)
-    fun getDelay(): Int = actionDelay.times(1000)
+//    fun getDuration(): Int = cycleDuration
+//    fun getAction(): Int = cycleAction.times(1000)
+//    fun getPause(): Int = cyclePause.times(1000)
+//    fun getDelay(): Int = actionDelay.times(1000)
 
 }

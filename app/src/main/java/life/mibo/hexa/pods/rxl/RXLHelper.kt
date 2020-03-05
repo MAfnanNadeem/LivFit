@@ -1,13 +1,14 @@
 /*
- *  Created by Sumeet Kumar on 3/3/20 4:47 PM
+ *  Created by Sumeet Kumar on 3/5/20 10:40 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 3/3/20 4:47 PM
+ *  Last modified 3/5/20 10:23 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl.parser
+package life.mibo.hexa.pods.rxl
 
 import android.util.SparseArray
+import android.util.SparseBooleanArray
 import androidx.core.util.forEach
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -19,17 +20,15 @@ import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.pods.pod.PodType
-import life.mibo.hexa.pods.rxl.RXLManager
-import life.mibo.hexa.pods.rxl.RxlColor
-import life.mibo.hexa.pods.rxl.RxlProgram
+import life.mibo.hexa.pods.rxl.parser.*
+import life.mibo.hexa.pods.rxl.program.RxlPlayer
+import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
-import life.mibo.hexa.utils.Utils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 
 class RXLHelper private constructor() {
@@ -38,7 +37,8 @@ class RXLHelper private constructor() {
         life.mibo.hardware.core.Logger.e("RXLManager init for first time")
     }
 
-    private var childListener = object : RxlParser.Listener {
+    private var childListener = object :
+        RxlParser.Listener {
 
         override fun onDispose() {
             log("BaseTestParser.Listener : onDispose")
@@ -74,7 +74,7 @@ class RXLHelper private constructor() {
             playerId: Int,
             observe: Boolean
         ) {
-            // log("BaseTestParser.Listener : sendColorEvent player $playerId action $action")
+            log("Parser.Listener : sendColorEvent player $playerId action $action")
             sendColor(device, color, action, playerId, observe)
         }
 
@@ -89,7 +89,8 @@ class RXLHelper private constructor() {
         val REFLEX = 10
         @Volatile
         private var INSTANCE: RXLHelper? = null
-
+        const val TAP_CODE = 200
+        const val TAP_TIME = 10 * 1000
         // @Volatile
         //private var receivedFocusAll = false
 
@@ -102,15 +103,40 @@ class RXLHelper private constructor() {
             }
     }
 
+    private var parrentListener: RxlListener? = null
 
-    private var parrentListener: RXLManager.Listener? = null
+    private var publisher: PublishProcessor<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
+    private var observers: CompositeDisposable? = null
+    private var delayObservers: DisposableArray? = null
+    private var disposable: Disposable? = null
+    // todo startObserver - start
+    // private var publisher: PublishSubject<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
+
+    private var program: RxlProgram? = null
+    private var programParser: RxlParser? = null
+
     // private var devicesUids = ArrayList<DeviceEvent>()
     //var events = ArrayList<Event>()
     //var wrongEvents = ArrayList<Event>()
-    private var isMultiPlayer = false
-    private var lastActivePod = -1
-    var program: RxlProgram? = null
-    var type: PodType = PodType.UNKNOWN
+    //private var isMultiPlayer = false
+    // private var lastActivePod = -1
+
+    private var type: PodType = PodType.UNKNOWN
+
+    //private var colorDisposable: Disposable? = null
+    private var colorDisposable = SparseArray<Disposable?>()
+
+    //var isRandom = false
+    private var lightLogic = 1 // 1= Sequence, 2 = Random, 3 = Focus, 4 = Focus at All
+
+    //var lightLogic : RxlLight = RxlLight.SEQUENCE // todo enum may be costly for performance, using int
+    private var unitTest = false
+    private var isStarted = false
+    private var isInternalStarted = false
+    private var isRunning = false
+
+    ///private var lastUid = ""
+    //private var actionTime = 0
 
     private fun refresh() {
         // devices.clear()
@@ -127,7 +153,7 @@ class RXLHelper private constructor() {
     }
 
 
-    fun withListener(listener: RXLManager.Listener): RXLHelper {
+    fun withListener(listener: RxlListener): RXLHelper {
         this.parrentListener = listener
         return this
     }
@@ -143,24 +169,6 @@ class RXLHelper private constructor() {
     }
 
 
-    // todo startObserver - start
-    // private var publisher: PublishSubject<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
-    private var publisher: PublishProcessor<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
-    private var observers: CompositeDisposable? = null
-    private var delayObservers: DisposableArray? = null
-    private var disposable: Disposable? = null
-    //private var colorDisposable: Disposable? = null
-    private var colorDisposable = SparseArray<Disposable?>()
-    //var isRandom = false
-    var lightLogic = 1 // 1= Sequence, 2 = Random, 3 = Focus, 4 = Focus at All
-    //var lightLogic : RxlLight = RxlLight.SEQUENCE // todo enum may be costly for performance, using int
-    private var unitTest = false
-    private var isStarted = false
-    private var isInternalStarted = false
-    private var isRunning = false
-    var baseParser: RxlParser? = null
-    //private var actionTime = 0
-
     private fun reset() {
         isStarted = false
         isInternalStarted = false
@@ -175,12 +183,36 @@ class RXLHelper private constructor() {
     }
 
     private fun createProgram() {
-        baseParser = when (program?.lightLogic()) {
+        programParser = when (program?.lightLogic()) {
             1 -> {
-                SequenceParser(program!!, childListener)
+                SequenceParser(
+                    program!!,
+                    childListener
+                )
+            }
+            2 -> {
+                RandomParser(
+                    program!!,
+                    childListener
+                )
+            }
+            3 -> {
+                FocusParser(
+                    program!!,
+                    childListener
+                )
+            }
+            4 -> {
+                AllAtOnceParser(
+                    program!!,
+                    childListener
+                )
             }
             else -> {
-                SequenceParser(program!!, childListener)
+                SequenceParser(
+                    program!!,
+                    childListener
+                )
             }
         }
     }
@@ -207,60 +239,54 @@ class RXLHelper private constructor() {
         reset()
         createProgram()
         createNowPublish()
-        startInternal()
+        startNowInternal()
         //startInternal()
     }
 
     private fun createTapPublish() {
-//        publisher = PublishSubject.create<RxlStatusEvent>()
-//        publisher!!.subscribeOn(Schedulers.io()).doOnNext {
-//            logi("publisherTap RxlStatusEvent doOnNext ${it.uid}  == lastUid $lastUid  receivedFocusAll $receivedFocusAll isFocus $isFocus")
-//            if (isFocus) {
-//                nextFocusEvent(it)
-//                return@doOnNext
-//            }
-//
-//            if (it.uid == lastUid) {
-//                if (!isInternalStarted) {
-//                    log("RxlStatusEvent2 starting........... >> $isInternalStarted ")
-//                    if (it.time > 10) {
-//                        startInternal()
-//                        return@doOnNext
-//                    } else
-//                        return@doOnNext
-//                }
-//
-//                log("RxlStatusEvent UID Matched ${it.uid} == $lastUid ")
-//                nextEvent(it.time)
-//            } else {
-//                log("RxlStatusEvent UID NOT Matched >> ${it.uid} == $lastUid ")
-//                return@doOnNext
-//            }
-//        }.subscribe()
+        publisher = PublishProcessor.create<RxlStatusEvent>()
+        //publisher!!.toFlowable(BackpressureStrategy.BUFFER)
+        //publisher!!.onBackpressureBuffer
+        //publisher?.firstElement()
+        publisher!!.onBackpressureBuffer().subscribeOn(Schedulers.io()).doOnNext {
+            logi("publisherTap RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
+            if (it.data > TAP_CODE) {
+                log("RxlStatusEvent2 it.data == TAP_CODE........... >> $isInternalStarted ")
+                checkAndStartOnTap(it)
+                return@doOnNext
+            }
+            if (!isStarted)
+                return@doOnNext
+            programParser!!.onEvent(it)
+        }.doOnError {
+            log("ERROR............ $it")
+        }.subscribe()
 
         if (isInternalStarted)
             return
+        programParser?.createPlayers();
 
-        log("RxlStatusEvent2 isStarted >> $isInternalStarted ")
-//        if (devices.isNotEmpty()) {
-//            val device = devices[0]
-//            lastUid = device.uid
-//            device.let {
-//                it.colorPalet = getColor()
-//                lastUid = it.uid
-//                EventBus.getDefault()
-//                    .postSticky(
-//                        ChangeColorEvent(
-//                            it,
-//                            it.uid,
-//                            10 * 10000
-//                        )
-//                    )
-//            }
-//            lastPod = 1
-//            log("RxlStatusEvent2 ChangeColorEvent2 send To UID == $lastUid ")
-//            listener?.onTapColorSent()
-//        }
+        tapPlayerCount = programParser!!.players.size
+        log("RxlStatusEvent2 isStarted >> $isStarted : $isInternalStarted $tapPlayerCount")
+        programParser!!.players?.forEach { player ->
+            log("RxlStatusEvent2 send tap to player $player")
+            if (player.pods.size > 0) {
+                val d: Device? = player.pods[0]
+                log("RxlStatusEvent2 send tap to Device $d")
+                d?.let {
+                    it.colorPalet = player.color
+                    player.lastUid = it.uid
+                    EventBus.getDefault()
+                        .postSticky(
+                            ChangeColorEvent(it, it.uid,
+                                TAP_TIME, TAP_CODE.plus(player.id))
+                        )
+                }
+            }
+            Thread.sleep(15)
+        }
+        log("RxlStatusEvent onTapColorSent ")
+        parrentListener?.onTapColorSent(0)
     }
 
     //Back Pressure handel
@@ -275,15 +301,95 @@ class RXLHelper private constructor() {
             logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
             if (!isStarted)
                 return@doOnNext
-            baseParser!!.onEvent(it)
+            programParser!!.onEvent(it)
         }.doOnError {
             log("ERROR............ $it")
         }.subscribe()
     }
 
     // Private Functions
+    var tapArray = SparseBooleanArray()
+    var tapPlayerCount = 0
+    var allPlayerTap = false
 
-    private fun startInternal() {
+
+    private fun allPlayersTapped(): Boolean {
+        return allPlayerTap
+    }
+
+    private fun checkAndStartOnTap(event: RxlStatusEvent) {
+        if (event.time > 10) {
+            program?.players?.forEach {
+                if (event.data == TAP_CODE.plus(it.id))
+                    startTapInternal(it)
+            }
+        }
+    }
+
+    private fun checkAndStartOnTap2(event: RxlStatusEvent) {
+        if (event.time > 10) {
+            when (event.data) {
+                TAP_CODE.plus(1) -> {
+                    program?.players?.let {
+                        if (it.size > 0) {
+                            //val p = it[0]
+                            //if (p.lastUid == event.uid)
+                            startTapInternal(it[0])
+                        }
+                    }
+                }
+                TAP_CODE.plus(2) -> {
+                    program?.players?.let {
+                        if (it.size > 1)
+                            startTapInternal(it[1])
+                    }
+                }
+                TAP_CODE.plus(3) -> {
+                    program?.players?.let {
+                        if (it.size > 2)
+                            startTapInternal(it[2])
+                    }
+                }
+                TAP_CODE.plus(4) -> {
+                    program?.players?.let {
+                        if (it.size > 3)
+                            startTapInternal(it[3])
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    private fun startTapInternal(player: RxlPlayer?) {
+        log("startTapInternal.......... $player")
+        if (player != null) {
+            isInternalStarted = true
+            //colorSent = false
+
+            log(
+                "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
+                        "action ${program?.getAction()} pause ${program?.getPause()}"
+            )
+
+            if (observers == null || observers?.isDisposed == true)
+                observers = CompositeDisposable()
+            unitTest = false
+            //isRandom = program!!.isRandom()
+            //lightLogic = program!!.lightLogic()
+
+            parrentListener?.onExerciseStart()
+            logi(".......... startExercise for player ${player.id} .......... ")
+            isRunning = true
+            programParser?.startTapProgram(player);
+            tapArray.put(player.id, true)
+        }
+
+    }
+
+
+    private fun startNowInternal() {
         //baseParser = TestParser(program!!, testListener)
         isInternalStarted = true
         //colorSent = false
@@ -303,10 +409,10 @@ class RXLHelper private constructor() {
         //isRandom = program!!.isRandom()
         lightLogic = program!!.lightLogic()
 
-        if (lightLogic > 2) {
-            //isFocus = true
-            setColors()
-        }
+//        if (lightLogic > 2) {
+//            //isFocus = true
+//            setColors()
+//        }
         //events.clear()
         // baseParser?.startExercise(0, 0)
         //baseParser?.startObserver(1)
@@ -316,23 +422,23 @@ class RXLHelper private constructor() {
     }
 
     // for focus and all at once only
-    val colors = ArrayList<RxlColor>()
-
-    private fun setColors() {
-        val list = Utils.getColors()
-        colors.clear()
-        list.forEach {
-            it.id?.let { c ->
-                colors.add(RxlColor(c))
-            }
-        }
-
-//        devicesUids.clear()
-//        devices.forEach {
-//            devicesUids.add(DeviceEvent(it.uid, false))
+//    val colors = ArrayList<RxlColor>()
+//
+//    private fun setColors() {
+//        val list = Utils.getColors()
+//        colors.clear()
+//        list.forEach {
+//            it.id?.let { c ->
+//                colors.add(RxlColor(c))
+//            }
 //        }
-
-    }
+//
+////        devicesUids.clear()
+////        devices.forEach {
+////            devicesUids.add(DeviceEvent(it.uid, false))
+////        }
+//
+//    }
 
     private fun startObserver(cycle: Int, duration: Int) {
         log("startObserver >> cycle $cycle - duration $duration")
@@ -444,7 +550,7 @@ class RXLHelper private constructor() {
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
         isStarted = true
 
-        baseParser?.onCycleStart()
+        programParser?.onCycleStart()
         //publisher.onNext("startCycle")
     }
 
@@ -474,7 +580,7 @@ class RXLHelper private constructor() {
             value?.dispose()
         }
         disposable?.dispose()
-        baseParser?.completeCycle()
+        programParser?.completeCycle()
 //        if (cycles > currentCycle) {
 //            currentCycle++
 //            pauseCycle(0, getPause())
@@ -492,7 +598,7 @@ class RXLHelper private constructor() {
         parrentListener?.onExerciseStart()
         logi(".......... startExercise .......... ")
         isRunning = true
-        baseParser?.startProgram()
+        programParser?.startProgram()
         //publisher.onNext("startExercise")
     }
 
@@ -503,7 +609,8 @@ class RXLHelper private constructor() {
         parrentListener?.onExerciseEnd()
         //EventBus.getDefault().post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
         dispose()
-
+        //programParser?.dispose()
+        turnOffAndRelease(program?.players)
         try {
             publisher?.onComplete()
             publisher?.unsubscribeOn(Schedulers.io())
@@ -527,44 +634,16 @@ class RXLHelper private constructor() {
     }
 
 
-    //private var nextPod = 0
-    // private var lastPod = 0
-    // private var lastUid = ""
-    //private var random: Random? = null
-
-
-//    @Synchronized
-//    private fun lightOnSequence() {
-//        if (lastPod >= devices.size)
-//            lastPod = 0
-//        sendColorEvent(devices[lastPod], activeColor)
-//        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
-//        lastPod++
-//    }
-//
-//    @Synchronized
-//    private fun lightOnRandom() {
-//        val id = nextRandom()
-//
-//        lastPod = if (id == lastPod)
-//            nextRandom()
-//        else
-//            id
-//
-//        if (lastPod >= devices.size)
-//            lastPod = nextRandom()
-//
-//        sendColorEvent(devices[lastPod], activeColor)
-//    }
-
-
-    //private var allFocus = 0
-    //private var focusCount = 0
-
-
     fun sendColor(d: Device?, color: Int, action: Int, playerId: Int, observe: Boolean = false) {
+
         if (observe)
-            delayObserver(Delay(d?.uid, action.plus(700).toLong(), playerId))
+            delayObserver(
+                Delay(
+                    d?.uid,
+                    action.plus(700).toLong(),
+                    playerId
+                )
+            )
         d?.let {
             it.colorPalet = color
             EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, action, playerId))
@@ -572,6 +651,27 @@ class RXLHelper private constructor() {
         //lastPod++
     }
 
+    fun turnOffAndRelease(players: ArrayList<RxlPlayer>?) {
+        try {
+            Single.fromCallable {
+                if (!players.isNullOrEmpty()) {
+                    players.forEach { p ->
+                        p.pods.forEach { d ->
+                            EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid, 0, 0))
+                            Thread.sleep(20)
+                        }
+                    }
+                }
+                ""
+            }.subscribeOn(Schedulers.io()).doOnSuccess {
+
+            }.doOnError {
+
+            }.subscribe()
+        } catch (e: java.lang.Exception) {
+
+        }
+    }
 
     private fun dispose() {
         observers?.add(Single.fromCallable {
@@ -633,7 +733,7 @@ class RXLHelper private constructor() {
     fun getHits(): String {
         val b = StringBuilder()
         b.append("\n")
-        baseParser?.players?.forEach { it ->
+        programParser?.players?.forEach { it ->
             b.append(it.name)
             b.append("\n")
             b.append("--------------")

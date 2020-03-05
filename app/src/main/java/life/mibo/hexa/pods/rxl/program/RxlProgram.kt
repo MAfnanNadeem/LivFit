@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/16/20 8:59 AM
+ *  Created by Sumeet Kumar on 3/5/20 10:39 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/1/20 4:27 PM
+ *  Last modified 3/4/20 4:28 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 import android.util.SparseArray
 import life.mibo.hardware.core.Logger
@@ -200,6 +200,34 @@ class RxlProgram() {
         return 0
     }
 
+    // if cycle is one
+    fun pause(): Int {
+        return cycles[currentCycle].cyclePause
+    }
+
+    fun delay(): Int {
+        return cycles[currentCycle].actionDelay
+    }
+
+    fun action(): Int {
+        return cycles[currentCycle].cycleAction
+    }
+
+    fun duration(): Int {
+        return cycles[currentCycle].cycleDuration
+    }
+
+    fun color(): Int {
+        return players[currentPlayer].color
+    }
+
+    fun colorPosition(): Int {
+        return players[currentPlayer].colorId
+    }
+
+    fun cycles(): Int = count
+
+
     fun isRandom(): Boolean {
         if (currentCycle < cycles.size)
             return cycles[currentCycle].lightType == RxlLight.RANDOM
@@ -273,8 +301,26 @@ class RxlProgram() {
             color: Int, colorId: Int, pods: ArrayList<Device>, type: RxlLight
         ): RxlProgram {
             // val station = RxlStation().add()
-            return RxlProgram().addCycle(RxlCycle(duration, action, pause, 0, "", type))
-                .addPlayer(RxlPlayer(1, "Player 1", color, colorId, pods.size, pods))
+            return RxlProgram().addCycle(
+                    RxlCycle(
+                        duration,
+                        action,
+                        pause,
+                        0,
+                        "",
+                        type
+                    )
+                )
+                .addPlayer(
+                    RxlPlayer(
+                        1,
+                        "Player 1",
+                        color,
+                        colorId,
+                        pods.size,
+                        pods
+                    )
+                )
                 .repeat(cycle)
         }
 
@@ -288,7 +334,16 @@ class RxlProgram() {
             logic: RxlLight
         ): RxlProgram {
             // val station = RxlStation().add()
-            return RxlProgram().addCycle(RxlCycle(duration, action, pause, delay, "", logic))
+            return RxlProgram().addCycle(
+                    RxlCycle(
+                        duration,
+                        action,
+                        pause,
+                        delay,
+                        "",
+                        logic
+                    )
+                )
                 .addPlayers(players)
                 .repeat(cycle)
         }

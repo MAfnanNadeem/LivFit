@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/16/20 9:00 AM
+ *  Created by Sumeet Kumar on 3/5/20 10:39 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/16/20 8:58 AM
+ *  Last modified 2/18/20 10:44 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.pods.rxl
+package life.mibo.hexa.pods.rxl.program
 
 import android.util.SparseArray
 
@@ -19,7 +19,12 @@ class RxlStation(val type: StationType = StationType.ONE) {
             count = 1
         else
             count++
-        stations.put(count, RxlColor(activeColor, destructiveColor))
+        stations.put(count,
+            RxlColor(
+                activeColor,
+                destructiveColor
+            )
+        )
         return this
     }
 
@@ -28,12 +33,23 @@ class RxlStation(val type: StationType = StationType.ONE) {
             count = 1
         else
             count++
-        stations.put(count, RxlColor(activeColor, destructiveColor, position))
+        stations.put(count,
+            RxlColor(
+                activeColor,
+                destructiveColor,
+                position
+            )
+        )
         return this
     }
 
     fun add(type: Int, activeColor: Int, destructiveColor: Int): RxlStation {
-        stations.put(type, RxlColor(activeColor, destructiveColor))
+        stations.put(type,
+            RxlColor(
+                activeColor,
+                destructiveColor
+            )
+        )
         return this
     }
 

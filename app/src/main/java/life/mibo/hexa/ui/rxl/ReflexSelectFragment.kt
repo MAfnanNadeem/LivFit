@@ -21,6 +21,7 @@ import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import life.mibo.hexa.ui.select_program.ProgramDialog
@@ -116,6 +117,7 @@ class ReflexSelectFragment : BaseFragment() {
     }
 
     private fun onNextClicked() {
+
         //var next = false
         Utils.hideKeyboard(recyclerView, this.activity)
         var error = false
@@ -138,7 +140,11 @@ class ReflexSelectFragment : BaseFragment() {
         } else {
             // SessionManager.initUser()
             //Utils.hideKeyboard(this.activity)
-            Thread.sleep(60)
+            try {
+                Thread.sleep(100)
+            } catch (e: Exception) {
+                MiboEvent.log(e)
+            }
             SessionManager.getInstance().userSession.rxlPlayers = list
             navigate(Navigator.RXL_TABS, list)
         }

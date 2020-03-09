@@ -3,8 +3,8 @@ package life.mibo.hexa.ui.login
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.twilio.verification.TwilioVerification
-import com.twilio.verification.external.Via
+//import com.twilio.verification.TwilioVerification
+//import com.twilio.verification.external.Via
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
@@ -34,7 +34,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private lateinit var controller: RegisterController
-    private lateinit var twilio: TwilioVerification
+    //private lateinit var twilio: TwilioVerification
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -340,21 +340,21 @@ class RegisterActivity : BaseActivity() {
     // private val ringCaptchaController = RingcaptchaAPIController("i2ucy2y2y3any8u5i8uz")
 
 
-    fun sendOtpTwilio(jwt: String?) {
-        if (jwt != null) {
-            if (!::twilio.isInitialized)
-                twilio = TwilioVerification(this);
-            twilio.startVerification(jwt, Via.SMS)
-        }
-    }
-
-    fun checkOtpTwilio(otp: String?) {
-        if (otp != null) {
-            if (!::twilio.isInitialized)
-                twilio = TwilioVerification(this);
-            twilio.checkVerificationPin(otp)
-        }
-    }
+//    fun sendOtpTwilio(jwt: String?) {
+//        if (jwt != null) {
+//            if (!::twilio.isInitialized)
+//                twilio = TwilioVerification(this);
+//            twilio.startVerification(jwt, Via.SMS)
+//        }
+//    }
+//
+//    fun checkOtpTwilio(otp: String?) {
+//        if (otp != null) {
+//            if (!::twilio.isInitialized)
+//                twilio = TwilioVerification(this);
+//            twilio.checkVerificationPin(otp)
+//        }
+//    }
 
     override fun onStop() {
         super.onStop()

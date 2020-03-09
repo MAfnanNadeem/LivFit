@@ -8,7 +8,7 @@ import android.view.inputmethod.EditorInfo
 import kotlinx.android.synthetic.main.activity_login.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseActivity
 
 
@@ -81,11 +81,11 @@ class LoginActivity : BaseActivity() {
         // debug()
         if (DEBUG) {
             btn_login?.setOnLongClickListener {
-                controller.onLogin(et_username?.text.toString(), et_password?.text.toString())
+               controller.onLogin(et_username?.text.toString(), et_password?.text.toString())
                 return@setOnLongClickListener true
             }
         }
-        videoBg()
+       // videoBg()
     }
 
     private fun videoBg() {

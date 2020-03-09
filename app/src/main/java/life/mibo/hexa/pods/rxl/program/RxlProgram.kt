@@ -251,7 +251,7 @@ class RxlProgram() {
                     3
                 RxlLight.ALL_AT_ONCE ->
                     4
-                RxlLight.TAP_AT_ONCE ->
+                RxlLight.TAP_AT_ALL ->
                     5
                 RxlLight.HOME_BASED ->
                     6
@@ -352,4 +352,14 @@ class RxlProgram() {
 
     fun getColor(): Int = getActiveColor()
     fun getPosition(): Int = getActivePosition()
+
+    fun pauseProgram() {
+
+    }
+
+    fun resumeProgram(): RxlProgram {
+
+        return this
+    }
+
 }

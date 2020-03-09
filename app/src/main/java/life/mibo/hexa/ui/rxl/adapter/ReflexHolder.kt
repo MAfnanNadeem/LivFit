@@ -10,6 +10,7 @@ package life.mibo.hexa.ui.rxl.adapter
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -26,8 +27,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
-import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.models.rxl.RxlProgram
+import life.mibo.hexa.pods.rxl.program.RxlLight
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
@@ -37,6 +38,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var imageBg: ImageView? = itemView.findViewById(R.id.imageViewBg)
     var image: ImageView? = itemView.findViewById(R.id.imageView)
     var title: TextView? = itemView.findViewById(R.id.tv_title)
+    var ivType: ImageView? = itemView.findViewById(R.id.iv_type)
     var type: TextView? = itemView.findViewById(R.id.tv_type)
     var users: TextView? = itemView.findViewById(R.id.tv_users)
     var time: TextView? = itemView.findViewById(R.id.tv_action)
@@ -54,12 +56,32 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         users?.text = "${item.players}"
         devices?.text = "${item.pods}"
         time?.text = "${item.totalDuration}"
+        ivType?.background = null
+        ivType?.setImageDrawable(null)
+        when (item.lightLogic()) {
+            RxlLight.SEQUENCE -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_sequence)
+            }
+            RxlLight.RANDOM -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_random_icon)
+            }
+            RxlLight.FOCUS -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_only)
+            }
+            RxlLight.ALL_AT_ONCE -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_all_at_once)
+            }
+            RxlLight.TAP_AT_ALL -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_return)
+            }
+        }
+        ivType?.background?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
         if (item.avatarBase64.isNullOrEmpty()) {
             image?.setImageResource(R.drawable.ic_rxl_pods_icon)
             image?.scaleType = ImageView.ScaleType.FIT_CENTER
-           // image?.setColorFilter(Constants.PRIMARY)
-           // setGradient(imageBg, image?.drawable)
+            // image?.setColorFilter(Constants.PRIMARY)
+            // setGradient(imageBg, image?.drawable)
         } else {
 //            val img = item.avatarBase64!!.split(",")
 //            Logger.e("ReflexHolder size: ${img.size}")

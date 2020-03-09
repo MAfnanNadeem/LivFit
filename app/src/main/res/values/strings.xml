@@ -61,6 +61,7 @@
     <string name="working_station">Working station</string>
     <string name="lights_out">Lights out</string>
     <string name="cycles">Rounds</string>
+    <string name="cycle">Round</string>
     <string name="players">Players</string>
     <string name="three_pods_required">Please connect at least 3 Reaction Lights</string>
     <string name="forgot_pwd">Forgot Password? </string>
@@ -179,5 +180,12 @@
     <string name="activity_settings">ACTIVITY SETTINGS</string>
     <string name="_1_sec">1 sec</string>
     <string name="watch_tutorial">WATCH TUTORIAL</string>
+    <string name="exercise_designed">This exercise is designed for  </string>
+    <string name="connected_error">  but you have connected only  </string>
+    <string name="course_name">Course Name</string>
+    <string name="on_click">CLICK</string>
+    <string name="on_tap">TAP</string>
+    <string name="on_sensor">PROXIMITY</string>
+    <string name="sensor_enable">Proximity enabled</string>
 
 </resources>

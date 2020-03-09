@@ -75,7 +75,8 @@
                 android:id="@+id/iv_type"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/rxl_item_icon_size"
-                android:src="@drawable/ic_rxl_all"
+                android:src="@drawable/ic_reflex_all_at_once"
+                android:scaleType="centerInside"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/tv_type"
                 app:layout_constraintStart_toStartOf="@id/tv_type" />

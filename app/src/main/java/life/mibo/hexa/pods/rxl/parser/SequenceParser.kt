@@ -9,7 +9,7 @@ package life.mibo.hexa.pods.rxl.parser
 
 import io.reactivex.Single
 import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hexa.pods.Event
+import life.mibo.hexa.pods.rxl.Event
 import life.mibo.hexa.pods.rxl.program.RxlPlayer
 import life.mibo.hexa.pods.rxl.program.RxlProgram
 import java.util.concurrent.TimeUnit
@@ -51,28 +51,33 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 //        startInternal()
 //    }
 
-    @Synchronized
-    override fun onCycleTapStart(playerId: Int) {
-        log("child STARTING PROGRAM")
-        for (p in players) {
-            if (p.id == playerId) {
-                lightOnSequence(p)
-                break
-            }
-        }
-    }
 
     override fun onCycleStart(player: RxlPlayer) {
-        log("child STARTING PROGRAM")
+        log("child STARTING PROGRAM player...........${player.id}")
         lightOnSequence(player)
     }
 
     @Synchronized
     override fun onCycleStart() {
-        log("child STARTING PROGRAM")
-        for (p in players) {
-            lightOnSequence(p)
-            Thread.sleep(50)
+        log("child STARTING PROGRAM isTap $isTap")
+        if (isTap) {
+            for (p in players) {
+                if (p.isTapReceived) {
+                    if (!p.isStarted) {
+                        log("child STARTING PROGRAM starting player $p")
+                        p.isStarted = true
+                        //p.lastPod = 250
+                        lightOnSequence(p)
+                    }
+                    Thread.sleep(THREAD_SLEEP)
+                }
+            }
+        } else {
+            for (p in players) {
+                //p.lastPod = 250
+                lightOnSequence(p)
+                Thread.sleep(THREAD_SLEEP)
+            }
         }
     }
 
@@ -82,8 +87,14 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
         log("child nextLightEvent called")
         if (player.lastUid == event.uid) {
             log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
-            player.events.add(Event(player.events.size + 1, actionTime, event.time))
-            if (delayTime > 100) {
+            player.events.add(
+                Event(
+                    player.events.size + 1,
+                    actionTime,
+                    event.time
+                )
+            )
+            if (delayTime > MIN_DELAY) {
                 Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
                     lightOnSequence(player)
                 }.doOnError {
@@ -92,9 +103,6 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
             } else {
                 lightOnSequence(player)
             }
-        } else {
-            log("RxlStatusEvent UID NOT Matched >> ${player.lastUid} == $lastUid ")
-            player.wrongEvents.add(Event(player.wrongEvents.size + 1, actionTime, event.time))
         }
 
 
@@ -122,16 +130,17 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
 
     override fun completeCycle() {
+        super.completeCycle()
         log("completeCycle")
-        if (cycles > currentCycle) {
-            currentCycle++
-            //pauseCycle(0, getPause())
-            log("completeCycle start new cycle")
-            listener.nextCycle(currentCycle, pauseTime, duration)
-            //resumeObserver(currentCycle, getPause(), duration)
-        } else {
-            log("completeCycle end program...")
-            listener.endProgram(0, 0)
-        }
+//        if (cycles > currentCycle) {
+//            currentCycle++
+//            //pauseCycle(0, getPause())
+//            log("completeCycle start new cycle")
+//            listener.nextCycle(currentCycle, pauseTime, duration)
+//            //resumeObserver(currentCycle, getPause(), duration)
+//        } else {
+//            log("completeCycle end program...")
+//            listener.endProgram(0, 0)
+//        }
     }
 }

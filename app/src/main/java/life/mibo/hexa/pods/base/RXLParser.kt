@@ -8,10 +8,8 @@
 package life.mibo.hexa.pods.base
 
 import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hexa.pods.pod.LightLogic
-import life.mibo.hexa.pods.pod.Players
-import life.mibo.hexa.pods.rxl.RxlLight
-import life.mibo.hexa.pods.rxl.RxlPlayer
+import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hexa.pods.rxl.program.RxlLight
 
 interface RXLParser {
     fun type(): RxlLight

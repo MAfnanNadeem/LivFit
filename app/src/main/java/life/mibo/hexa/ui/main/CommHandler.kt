@@ -7,14 +7,13 @@
 
 package life.mibo.hexa.ui.main
 
+//import life.mibo.hexa.pods.PodEvent
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
-import life.mibo.hardware.events.PodEvent
 import life.mibo.hardware.models.program.Circuit
 import life.mibo.hardware.network.TCPClient
-//import life.mibo.hexa.pods.PodEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.NoSubscriberEvent
 import org.greenrobot.eventbus.Subscribe
@@ -112,7 +111,7 @@ class CommHandler(val activity: MainActivity) {
     fun onNoSubscriberEvent(event: NoSubscriberEvent) {
         EventBus.getDefault().removeStickyEvent(event)
         //EventBus.getDefault().removeStickyEvent(event);
-        log("onNoSubscriberEvent " + event)
+        log("onNoSubscriberEvent ${event?.originalEvent}")
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -130,6 +129,13 @@ class CommHandler(val activity: MainActivity) {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onBlinkEvent(event: RxlBlinkEvent) {
+        log("onBlinkEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        CommunicationManager.getInstance().onBlinkEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onProximityEvent(event: ProximityEvent) {
         log("ProximityEvent $event")
         EventBus.getDefault().removeStickyEvent(event)
@@ -141,6 +147,13 @@ class CommHandler(val activity: MainActivity) {
         log("PodEvent $event")
         EventBus.getDefault().removeStickyEvent(event)
         CommunicationManager.getInstance().onPodEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onDelayColorEvent(event: DelayColorEvent) {
+        log("PodEvent $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        CommunicationManager.getInstance().onDelayColorEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

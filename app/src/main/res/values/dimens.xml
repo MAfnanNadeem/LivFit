@@ -16,6 +16,8 @@
     <dimen name="ch_6_list_item_button">44dp</dimen>
     <dimen name="rxl_item_icon_size">24dp</dimen>
     <dimen name="like_layout_size">32dp</dimen>
+    <dimen name="thumb_seekbar">72dp</dimen>
+    <dimen name="thumb_size">32dp</dimen>
     <integer name="nav_anim_time">400</integer>
 
 

@@ -16,7 +16,7 @@ import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
-import life.mibo.hexa.room.Database
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.main.MainActivity
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
@@ -51,7 +51,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             //usr = "test@mibo.life"
             //usr = "christie.ffrench@gmail.com"
             //usr = "diana@gmail.com"
-            usr = "max@gmail.com"
+            usr = "sameerk@gmail.com"
            // usr = "alisher@mibo.life"
             pwd = "123456"
         }
@@ -83,7 +83,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                     if (data.status.equals("success", true)) {
                         Observable.just("").observeOn(Schedulers.newThread()).doOnComplete {
                             Database.getInstance(context).memberDao()
-                                .add(life.mibo.hexa.room.Member.from(data.data!!))
+                                .add(life.mibo.hexa.database.Member.from(data.data!!))
                         }.subscribe()
                         //Toasty.success(context, context.getString(R.string.logged_succes)).show()
                         isLogin = true

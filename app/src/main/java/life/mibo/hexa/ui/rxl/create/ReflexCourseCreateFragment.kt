@@ -51,6 +51,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
     }
 
     lateinit var viewImpl: CourseCreateImpl
+    var isTap = true;
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -128,9 +129,9 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_action?.setOnClickListener {
             viewImpl.showDialog(CourseCreateImpl.Type.ACTION)
         }
-        et_course_structure?.setOnClickListener {
-            viewImpl.showDialog(CourseCreateImpl.Type.STRUCTURE)
-        }
+//        et_course_structure?.setOnClickListener {
+//            viewImpl.showDialog(CourseCreateImpl.Type.STRUCTURE)
+//        }
         viewImpl.listener = this
 
 
@@ -140,7 +141,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             if (program is RxlProgram) {
                 tv_title?.text = program.logicType()
                 //loadImage(program.image)
-                et_course_structure?.text = program.category
+                //et_course_structure?.text = program.category
                 et_course_desc?.setText(program.description)
                 tv_select_stations?.text = "${program.workStation}"
                 tv_select_cycles?.text = "${program.cycle}"
@@ -175,6 +176,54 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             return@setOnTouchListener false
         }
 
+//        fluidSeekbar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//               // fluidSeekbar?.thumb = fluidSeekbar?.getThumb(progress)
+//                seekBar?.let {
+//                    // val int = (progress * (seekBar.width - 2 * seekBar.thumbOffset)) / seekBar.max;
+//                    // seekBarText.text = "$progress";
+//                    // seekBarText.x = seekBar.x + int + seekBar.thumbOffset / 2;
+//                }
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+//
+//            }
+//
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+//
+//            }
+//
+//        })
+
+        radio_group?.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.radio_start_sensor -> {
+                    //fluidSlider?.visibility = View.VISIBLE
+                    fluidSeekbar?.visibility = View.VISIBLE
+                    //Utils.slideUp(fluidSlider)
+//                    nestedScrollView?.post {
+//                        nestedScrollView?.fullScroll(View.FOCUS_DOWN)
+//                    }
+                    checked = 3
+                }
+//                R.id.radio_start_now -> {
+//                    fluidSeekbar?.visibility = View.GONE
+//                    //Utils.slideDown(fluidSlider)
+//                    //fluidSlider?.visibility = View.GONE
+//                    checked = 1
+//                }
+                R.id.radio_start_tap -> {
+                    checked = 1
+                    fluidSeekbar?.visibility = View.GONE
+                    //fluidSlider?.visibility = View.GONE
+                    //Utils.slideDown(fluidSlider)
+                }
+
+            }
+
+        }
+
       //  if(tv_select_lights.equals("sequence"))
      //  viewImpl.createSequenceList(recyclerViewSequence)
     }
@@ -202,30 +251,6 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
         tv_select_players?.text = viewImpl.getTitle(CourseCreateImpl.Type.PLAYERS)
         tv_select_action?.text = viewImpl.getTitle(CourseCreateImpl.Type.ACTION)
 
-        radio_group?.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                R.id.radio_start_sensor -> {
-                    //fluidSlider?.visibility = View.VISIBLE
-                    //Utils.slideUp(fluidSlider)
-                    nestedScrollView?.post {
-                        nestedScrollView?.fullScroll(View.FOCUS_DOWN)
-                    }
-                    checked = 3
-                }
-                R.id.radio_start_now -> {
-                    //Utils.slideDown(fluidSlider)
-                    //fluidSlider?.visibility = View.GONE
-                    checked = 1
-                }
-                R.id.radio_start_tap -> {
-                    checked = 2
-                    //fluidSlider?.visibility = View.GONE
-                    //Utils.slideDown(fluidSlider)
-                }
-
-            }
-
-        }
     }
 
     override fun onDialogItemSelected(item: ReflexDialog.Item, type: Int) {
@@ -310,16 +335,16 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
     }
 
     private fun validate() {
-        val member = Prefs.get(context).member ?: return
+        log("progress ${fluidSeekbar?.progress}")
 
         if (Utils.isEmpty(et_course_name?.text)) {
             showError("Enter Course Name", et_course_name)
             return
         }
-        if (Utils.isEmpty(et_course_structure?.text)) {
-            showError("Enter Course Structure", et_course_structure)
-            return
-        }
+//        if (Utils.isEmpty(et_course_structure?.text)) {
+//            showError("Enter Course Structure", et_course_structure)
+//            return
+//        }
         if (Utils.isEmpty(et_course_desc?.text)) {
             showError("Enter Course Description", et_course_desc)
             return
@@ -332,7 +357,14 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             "http://test.mibo.world/assets/images/rxl.jpg"
         )
 
-        saveExerciseProgram(member.id(), member.accessToken)
+        val member = Prefs.get(context).member ?: return
+
+        saveExerciseProgram(
+            member.id(),
+            member.accessToken,
+            if (checked == 3) "PROXIMITY" else "TAP",
+            fluidSeekbar?.progress ?: 0
+        )
 
 //        val data = Data(
 //            "no",

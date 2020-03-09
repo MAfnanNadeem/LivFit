@@ -16,4 +16,6 @@ interface RxlListener {
     fun onCycleResumed(cycle: Int)
     fun onPod(podId: Int, time: Int)
     fun onTapColorSent(playerId: Int)
+    fun onExerciseResumed(cycle: Int, totalTime: Int, remaining: Int)
+    fun onExercisePaused(cycle: Int, totalTime: Int, remaining: Int)
 }

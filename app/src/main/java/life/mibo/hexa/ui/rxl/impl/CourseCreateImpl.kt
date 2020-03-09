@@ -8,6 +8,7 @@
 package life.mibo.hexa.ui.rxl.impl
 
 import android.content.Context
+import android.os.Debug
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.create_pods_grid.view.*
+import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
@@ -76,9 +78,15 @@ class CourseCreateImpl(var context: Context, var listener: Listener? = null) {
         if (max > 2) {
             val list = ArrayList<ReflexDialog.Item?>()
             val title = "Select No.of Pods"
-
-            for (i in 2..max) {
-                list.add(ReflexDialog.Item(i, "$i"))
+            if(BuildConfig.DEBUG){
+                for (i in 1..max) {
+                    list.add(ReflexDialog.Item(i, "$i"))
+                }
+            }
+            else {
+                for (i in 2..max) {
+                    list.add(ReflexDialog.Item(i, "$i"))
+                }
             }
 
             showDialog(list, title, type.type)

@@ -182,28 +182,18 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     R.drawable.device_list_item_bg_selected
                 )
 
-
-                when {
-                    item.batteryLevel > 20 -> {
-                        battery?.visibility = View.VISIBLE
-                        battery?.text = "${item.batteryLevel}"
-                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
-                        battery?.background?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
-//                        battery?.background?.let {
-//                            DrawableCompat.setTint(it, Color.GREEN)
-//                        }
-
-                    }
-                    item.batteryLevel > 0 -> {
-                        battery?.visibility = View.VISIBLE
-                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
-                        battery?.text = "${item.batteryLevel}"
-                        battery?.background?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP)
-                    }
-                    else -> {
-
-                        battery?.visibility = View.INVISIBLE
-                    }
+                if (item.batteryLevel > 20) {
+                    battery?.visibility = View.VISIBLE
+                    battery?.text = "${item.batteryLevel}"
+                    battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                    battery?.background?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
+                } else if (item.batteryLevel > 0) {
+                    battery?.visibility = View.VISIBLE
+                    battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                    battery?.text = "${item.batteryLevel}"
+                    battery?.background?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP)
+                } else {
+                    battery?.visibility = View.INVISIBLE
                 }
 
 //                when {
@@ -218,7 +208,9 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 connect?.setColorFilter(Color.GREEN)
                 view?.background =
                     ContextCompat.getDrawable(itemView.context, R.drawable.device_list_item_bg)
-                battery?.background = null
+               // battery?.background = null
+                battery?.visibility = View.INVISIBLE
+
             }
             image?.background = null
             if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {

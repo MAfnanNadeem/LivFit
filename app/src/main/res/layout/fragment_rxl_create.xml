@@ -37,10 +37,9 @@
                 android:text="Random"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="1" />
+                app:layout_constraintBottom_toBottomOf="@id/iv_icon_giff"
+                app:layout_constraintStart_toEndOf="@id/iv_icon_giff"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_icon_giff"
@@ -49,24 +48,21 @@
                 android:src="@drawable/ic_reflex_random_icon"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large"
-                android:layout_marginEnd="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/et_course_structure"
-                app:layout_constraintEnd_toStartOf="@+id/et_course_structure"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/et_course_name"
-                app:layout_constraintWidth_percent="1" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.5" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/et_course_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/grid_2x"
                 android:background="@drawable/login_edittext"
-                android:ems="10"
-                android:hint="Course Name"
+                android:hint="@string/course_name"
                 android:padding="@dimen/grid_1x"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_icon_giff" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/et_course_structure"
@@ -75,11 +71,12 @@
                 android:layout_marginTop="@dimen/grid_1x"
                 android:background="@drawable/login_edittext"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:hint="Course Structure"
+                android:padding="@dimen/grid_1x"
                 android:singleLine="true"
                 android:textColor="@color/textColor"
-                android:hint="Course Structure"
                 android:textSize="@dimen/text_size_medium"
-                android:padding="@dimen/grid_1x"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/et_course_name"
                 app:layout_constraintTop_toBottomOf="@+id/et_course_name" />
@@ -107,7 +104,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/grid_2x"
-                android:text="GENERAL SETTINGS"
+                android:text="@string/general_settings"
+                android:visibility="gone"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
@@ -121,6 +119,7 @@
                 android:layout_marginTop="@dimen/grid_2x"
                 android:text="@string/lights_out"
                 android:textColor="@color/white"
+                android:visibility="gone"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintEnd_toEndOf="@+id/iv_stations"
                 app:layout_constraintStart_toStartOf="@+id/iv_stations"
@@ -131,10 +130,9 @@
                 style="@style/rxl_create_icon"
                 android:layout_width="100dp"
                 android:src="@drawable/ic_reflex_lights_out"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
-
-
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -144,6 +142,7 @@
                 android:background="@drawable/login_edittext"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minWidth="100dp"
+                android:visibility="gone"
                 android:padding="@dimen/grid_1x"
                 android:singleLine="true"
                 android:text="1"
@@ -160,8 +159,8 @@
                 android:layout_marginTop="@dimen/grid_2x"
                 android:text="drag to re-arrange sequence"
                 android:textColor="@color/white"
-                android:visibility="gone"
                 android:textSize="@dimen/text_size_small"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_stations" />
@@ -170,8 +169,8 @@
                 android:id="@+id/recyclerViewSequence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence_text" />
@@ -185,6 +184,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintEnd_toEndOf="@+id/iv_cycles"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@+id/iv_cycles"
                 app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence" />
 
@@ -193,6 +193,7 @@
                 style="@style/rxl_create_icon"
                 android:layout_width="100dp"
                 android:src="@drawable/ic_reflex_stations"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
 
@@ -205,6 +206,7 @@
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minWidth="100dp"
                 android:padding="@dimen/grid_1x"
+                android:visibility="gone"
                 android:singleLine="true"
                 android:text="1"
                 android:textColor="@color/textColor"
@@ -219,11 +221,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/grid_2x"
-                android:text="ACTIVITY SETTINGS"
+                android:text="@string/activity_settings"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_cycles"
+                app:layout_constraintTop_toBottomOf="@id/et_course_desc"
                 app:layout_constraintWidth_percent="1" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -400,7 +402,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
-                    android:text="Delay"
+                    android:text="@string/pause"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
                     app:layout_constraintEnd_toEndOf="@+id/iv_pause"
@@ -483,51 +485,63 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/constraintLayout">
 
-                <life.mibo.views.FluidSlider
-                    android:id="@+id/fluidSlider"
+                <!--                <life.mibo.views.FluidSlider-->
+                <!--                    android:id="@+id/fluidSlider"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:visibility="gone"-->
+                <!--                    app:slider_bar_color="@color/colorPrimary"-->
+                <!--                    app:slider_bar_text_color="@color/white"-->
+                <!--                    app:slider_bubble_color="@color/colorAccent"-->
+                <!--                    app:slider_bubble_text_color="@color/white"-->
+                <!--                    app:slider_end_text=""-->
+                <!--                    app:slider_initial_position="0.5"-->
+                <!--                    app:slider_size="small"-->
+                <!--                    app:slider_start_text="inches" />-->
+
+                <life.mibo.views.TextThumbSeekBar
+                    android:id="@+id/fluidSeekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/grid_3x"
+                    android:paddingEnd="@dimen/grid_3x"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:max="300"
                     android:visibility="gone"
-                    app:slider_bar_color="@color/colorPrimary"
-                    app:slider_bar_text_color="@color/white"
-                    app:slider_bubble_color="@color/colorAccent"
-                    app:slider_bubble_text_color="@color/white"
-                    app:slider_end_text=""
-                    app:slider_initial_position="0.5"
-                    app:slider_size="small"
-                    app:slider_start_text="inches" />
-
+                    android:min="30"
+                    android:progress="50"
+                    android:thumbOffset="0dp" />
                 <RadioGroup
                     android:id="@+id/radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_1x"
+                    android:layout_marginTop="@dimen/grid_2x"
                     android:orientation="horizontal"
-                    android:weightSum="3"
+                    android:weightSum="2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintWidth_percent="1">
 
-                    <androidx.appcompat.widget.AppCompatRadioButton
-                        android:id="@+id/radio_start_now"
-                        style="@style/RadioButton"
-                        android:layout_weight="1"
-                        android:background="@drawable/radio_button_selector"
-                        android:checked="true"
-                        android:text="ON CLICK" />
+<!--                    <androidx.appcompat.widget.AppCompatRadioButton-->
+<!--                        android:id="@+id/radio_start_now"-->
+<!--                        style="@style/RadioButton"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/radio_button_selector"-->
+<!--                        android:checked="true"-->
+<!--                        android:text="@string/on_click" />-->
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/radio_start_tap"
                         style="@style/RadioButton"
                         android:layout_weight="1"
-                        android:background="@drawable/radio_button_selector_center"
-                        android:text="ON TAP" />
+                        android:background="@drawable/radio_button_selector"
+                        android:text="@string/on_tap" />
 
                     <androidx.appcompat.widget.AppCompatRadioButton
                         android:id="@+id/radio_start_sensor"
                         style="@style/RadioButton"
                         android:layout_weight="1"
                         android:background="@drawable/radio_button_selector_right"
-                        android:text="ON SENSOR" />
+                        android:text="@string/on_sensor" />
 
                 </RadioGroup>
             </LinearLayout>

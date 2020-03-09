@@ -11,7 +11,7 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import life.mibo.hexa.core.gson.AlwaysListTypeAdapterFactory
 import life.mibo.hexa.models.base.BaseModel
-import life.mibo.hexa.pods.rxl.RxlLight
+import life.mibo.hexa.pods.rxl.program.RxlLight
 
 class RxlExercises(
     @SerializedName("data")
@@ -96,7 +96,7 @@ class RxlExercises(
                     return RxlLight.ALL_AT_ONCE
                 }
                 5 -> {
-                    return RxlLight.TAP_AT_ONCE
+                    return RxlLight.TAP_AT_ALL
                 }
                 6 -> {
                     return RxlLight.ALL_AT_ALL

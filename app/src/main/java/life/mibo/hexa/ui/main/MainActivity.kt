@@ -54,10 +54,10 @@ import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.ScanComplete
 import life.mibo.hexa.models.rxl.RxlProgram
-import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
@@ -455,6 +455,8 @@ class MainActivity : BaseActivity(), Navigator {
             COMMAND_DEVICE_STATUS_RESPONSE -> {
                 // code -126
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE $uid")
+                if (!SessionManager.getInstance().userSession.isScanning)
+                    return
                 //val d = SessionManager.getInstance().userSession.booster
                 val list = SessionManager.getInstance().userSession.devices
                 for (d in list) {

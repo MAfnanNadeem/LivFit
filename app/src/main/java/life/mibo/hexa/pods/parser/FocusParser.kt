@@ -9,10 +9,8 @@ package life.mibo.hexa.pods.parser
 
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hexa.pods.base.RXLParser
-import life.mibo.hexa.pods.pod.LightLogic
-import life.mibo.hexa.pods.pod.Players
-import life.mibo.hexa.pods.rxl.RxlLight
-import life.mibo.hexa.pods.rxl.RxlPlayer
+import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hexa.pods.rxl.program.RxlLight
 
 class FocusParser : RXLParser {
     override fun type(): RxlLight {
@@ -23,8 +21,8 @@ class FocusParser : RXLParser {
         return "Random"
     }
 
-    override fun player(): RxlPlayer.Player {
-        return RxlPlayer.Player.SINGLE
+    override fun player(): PlayerType {
+        return PlayerType.SINGLE
     }
 
     override fun onEvent(event: RxlStatusEvent) {

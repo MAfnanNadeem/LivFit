@@ -14,7 +14,7 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import life.mibo.hexa.database.Converters
 import life.mibo.hexa.models.base.BaseModel
-import life.mibo.hexa.pods.rxl.RxlLight
+import life.mibo.hexa.pods.rxl.program.RxlLight
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import java.io.Serializable
 

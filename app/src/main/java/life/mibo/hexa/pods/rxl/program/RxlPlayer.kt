@@ -8,7 +8,7 @@
 package life.mibo.hexa.pods.rxl.program
 
 import life.mibo.hardware.models.Device
-import life.mibo.hexa.pods.Event
+import life.mibo.hexa.pods.rxl.Event
 import kotlin.random.Random
 
 data class RxlPlayer(
@@ -23,6 +23,9 @@ data class RxlPlayer(
 
     var lastPod = 0
     var lastUid = ""
+    var isFocus = false
+    var isTapReceived = false
+    var isStarted = false
     //var station = RxlStation().addColor(color, 0, colorId)
     var events = ArrayList<Event>()
     var wrongEvents = ArrayList<Event>()
@@ -36,14 +39,36 @@ data class RxlPlayer(
 
     fun nextRandom(): Int {
         val i = Random.nextInt(pods.size)
-        lastPod = if (lastPod == i) lastPod++ else i
+        lastPod = if (lastPod == i) lastPod.plus(1) else i
         if (lastPod >= pods.size)
             lastPod = 0
         return lastPod
     }
 
+    fun generateRandom(): Int {
+        val i = Random.nextInt(pods.size)
+        if (i >= pods.size)
+            return 0
+        return i
+    }
+
+    fun randomPod(): Device? {
+        if (pods.size > 0) {
+            var i = Random.nextInt(pods.size)
+            if (i >= pods.size)
+                i = 0
+            return pods[i]
+        }
+        return null
+    }
+
     fun inc() {
-        lastPod++
+        lastPod += 1
+    }
+
+    private fun isNextFocus(): Boolean {
+        isFocus = Random.nextInt(50) % 3 == 0
+        return isFocus
     }
 
     private fun podsUids(): String {

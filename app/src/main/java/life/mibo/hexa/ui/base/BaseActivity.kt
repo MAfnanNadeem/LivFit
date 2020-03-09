@@ -31,7 +31,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     @Subscribe
     public fun SubscribeTest(event: NoSubscriberEvent?){
-        log("SubscribeTest $event")
+        log("SubscribeTest bus: ${event?.eventBus} :: object: ${event?.originalEvent}")
     }
 
     public override fun onStart() {

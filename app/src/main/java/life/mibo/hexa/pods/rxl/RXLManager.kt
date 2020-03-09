@@ -21,7 +21,6 @@ import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hexa.events.NotifyEvent
-import life.mibo.hexa.pods.Event
 import life.mibo.hexa.pods.pod.PodType
 import life.mibo.hexa.pods.rxl.program.PlayerType
 import life.mibo.hexa.pods.rxl.program.RxlColor
@@ -291,14 +290,26 @@ class RXLManager private constructor() {
     @Synchronized
     private fun nextEvent(time: Int) {
         colorSent = false
-        events.add(Event(events.size + 1, actionTime, time))
+        events.add(
+            Event(
+                events.size + 1,
+                actionTime,
+                time
+            )
+        )
         nextLightEvent()
     }
 
     @Synchronized
     private fun nextMultiPlayerEvent(time: Int) {
         colorSent = false
-        events.add(Event(events.size + 1, actionTime, time))
+        events.add(
+            Event(
+                events.size + 1,
+                actionTime,
+                time
+            )
+        )
         nextLightEvent()
     }
 
@@ -326,9 +337,21 @@ class RXLManager private constructor() {
                 //Thread.sleep(50)
                 if (it.uid == lastUid) {
                     log("nextFocusEvent2 doOnComplete ID MATCHED  >> ${it.uid} == $lastUid ")
-                    events.add(Event(events.size + 1, actionTime, it.time))
+                    events.add(
+                        Event(
+                            events.size + 1,
+                            actionTime,
+                            it.time
+                        )
+                    )
                 } else {
-                    wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                    wrongEvents.add(
+                        Event(
+                            wrongEvents.size + 1,
+                            actionTime,
+                            it.time
+                        )
+                    )
                     log("nextFocusEvent2 doOnComplete NOT MATCH >> ${it.uid} == $lastUid ")
                 }
                 colorSent = false
@@ -342,9 +365,21 @@ class RXLManager private constructor() {
             if (it.uid == lastUid) {
                 colorSent = false
                 if (focusValid)
-                    events.add(Event(events.size + 1, actionTime, it.time))
+                    events.add(
+                        Event(
+                            events.size + 1,
+                            actionTime,
+                            it.time
+                        )
+                    )
                 else {
-                    wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                    wrongEvents.add(
+                        Event(
+                            wrongEvents.size + 1,
+                            actionTime,
+                            it.time
+                        )
+                    )
                     log("nextFocusEvent wrong focus device tapped >> ${it.uid} == $lastUid ")
                 }
                 nextFocusLightEvent()
@@ -365,10 +400,22 @@ class RXLManager private constructor() {
         }.doOnComplete {
             Thread.sleep(100)
             if (it.uid == lastUid) {
-                events.add(Event(events.size + 1, actionTime, it.time))
+                events.add(
+                    Event(
+                        events.size + 1,
+                        actionTime,
+                        it.time
+                    )
+                )
                 log("nextFocusEvent2 match >> ${it.uid} == $lastUid ")
             } else {
-                wrongEvents.add(Event(wrongEvents.size + 1, actionTime, it.time))
+                wrongEvents.add(
+                    Event(
+                        wrongEvents.size + 1,
+                        actionTime,
+                        it.time
+                    )
+                )
                 log("nextFocusEvent2 no match >> ${it.uid} == $lastUid ")
             }
             nextFocusLightEvent()

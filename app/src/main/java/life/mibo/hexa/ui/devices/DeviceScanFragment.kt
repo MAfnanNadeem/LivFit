@@ -214,7 +214,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             }.doOnSuccess {
                 isConnectTrigger = false
                 log("testNextButton doOnSuccess $it")
-                button_connect_all.revertAnimation {
+                button_connect_all?.revertAnimation {
                     availabeAdapter?.list?.size?.let { size ->
                         if (size > 1)
                             button_connect_all?.text = getString(R.string.connect_all)
@@ -807,18 +807,21 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     override fun onResume() {
         super.onResume()
         log("onResume")
+
     }
 
 
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+        SessionManager.getInstance().userSession.isScanning = true
         log("onStart")
     }
 
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+        SessionManager.getInstance().userSession.isScanning = false
         controller.onStop()
         log("onStop")
     }

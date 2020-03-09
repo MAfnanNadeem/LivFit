@@ -28,10 +28,9 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.models.rxl.RxlExercises
 import life.mibo.hexa.pods.rxl.RXLManager
-import life.mibo.hexa.pods.rxl.RxlLight
-import life.mibo.hexa.pods.rxl.RxlProgram
+import life.mibo.hexa.pods.rxl.program.RxlLight
+import life.mibo.hexa.pods.rxl.RxlListener
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog
@@ -46,7 +45,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
 
-class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLManager.Listener {
+class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RxlListener {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -566,8 +565,16 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RXLMana
         log("onPod")
     }
 
-    override fun onTapColorSent() {
+    override fun onTapColorSent(id: Int) {
         Toasty.info(context!!, getString(R.string.hit_to_start_rxl)).show()
+    }
+
+    override fun onExerciseResumed(cycle: Int, totalTime: Int, remaining: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onExercisePaused(cycle: Int, totalTime: Int, remaining: Int) {
+        TODO("Not yet implemented")
     }
 
     var lastFrom = -1

@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class RXLHelper private constructor() {
@@ -43,6 +44,7 @@ class RXLHelper private constructor() {
 
         override fun onDispose() {
             log("BaseTestParser.Listener : onDispose")
+            //EventBus.builder().addIndex()
             dispose()
         }
 
@@ -146,7 +148,7 @@ class RXLHelper private constructor() {
 
     //var lightLogic : RxlLight = RxlLight.SEQUENCE // todo enum may be costly for performance, using int
     private var unitTest = false
-    private var isStarted = false
+    private var isStarted = AtomicBoolean()
     private var isInternalStarted = false
     private var isRunning = false
 
@@ -194,7 +196,7 @@ class RXLHelper private constructor() {
 
 
     private fun reset() {
-        isStarted = false
+        isStarted.set(false)
         isInternalStarted = false
         isRunning = false
         isPaused = false
@@ -263,14 +265,14 @@ class RXLHelper private constructor() {
 
     fun stopProgram() {
         log(".......... stopProgram .......... ")
-        isStarted = false
+        isStarted.set(false)
         //colorDisposable?.dispose()
         colorDisposable?.forEach { key, value ->
             value?.dispose()
         }
         disposable?.dispose()
         completeExercise(0, 0)
-        isStarted = false
+        //isStarted = false
         log(".......... stopProgram .......... stopped")
     }
 
@@ -362,7 +364,7 @@ class RXLHelper private constructor() {
     }
 
     fun onNext(it: RxlStatusEvent) {
-        if (!isStarted)
+        if (!isStarted.get())
             return
         programParser!!.onEvent(it)
     }
@@ -655,7 +657,7 @@ class RXLHelper private constructor() {
         isPaused = false
         //colorSent = false
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
-        isStarted = true
+        isStarted.set(true)
         //isPaused = false
         // this will create time sync issue with multiple users and start exercise again
 //        if (isTap)
@@ -670,7 +672,7 @@ class RXLHelper private constructor() {
         logi(".......... pauseCycle .......... " + getTime())
         rxlListener?.onCyclePaused(cycle, time)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle paused"))
-        isStarted = false
+        isStarted.set(true)
         //publisher.onNext("pauseCycle")
     }
 
@@ -685,7 +687,7 @@ class RXLHelper private constructor() {
 
     private fun completeCycle(cycle: Int, duration: Int = 0) {
         logi(".......... completeCycle .......... " + getTime())
-        isStarted = false
+        isStarted.set(false)
         rxlListener?.onCycleEnd(cycle)
         //colorDisposable?.dispose()
         colorDisposable?.forEach { key, value ->
@@ -700,7 +702,7 @@ class RXLHelper private constructor() {
 //        } else {
 //            completeExercise(0, 0)
 //        }
-        isStarted = false
+       // isStarted = false
 
         //publisher.onNext("completeCycle")
 
@@ -812,17 +814,17 @@ class RXLHelper private constructor() {
 
     fun unregister() {
         EventBus.getDefault().unregister(this)
-        isStarted = false
+        isStarted.set(false)
         isRunning = false
         dispose()
         observers?.dispose()
         //if(::disposable.isInitialized)
         disposable?.dispose()
         //colorDisposable?.dispose()
-        colorDisposable?.forEach { key, value ->
+        colorDisposable.forEach { key, value ->
             value?.dispose()
         }
-        colorDisposable?.clear()
+        colorDisposable.clear()
         disposable = null
         rxlListener = null
         log("unregister")

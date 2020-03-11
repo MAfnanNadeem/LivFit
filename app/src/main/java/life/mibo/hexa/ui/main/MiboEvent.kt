@@ -67,6 +67,12 @@ object MiboEvent {
         post(FirebaseAnalytics.Event.SIGN_UP + "otp", bundle)
     }
 
+    fun event(tag: String, value: String?) {
+        val bundle = Bundle()
+        bundle.putString(tag, value)
+        post("mibo_event", bundle)
+    }
+
     private fun post(type: String, bundle: Bundle?) {
         try {
             firebase.logEvent(type, bundle)

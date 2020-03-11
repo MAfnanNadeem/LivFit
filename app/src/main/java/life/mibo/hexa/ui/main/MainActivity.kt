@@ -766,6 +766,10 @@ class MainActivity : BaseActivity(), Navigator {
 
     // TODO Navigation
     override fun navigateTo(type: Int, data: Any?) {
+        if(data is HomeItem.Type){
+            navigate(data)
+            return
+        }
         log("Call $type || $data")
         when (type) {
             CONNECT -> {
@@ -944,10 +948,10 @@ class MainActivity : BaseActivity(), Navigator {
                 navigation?.setCheckedItem(R.id.nav_home)
             }
             R.id.nav_ch6 -> {
-                navigate(HomeItem.Type.BOOSTER)
+                navigate(HomeItem.Type.BOOSTER_SCAN)
             }
             R.id.navigation_channels -> {
-                navigate(HomeItem.Type.BOOSTER)
+                navigate(HomeItem.Type.BOOSTER_SCAN)
             }
             R.id.navigation_calendar -> {
                 navigate(HomeItem.Type.SCHEDULE)
@@ -1053,7 +1057,7 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_calories)
             }
 
-            HomeItem.Type.BOOSTER -> {
+            HomeItem.Type.BOOSTER_SCAN -> {
                 //navController.navigate(R.id.action_navigation_home_pop)
                 //navController.navigate(R.id.navigation_home)
                 val bundle = Bundle()
@@ -1081,7 +1085,7 @@ class MainActivity : BaseActivity(), Navigator {
                 drawerItemClicked(R.id.navigation_rxl_test)
             }
 
-            HomeItem.Type.ReFlex -> {
+            HomeItem.Type.RXL_SCAN -> {
                 val bundle = Bundle()
                 bundle.putBoolean("is_rxl", true)
                 navigate(
@@ -1092,8 +1096,8 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.PROFILE -> {
-                if (DEBUG)
-                    navigate(0, R.id.navigation_profile)
+              //  if (DEBUG)
+                //    navigate(0, R.id.navigation_profile)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
 

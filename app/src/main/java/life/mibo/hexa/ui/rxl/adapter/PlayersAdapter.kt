@@ -24,6 +24,24 @@ import java.io.Serializable
 
 class PlayersAdapter(var list: ArrayList<PlayerItem>, var listener: ItemClickListener<PlayerItem>) :
     RecyclerView.Adapter<PlayersAdapter.Holder>() {
+
+    private val backupList = ArrayList<PlayerItem>()
+
+    constructor(
+        list: ArrayList<PlayerItem>,
+        listener: ItemClickListener<PlayerItem>,
+        playerName: String
+    ) : this(list, listener) {
+        createList(playerName)
+    }
+
+    private fun createList(playerName: String) {
+        backupList.add(PlayerItem(1, playerName, "Player 1 Name", 0, Color.RED))
+        backupList.add(PlayerItem(2, "", "Player 2 Name", 0, Color.GREEN))
+        backupList.add(PlayerItem(3, "", "Player 3 Name", 0, Color.BLUE))
+        backupList.add(PlayerItem(4, "", "Player 4 Name", 0, Color.CYAN))
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -46,6 +64,18 @@ class PlayersAdapter(var list: ArrayList<PlayerItem>, var listener: ItemClickLis
 
     private fun getItem(position: Int): PlayerItem {
         return list[position]
+    }
+
+    fun update(count: Int) {
+        Logger.e("update count $count :: ${backupList.size}")
+        if (count > 0) {
+            list.clear()
+            for (i in 0 until count) {
+                if (i < backupList.size)
+                    list.add(backupList[i])
+            }
+            notifyDataSetChanged()
+        }
     }
 
     fun update(items: ArrayList<PlayerItem>) {

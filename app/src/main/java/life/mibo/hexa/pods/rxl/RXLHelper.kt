@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.events.DelayColorEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hexa.pods.pod.PodType
@@ -37,7 +38,7 @@ class RXLHelper private constructor() {
         life.mibo.hardware.core.Logger.e("RXLManager init for first time")
     }
 
-    private var childListener = object :
+    private var programListener = object :
         RxlParser.Listener {
 
         override fun onDispose() {
@@ -78,6 +79,17 @@ class RXLHelper private constructor() {
             sendColor(device, color, action, playerId, observe)
         }
 
+        override fun sendDelayColorEvent(
+            device: Device,
+            color: Int,
+            action: Int,
+            playerId: Int,
+            delay: Int,
+            observe: Boolean
+        ) {
+            sendDelayColor(device, color, action, playerId, delay, observe)
+        }
+
         override fun endProgram(cycle: Int, duration: Int) {
             log("BaseTestParser.Listener : endProgram $duration")
             completeExercise(cycle, duration)
@@ -87,9 +99,11 @@ class RXLHelper private constructor() {
 
     companion object {
         val REFLEX = 10
+
         @Volatile
         private var INSTANCE: RXLHelper? = null
-        const val TAP_CODE = 200
+        const val TAP_CODE = 220
+        const val DELAY_OBSERVE = 700
         const val TAP_TIME = 10 * 1000
         // @Volatile
         //private var receivedFocusAll = false
@@ -103,9 +117,10 @@ class RXLHelper private constructor() {
             }
     }
 
-    private var parrentListener: RxlListener? = null
+    private var rxlListener: RxlListener? = null
 
     private var publisher: PublishProcessor<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
+    private var publisherDisposable: Disposable? = null
     private var observers: CompositeDisposable? = null
     private var delayObservers: DisposableArray? = null
     private var disposable: Disposable? = null
@@ -135,6 +150,15 @@ class RXLHelper private constructor() {
     private var isInternalStarted = false
     private var isRunning = false
 
+    var isTap = false
+    var isPaused = false
+    var isResumed = false
+    var pauseDuration = 0L
+    var remainDuration = 0
+
+    //var pauseTotalDuration = 0
+    var pauseCycle = 0
+
     ///private var lastUid = ""
     //private var actionTime = 0
 
@@ -154,7 +178,7 @@ class RXLHelper private constructor() {
 
 
     fun withListener(listener: RxlListener): RXLHelper {
-        this.parrentListener = listener
+        this.rxlListener = listener
         return this
     }
 
@@ -173,6 +197,8 @@ class RXLHelper private constructor() {
         isStarted = false
         isInternalStarted = false
         isRunning = false
+        isPaused = false
+        remainDuration = 0
         //colorSent = false
         //isFocus = false
         //receivedFocusAll = false
@@ -185,34 +211,20 @@ class RXLHelper private constructor() {
     private fun createProgram() {
         programParser = when (program?.lightLogic()) {
             1 -> {
-                SequenceParser(
-                    program!!,
-                    childListener
-                )
+                SequenceParser(program!!, programListener)
             }
             2 -> {
-                RandomParser(
-                    program!!,
-                    childListener
-                )
+                RandomParser(program!!, programListener)
             }
             3 -> {
-                FocusParser(
-                    program!!,
-                    childListener
-                )
+                FocusParser(program!!, programListener)
             }
             4 -> {
-                AllAtOnceParser(
-                    program!!,
-                    childListener
-                )
+                AllAtOnceParser(program!!, programListener)
             }
+            //5 -> { TapAtAllParser(program!!, programListener) }
             else -> {
-                SequenceParser(
-                    program!!,
-                    childListener
-                )
+                SequenceParser(program!!, programListener)
             }
         }
     }
@@ -224,11 +236,50 @@ class RXLHelper private constructor() {
             startNow()
     }
 
+    fun pauseProgram() {
+        log("pauseProgram cycle $pauseCycle, pause $pauseDuration")
+        isPaused = true
+        disposable?.dispose()
+        colorDisposable?.forEach { key, value ->
+            value?.dispose()
+        }
+        programParser?.paused(true)
+        dispose()
+        pauseExercise(pauseCycle, programParser?.duration ?: 0, pauseDuration.toInt())
+    }
+
+    fun resumeProgram() {
+        if (isPaused) {
+            log("resumeProgram cycle $pauseCycle, pause $pauseDuration remain $remainDuration")
+            programParser?.paused(false)
+            remainDuration = remainDuration.minus(pauseDuration.toInt());
+            if (remainDuration > 1) {
+                startObserver(pauseCycle, remainDuration)
+            } else {
+                completeCycle(pauseCycle, 0)
+            }
+        }
+    }
+
+    fun stopProgram() {
+        log(".......... stopProgram .......... ")
+        isStarted = false
+        //colorDisposable?.dispose()
+        colorDisposable?.forEach { key, value ->
+            value?.dispose()
+        }
+        disposable?.dispose()
+        completeExercise(0, 0)
+        isStarted = false
+        log(".......... stopProgram .......... stopped")
+    }
+
     private fun startOnTap() {
         //isRandom = random
         //register()
         reset()
         createProgram()
+        isTap = true
         createTapPublish()
         //startInternal()
     }
@@ -238,29 +289,30 @@ class RXLHelper private constructor() {
         //register()
         reset()
         createProgram()
+        isTap = false
         createNowPublish()
         startNowInternal()
         //startInternal()
     }
 
     private fun createTapPublish() {
+        publisherDisposable?.dispose()
         publisher = PublishProcessor.create<RxlStatusEvent>()
         //publisher!!.toFlowable(BackpressureStrategy.BUFFER)
         //publisher!!.onBackpressureBuffer
         //publisher?.firstElement()
-        publisher!!.onBackpressureBuffer().subscribeOn(Schedulers.io()).doOnNext {
-            logi("publisherTap RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
-            if (it.data > TAP_CODE) {
-                log("RxlStatusEvent2 it.data == TAP_CODE........... >> $isInternalStarted ")
-                checkAndStartOnTap(it)
-                return@doOnNext
-            }
-            if (!isStarted)
-                return@doOnNext
-            programParser!!.onEvent(it)
-        }.doOnError {
-            log("ERROR............ $it")
-        }.subscribe()
+        publisherDisposable =
+            publisher!!.onBackpressureBuffer().subscribeOn(Schedulers.io()).doOnNext {
+                logi("publisherTap RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
+                if (it.data > TAP_CODE) {
+                    log("RxlStatusEvent2 it.data == TAP_CODE........... >> $isInternalStarted ")
+                    checkAndStartOnTap(it)
+                    return@doOnNext
+                }
+                onNext(it)
+            }.doOnError {
+                log("ERROR............ $it")
+            }.subscribe()
 
         if (isInternalStarted)
             return
@@ -278,33 +330,41 @@ class RXLHelper private constructor() {
                     player.lastUid = it.uid
                     EventBus.getDefault()
                         .postSticky(
-                            ChangeColorEvent(it, it.uid,
-                                TAP_TIME, TAP_CODE.plus(player.id))
+                            ChangeColorEvent(
+                                it, it.uid,
+                                TAP_TIME, TAP_CODE.plus(player.id)
+                            )
                         )
                 }
             }
             Thread.sleep(15)
         }
         log("RxlStatusEvent onTapColorSent ")
-        parrentListener?.onTapColorSent(0)
+        rxlListener?.onTapColorSent(0)
     }
 
     //Back Pressure handel
     //https://www.baeldung.com/rxjava-backpressure
     private fun createNowPublish() {
+        publisherDisposable?.dispose()
         //publisher = PublishSubject.create<RxlStatusEvent>()
         publisher = PublishProcessor.create<RxlStatusEvent>()
         //publisher!!.toFlowable(BackpressureStrategy.BUFFER)
         //publisher!!.onBackpressureBuffer
         //publisher?.firstElement()
-        publisher!!.onBackpressureBuffer().subscribeOn(Schedulers.io()).doOnNext {
-            logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
-            if (!isStarted)
-                return@doOnNext
-            programParser!!.onEvent(it)
-        }.doOnError {
-            log("ERROR............ $it")
-        }.subscribe()
+        publisherDisposable =
+            publisher!!.onBackpressureBuffer().subscribeOn(Schedulers.io()).doOnNext {
+                logi("publisherNow RxlStatusEvent doOnNext ${it.uid}  data ${it.data} ")
+                onNext(it)
+            }.doOnError {
+                log("ERROR............ $it")
+            }.subscribe()
+    }
+
+    fun onNext(it: RxlStatusEvent) {
+        if (!isStarted)
+            return
+        programParser!!.onEvent(it)
     }
 
     // Private Functions
@@ -319,9 +379,11 @@ class RXLHelper private constructor() {
 
     private fun checkAndStartOnTap(event: RxlStatusEvent) {
         if (event.time > 10) {
+            log("checkAndStartOnTap ${event.data}")
             program?.players?.forEach {
-                if (event.data == TAP_CODE.plus(it.id))
+                if (event.data == TAP_CODE.plus(it.id)) {
                     startTapInternal(it)
+                }
             }
         }
     }
@@ -366,10 +428,12 @@ class RXLHelper private constructor() {
         log("startTapInternal.......... $player")
         if (player != null) {
             isInternalStarted = true
+            player.isTapReceived = true
+            isPaused = false
             //colorSent = false
 
             log(
-                "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
+                "startTapInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
                         "action ${program?.getAction()} pause ${program?.getPause()}"
             )
 
@@ -379,7 +443,7 @@ class RXLHelper private constructor() {
             //isRandom = program!!.isRandom()
             //lightLogic = program!!.lightLogic()
 
-            parrentListener?.onExerciseStart()
+            rxlListener?.onExerciseStart()
             logi(".......... startExercise for player ${player.id} .......... ")
             isRunning = true
             programParser?.startTapProgram(player);
@@ -392,6 +456,7 @@ class RXLHelper private constructor() {
     private fun startNowInternal() {
         //baseParser = TestParser(program!!, testListener)
         isInternalStarted = true
+        isPaused = false
         //colorSent = false
         log("startInternal..........")
         log(
@@ -406,6 +471,7 @@ class RXLHelper private constructor() {
         if (observers == null || observers?.isDisposed == true)
             observers = CompositeDisposable()
         unitTest = false
+
         //isRandom = program!!.isRandom()
         lightLogic = program!!.lightLogic()
 
@@ -442,10 +508,45 @@ class RXLHelper private constructor() {
 
     private fun startObserver(cycle: Int, duration: Int) {
         log("startObserver >> cycle $cycle - duration $duration")
+        pauseCycle = cycle
+        // pauseTotalDuration = duration
+        disposable?.dispose()
+        try {
+            Thread.sleep(10)
+        } catch (e: java.lang.Exception) {
+
+        }
+        if (observers == null || observers?.isDisposed == true)
+            observers = CompositeDisposable()
+        observers?.add(
+            Observable.interval(0, 1, TimeUnit.SECONDS).take(duration.toLong())
+                .subscribeOn(Schedulers.io()).doOnNext {
+                    log("startObserver onNext time $it")
+                    pauseDuration = it
+                }.doOnComplete {
+                    log("startObserver >> doOnComplete cycle $cycle - duration $duration")
+                    completeCycle(cycle, duration)
+                }.doOnSubscribe {
+                    log("startObserver >> doOnSubscribe cycle $cycle - duration $duration")
+                    startCycle(cycle, duration)
+                }.doOnError {
+                    log("startObserver >> doOnError cycle $cycle ${it.message}")
+                    it.printStackTrace()
+                }.subscribe()
+        )
+    }
+
+    private fun startObserver2(cycle: Int, duration: Int) {
+        log("startObserver >> cycle $cycle - duration $duration")
+        pauseCycle = cycle
+        // pauseTotalDuration = duration
         disposable?.dispose()
         observers?.add(
             Observable.timer(duration.toLong(), TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io()).doOnComplete {
+                .subscribeOn(Schedulers.io()).doOnNext {
+                    log("startObserver onNext time $it")
+                    pauseDuration = it
+                }.doOnComplete {
                     log("startObserver >> doOnComplete cycle $cycle - duration $duration")
                     completeCycle(cycle, duration)
                 }.doOnSubscribe {
@@ -545,10 +646,21 @@ class RXLHelper private constructor() {
 
     private fun startCycle(cycle: Int, time: Int = 0) {
         logi(".......... startCycle .......... " + getTime())
-        parrentListener?.onCycleStart(cycle, time)
+        if (isPaused) {
+            rxlListener?.onExerciseResumed(cycle, programParser?.duration ?: 0, time)
+        } else {
+            rxlListener?.onCycleStart(cycle, time)
+            remainDuration = program!!.getDuration()
+        }
+        isPaused = false
         //colorSent = false
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
         isStarted = true
+        //isPaused = false
+        // this will create time sync issue with multiple users and start exercise again
+//        if (isTap)
+//            programParser?.onCycleTapStart(0)
+//        else programParser?.onCycleStart()
 
         programParser?.onCycleStart()
         //publisher.onNext("startCycle")
@@ -556,7 +668,7 @@ class RXLHelper private constructor() {
 
     private fun pauseCycle(cycle: Int, time: Int = 0) {
         logi(".......... pauseCycle .......... " + getTime())
-        parrentListener?.onCyclePaused(cycle, time)
+        rxlListener?.onCyclePaused(cycle, time)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle paused"))
         isStarted = false
         //publisher.onNext("pauseCycle")
@@ -564,7 +676,7 @@ class RXLHelper private constructor() {
 
     private fun resumeCycle(cycle: Int, time: Int = 0) {
         logi(".......... resumeCycle .......... ")
-        parrentListener?.onCycleResumed(cycle)
+        rxlListener?.onCycleResumed(cycle)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle resumed"))
         //startCycle(cycle)
         //isStarted = true
@@ -574,7 +686,7 @@ class RXLHelper private constructor() {
     private fun completeCycle(cycle: Int, duration: Int = 0) {
         logi(".......... completeCycle .......... " + getTime())
         isStarted = false
-        parrentListener?.onCycleEnd(cycle)
+        rxlListener?.onCycleEnd(cycle)
         //colorDisposable?.dispose()
         colorDisposable?.forEach { key, value ->
             value?.dispose()
@@ -595,18 +707,24 @@ class RXLHelper private constructor() {
     }
 
     private fun startExercise(cycle: Int, time: Int = 0) {
-        parrentListener?.onExerciseStart()
+        rxlListener?.onExerciseStart()
         logi(".......... startExercise .......... ")
         isRunning = true
         programParser?.startProgram()
         //publisher.onNext("startExercise")
     }
 
+    private fun pauseExercise(cycle: Int, time: Int = 0, remain: Int = 0) {
+        rxlListener?.onExercisePaused(cycle, time, remain)
+        turnOffAndRelease(program?.players)
+    }
+
     private fun completeExercise(cycle: Int, time: Int = 0) {
         logi(".......... completeExercise .......... ")
         isInternalStarted = false
         isRunning = false
-        parrentListener?.onExerciseEnd()
+        rxlListener?.onExerciseEnd()
+        programParser?.stop()
         //EventBus.getDefault().post(NotifyEvent(REFLEX.plus(1), getTime() + " Completed...."))
         dispose()
         //programParser?.dispose()
@@ -614,39 +732,35 @@ class RXLHelper private constructor() {
         try {
             publisher?.onComplete()
             publisher?.unsubscribeOn(Schedulers.io())
+            publisherDisposable?.dispose()
             publisher = null
         } catch (e: Exception) {
         }
         //publisher.onNext("completeExercise")
     }
 
-    fun stopProgram() {
-        log(".......... stopProgram .......... ")
-        isStarted = false
-        //colorDisposable?.dispose()
-        colorDisposable?.forEach { key, value ->
-            value?.dispose()
-        }
-        disposable?.dispose()
-        completeExercise(0, 0)
-        isStarted = false
-        log(".......... stopProgram .......... stopped")
-    }
-
-
     fun sendColor(d: Device?, color: Int, action: Int, playerId: Int, observe: Boolean = false) {
 
         if (observe)
             delayObserver(
-                Delay(
-                    d?.uid,
-                    action.plus(700).toLong(),
-                    playerId
-                )
+                Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId)
             )
         d?.let {
             it.colorPalet = color
             EventBus.getDefault().postSticky(ChangeColorEvent(it, it.uid, action, playerId))
+        }
+        //lastPod++
+    }
+
+    fun sendDelayColor(
+        d: Device?, color: Int, action: Int,
+        playerId: Int, delay: Int, observe: Boolean = false
+    ) {
+        if (observe)
+            delayObserver(Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId))
+        d?.let {
+            it.colorPalet = color
+            EventBus.getDefault().postSticky(DelayColorEvent(it, it.uid, action, playerId, delay))
         }
         //lastPod++
     }
@@ -691,6 +805,7 @@ class RXLHelper private constructor() {
         try {
             EventBus.getDefault().register(this)
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             MiboEvent.log(e)
         }
     }
@@ -709,7 +824,7 @@ class RXLHelper private constructor() {
         }
         colorDisposable?.clear()
         disposable = null
-        parrentListener = null
+        rxlListener = null
         log("unregister")
     }
 
@@ -730,7 +845,9 @@ class RXLHelper private constructor() {
         publisher?.onNext(event)
     }
 
-    fun getHits(): String {
+    fun getScore(): String {
+        if (lightLogic == 3 || lightLogic == 4)
+            return getHitsFocus()
         val b = StringBuilder()
         b.append("\n")
         programParser?.players?.forEach { it ->
@@ -749,6 +866,47 @@ class RXLHelper private constructor() {
             }
             b.append(", Hits: $hits")
             b.append(", Missed: $missed")
+            b.append("\n")
+            b.append("\n")
+            b.append("\n")
+        }
+
+        return b.toString()
+        // return ""
+    }
+
+    fun getPlayers() = programParser?.players
+    fun getProgram() = programParser?.program
+
+    private fun getHitsFocus(): String {
+
+        val b = StringBuilder()
+        b.append("\n")
+        programParser?.players?.forEach { it ->
+            b.append(it.name)
+            b.append("\n")
+            b.append("--------------")
+            b.append("\n")
+            var hits = 0
+            var total = 0
+            var missed = 0
+            var wrong = 0
+            it.events?.forEach { ev ->
+                if (ev.isFocus) {
+                    total++
+                    if (ev.tapTime > 1)
+                        hits++
+                    else
+                        missed++
+                } else {
+                    if (ev.tapTime > 1)
+                        wrong++
+                }
+            }
+            b.append("Total: $total")
+            b.append(", Hits: $hits")
+            b.append(", Missed: $missed")
+            b.append(", Wrong hits: $wrong")
             b.append("\n")
             b.append("\n")
             b.append("\n")

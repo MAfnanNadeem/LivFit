@@ -22,10 +22,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import kotlin.jvm.Synchronized;
 import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.BleScanCallback;
 import life.mibo.hardware.bluetooth.CharacteristicChangeListener;
@@ -129,13 +131,14 @@ public class BluetoothManager {
         scanDevice();
     }
 
+    @Synchronized
     public void scanDevice() {
         if (!mBluetoothAdapter.enable())
             return;
         //TODO: Check if only devices connected should be cleared o not lose the devices conected
 
 
-        getDevicesBoosterBle().clear();
+        getDevicesBoosterBle();
         getDevicesHRBle().clear();
         getDevicesScaleBle().clear();
         getDevicesConnectedBle();
@@ -153,6 +156,9 @@ public class BluetoothManager {
 //
 //            }
 //        }, SCAN_PERIOD);
+
+        refreshList();
+        rxlCount = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (bluetoothLeScanner == null)
                 initBlueTooth();
@@ -304,19 +310,26 @@ public class BluetoothManager {
             //    bleScanCallback.onDevice(B);
             log("BluetoothManager onScanResult " + result);
             BluetoothDevice device = result.getDevice();
-            if(device == null)
+            if (device == null || device.getName() == null)
                 return;
             log("BluetoothManager getName " + result.getDevice().getName());
             //mBluetoothAdapter.getRemoteDevice(result)
 
-            if (!devicesHRBle.contains(device) && device.getName() != null && (device.getName().contains("HW") || device.getName().contains("Geonaute"))) {
-                devicesHRBle.add(device);
-                listener.bleHrDeviceDiscovered(device.toString(), device.getName());
-                log(" onScanResult2 " + device.getName() + "   " + device.getClass());
-            }
-
             // TODO Session is Boosted/Wifi remove later isBoosterMode()
-            if (!devicesBoosterBle.contains(device) && device.getName() != null && device.getName().contains("MBRXL")) {
+            if (device.getName() != null && device.getName().contains("MBRXL")) {
+                try {
+                    for (BluetoothDevice b : devicesBoosterBle) {
+                        if (b.getName().equalsIgnoreCase(device.getName())) {
+
+                            log("BluetoothManager device found " + device.getName());
+                            return;
+                        }
+                    }
+                }
+                catch (Exception e){
+
+                }
+
                 //rxlCount++;
                 devicesBoosterBle.add(device);
                 listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL " + ++rxlCount);
@@ -341,6 +354,14 @@ public class BluetoothManager {
                 log(" onScanResult4 " + device.getName() + "   " + device.getClass());
             }
 
+            if (device.getName() != null && !devicesHRBle.contains(device) && (device.getName().contains("HW") || device.getName().contains("Geonaute"))) {
+                devicesHRBle.add(device);
+                listener.bleHrDeviceDiscovered(device.toString(), device.getName());
+                log(" onScanResult2 " + device.getName() + "   " + device.getClass());
+                return;
+            }
+
+
 //            if (!devicesBoosterBle.contains(device) && !SessionManager.getInstance().getSession().isBoosterMode() && device.getName() != null && device.getName().contains("MIBO-")) {
 //                devicesBoosterBle.add(device);
 //                listener.bleBoosterDeviceDiscovered(device.getName().replace("MIBO-", ""), device.getName());
@@ -352,6 +373,7 @@ public class BluetoothManager {
                 devicesScaleBle.add(device);
                 listener.bleScaleDeviceDiscovered(device.toString(), device.getName());
                 log(" onScanResult4 " + device.getName() + "   " + device.getClass());
+                return;
             }
         }
 
@@ -465,35 +487,76 @@ public class BluetoothManager {
         }
         log("connectRXLGattDevice newDevice " + newDevice + " size:" + devicesBoosterBle.size());
         if (newDevice) {
-            for (BluetoothDevice d : devicesBoosterBle) {
-                if (d.getName() != null) {
-                    log("connectRXLGattDevice name: " + d.getName());
-                    if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
-                        log("connectRXLGattDevice matched ");
-                        devicesConnectedBle.add(d);
+            try {
+                for (BluetoothDevice d : devicesBoosterBle) {
+                    if (d.getName() != null) {
+                        log("connectRXLGattDevice name: " + d.getName());
+                        if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
+                            log("connectRXLGattDevice matched " + d.getName());
+                            devicesConnectedBle.add(d);
 
-                        // Not work with MIBO_RXL_SERVICE_CHAR_UUID , MIBO_RXL_TRANSMISSION_CHAR_UUID
+                            // Not work with MIBO_RXL_SERVICE_CHAR_UUID , MIBO_RXL_TRANSMISSION_CHAR_UUID
 //                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
 //                                BleGattManager.MIBO_RXL_SERVICE_CHAR_UUID,
 //                                BleGattManager.MIBO_RXL_TRANSMISSION_CHAR_UUID,
 //                                new byte[0]));
 
-                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
-                                BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
-                                BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
-                                new byte[0]));
-                        addGattListenerRXL2(mGattManager, d);
-                        //log("connectRXLGattDevice " + Id);
+                            getGattManager().queue(new GattCharacteristicWriteOperation(d,
+                                    BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
+                                    BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
+                                    new byte[0]));
+                            addGattListenerRXL2(mGattManager, d);
+                            //log("connectRXLGattDevice " + Id);
 //                        mGattManager.queue(new GattSetNotificationOperation(d,
 //                                BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
 //                                BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID,
 //                                BleGattManager.CLIENT_UUID));
 
 
-                        log("connectRXLGattDevice RXL connected " + Id);
+                            log("connectRXLGattDevice RXL connected " + Id);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                log("ERROR : " + e.getMessage());
+                Iterator<BluetoothDevice> iter = devicesBoosterBle.iterator();
+
+                while (iter.hasNext()) {
+                    BluetoothDevice d = iter.next();
+
+                    if (d.getName() != null) {
+                        log("connectRXLGattDevice name: " + d.getName());
+                        if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
+                            log("connectRXLGattDevice matched ");
+                            devicesConnectedBle.add(d);
+
+                            // Not work with MIBO_RXL_SERVICE_CHAR_UUID , MIBO_RXL_TRANSMISSION_CHAR_UUID
+//                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
+//                                BleGattManager.MIBO_RXL_SERVICE_CHAR_UUID,
+//                                BleGattManager.MIBO_RXL_TRANSMISSION_CHAR_UUID,
+//                                new byte[0]));
+
+                            getGattManager().queue(new GattCharacteristicWriteOperation(d,
+                                    BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
+                                    BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
+                                    new byte[0]));
+                            addGattListenerRXL2(mGattManager, d);
+                            //log("connectRXLGattDevice " + Id);
+//                        mGattManager.queue(new GattSetNotificationOperation(d,
+//                                BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
+//                                BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID,
+//                                BleGattManager.CLIENT_UUID));
+
+
+                            log("connectRXLGattDevice RXL connected " + Id);
+                        }
+                    }
+
+                    //if (someCondition)
+                    //  iter.remove();
+                }
             }
+
         }
 
     }
@@ -681,23 +744,54 @@ public class BluetoothManager {
         });
     }
 
-    void sendToBleRxl(String Id, byte[] message) {
-        sendToMIBOBoosterGattDevice(Id, message);
+    void sendMessage(String Id, byte[] message, String tag) {
+        log("sendMessage uid:" + Id + " ,data: " + Arrays.toString(message) + " , tag:" + tag);
+        sendToMIBOBoosterGattDevice(Id, message, tag);
+        log("sendMessage end" + tag);
     }
+
+    void sendToMIBOBoosterGattDevice(String Id, byte[] message, String tag) {
+        if (!TextUtils.isEmpty(Id)) {
+            log(tag + " sendToMIBOBoosterGattDevice data: " + Utils.getBytes(message) + " :: size " + devicesBoosterBle.size());
+            Encryption.mbp_encrypt(message, message.length);
+            for (BluetoothDevice d : devicesBoosterBle) {
+                if (d.getName() != null)
+                    if (d.getName().contains(Id)) {
+                        log(tag + " sendToMIBOBoosterGattDevice ID MATCHED: " + d.getName());
+                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
+                                BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
+                                BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
+                                message), tag);
+
+                    } else {
+                        log(tag + " sendToMIBOBoosterGattDevice ID NOT MATCHED: " + d.getName());
+                    }
+            }
+        } else {
+            log(tag + " sendToMIBOBoosterGattDevice Id is empty...........");
+        }
+    }
+
     void sendToMIBOBoosterGattDevice(String Id, byte[] message) {
-        if (!TextUtils.isEmpty(Id))
+        if (!TextUtils.isEmpty(Id)) {
             log("sendToMIBOBoosterGattDevice data: " + Utils.getBytes(message));
             Encryption.mbp_encrypt(message, message.length);
             for (BluetoothDevice d : devicesBoosterBle) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
+                        log("sendToMIBOBoosterGattDevice ID MATCHED: " + d.getName());
                         getGattManager().queue(new GattCharacteristicWriteOperation(d,
                                 BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
                                 BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID,
                                 message));
 
+                    } else {
+                        log("sendToMIBOBoosterGattDevice ID NOT MATCHED: " + d.getName());
                     }
             }
+        } else {
+            log("sendToMIBOBoosterGattDevice Id is empty...........");
+        }
     }
 
     void sendPingToBoosterGattDevice(byte[] message, BluetoothDevice d) {
@@ -752,6 +846,46 @@ public class BluetoothManager {
 
         }
         return devices;
+
+    }
+
+    synchronized void refreshList() {
+        List<BluetoothDevice> connected = new ArrayList<>();
+        List<BluetoothDevice> removed = new ArrayList<>();
+        try {
+            android.bluetooth.BluetoothManager bluetoothManager = (android.bluetooth.BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+            connected.addAll(bluetoothManager.getConnectedDevices(BluetoothProfile.GATT));
+            for (BluetoothDevice device : connected) {
+                if (devicesBoosterBle.size() > 0) {
+                    boolean contains = false;
+                    for (BluetoothDevice d : devicesBoosterBle) {
+                        if (device.getName().equalsIgnoreCase(d.getName())) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        removed.add(device);
+                    }
+                }
+                if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+
+                }
+            }
+
+            if (removed.size() > 0) {
+                for (BluetoothDevice dd : removed) {
+                    Iterator<BluetoothDevice> i = devicesBoosterBle.iterator();
+                    while (i.hasNext()) {
+                        if (i.next().getName().equalsIgnoreCase(dd.getName()))
+                            i.remove();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log("refreshList error............................................................. " + e.getMessage());
+        }
 
     }
 

@@ -12,6 +12,7 @@ public class ChangeColorEvent {
 
     private Device device;
     private int time = 0;
+    private int data = 0;
     public String getUid() {
         return uid;
     }
@@ -33,6 +34,13 @@ public class ChangeColorEvent {
         this.time = time;
     }
 
+    public ChangeColorEvent(Device device, String uid, int time, int data) {
+        this.device = device;
+        this.uid = uid;
+        this.time = time;
+        this.data = data;
+    }
+
     public int getTime() {
         return time;
     }
@@ -41,11 +49,21 @@ public class ChangeColorEvent {
         return device;
     }
 
+
+    public int getData() {
+        return data;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
     @Override
     public String toString() {
         return "ChangeColorEvent{" +
                 ", time=" + time +
                 ", uid='" + uid + '\'' +
+                ", data='" + data + '\'' +
                 '}';
     }
 

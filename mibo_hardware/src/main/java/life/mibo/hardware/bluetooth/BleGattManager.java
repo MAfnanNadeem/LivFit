@@ -95,23 +95,36 @@ public class BleGattManager {
         drive();
     }
 
+    public synchronized void queue(GattOperation gattOperation, String tag) {
+        log(tag + " GattManager().queue operation: " + gattOperation);
+
+        gattQueue.add(gattOperation);
+        log(tag + " GattManager() added Queue, size: " + gattQueue.size());
+        mCurrentOperation = null;
+        drive();
+    }
+
     private synchronized void drive() {
+        drive("");
+    }
+
+    private synchronized void drive(String tag) {
         if (mCurrentOperation != null) {
-            log("drive() tried to drive, but currentOperation was not null, " + mCurrentOperation);
+            log(tag + " drive() tried to drive, but currentOperation was not null, " + mCurrentOperation);
             return;
         }
         if (gattQueue.size() == 0) {
-            log("drive() Queue empty, drive loop stopped.");
+            log(tag + " drive() Queue empty, drive loop stopped.");
             mCurrentOperation = null;
             return;
         }
 
         final GattOperation operation = gattQueue.poll();
         if (operation == null) {
-            log("drive() GattOperation is NULL.");
+            log(tag + " drive() GattOperation is NULL.");
             return;
         }
-        log("drive() Driving Gatt queue, size will now become: " + gattQueue.size());
+        log(tag + " drive() Driving Gatt queue, size will now become: " + gattQueue.size());
         setCurrentOperation(operation);
 
 
@@ -123,11 +136,11 @@ public class BleGattManager {
 
         final BluetoothDevice device = operation.getDevice();
         if (gattMap.containsKey(device.getAddress())) {
-            log("drive() gattMap.containsKey " + gattMap);
+            log(tag + " drive() gattMap.containsKey " + gattMap);
             execute(gattMap.get(device.getAddress()), operation);
         } else {
             if (!connectingDevices.contains(device.getAddress())) {
-                log("drive() connect..." + gattMap.size());
+                log(tag + " drive() connect..." + gattMap.size());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     connectingDevices.add(device.getAddress());
                     log("drive() Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
@@ -219,10 +232,12 @@ public class BleGattManager {
                             super.onServicesDiscovered(gatt, status);
                             log("drive() BluetoothGattCallback onServicesDiscovered, status: " + status + " " + device.getName());
 
-                            if (device.getName().contains("MIBO"))
+                            if (device.getName().contains("MIBO")) {
                                 for (CharacteristicChangeListener listener : listenerHashMap.get(BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID)) {
                                     listener.onCharacteristicChanged(device.getAddress(), null);
                                 }
+                                //return;
+                            }
                             if (device.getName().contains("MBRXL")) {
                                 //for (CharacteristicChangeListener listener : listenerHashMap.get(BleGattManager.MIBO_RXL_RECEPTION_CHAR_UUID)) {
                                 //  listener.onCharacteristicChanged(device.getAddress(), null);
@@ -230,6 +245,7 @@ public class BleGattManager {
                                 for (CharacteristicChangeListener listener : listenerHashMap.get(BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID)) {
                                     listener.onCharacteristicChanged(device.getAddress(), null);
                                 }
+                                //return;
                             }
                             if (device.getName().contains("HW") || device.getName().contains("Geonaute"))
                                 for (CharacteristicChangeListener listener : listenerHashMap.get(BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID)) {
@@ -266,7 +282,7 @@ public class BleGattManager {
                         }
                     }, BluetoothDevice.TRANSPORT_LE);
                 } else {
-                    log("Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -- Device not supported "+Build.VERSION.SDK_INT);
+                    log("Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -- Device not supported " + Build.VERSION.SDK_INT);
                 }
             }
             waitIdle();

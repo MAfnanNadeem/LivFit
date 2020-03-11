@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.hexa"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "0.0.8"
+        versionCode 9
+        versionName "0.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -98,6 +98,7 @@ dependencies {
     //implementation 'br.com.simplepass:loading-button-android:2.2.0'
     implementation 'com.ogaclejapan.smarttablayout:library:2.0.0'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
 
 
     // Google

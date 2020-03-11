@@ -17,7 +17,6 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_marginTop="@dimen/grid_1x"
-        android:src="@drawable/login_bg"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 3/9/20 3:48 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 3/9/20 3:30 PM
+  ~  Mibo Hexa - app
+  -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+
+            <padding
+                android:bottom="4dp"
+                android:left="4dp"
+                android:right="4dp"
+                android:top="4dp" />
+
+            <solid android:color="@color/colorPrimaryDark2" />
+
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+
+            <padding
+                android:bottom="8dp"
+                android:left="8dp"
+                android:right="8dp"
+                android:top="8dp" />
+
+            <solid android:color="#ffffff" />
+
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#aa99D8F3" />
+        </shape>
+    </item>
+</layer-list>

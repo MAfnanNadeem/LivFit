@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import life.mibo.hardware.core.DataParser;
+import life.mibo.hardware.core.Logger;
 
 import static life.mibo.hardware.models.ConnectionTypes.BLE;
 import static life.mibo.hardware.models.ConnectionTypes.WIFI;
@@ -28,6 +29,7 @@ import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 /**
  * Created by Fer on 16/03/2019.
+ * Modified by Sumeet
  */
 
 public class Device implements Serializable, BaseModel {
@@ -106,6 +108,7 @@ public class Device implements Serializable, BaseModel {
         this.name = name;
         this.connectionType = WIFI;
         UiidToString(uid);
+
         this.ip = ip;
         this.type = type;
         setSerialFromUid(uid);
@@ -123,7 +126,10 @@ public class Device implements Serializable, BaseModel {
         this.uid = uid.toUpperCase();
 
         if(serial.length()> 8){
+            //Logger.e("Device uid ----- " + uid.length() + " :: " + uid);
+            //Logger.e("Device serial ----- " + serial);
             this.serial = uid.substring(uid.length() - 8).toLowerCase();
+            //Logger.e("Device serial2 ----- " + this.serial);
         }else{
             this.serial = serial;
         }
@@ -161,7 +167,8 @@ public class Device implements Serializable, BaseModel {
             uid = (String.format("%02x", uuid[0] & 0xFF) + "" + String.format("%02x", uuid[1] & 0xFF) + "" + String.format("%02x", uuid[2] & 0xFF) + ""
                     + String.format("%02x", uuid[3] & 0xFF) + "" + String.format("%02x", uuid[4] & 0xFF) + "" + String.format("%02x", uuid[5] & 0xFF));
         }
-        uid.toUpperCase();
+        uid = uid.toUpperCase();
+        //Logger.e("UiidToString "+uid);
     }
 
     public static String convetrUiidToString(byte[] uuid) {

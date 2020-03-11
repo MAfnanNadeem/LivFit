@@ -8,23 +8,28 @@
 package life.mibo.hexa.ui.rxl
 
 //import kotlinx.android.synthetic.main.fragment_rxl_initial.*
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_rxl_players.*
 import life.mibo.hardware.SessionManager
+import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.ui.home.HomeItem
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
 import life.mibo.hexa.ui.select_program.ProgramDialog
+import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
 
 class ReflexSelectFragment : BaseFragment() {
@@ -65,7 +70,7 @@ class ReflexSelectFragment : BaseFragment() {
 
     var adapter: PlayersAdapter? = null
     fun onCreate() {
-        radio_group?.setOnCheckedChangeListener { group, checkedId ->
+        radio_group?.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.player_one -> {
                     updateView(1)
@@ -104,16 +109,46 @@ class ReflexSelectFragment : BaseFragment() {
                     showColorPicker(item)
                 }
 
-            })
+            }, playerName)
         recyclerView.adapter = adapter
 
         btn_next?.setOnClickListener {
-            onNextClicked()
+            if (isConnected)
+                onNextClicked()
         }
         SessionManager.initUser()
         SessionManager.getInstance().userSession.isRxl = true
         SessionManager.getInstance().userSession.rxlPlayers = null
         SessionManager.getInstance().userSession.rxlDevices = null
+
+         snackBar()
+    }
+
+    var isConnected = false
+
+    var snackbar: Snackbar? = null
+
+    @SuppressLint("CheckResult")
+    fun snackBar() {
+        val list = SessionManager.getInstance().userSession.devices
+        val pods = ArrayList<Device>()
+        if (list.size > 0) {
+            list.forEach {
+                if (it.isPod) {
+                    pods.add(it)
+                }
+            }
+        }
+
+        if (pods.isEmpty()) {
+            snackbar = Toasty.snackbar(view, R.string.no_pods, R.string.connect) {
+                navigate(Navigator.RXL_HOME, HomeItem.Type.RXL_SCAN)
+            }
+           // snackbar?.show()
+            return
+        }
+        isConnected = true
+
     }
 
     private fun onNextClicked() {
@@ -127,7 +162,7 @@ class ReflexSelectFragment : BaseFragment() {
         if (!list.isNullOrEmpty()) {
             for (it in list) {
                 log("onNextClicked playerName ${it.playerName}")
-                if (it.playerName.isNullOrEmpty()) {
+                if (it.playerName.trim().isEmpty()) {
                     error = true
                     id = it.id
                     break
@@ -150,7 +185,7 @@ class ReflexSelectFragment : BaseFragment() {
         }
     }
 
-    fun getError(id: Int): Int {
+    private fun getError(id: Int): Int {
         when (id) {
             1 -> {
                 return R.string.player_1_error
@@ -209,6 +244,10 @@ class ReflexSelectFragment : BaseFragment() {
 
 
     private fun updateView(type: Int) {
+        adapter?.update(type)
+    }
+
+    private fun updateView2(type: Int) {
         val list = ArrayList<PlayersAdapter.PlayerItem>()
         when (type) {
             1 -> {
@@ -234,6 +273,11 @@ class ReflexSelectFragment : BaseFragment() {
         }
 
         adapter?.update(list)
+    }
+
+    override fun onDetach() {
+        snackbar?.dismiss()
+        super.onDetach()
     }
 
     override fun onBackPressed(): Boolean {

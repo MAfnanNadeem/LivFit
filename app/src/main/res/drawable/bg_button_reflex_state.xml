@@ -7,6 +7,6 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/bg_button_reflex_disable" android:state_pressed="true" />
-    <item android:drawable="@drawable/bg_button_reflex" android:state_enabled="true" />
+    <item android:drawable="@drawable/bg_button_reflex_red" android:state_enabled="true" />
     <item android:drawable="@drawable/bg_button_reflex_disable" android:state_enabled="false" />
 </selector>

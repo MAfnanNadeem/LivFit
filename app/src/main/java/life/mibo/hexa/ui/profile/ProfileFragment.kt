@@ -43,10 +43,10 @@ class ProfileFragment : BaseFragment() {
         //drawer_user_email?.text = member.imageThumbnail
             "${member?.firstName} ${member?.lastName}"
         profileBar.apply {
-            photo = ContextCompat.getDrawable(context, R.drawable.login_bg)
+            photo = ContextCompat.getDrawable(context, R.drawable.rxl_score_user)
             subtitle = "Joined on "+SimpleDateFormat("dd MMMM, yyyy").format(Date())
             title =  "${member?.firstName} ${member?.lastName}"
-            wallpaper = ContextCompat.getDrawable(context, R.drawable.login_bg)
+            wallpaper = ContextCompat.getDrawable(context, R.drawable.ic_reflex_user)
             optionWindow.changeWallpaperButton.visibility = View.GONE
             optionWindow.changeUsernameButton.visibility = View.GONE
             optionWindow.logOutButton.visibility = View.GONE

@@ -23,7 +23,7 @@ import kotlin.random.Random
 class AllAtOnceParser(program: RxlProgram, listener: Listener) :
     RxlParser(program, listener, "AllAtOnceParser") {
 
-    val DELAY: Int = 100
+    private val DELAY: Int = 100
 
 
 
@@ -124,36 +124,32 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
         log("child playerEvent player ${player.id} :: ${player.lastPod}  = ${event.data}")
         if (player.lastPod == event.data) {
             if (player.lastUid == event.uid) {
-                colorSent = false
+                //colorSent = false
                 log("playerEvent UID Matched  ")
                 player.events.add(Event(player.events.size + 1, actionTime, event.time, true))
-                if (delayTime > MIN_DELAY) {
-                    Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
-                        lightOnAllAtOnce(player)
-                    }.doOnError {
-                        MiboEvent.log("AllAtOnceParser onNext error: $it")
-                        lightOnAllAtOnce(player)
-                    }.subscribe()
-                } else {
-                    lightOnAllAtOnce(player)
-                }
+                next(player)
             } else {
                 log("playerEvent UID NOT Matched >> ${player.lastUid}  == ${event.uid}")
                 player.events.add(Event(player.events.size + 1, actionTime, event.time, false))
-                if (delayTime > MIN_DELAY) {
-                    Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
-                        lightOnAllAtOnce(player)
-                    }.doOnError {
-                        MiboEvent.log("AllAtOnceParser onNext error: $it")
-                        lightOnAllAtOnce(player)
-                    }.subscribe()
-                } else {
-                    lightOnAllAtOnce(player)
-                }
+                next(player)
                 //player.wrongEvents.add(Event(player.wrongEvents.size + 1, actionTime, event.time))
             }
         } else {
             log("child playerEvent player already received...........")
+        }
+    }
+
+    private fun next(player: RxlPlayer) {
+        log("next next next")
+        if (delayTime > MIN_DELAY) {
+            Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
+                lightOnAllAtOnce(player)
+            }.doOnError {
+                MiboEvent.log("AllAtOnceParser onNext error: $it")
+                lightOnAllAtOnce(player)
+            }.subscribe()
+        } else {
+            lightOnAllAtOnce(player)
         }
     }
 
@@ -187,27 +183,26 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
         //val id = player.nextRandom()
         val uid = player.randomPod()?.uid
         val id = getPlayerId(player)
-        log("lightOnAllAtOnce player ${player.id} : $uid :: lastPod $id")
+        log("lightOnAllAtOnce player ${player.id}, uid $uid, getPlayerId $id, action $actionTime")
         Observable.fromIterable(player.pods).subscribeOn(Schedulers.io()).doOnNext { device ->
-            uid?.let {
-                if (it == device.uid) {
-                    player.lastUid = uid
-                    //player.isFocus = true
-                    listener.sendDelayColorEvent(device, player.color, actionTime, id, DELAY, true)
-                } else {
-                    //player.isFocus = false
-                    listener.sendDelayColorEvent(
-                        device,
-                        randomColor(player),
-                        actionTime,
-                        id,
-                        DELAY,
-                        false
-                    )
-                }
+            if (uid == device.uid) {
+                player.lastUid = device.uid
+                //player.isFocus = true
+                listener.sendDelayColorEvent(device, player.color, actionTime, id, DELAY, true)
+            } else {
+                //player.isFocus = false
+                listener.sendDelayColorEvent(
+                    device,
+                    randomColor(player),
+                    actionTime,
+                    id,
+                    DELAY,
+                    false
+                )
             }
-            //Thread.sleep(10)
-            log("nextFocusEvent onChangeColorEvent Observable ON = ${device.uid}")
+            log("lightOnAllAtOnce sendDelayColorEvent to player ${player.id} - ${device.uid}")
+            Thread.sleep(10)
+            //log("nextFocusEvent onChangeColorEvent Observable ON = ${device.uid}")
         }.doOnError {
 
         }.doOnComplete {
@@ -215,12 +210,12 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
     }
 
 
-    //private var focusValid = false
-    //private var isFocus = false
-    private fun isNextFocus(): Boolean {
-        //return Random.nextInt(50) % 2 == 0
-        return Random.nextInt(50) % 3 == 0
-    }
+//    //private var focusValid = false
+//    //private var isFocus = false
+//    private fun isNextFocus(): Boolean {
+//        //return Random.nextInt(50) % 2 == 0
+//        return Random.nextInt(50) % 3 == 0
+//    }
 
 
     override fun completeCycle() {
@@ -247,38 +242,38 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
         return colors[i].activeColor
     }
 
-    fun onNextEvent(player: RxlPlayer, event: RxlStatusEvent) {
-        Observable.fromIterable(player.pods).subscribeOn(Schedulers.io()).doOnNext {
-            log("nextFocusEvent2 onChangeColorEvent Observable OFF = ${it.uid}")
-        }.doOnComplete {
-            log("nextFocusEvent2 doOnComplete NOT MATCH >> ${event.uid} ")
-        }.subscribe()
-
-        Thread.sleep(20)
-    }
+//    fun onNextEvent(player: RxlPlayer, event: RxlStatusEvent) {
+//        Observable.fromIterable(player.pods).subscribeOn(Schedulers.io()).doOnNext {
+//            log("nextFocusEvent2 onChangeColorEvent Observable OFF = ${it.uid}")
+//        }.doOnComplete {
+//            log("nextFocusEvent2 doOnComplete NOT MATCH >> ${event.uid} ")
+//        }.subscribe()
+//
+//        Thread.sleep(20)
+//    }
     // private var focusCount = 0
 
-    var colorSent = false
-    private fun nextFocusLight(player: RxlPlayer) {
-        //if (colorSent)
-        //     return
-        colorSent = true
-        log("child nextFocusLight $player")
-
-        val id = player.generateRandom()
-        val pod = player.pods[id]
-        log("lightOnFocus")
-        player.isFocus = isNextFocus()
-        if (player.isFocus) {
-            // focusValid = true
-            player.lastUid = pod.uid
-            listener.sendColorEvent(pod, player.color, actionTime, player.id, true)
-            //sendToFocusLight(player)
-        } else {
-            //focusValid = false
-            player.lastUid = pod.uid
-            listener.sendDelayColorEvent(pod, randomColor(player), actionTime, player.id, 100, true)
-            //sendToNonFocusLight(player)
-        }
-    }
+//    var colorSent = false
+//    private fun nextFocusLight(player: RxlPlayer) {
+//        //if (colorSent)
+//        //     return
+//        colorSent = true
+//        log("child nextFocusLight $player")
+//
+//        val id = player.generateRandom()
+//        val pod = player.pods[id]
+//        log("lightOnFocus")
+//        player.isFocus = isNextFocus()
+//        if (player.isFocus) {
+//            // focusValid = true
+//            player.lastUid = pod.uid
+//            listener.sendColorEvent(pod, player.color, actionTime, player.id, true)
+//            //sendToFocusLight(player)
+//        } else {
+//            //focusValid = false
+//            player.lastUid = pod.uid
+//            listener.sendDelayColorEvent(pod, randomColor(player), actionTime, player.id, 100, true)
+//            //sendToNonFocusLight(player)
+//        }
+//    }
 }

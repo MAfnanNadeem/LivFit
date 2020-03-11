@@ -65,6 +65,8 @@ public class SessionManager {
     }
 
     public UserSession getUserSession() {
+        if (userSession == null)
+            userSession = new UserSession();
         return userSession;
     }
 

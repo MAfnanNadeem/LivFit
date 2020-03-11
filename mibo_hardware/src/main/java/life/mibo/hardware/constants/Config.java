@@ -4,7 +4,12 @@ package life.mibo.hardware.constants;
  * Created by Fer on 20/03/2019.
  */
 
-public class CommunicationConstants {
+public class Config {
+
+    public static final int UDP_PORT_RECEIVE = 53531;
+    public static final int UDP_PORT_SEND = 42421;
+    public static final String TCP_PORT = "53532";
+
     public static final int MIN_COMMAND_LENGTH = 9;
 
     public static final int COMMAND_ADVERTISING = 0xFF;
@@ -38,7 +43,16 @@ public class CommunicationConstants {
     public static final int COMMAND_ASYNC_SET_MAIN_LEVEL = 0xC1;
     public static final int COMMAND_ASYNC_PAUSE = 0xC2;
     public static final int COMMAND_ASYNC_START = 0xC4;
-    public static final int COMMAND_RXL_PROXIMATE = 0x04;
+    public static final int RXL_COMMAND_PROXIMATE = 0x04;
+    public static final int RXL_TAP_EVENT = 0xC0;
+
+
+    public static final int RXL_COMMAND_COLOR = 0x03;
+    public static final int RXL_COMMAND_BLINK = 0x05;
+    public static final int RXL_COMMAND_BLINK_RESPONSE = 0x85;
+    public static final int RXL_COMMAND_COLOR_DELAY = 0x06;
+    public static final int RXL_COMMAND_COLOR_DELAY_RESPONSE = 0x86;
+
 
 
 

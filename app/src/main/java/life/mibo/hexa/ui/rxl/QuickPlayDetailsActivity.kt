@@ -25,11 +25,11 @@ import life.mibo.hardware.events.RxlBlinkEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
-import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
+import life.mibo.hexa.pods.rxl.Event
 import life.mibo.hexa.pods.rxl.RXLHelper
 import life.mibo.hexa.pods.rxl.RxlListener
 import life.mibo.hexa.pods.rxl.program.RxlLight
@@ -38,13 +38,18 @@ import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog
+import life.mibo.hexa.ui.main.MiboApplication
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.rxl.adapter.PlayersAdapter
+import life.mibo.hexa.ui.rxl.adapter.ScoreAdapter
 import life.mibo.hexa.ui.rxl.impl.CourseCreateImpl
 import life.mibo.hexa.ui.rxl.impl.ReflexDialog
+import life.mibo.hexa.ui.rxl.impl.ScoreDialog
 import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Constants
 import life.mibo.hexa.utils.Toasty
+import life.mibo.hexa.utils.Utils
+import life.mibo.views.anim.AnimateView
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
@@ -84,34 +89,55 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     }
 
-    private fun updateToolbar() {
-        val appbar = findViewById<AppBarLayout?>(R.id.appBar)
-        if (isUser) {
-//            // val heightDp = Utils.dpToPixel(72, this)
-//            // appbar?.setExpanded(false, false)
-//            //appbar?.isEnabled = false
-//            //collapsingToolbar?.isEnabled = false
-            giffVideoView?.visibility = GONE
-            //simple_drawee_view?.visibility = View.GONE
-            appbar?.setExpanded(false, false)
-            // appbar?.setLiftable(false)
-            nestedScrollView?.isNestedScrollingEnabled = false
-            // disableCollapseBar()
-
-            //val behavior = lp.behavior as AppBarLayout.Behavior?
-            //behavior?.onNestedFling(coordinatorLayout, appbar, appbar, 0f, 10000f, true)
-        } else {
-
-            val heightDp = resources.displayMetrics.heightPixels.times(0.85f)
-            val lp =
-                appbar?.layoutParams as CoordinatorLayout.LayoutParams
-            lp.height = heightDp.toInt()
-            // iv_icon_giff?.setImageResource(R.drawable.rxl_agility_test_1)
-            try {
-                loadGlide(program?.tutorial)
-            } catch (e: java.lang.Exception) {
-            }
+    private fun getStatusBarHeight(): Int {
+        var result = 0
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId)
         }
+        return result
+    }
+
+    private fun updateToolbar() {
+        try {
+            val appbar = findViewById<AppBarLayout?>(R.id.appBar)
+            if (isUser) {
+                //lp.height = resources.getDimension(R.dimen.toolbar_height);
+
+                val heightDp = Utils.dpToPixel(56, this) + getStatusBarHeight()
+                val lp =
+                    appbar?.layoutParams as CoordinatorLayout.LayoutParams
+                lp.height = heightDp.toInt()
+
+
+                // appbar?.setExpanded(false, false)
+                //appbar?.isEnabled = false
+                //collapsingToolbar?.isEnabled = false
+                giffVideoView?.visibility = GONE
+                //simple_drawee_view?.visibility = View.GONE
+                appbar?.setExpanded(false, false)
+                // appbar?.setLiftable(false)
+                nestedScrollView?.isNestedScrollingEnabled = false
+                // disableCollapseBar()
+
+                //val behavior = lp.behavior as AppBarLayout.Behavior?
+                //behavior?.onNestedFling(coordinatorLayout, appbar, appbar, 0f, 10000f, true)
+            } else {
+
+                val heightDp = resources.displayMetrics.heightPixels.times(0.85f)
+                val lp =
+                    appbar?.layoutParams as CoordinatorLayout.LayoutParams
+                lp.height = heightDp.toInt()
+                // iv_icon_giff?.setImageResource(R.drawable.rxl_agility_test_1)
+                try {
+                    loadGlide(program?.tutorial)
+                } catch (e: java.lang.Exception) {
+                }
+            }
+        } catch (e: Exception) {
+            MiboEvent.log(e)
+        }
+
     }
 
     private fun loadGlide(url: List<String>?) {
@@ -135,7 +161,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //delegate.listener = this
 
 
-        createTestDevices()
+        //createTestDevices()
         SessionManager.getInstance().userSession.isRxl = true
         setProgram()
         setPlayers()
@@ -144,6 +170,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         btn_start_now?.setOnClickListener {
             printPods()
             //startNowTest()
+            //testDialog()
             startNowClicked()
         }
 
@@ -184,6 +211,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //        }
         tv_customize?.setOnClickListener {
             //navigate(Navigator.RXL_COURSE_CREATE, program)
+            if (isSessionActive)
+                return@setOnClickListener
             setResult(3)
             finish()
         }
@@ -199,11 +228,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             changeSensor(i)
         } else {
             log("changeSensor tap " + program?.proximityValue)
-            changeSensor(100)
+            changeSensor(0)
         }
         //setSlider()
 
-        if (BuildConfig.DEBUG) {
+        if (MiboApplication.DEBUG) {
             tv_select_action?.setOnClickListener {
                 delegate.showDialog(CourseCreateImpl.Type.ACTION)
             }
@@ -258,7 +287,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     private fun startNowLongTest() {
 
-        changeSensor(100)
+        //changeSensor(100)
         log("isRandom " + isRandom())
         //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
         //if (checkPlayersPods())
@@ -325,6 +354,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     private fun setProgram() {
         toolbar?.title = program?.name
         collapsingToolbar?.title = program?.name
+        if (isUser) {
+            toolbar_collapsed_title?.text = program?.name
+            toolbar_collapsed_title?.visibility = VISIBLE
+            collapsingToolbar?.invalidate()
+            toolbar_collapsed_title?.invalidate()
+        }
         program?.let {
             //tv_select_stations?.text = "${it.workingStations}"
             tv_select_cycles?.text = "${it.cycle}"
@@ -983,10 +1018,14 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     private fun setPickers() {
         tv_select_cycles?.setOnClickListener {
+            if (isSessionActive)
+                return@setOnClickListener
             delegate.showDialog(CourseCreateImpl.Type.CYCLES)
         }
 
         tv_select_duration?.setOnClickListener {
+            if (isSessionActive)
+                return@setOnClickListener
             delegate.showDialog(CourseCreateImpl.Type.DURATION)
         }
 
@@ -997,7 +1036,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         if (userPods.size > 0) {
             Observable.fromIterable(userPods)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : io.reactivex.Observer<Device> {
+                .subscribe(object : Observer<Device> {
 
                     override fun onSubscribe(d: Disposable) {
 
@@ -1159,7 +1198,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //        )
     }
 
-    private var size = 2
+    private var size = 1
     private fun checkStartCondition(action: (ArrayList<Device>) -> Unit) {
         //val list = SessionManager.getInstance().userSession.devices
         if (userPods.size < size) {
@@ -1177,14 +1216,14 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             if (isValidLogic()) {
                 if (checkPlayersPods())
                     action.invoke(userPods)
-                if (userPods.size != getProgramPods())
-                    Toasty.info(
-                        this,
-                        getString(R.string.exercise_designed) + getProgramPods() + getString(R.string.connected_error) + userPods.size,
-                        Toasty.LENGTH_LONG
-                    ).show()
+//                if (userPods.size != getProgramPods())
+//                    Toasty.info(
+//                        this,
+//                        getString(R.string.exercise_designed) + getProgramPods() + getString(R.string.connected_error) + userPods.size,
+//                        Toasty.LENGTH_LONG
+//                    ).show()
             } else {
-                Toasty.info(this, "Selected logic not supported").show()
+                Toasty.info(this, getString(R.string.logic_not_supported)).show()
 //                MessageDialog.info(
 //                    this, "RXL Requirement",
 //                    "Selected light logic is currently not supported \n\n Choose Random or Sequence"
@@ -1196,13 +1235,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //                .addDevices(pods).sendColor(null)
             return
         } else {
-            this.let {
-                MessageDialog.info(
-                    it,
-                    getString(R.string.rxl_title),
-                    getString(R.string.three_pods_required)
-                )
-            }
+//            this.let {
+//                MessageDialog.info(
+//                    it,
+//                    getString(R.string.rxl_title),
+//                    getString(R.string.three_pods_required)
+//                )
+//            }
 
         }
     }
@@ -1435,11 +1474,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_start_now?.isEnabled = true
             btn_start_hit?.isEnabled = true
             //tv_desc?.text = "Completed..."
-            MessageDialog.info(
-                this,
-                "Completed",
-                "Exercise finished " + RXLHelper.getInstance().getScore()
-            )
+            showScoreDialog(RXLHelper.getInstance().getPlayers())
+//            MessageDialog.info(
+//                this,
+//                "Completed",
+//                "Exercise finished " + RXLHelper.getInstance().getScore()
+//            )
             progressBar!!.visibility = GONE
             tv_cycle_heading?.visibility = INVISIBLE
             tv_cycle_count?.text = ""
@@ -1458,17 +1498,26 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         runOnUiThread {
             constraint_bottom_stop?.visibility = VISIBLE
             constraint_bottom?.visibility = INVISIBLE
-            btn_pause?.isEnabled = false
+            // btn_pause?.isEnabled = false
             //btn_start_now?.isEnabled = false
             //btn_start_hit?.isEnabled = false
+            AnimateView.addAnimTo(btn_pause).setScaleForPopOutAnim(0f, 0f)
+            btn_pause?.isEnabled = true
+            isPaused = false
             tv_cycle_heading?.visibility = VISIBLE
             tv_cycle_count?.text = "$cycle"
+            btn_pause?.setText(R.string.pause)
+            btn_pause?.background = null
+            btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
         }
         progress(0, 100, duration.times(1000), 1)
     }
 
     override fun onCyclePaused(cycle: Int, time: Int) {
         log("onCyclePaused")
+        runOnUiThread {
+            btn_pause?.isEnabled = false
+        }
         progress(0, 100, time, 2)
     }
 
@@ -1491,45 +1540,61 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     override fun onExerciseResumed(cycle: Int, totalTime: Int, remaining: Int) {
-        progress(0, 100, remaining, 1)
+        log("onExerciseResumed ")
+        runOnUiThread {
+            btn_pause?.setText(R.string.pause)
+            btn_pause?.background = null
+            btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
+        }
+        //animator?.resume()
+        val i = lastAnimator2
+        if (i is Int) {
+            log("onExerciseResumed lastAnimator2 is Int... $i :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
+            progress(i, 100, remaining.times(1000), 1)
+        } else {
+            val p = remaining.div(getDuration().toFloat()).times(100f)
+            log("onExerciseResumed percent $p :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
+            progress(100 - p.toInt(), 100, remaining.times(1000), 1)
+        }
     }
 
+    var lastAnimator = 0f
+    var lastAnimator2: Any? = null
     override fun onExercisePaused(cycle: Int, totalTime: Int, remaining: Int) {
-
+        log("onExercisePaused ")
+        runOnUiThread {
+            btn_pause?.setText(R.string.resume)
+            btn_pause?.background = null
+            btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_green)
+            lastAnimator = animator?.animatedFraction ?: 0f
+            lastAnimator2 = animator?.animatedValue
+            animator?.cancel()
+        }
     }
 
     // var lastFrom = -1
     var animator: ObjectAnimator? = null
     fun progress(valueFrom: Int, valueTo: Int, duration: Int, type: Int) {
-        //  if (lastFrom == valueFrom)
-        //      return
-        //  lastFrom = valueFrom
-        // Observable.fromCallable {  }
-//        activity?.runOnUiThread {
-//
-//        }
-        Single.just("this").subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-                log("progress $valueFrom : $valueTo :: $duration")
-                if (duration == 0) {
-                    progressBar!!.visibility = GONE
-                    return@doOnSuccess
-                } else
-                    progressBar!!.visibility = VISIBLE
+        Single.just("this").observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+            log("progress $valueFrom : $valueTo :: $duration")
+            if (duration == 0) {
+                progressBar!!.visibility = GONE
+                return@doOnSuccess
+            } else
+                progressBar!!.visibility = VISIBLE
 
-                if (type == 1)
-                    progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
-                else
-                    progressBar!!.progressTintList = ColorStateList.valueOf(Color.RED)
+            if (type == 1)
+                progressBar!!.progressTintList = ColorStateList.valueOf(Color.GREEN)
+            else
+                progressBar!!.progressTintList = ColorStateList.valueOf(Color.RED)
 
-                animator = ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo)
-                    .setDuration(duration.toLong())
-                animator?.start()
-            }.subscribe()
+            animator = ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo)
+                .setDuration(duration.toLong())
+            animator?.start()
+        }.subscribe()
     }
 
-
-    var isSessionActive = false
+    private var isSessionActive = false
     override fun onBackPressed() {
         if (canBack())
             super.onBackPressed()
@@ -1584,4 +1649,94 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     fun checkSession(): Boolean = isSessionActive
 
+    fun testDialog() {
+        val players = ArrayList<RxlPlayer>()
+        val p = RxlPlayer(1, "Test Name", Color.RED, 0, 0, ArrayList())
+
+        for (i in 1..100) {
+            p.events.add(Event(i, 2000, if (i % 3 == 0) 3 else 0, false))
+        }
+        players.add(p)
+        val p2 = p as RxlPlayer
+        p2.color = Color.GREEN
+        players.add(p2)
+        p2.color = Color.BLUE
+        players.add(p2)
+        p2.color = Color.MAGENTA
+        players.add(p2)
+        showScoreDialog(players)
+    }
+
+    private fun showScoreDialog(players: ArrayList<RxlPlayer>?) {
+        if (players == null)
+            return
+        //val players = RXLHelper.getInstance().getPlayers() ?: return
+        val list = ArrayList<ScoreAdapter.ScoreItem>()
+        val time = RXLHelper.getInstance().getProgram()?.totalDuration()
+        val size = players.size
+        //val programName = RXLHelper.getInstance().getProgram()?
+
+        list.add(
+            ScoreAdapter.ScoreItem(
+                0,
+                "",
+                "$time",
+                R.drawable.rxl_score_pods_time,
+                R.drawable.rxl_score_time,
+                0,
+                R.string.total_time
+            ).initial(true)
+        )
+        players.forEach { it ->
+            var hits = 0
+            var missed = 0
+            it.events.forEach { ev ->
+                if (ev.tapTime > 1)
+                    hits++
+                else
+                    missed++
+            }
+
+            if (size == 1) {
+                list.add(
+                    ScoreAdapter.ScoreItem(
+                        1,
+                        "",
+                        "$hits",
+                        R.drawable.rxl_score_pods_hit,
+                        R.drawable.rxl_score_hits,
+                        0,
+                        R.string.hits
+                    )
+                )
+                list.add(
+                    ScoreAdapter.ScoreItem(
+                        2,
+                        "",
+                        "$missed",
+                        R.drawable.rxl_score_pods_missed,
+                        R.drawable.rxl_score_missed,
+                        0,
+                        R.string.missed
+                    )
+                )
+            } else {
+                list.add(
+                    ScoreAdapter.ScoreItem(
+                        it.id, it.name, "$hits", it.color, "$missed", 0, 0, false
+                    )
+                )
+            }
+        }
+
+        if (list.size > 1) {
+            val dialog = ScoreDialog(this, program?.name, list)
+            dialog.show()
+            // val height = resources.displayMetrics.heightPixels * 0.8;
+            // log("showScoreDialog ${dialog.window?.attributes?.height} == $height")
+            // log("showScoreDialog <> ${dialog.window?.decorView?.height} == $height")
+            //if (dialog.window?.attributes?.height ?: 0 > height)
+            //  dialog.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, height.toInt())
+        }
+    }
 }

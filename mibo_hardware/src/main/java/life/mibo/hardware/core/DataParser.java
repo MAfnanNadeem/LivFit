@@ -8,19 +8,22 @@ import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Block;
 import life.mibo.hardware.models.program.Program;
 
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_GET_DEVICE_STATUS;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_GET_FIRMWARE_REVISION;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_PING_STIMULATOR;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_RESET_CURRENT_CYCLE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_RXL_PROXIMATE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SEARCH_STIMULATOR;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_CHANNELS_LEVELS;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_COMMON_STIMULATION_PARAMETERS;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_ON_HOT;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_DEVICE_COLOR;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_MAIN_LEVEL;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_START_CURRENT_CYCLE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_STOP_CURRENT_CYCLE;
+import static life.mibo.hardware.constants.Config.COMMAND_GET_DEVICE_STATUS;
+import static life.mibo.hardware.constants.Config.COMMAND_GET_FIRMWARE_REVISION;
+import static life.mibo.hardware.constants.Config.COMMAND_PING_STIMULATOR;
+import static life.mibo.hardware.constants.Config.COMMAND_RESET_CURRENT_CYCLE;
+import static life.mibo.hardware.constants.Config.COMMAND_SEARCH_STIMULATOR;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_CHANNELS_LEVELS;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_ON_HOT;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_MAIN_LEVEL;
+import static life.mibo.hardware.constants.Config.COMMAND_START_CURRENT_CYCLE;
+import static life.mibo.hardware.constants.Config.COMMAND_STOP_CURRENT_CYCLE;
+import static life.mibo.hardware.constants.Config.RXL_COMMAND_BLINK;
+import static life.mibo.hardware.constants.Config.RXL_COMMAND_COLOR;
+import static life.mibo.hardware.constants.Config.RXL_COMMAND_COLOR_DELAY;
+import static life.mibo.hardware.constants.Config.RXL_COMMAND_PROXIMATE;
 
 
 public class DataParser {
@@ -83,14 +86,17 @@ public class DataParser {
     }
 
     public static byte[] getUID(byte[] command) {
-        Logger.e("DataParser", "getUID " + Arrays.toString(command));
+        log("getUID " + Arrays.toString(command));
         if (command.length > 6)
             return new byte[]{command[2], command[3], command[4], command[5], command[6], command[7]};
         return new byte[]{0,1,2,3,4,5};
     }
 
-    public static byte[] getUIDRxl(byte[] command) {
-        Logger.e("DataParser", "getUID " + Arrays.toString(command));
+    public static byte[] getUIDRxl(byte[] command, byte[] uid) {
+        log("getUID " + Arrays.toString(command));
+
+        if (uid.length > 6)
+            return new byte[]{uid[2], uid[3], uid[4], uid[5], uid[6], uid[7]};
         if (command.length > 2)
             return new byte[]{1, 2, command[0], command[1], command[2], command[3]};
         return new byte[]{0, 1, 2, 3, 4, 5};
@@ -125,7 +131,7 @@ public class DataParser {
         byte[] data = new byte[2];
         data[0] = (byte) (value & 0xFF);
         data[1] = (byte) ((value >> 8) & 0xFF);
-        return fullMessage(new byte[]{COMMAND_RXL_PROXIMATE}, new byte[]{2}, data, RXL);
+        return fullMessage(new byte[]{RXL_COMMAND_PROXIMATE}, new byte[]{2}, data, RXL);
     }
 
     public static byte[] sendStart() {
@@ -195,11 +201,83 @@ public class DataParser {
             int b = (color) & 0xFF;
             int t1 = (time >> 8) & 0xFF;
             int t2 = (time) & 0xFF;
-            Logger.e("sendRxlColor " + color + " : r"+r+" g"+g+" b "+b + time+" : "+t1 +"  "+t2);
-            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{5}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
+            log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{5}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
-            Logger.e("sendRxlColor " + color + " : " + time, e);
+            log("sendRxlColor " + color + " : " + time);
+            Logger.e("sendRxlColor Exception ", e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
+    public static byte[] sendRxlColor(int color, int time, int data, int type) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            int d = (data) & 0xFF;
+            log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{6}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d}, type);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRxlColor Exception ", e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
+    public static byte[] sendRxlDelayColor(int color, int time, int data, int delay) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            int d = (data) & 0xFF;
+            int d1 = (delay) & 0xFF;
+            int d2 = (delay >> 8) & 0xFF;
+            log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{RXL_COMMAND_COLOR_DELAY}, new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d, (byte) d1, (byte) d2}, RXT);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRxlColor Exception ", e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
+    public static byte[] sendRxlBlink(int color, int cycle, int on, int off) {
+        try {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int on1 = (on) & 0xFF;
+            int on2 = (on >> 8) & 0xFF;
+            int off1 = (off) & 0xFF;
+            int off2 = (off >> 8) & 0xFF;
+            int c = (cycle) & 0xFF;
+            log("sendRxlBlink " + color + " : r" + r + " g" + g + " b " + b + on + " : " + on1 + "  " + on2 + " : " + off1 + "  " + off2 + " :: " + c);
+//            byte[] array = new byte[8];
+//            array[0] = (byte) r;
+//            array[1] = (byte) g;
+//            array[2] = (byte) b;
+//            array[3] = (byte) c;
+//            array[4] = (byte) on1;
+//            array[5] = (byte) on2;
+//            array[6] = (byte) off1;
+//            array[7] = (byte) off2;
+            //new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) c, (byte) on1, (byte) on2, (byte) off1, (byte) off2}
+            return fullMessage(new byte[]{RXL_COMMAND_BLINK}, new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) c, (byte) on1, (byte) on2, (byte) off1, (byte) off2}, RXL);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRxlColor Exception ", e);
             e.printStackTrace();
         }
         return new byte[0];
@@ -214,11 +292,11 @@ public class DataParser {
             int b = (color) & 0xFF;
             int t1 = (time >> 8) & 0xFF;
             int t2 = (time) & 0xFF;
-            Logger.e("sendRXTColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+            log("sendRXTColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
             return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{6}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
-            Logger.e("sendRXTColor " + color + " : " + time, e);
+            Logger.e("sendRxlColor Exception ", e);
             e.printStackTrace();
         }
         return new byte[0];
@@ -394,10 +472,10 @@ public class DataParser {
         outputStream.write((byte) (crc16(c) & 0xFF));
         outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
 
-        Logger.e("Writing Header1 " + Arrays.toString(header));
-        Logger.e("Writing Code2 " + Arrays.toString(code));
-        Logger.e("Writing Length3 " + Arrays.toString(length));
-        Logger.e("Writing Message4 " + Arrays.toString(data));
+        log("Writing Header1 " + Arrays.toString(header));
+        log("Writing Code2 " + Arrays.toString(code));
+        log("Writing Length3 " + Arrays.toString(length));
+        log("Writing Message4 " + Arrays.toString(data));
 
         return outputStream.toByteArray();
     }
@@ -456,10 +534,10 @@ public class DataParser {
         outputStream.write((byte) (crc16(c) & 0xFF));
         outputStream.write((byte) ((crc16(c) >> 8) & 0xFF));
 
-        Logger.e("Writing Message5 " + Arrays.toString(header));
-        Logger.e("Writing Message6 " + Arrays.toString(code));
-        Logger.e("Writing Message7 " + Arrays.toString(length));
-        Logger.e("Writing Message8 " + Arrays.toString(data));
+        log("Writing Message5 " + Arrays.toString(header));
+        log("Writing Message6 " + Arrays.toString(code));
+        log("Writing Message7 " + Arrays.toString(length));
+        log("Writing Message8 " + Arrays.toString(data));
 
         return outputStream.toByteArray();
     }
@@ -523,6 +601,10 @@ public class DataParser {
         }
         crc &= 0xffff;
         return crc;
+    }
+
+    private static void log(String msg) {
+        Logger.e("DataParser: " + msg);
     }
 
 }

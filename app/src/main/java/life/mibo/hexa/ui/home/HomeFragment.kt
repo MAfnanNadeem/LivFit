@@ -2,6 +2,7 @@ package life.mibo.hexa.ui.home
 
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Maybe
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
@@ -23,6 +23,7 @@ import life.mibo.hexa.models.login.Member
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.BaseListener
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.main.Navigator.Companion.HOME_VIEW
 import life.mibo.hexa.utils.Toasty
@@ -49,7 +50,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         val root = inflater.inflate(R.layout.fragment_home_new, container, false)
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         // val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(this, Observer {
+        homeViewModel.text.observe(viewLifecycleOwner, Observer {
             //  textView.text = it
         })
 
@@ -86,6 +87,21 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
         loadImage(iv_user_pic)
     }
+
+    private fun videoBg() {
+        try {
+            val uri = Uri.parse("android.resource://" + context?.packageName + "/" + R.raw.login_video)
+            videoView.setVideoURI(uri)
+            videoView.start()
+            videoView?.setOnPreparedListener {
+                it.isLooping = true
+            }
+        }
+        catch (e: Exception){
+            MiboEvent.log(e)
+        }
+    }
+
 
     private fun loadImage(iv: ImageView) {
         Maybe.fromCallable {
@@ -330,10 +346,13 @@ class HomeFragment : BaseFragment(), HomeObserver {
     override fun onResume() {
         log("onResume")
         super.onResume()
+       // videoView?.resume()
+        videoBg()
     }
 
     override fun onStop() {
         log("onStop")
+        videoView?.stopPlayback()
         super.onStop()
         controller.onStop()
         navigate(HOME_VIEW, false)

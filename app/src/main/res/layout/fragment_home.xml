@@ -36,7 +36,7 @@
             android:id="@+id/iv_user_pic"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:src="@drawable/login_bg"
+            android:src="@drawable/rxl_score_user"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

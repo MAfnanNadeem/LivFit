@@ -1,0 +1,17 @@
+<!--
+  ~  Created by Sumeet Kumar on 2/25/20 5:07 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 2/25/20 5:07 PM
+  ~  Mibo Hexa - app
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="life.mibo.hexa.ui.rxl.QuickPlayDetailsActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+</menu>

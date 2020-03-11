@@ -38,7 +38,7 @@ class ReflexDialog(
         textView = findViewById(R.id.tv_title)
         val close: View? = findViewById(R.id.iv_cancel)
 
-        window?.attributes?.windowAnimations = R.style.DialogAnimation;
+        window?.attributes?.windowAnimations = R.style.DialogBounceAnimation;
 
         recyclerView?.layoutManager = LinearLayoutManager(context)
         dialogAdapter = DialogAdapter(list)

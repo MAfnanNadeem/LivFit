@@ -78,7 +78,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         ivType?.background?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
         if (item.avatarBase64.isNullOrEmpty()) {
-            image?.setImageResource(R.drawable.ic_rxl_pods_icon)
+            image?.setImageResource(R.drawable.ic_rxl_pods_icon_200)
             image?.scaleType = ImageView.ScaleType.FIT_CENTER
             // image?.setColorFilter(Constants.PRIMARY)
             // setGradient(imageBg, image?.drawable)

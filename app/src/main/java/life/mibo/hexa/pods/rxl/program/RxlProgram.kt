@@ -227,6 +227,15 @@ class RxlProgram() {
 
     fun cycles(): Int = count
 
+    fun totalDuration(): Int {
+        return try {
+            val t1 = cycles[currentCycle].cycleDuration.times(count)
+            val t2 = cycles[currentCycle].cyclePause.times(count.minus(1))
+            t1.plus(t2)
+        } catch (e: Exception) {
+            0
+        }
+    }
 
     fun isRandom(): Boolean {
         if (currentCycle < cycles.size)

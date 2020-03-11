@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +17,8 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import life.mibo.hexa.R;
 
@@ -39,6 +40,13 @@ public class Toasty {
 
     private Toasty() {
         // avoiding instantiation
+    }
+
+    @CheckResult
+    public static Snackbar snackbar(View view, @StringRes int message, int action, View.OnClickListener listener) {
+        Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).setAction(action, listener);
+        bar.show();
+        return bar;
     }
 
     @CheckResult

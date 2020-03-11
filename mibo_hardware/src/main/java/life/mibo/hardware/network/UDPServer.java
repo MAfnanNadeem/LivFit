@@ -12,8 +12,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-
-import life.mibo.hardware.constants.CommunicationsConfig;
+import life.mibo.hardware.constants.Config;
 import life.mibo.hardware.core.Logger;
 
 /**
@@ -23,8 +22,8 @@ import life.mibo.hardware.core.Logger;
 public class UDPServer {
 
     //private Context context;
-    private final int PortSend = CommunicationsConfig.UDP_PORT_SEND ;
-    private final int PortReceive = CommunicationsConfig.UDP_PORT_RECEIVE;
+    private final int PortSend = Config.UDP_PORT_SEND ;
+    private final int PortReceive = Config.UDP_PORT_RECEIVE;
 
     private DatagramSocket SendSocket;
 

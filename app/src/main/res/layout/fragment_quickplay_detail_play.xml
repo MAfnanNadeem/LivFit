@@ -81,7 +81,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+
+                <TextView
+                    android:id="@+id/toolbar_collapsed_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="center_vertical|start"
+                    android:gravity="center_vertical|start"
+                    android:textAppearance="@style/CollapsedAppBar"
+                    android:visibility="gone" />
+            </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

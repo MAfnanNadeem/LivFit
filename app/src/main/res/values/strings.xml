@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Mibo Hexa</string>
+    <!--    <string name="app_name">Mibo Hexa</string>-->
+    <string name="app_name">MI.BO. NuFit</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -143,6 +144,7 @@
     <string name="required_pods"><![CDATA[<b>%s</b> Pods required for this exercise]]></string>
     <string name="assigned_pods"><![CDATA[Pods are mis-configured, total connected pods are <b>%s</b> and assigned pods to players are <b>%s</b> ]]></string>
     <string name="pods">Pods</string>
+    <string name="no_pods">No Pods are connected</string>
     <string name="activity_duration">Activity Duration</string>
     <string name="action">Action</string>
     <string name="delay">Delay</string>
@@ -167,6 +169,7 @@
     <string name="hit_to_start_rxl">Hit Reaction Light to start</string>
     <string name="title_activity_quick_play_details">QuickPlayDetailsActivity</string>
     <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
     <string name="types">Types</string>
     <string name="categories">Categories</string>
     <string name="no_exercise_created">You have not created any exercise yet \n click on <b>+</b> button to create.</string>
@@ -187,5 +190,11 @@
     <string name="on_tap">TAP</string>
     <string name="on_sensor">PROXIMITY</string>
     <string name="sensor_enable">Proximity enabled</string>
+    <string name="missed">MISSED</string>
+    <string name="hits">HITS</string>
+    <string name="your_hits">Your Hits</string>
+    <string name="your_missed">Your Missed</string>
+    <string name="total_time">TOTAL TIME <small>(sec)</small></string>
+    <string name="logic_not_supported">Selected logic not supported</string>
 
 </resources>

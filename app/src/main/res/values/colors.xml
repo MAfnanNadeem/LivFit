@@ -43,6 +43,8 @@
 
     <color name="color_button_yellow">#FFA000</color>
     <color name="error_message_color">#A52A2A</color>
+    <color name="btn_red">#E12020</color>
+    <color name="btn_red_border">#DDFF0000</color>
 
 
 </resources>

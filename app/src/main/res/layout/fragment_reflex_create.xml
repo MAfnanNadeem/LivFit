@@ -1,0 +1,19 @@
+<!--
+  ~  Created by Sumeet Kumar on 1/25/20 5:34 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/25/20 5:34 PM
+  ~  Mibo Hexa - app
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="life.mibo.reflex.ui.rxl.create.ReflexCourseCreateFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

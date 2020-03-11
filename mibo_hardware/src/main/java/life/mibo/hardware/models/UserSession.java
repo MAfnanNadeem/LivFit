@@ -47,9 +47,12 @@ public class UserSession implements BaseModel {
 
     private ArrayList<Device> connectedDevices = new ArrayList<>();
     private BluetoothDevice connectedScale;
+    private Object rxlPlayers;
+    private Object rxlDevices;
 
     private boolean boosterMode = true; // true wifi false ble
     private boolean isStarted;
+    private boolean isScanning = false;
     private boolean isBooster = false;
     private boolean isRxl = false;
 
@@ -61,13 +64,6 @@ public class UserSession implements BaseModel {
         isBooster = booster;
     }
 
-    public void setRxl(boolean rxl) {
-        isRxl = rxl;
-    }
-
-    public boolean isRxl() {
-        return isRxl;
-    }
 
     //    public Device getDevice() {
 //        return device;
@@ -483,8 +479,44 @@ public class UserSession implements BaseModel {
             cTimer.cancel();
     }
 
+    // RXL/RXT
+    public void setRxl(boolean rxl) {
+        isRxl = rxl;
+    }
+
+    public boolean isRxl() {
+        return isRxl;
+    }
+
+
+    public void setRxlDevices(Object rxlDevices) {
+        this.rxlDevices = rxlDevices;
+    }
+
+    public void setRxlPlayers(Object rxlPlayers) {
+        this.rxlPlayers = rxlPlayers;
+    }
+
+    public Object getRxlDevices() {
+        return rxlDevices;
+    }
+
+    public @Nullable
+    Object getRxlPlayers() {
+        return rxlPlayers;
+    }
+
     public CountDownTimer getSessionTimer() {
         return cTimer;
+    }
+
+
+    public boolean isScanning() {
+        return isScanning;
+    }
+
+    public void setScanning(boolean scanning) {
+        isScanning = scanning;
     }
 
     public void checkDeviceStatus(boolean[] status, String uid) {

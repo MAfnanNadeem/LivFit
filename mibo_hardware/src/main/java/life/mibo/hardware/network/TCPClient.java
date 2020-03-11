@@ -15,7 +15,7 @@ import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.encryption.Encryption;
 
-import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGTH;
+import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
 
 
 /**

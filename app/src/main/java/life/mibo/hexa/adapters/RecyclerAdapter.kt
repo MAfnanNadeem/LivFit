@@ -37,7 +37,7 @@ class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item = getItem(position)
         holder.text?.text = item?.title
-        holder.image?.load(R.drawable.login_bg)
+        //holder.image?.load(R.drawable.login_bg)
 
 //        Coil.loader().load(holder.image?.context!!, R.drawable.login_bg) {
 //            this.target(holder.image!!).

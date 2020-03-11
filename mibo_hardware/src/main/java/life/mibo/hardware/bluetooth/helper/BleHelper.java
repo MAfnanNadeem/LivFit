@@ -28,6 +28,7 @@ import java.util.UUID;
 import life.mibo.hardware.core.Logger;
 
 ///https://github.com/EmKsolandroid/ble
+//https://github.com/Polidea/RxAndroidBle
 public class BleHelper {
 
     public static final String TAG = "BleHelper";

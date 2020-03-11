@@ -176,7 +176,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             HomeItem(
                 "6CH Booster",
                 "",
-                HomeItem.Type.BOOSTER,
+                HomeItem.Type.BOOSTER_SCAN,
                 R.drawable.ic_dashboard_booster,
                 R.drawable.dashboard_item_bg_3
             )
@@ -191,7 +191,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Reflex", "",
-                HomeItem.Type.ReFlex, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
+                HomeItem.Type.RXL_SCAN, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
             )
         )
         isMember = true
@@ -248,7 +248,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             HomeItem(
                 "6CH Booster",
                 "",
-                HomeItem.Type.BOOSTER,
+                HomeItem.Type.BOOSTER_SCAN,
                 R.drawable.ic_dashboard_booster,
                 R.drawable.dashboard_item_bg_3
             )
@@ -263,7 +263,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "Reflex", "",
-                HomeItem.Type.ReFlex, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
+                HomeItem.Type.RXL_SCAN, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
             )
         )
 
@@ -320,7 +320,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             HomeItem(
                 "Booster",
                 intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
-                HomeItem.Type.BOOSTER, R.drawable.ic_dashboard_booster
+                HomeItem.Type.BOOSTER_SCAN, R.drawable.ic_dashboard_booster
             )
         )
         list.add(

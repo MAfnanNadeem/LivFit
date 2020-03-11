@@ -262,9 +262,8 @@ class GiffVideoSlider(
                     .into(view)
                 //.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
 
-            } else if (type.contains("mp4")) {
-                Glide.with(this).asGif().load(R.drawable.rxl_agility_test_1)
-                    .listener(glideListener)
+            } else  {
+                Glide.with(this).load(url)
                     .apply(request)
                     .into(view)
             }

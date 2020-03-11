@@ -140,4 +140,8 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="DialogBounceAnimation">
+        <item name="android:windowEnterAnimation">@anim/bounce_anim</item>
+    </style>
+
 </resources>

@@ -24,9 +24,11 @@ import life.mibo.hardware.core.Utils;
 import life.mibo.hardware.encryption.Encryption;
 import life.mibo.hardware.events.BleConnection;
 import life.mibo.hardware.events.ChangeColorEvent;
+import life.mibo.hardware.events.DelayColorEvent;
 import life.mibo.hardware.events.DeviceSearchEvent;
 import life.mibo.hardware.events.PodEvent;
 import life.mibo.hardware.events.ProximityEvent;
+import life.mibo.hardware.events.RxlBlinkEvent;
 import life.mibo.hardware.events.SendChannelsLevelEvent;
 import life.mibo.hardware.events.SendCircuitEvent;
 import life.mibo.hardware.events.SendDevicePlayEvent;
@@ -44,22 +46,22 @@ import life.mibo.hardware.network.TCPClient;
 import life.mibo.hardware.network.UDPServer;
 
 import static java.lang.Thread.sleep;
-import static life.mibo.hardware.constants.CommunicationConstants.ASYNC_PROGRAM_STATUS;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_ASYNC_PAUSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_ASYNC_SET_MAIN_LEVEL;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_ASYNC_START;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_DEVICE_STATUS_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_FIRMWARE_REVISION_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_PING_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_RESET_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_CHANNELS_LEVELS_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_DEVICE_COLOR_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_SET_MAIN_LEVEL_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.COMMAND_START_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.CommunicationConstants.MIN_COMMAND_LENGTH;
-import static life.mibo.hardware.constants.CommunicationsConfig.TCP_PORT;
+import static life.mibo.hardware.constants.Config.ASYNC_PROGRAM_STATUS;
+import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_PAUSE;
+import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_SET_MAIN_LEVEL;
+import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_START;
+import static life.mibo.hardware.constants.Config.COMMAND_DEVICE_STATUS_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_FIRMWARE_REVISION_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_PING_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_RESET_CURRENT_CYCLE_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_CHANNELS_LEVELS_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_MAIN_LEVEL_RESPONSE;
+import static life.mibo.hardware.constants.Config.COMMAND_START_CURRENT_CYCLE_RESPONSE;
+import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
+import static life.mibo.hardware.constants.Config.TCP_PORT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTING;
@@ -281,6 +283,7 @@ public class CommunicationManager {
 
         @Override
         public void bleRXLDiscovered(String uid, String serial, String name) {
+            log("bleRXLDiscovered " + uid);
             bleRxlDiscovered(uid, serial, name);
         }
 
@@ -424,32 +427,32 @@ public class CommunicationManager {
                             command[j] = message[i + 5 + j];
                         }
 
-                        logi("broadcastConsumer checkBoosterDevice " + ip);
+                        logi("broadcastConsumer checkBoosterDevice " + ip + " : " + Arrays.toString(command));
                         checkBoosterDevice(command, ip);
                         break;
                     }
                 } else if (message[i] == 'M' && message[i + 1] == 'B' && message[i + 2] == 'R' && message[i + 3] == 'X') {
                     if (message[i + 4] == 'L') {
-                        if (message.length > (i + message[i + 6] + 8)) {
-                            byte[] command = new byte[message[i + 6] + 2];
-                            for (int j = 0; j < message[i + 6] + 2; j++) {
-                                command[j] = message[i + 5 + j];
+                        if (message.length > (i + message[i + 7] + 8)) {
+                            byte[] command = new byte[message[i + 7] + 2];
+                            for (int j = 0; j < message[i + 7] + 2; j++) {
+                                command[j] = message[i + 6 + j];
                             }
 
-                            logi("broadcastConsumer checkRxlDevice " + ip);
-                            checkRxlDevice(ip);
+                            logi("broadcastConsumer checkRxlDevice " + ip + " : " + Arrays.toString(command));
+                            checkRxlDevice(ip, command);
                             break;
                         }
                     }
                     if (message[i + 4] == 'T') {
-                        if (message.length > (i + message[i + 6] + 8)) {
-                            byte[] command = new byte[message[i + 6] + 2];
-                            for (int j = 0; j < message[i + 6] + 2; j++) {
-                                command[j] = message[i + 5 + j];
+                        if (message.length > (i + message[i + 7] + 8)) {
+                            byte[] command = new byte[message[i + 7] + 2];
+                            for (int j = 0; j < message[i + 7] + 2; j++) {
+                                command[j] = message[i + 6 + j];
                             }
 
-                            logi("broadcastConsumer checkRxlDevice " + ip);
-                            checkRxtDevice(ip);
+                            logi("broadcastConsumer checkRxlDevice " + ip + " : " + Arrays.toString(command));
+                            checkRxtDevice(ip, command);
                             break;
                         }
                     }
@@ -461,7 +464,6 @@ public class CommunicationManager {
 
     private void debugCommands(String tag, byte[] msg) {
         if (msg == null) {
-
             return;
         }
         int count = msg.length - 1;
@@ -521,6 +523,8 @@ public class CommunicationManager {
     }
 
     private void bleRxlDiscovered(String uid, String serial, String name) {
+        //log("bleRxlDiscovered serial: " + serial);
+        //log("bleRxlDiscovered uid: " + Utils.getUid(serial));
         add(new Device(name, uid, Utils.getUid(serial), RXL_BLE));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         // if (listener != null)
@@ -569,26 +573,31 @@ public class CommunicationManager {
     }
 
     private int rxlCount = 0;
-    private synchronized void checkRxlDevice(InetAddress ip) {
+
+    private synchronized void checkRxlDevice(InetAddress ip, byte[] command) {
         log("checkRxlDevice --- " + ip);
+        // log("checkRxlDevice uid: " + DataParser.getUIDRxl(ip.getAddress(), command));
         for (Device d : mDiscoveredDevices) {
             if (d.getIp().equals(ip)) {
                 log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
                 return;
             }
         }
-        add(new Device("RXL " + ++rxlCount, DataParser.getUIDRxl(ip.getAddress()), ip, RXL_WIFI));
+        add(new Device("RXL " + ++rxlCount, DataParser.getUIDRxl(ip.getAddress(), command), ip, RXL_WIFI));
     }
 
-    private synchronized void checkRxtDevice(InetAddress ip) {
+    private synchronized void checkRxtDevice(InetAddress ip, byte[] cmd) {
         log("checkRxlDevice --- " + ip);
+        // log("checkRxlDevice mac --- " + new String(DataParser.getUIDRxl(ip.getAddress(),cmd)));
+        //log("checkRxlDevice mac --- " + new String(DataParser.getUIDRxl(ip.getAddress(),cmd)));
+        //debugCommands("checkRxlDevice mac", DataParser.getUIDRxl(ip.getAddress(),cmd));
         for (Device d : mDiscoveredDevices) {
             if (d.getIp().equals(ip)) {
                 log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
                 return;
             }
         }
-        add(new Device("RXT", DataParser.getUIDRxl(ip.getAddress()), ip, RXT_WIFI));
+        add(new Device("RXT", DataParser.getUIDRxl(ip.getAddress(), cmd), ip, RXT_WIFI));
     }
 
     private void checkNewDevice(byte[] command, InetAddress ip) {
@@ -1232,7 +1241,7 @@ public class CommunicationManager {
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
                 if (event.getDevice().getType() == RXL_WIFI) {
-                    t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
+                    t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), t.getType()), "onChangeColorEvent");
                 } else if (event.getDevice().getType() == RXT_WIFI) {
                     t.sendMessage(DataParser.sendRxtColor(Integer.parseInt(event.getDevice().getData().toString()), event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onRXTColorChange");
                 } else {
@@ -1243,7 +1252,7 @@ public class CommunicationManager {
         if (bluetoothManager != null) {
             if (event.getDevice().getType() == RXL_BLE) {
                 //t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
-                bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), DataParser.RXL));
+                bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL));
             } else {
                 bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), event.getDevice().type()));
             }
@@ -1252,6 +1261,39 @@ public class CommunicationManager {
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onChangeColorEvent color changed..................... " + event.getUid());
+
+    }
+
+    public synchronized void onDelayColorEvent(DelayColorEvent event) {
+        log("onDelayColorEvent " + event);
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendRxlDelayColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), event.getDelay()), "onDelayColorEvent");
+            }
+        }
+        if (bluetoothManager != null) {
+            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL));
+        }
+        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        log("onChangeColorEvent color changed..................... " + event.getUid());
+
+    }
+
+    public synchronized void onBlinkEvent(RxlBlinkEvent event) {
+        log("onBlinkEvent: " + event.getUid());
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                log("onBlinkEvent UID MATCHED");
+                t.sendMessage(DataParser.sendRxlBlink(event.getColor(), event.getCycles(), event.getTimeOn(), event.getTimeOff()), "onBlinkEvent");
+            }
+        }
+        if (bluetoothManager != null) {
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlBlink(event.getColor(), event.getCycles(), event.getTimeOn(), event.getTimeOff()), "onBlinkEvent");
+        }
+        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        log("onBlinkEvent blink color changed..................... " + event.getUid());
 
     }
 

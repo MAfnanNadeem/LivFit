@@ -280,6 +280,7 @@ public class Utils {
         list.add(new Program(0xFF0000FF));
         list.add(new Program(0xFFFFFF00));
         list.add(new Program(0xFFFF00FF));
+        list.add(new Program(0xFF00FFFF));
         list.add(new Program(0xFF00b75b));
         list.add(new Program(0xFF800000));
         list.add(new Program(0xFF808000));

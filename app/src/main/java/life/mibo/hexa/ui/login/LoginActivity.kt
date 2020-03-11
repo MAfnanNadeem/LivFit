@@ -1,6 +1,7 @@
 package life.mibo.hexa.ui.login
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -10,6 +11,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseActivity
+import life.mibo.hexa.utils.Toasty
 
 
 class LoginActivity : BaseActivity() {
@@ -85,6 +87,7 @@ class LoginActivity : BaseActivity() {
                 return@setOnLongClickListener true
             }
         }
+        //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
        // videoBg()
     }
 

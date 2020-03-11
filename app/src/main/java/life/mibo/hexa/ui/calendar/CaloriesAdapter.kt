@@ -49,7 +49,7 @@ class CaloriesAdapter(
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var time: TextView? = itemView.findViewById(R.id.tv_time)
+        var time: TextView? = itemView.findViewById(R.id.tv_action)
         var minutes: TextView? = itemView.findViewById(R.id.tv_minutes)
         var calories: TextView? = itemView.findViewById(R.id.tv_calories)
         var date: TextView? = itemView.findViewById(R.id.tv_date_value)

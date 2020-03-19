@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
    >
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_1"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -60,7 +60,7 @@
             android:visibility="visible"
             app:constraint_referenced_ids="iv_dashboard_1_text,iv_dashboard_1_icon,iv_dashboard_1" />
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_2"
             android:layout_width="150dp"
             android:layout_height="150dp"

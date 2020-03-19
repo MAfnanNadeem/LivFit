@@ -88,6 +88,6 @@ public class RxlStatusEvent {
     @NonNull
     @Override
     public String toString() {
-        return "uid " + uid + " cmd " + command + " : data " + data;
+        return "uid " + uid + " cmd " + Arrays.toString(command) + " : data " + data;
     }
 }

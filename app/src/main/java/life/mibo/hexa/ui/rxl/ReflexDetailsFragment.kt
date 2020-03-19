@@ -28,9 +28,9 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.pods.rxl.program.RxlLight
-import life.mibo.hexa.pods.rxl.RxlListener
+import life.mibo.hardware.rxl.RxlListener
+import life.mibo.hexa.pods.rxl.RXLManager
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog

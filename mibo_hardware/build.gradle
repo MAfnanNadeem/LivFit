@@ -36,5 +36,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation files('libs\\FitBleKit_v2.0.4.jar')
     implementation 'com.samigehi:socket:1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.18'
 
 }

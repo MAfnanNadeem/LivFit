@@ -30,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/textView2">
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_user_pic"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@id/constraintLayout1"
         app:layout_constraintWidth_percent="0.66">
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
             android:visibility="gone"
             app:constraint_referenced_ids="iv_dashboard_1_text,iv_dashboard_1_icon,iv_dashboard_1" />
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
         app:layout_constraintTop_toBottomOf="@id/constraintLayout2">
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
             android:visibility="gone"
             app:constraint_referenced_ids="iv_dashboard_3_text,iv_dashboard_3_icon,iv_dashboard_3" />
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -226,7 +226,7 @@
             app:constraint_referenced_ids="iv_dashboard_4_text,iv_dashboard_4_icon,iv_dashboard_4" />
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_5"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -273,7 +273,7 @@
         app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
         app:layout_constraintWidth_percent="0.66">
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_6"
             style="@style/dashboard_item_image"
             android:src="@drawable/bg_heart_gradient"
@@ -307,7 +307,7 @@
             app:constraint_referenced_ids="iv_dashboard_6_text,iv_dashboard_6_icon,iv_dashboard_6" />
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_7"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -355,7 +355,7 @@
         app:layout_constraintTop_toBottomOf="@id/constraintLayout4">
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_8"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -391,7 +391,7 @@
             android:visibility="gone"
             app:constraint_referenced_ids="iv_dashboard_8_text,iv_dashboard_8_icon,iv_dashboard_8" />
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -427,7 +427,7 @@
             app:constraint_referenced_ids="iv_dashboard_9_text,iv_dashboard_9_icon,iv_dashboard_9" />
 
 
-        <life.mibo.views.HexagonMaskView
+        <life.mibo.views.hexa.HexagonMaskView
             android:id="@+id/iv_dashboard_10"
             android:layout_width="0dp"
             android:layout_height="match_parent"

@@ -89,4 +89,7 @@ data class RxlProgram(
     fun lightLogic(): RxlLight {
         return RxlExercises.lightLogic(type)
     }
+    fun lightLogic2(): life.mibo.hardware.rxl.program.RxlLight {
+        return RxlExercises.lightLogic2(type)
+    }
 }

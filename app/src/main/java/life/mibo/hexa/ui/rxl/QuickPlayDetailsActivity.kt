@@ -1,5 +1,10 @@
 package life.mibo.hexa.ui.rxl
 
+//import life.mibo.hexa.pods.rxl.RXLHelper
+//import life.mibo.hexa.pods.rxl.RxlListener
+//import life.mibo.hexa.pods.rxl.program.RxlLight
+//import life.mibo.hexa.pods.rxl.program.RxlPlayer
+//import life.mibo.hexa.pods.rxl.program.RxlProgram
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -25,16 +30,16 @@ import life.mibo.hardware.events.RxlBlinkEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
+import life.mibo.hardware.rxl.RXLManager
+//import life.mibo.hardware.rxl.RXLManager
+import life.mibo.hardware.rxl.RxlListener
+import life.mibo.hardware.rxl.program.RxlLight
+import life.mibo.hardware.rxl.program.RxlPlayer
+import life.mibo.hardware.rxl.program.RxlProgram
 import life.mibo.hexa.R
 import life.mibo.hexa.core.toIntOrZero
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.models.program.Program
-import life.mibo.hexa.pods.rxl.Event
-import life.mibo.hexa.pods.rxl.RXLHelper
-import life.mibo.hexa.pods.rxl.RxlListener
-import life.mibo.hexa.pods.rxl.program.RxlLight
-import life.mibo.hexa.pods.rxl.program.RxlPlayer
-import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.MessageDialog
@@ -270,7 +275,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
         //if (checkPlayersPods())
         checkStartCondition {
-            RXLHelper.getInstance().with(
+            RXLManager.getInstance().with(
                 RxlProgram.getExercise(
                     getDuration(),
                     getAction(),
@@ -292,7 +297,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
         //if (checkPlayersPods())
         checkStartCondition {
-            RXLHelper.getInstance().with(
+            RXLManager.getInstance().with(
                 RxlProgram.getExercise(
                     getDuration(),
                     getAction(),
@@ -330,7 +335,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             getDuration(), getAction(), getPause(), getCycles(), 0, rxlPlayers, getLightLogic()
         )
         currentProgram?.let {
-            RXLHelper.getInstance().with(it).withListener(this).start(tap)
+            RXLManager.getInstance().with(it).withListener(this).start(tap)
         }
 
 
@@ -1322,7 +1327,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     private fun getLightLogic(): RxlLight {
         program?.let {
-            return it.lightLogic()
+            return it.lightLogic2()
         }
         return RxlLight.UNKNOWN
     }
@@ -1423,7 +1428,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     override fun onStart() {
         super.onStart()
         //register(this)
-        RXLHelper.getInstance().register()
+        RXLManager.getInstance().register()
         //RXLManager.getInstance().register()
         // EventBus.getDefault().register(this)
     }
@@ -1436,7 +1441,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     override fun onDestroy() {
-        RXLHelper.getInstance().unregister()
+        RXLManager.getInstance().unregister()
         //RXLManager.getInstance().unregister()
         super.onDestroy()
     }
@@ -1453,7 +1458,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     private fun endProgram(user: Boolean) {
         try {
             //RXLManager.getInstance().stopProgram()
-            RXLHelper.getInstance().stopProgram()
+            RXLManager.getInstance().stopProgram()
         } catch (e: java.lang.Exception) {
             MiboEvent.log("Error occurred while stopping RXL Program user=$user" + e?.message)
             MiboEvent.log(e)
@@ -1474,7 +1479,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_start_now?.isEnabled = true
             btn_start_hit?.isEnabled = true
             //tv_desc?.text = "Completed..."
-            showScoreDialog(RXLHelper.getInstance().getPlayers())
+            showScoreDialog(RXLManager.getInstance().getPlayers())
 //            MessageDialog.info(
 //                this,
 //                "Completed",
@@ -1614,13 +1619,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         isPaused = true
         //val clone = currentProgram
         animator?.cancel()
-        RXLHelper.getInstance().pauseProgram()
+        RXLManager.getInstance().pauseProgram()
     }
 
     private fun resumeProgram() {
         log("resumeProgram....")
         currentProgram?.let {
-            RXLHelper.getInstance().withListener(this).resumeProgram()
+            RXLManager.getInstance().withListener(this).resumeProgram()
             isPaused = false
         }
 
@@ -1650,21 +1655,21 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     fun checkSession(): Boolean = isSessionActive
 
     fun testDialog() {
-        val players = ArrayList<RxlPlayer>()
-        val p = RxlPlayer(1, "Test Name", Color.RED, 0, 0, ArrayList())
-
-        for (i in 1..100) {
-            p.events.add(Event(i, 2000, if (i % 3 == 0) 3 else 0, false))
-        }
-        players.add(p)
-        val p2 = p as RxlPlayer
-        p2.color = Color.GREEN
-        players.add(p2)
-        p2.color = Color.BLUE
-        players.add(p2)
-        p2.color = Color.MAGENTA
-        players.add(p2)
-        showScoreDialog(players)
+//        val players = ArrayList<RxlPlayer>()
+//        val p = RxlPlayer(1, "Test Name", Color.RED, 0, 0, ArrayList())
+//
+//        for (i in 1..100) {
+//            p.events.add(Event(i, 2000, if (i % 3 == 0) 3 else 0, false))
+//        }
+//        players.add(p)
+//        val p2 = p as RxlPlayer
+//        p2.color = Color.GREEN
+//        players.add(p2)
+//        p2.color = Color.BLUE
+//        players.add(p2)
+//        p2.color = Color.MAGENTA
+//        players.add(p2)
+//        showScoreDialog(players)
     }
 
     private fun showScoreDialog(players: ArrayList<RxlPlayer>?) {
@@ -1672,7 +1677,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             return
         //val players = RXLHelper.getInstance().getPlayers() ?: return
         val list = ArrayList<ScoreAdapter.ScoreItem>()
-        val time = RXLHelper.getInstance().getProgram()?.totalDuration()
+        val time = RXLManager.getInstance().getProgram()?.totalDuration()
         val size = players.size
         //val programName = RXLHelper.getInstance().getProgram()?
 
@@ -1687,7 +1692,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 R.string.total_time
             ).initial(true)
         )
-        players.forEach { it ->
+        players.forEach {
             var hits = 0
             var missed = 0
             it.events.forEach { ev ->
@@ -1696,6 +1701,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 else
                     missed++
             }
+
+            log("showScoreDialog player: ${it.id}, ${it.events.size} hit $hits : miss $missed")
 
             if (size == 1) {
                 list.add(

@@ -156,23 +156,6 @@
         <attr name="gradient_endColor" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="FluidSlider">
-        <attr name="slider_bar_color" format="color" />
-        <attr name="slider_bubble_color" format="color" />
-        <attr name="slider_bar_text_color" format="color" />
-        <attr name="slider_bubble_text_color" format="color" />
-        <attr name="slider_start_text" format="string" />
-        <attr name="slider_end_text" format="string" />
-        <attr name="slider_text_size" format="dimension" />
-        <attr name="slider_duration" format="integer" />
-        <!-- Initial position in range from 0.0 to 1.0 -->
-        <attr name="slider_initial_position" format="float" />
-        <attr name="slider_size" format="enum">
-            <enum name="small" value="0" />
-            <enum name="normal" value="1" />
-        </attr>
-    </declare-styleable>
-
     <!--Diagonal View -->
 
     <declare-styleable name="DiagonalView">

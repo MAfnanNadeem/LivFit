@@ -7,7 +7,10 @@
 
 package life.mibo.hardware.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+
+import life.mibo.hardware.rxl.program.RxlColor;
 
 public class Utils {
     public static String getBytes(byte[] message) {
@@ -33,5 +36,26 @@ public class Utils {
 
         }
         return name;
+    }
+
+    public static ArrayList<RxlColor> getColors() {
+        ArrayList<RxlColor> list = new ArrayList<>();
+        list.add(new RxlColor(0xFFFF0000));
+        list.add(new RxlColor(0xFF00FF00));
+        list.add(new RxlColor(0xFF0000FF));
+        list.add(new RxlColor(0xFFFFFF00));
+        list.add(new RxlColor(0xFFFF00FF));
+        list.add(new RxlColor(0xFF00FFFF));
+        list.add(new RxlColor(0xFF00b75b));
+        list.add(new RxlColor(0xFF800000));
+        list.add(new RxlColor(0xFF808000));
+        list.add(new RxlColor(0xFF000080));
+        list.add(new RxlColor(0xFF800080));
+        list.add(new RxlColor(0xFF008080));
+        list.add(new RxlColor(0xFFa7d129));
+        list.add(new RxlColor(0xFF111111));
+        list.add(new RxlColor(0xFFfa8072));
+        list.add(new RxlColor(0xFFFFFFFF));
+        return list;
     }
 }

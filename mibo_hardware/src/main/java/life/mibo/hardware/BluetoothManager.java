@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +49,8 @@ import life.mibo.hardware.models.BleDevice;
 
 public class BluetoothManager {
 
-    private ArrayList<BluetoothDevice> devicesBoosterBle;
+    //private ArrayList<BluetoothDevice> devicesBoosterBle;
+    private HashMap<String, BluetoothDevice> devicesBoosterBle;
     private ArrayList<BluetoothDevice> devicesRxl;
     private ArrayList<BluetoothDevice> devicesHRBle;
     private ArrayList<BluetoothDevice> devicesScaleBle;
@@ -214,9 +216,10 @@ public class BluetoothManager {
         return devicesScaleBle;
     }
 
-    private ArrayList<BluetoothDevice> getDevicesBoosterBle() {
+    private HashMap<String, BluetoothDevice> getDevicesBoosterBle() {
         if (devicesBoosterBle == null) {
-            devicesBoosterBle = new ArrayList<>();
+            //devicesBoosterBle = new ArrayList<>();
+            devicesBoosterBle = new HashMap<>();
         }
         return devicesBoosterBle;
     }
@@ -317,38 +320,26 @@ public class BluetoothManager {
 
             // TODO Session is Boosted/Wifi remove later isBoosterMode()
             if (device.getName() != null && device.getName().contains("MBRXL")) {
-                try {
-                    for (BluetoothDevice b : devicesBoosterBle) {
-                        if (b.getName().equalsIgnoreCase(device.getName())) {
-
-                            log("BluetoothManager device found " + device.getName());
-                            return;
-                        }
-                    }
-                }
-                catch (Exception e){
-
-                }
-
                 //rxlCount++;
-                devicesBoosterBle.add(device);
+                devicesBoosterBle.put(device.getName(), device);
+                //addBleDevices(device);
                 listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL " + ++rxlCount);
                 //  listener.bleBoosterDeviceDiscovered(device.toString(), device.getName());
                 log(" onScanResult3 " + device.getName() + "   " + device.getClass());
             }
 
             if (device.getName() != null && device.getName().contains("MIBO-")) {
-                for (BluetoothDevice b : devicesBoosterBle) {
-                    if (b.getName().equalsIgnoreCase(device.getName())) {
-                        return;
-                    }
-                }
+//                for (BluetoothDevice b : devicesBoosterBle.values()) {
+//                    if (b.getName().equalsIgnoreCase(device.getName())) {
+//                        return;
+//                    }
+//                }
 //                if (device.getName().startsWith("MIBO-RXL")) {
 //                    listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL- " + devicesBoosterBle.size());
 //                    devicesBoosterBle.add(device);
 //                    return;
 //                }
-                devicesBoosterBle.add(device);
+                devicesBoosterBle.put(device.getName(), device);
                 listener.bleBoosterDeviceDiscovered(device.getName().replace("MIBO-", ""), device.getName());
                 //  listener.bleBoosterDeviceDiscovered(device.toString(), device.getName());
                 log(" onScanResult4 " + device.getName() + "   " + device.getClass());
@@ -389,6 +380,30 @@ public class BluetoothManager {
             log("BluetoothManager onScanFailed " + errorCode);
         }
     };
+
+    private void addBleDevices(BluetoothDevice device) {
+        boolean exit = false;
+//        try {
+//            for (BluetoothDevice b : devicesBoosterBle) {
+//                if (b.getName().equalsIgnoreCase(device.getName())) {
+//                    log("BluetoothManager device found " + device.getName());
+//                    exit = true;
+//                    break;
+//                }
+//            }
+//        } catch (Exception e) {
+//
+//        }
+
+        if (exit) {
+
+        }
+
+        devicesBoosterBle.put(device.getName(), device);
+        //devicesBoosterBle.add(device);
+        listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL " + ++rxlCount);
+
+    }
 
 
     public void connectHrGattDevice(String Id) {
@@ -449,7 +464,7 @@ public class BluetoothManager {
                 }
         }
         if (newDevice) {
-            for (BluetoothDevice d : devicesBoosterBle) {
+            for (BluetoothDevice d : devicesBoosterBle.values()) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
                         devicesConnectedBle.add(d);
@@ -488,7 +503,7 @@ public class BluetoothManager {
         log("connectRXLGattDevice newDevice " + newDevice + " size:" + devicesBoosterBle.size());
         if (newDevice) {
             try {
-                for (BluetoothDevice d : devicesBoosterBle) {
+                for (BluetoothDevice d : devicesBoosterBle.values()) {
                     if (d.getName() != null) {
                         log("connectRXLGattDevice name: " + d.getName());
                         if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
@@ -519,7 +534,7 @@ public class BluetoothManager {
                 }
             } catch (Exception e) {
                 log("ERROR : " + e.getMessage());
-                Iterator<BluetoothDevice> iter = devicesBoosterBle.iterator();
+                Iterator<BluetoothDevice> iter = devicesBoosterBle.values().iterator();
 
                 while (iter.hasNext()) {
                     BluetoothDevice d = iter.next();
@@ -623,7 +638,7 @@ public class BluetoothManager {
 
     private void testBleConnection(String device) {
         log("testBleConnection started......... " + device);
-        for (BluetoothDevice d : devicesBoosterBle) {
+        for (BluetoothDevice d : devicesBoosterBle.values()) {
             if (d.getName() != null && d.getName().toLowerCase().contains(device.toLowerCase())) {
                 log("testBleConnection found and connecting......... " + device);
                 BluetoothGatt gatt = d.connectGatt(activity, true, testGatt);
@@ -663,8 +678,9 @@ public class BluetoothManager {
     }
 
     ArrayList<BluetoothDevice> getConnectedBleDevices() {
-        if (devicesBoosterBle == null)
-            devicesBoosterBle = new ArrayList<>();
+        if (devicesConnectedBle == null)
+            devicesConnectedBle = new ArrayList<>();
+            //devicesBoosterBle = new ArrayList<>();
         return devicesConnectedBle;
     }
 
@@ -754,7 +770,7 @@ public class BluetoothManager {
         if (!TextUtils.isEmpty(Id)) {
             log(tag + " sendToMIBOBoosterGattDevice data: " + Utils.getBytes(message) + " :: size " + devicesBoosterBle.size());
             Encryption.mbp_encrypt(message, message.length);
-            for (BluetoothDevice d : devicesBoosterBle) {
+            for (BluetoothDevice d : devicesBoosterBle.values()) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
                         log(tag + " sendToMIBOBoosterGattDevice ID MATCHED: " + d.getName());
@@ -776,7 +792,7 @@ public class BluetoothManager {
         if (!TextUtils.isEmpty(Id)) {
             log("sendToMIBOBoosterGattDevice data: " + Utils.getBytes(message));
             Encryption.mbp_encrypt(message, message.length);
-            for (BluetoothDevice d : devicesBoosterBle) {
+            for (BluetoothDevice d : devicesBoosterBle.values()) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
                         log("sendToMIBOBoosterGattDevice ID MATCHED: " + d.getName());
@@ -831,6 +847,18 @@ public class BluetoothManager {
         });
     }
 
+//    public boolean connected(BluetoothDevice b) {
+//        try {
+//            android.bluetooth.BluetoothManager bluetoothManager = (android.bluetooth.BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//            if ((bluetoothManager.getConnectionState(b, BluetoothProfile.GATT)) {
+//
+//            }
+//        } catch (Exception e) {
+//
+//        }
+//        return false;
+//    }
+
     public List<BluetoothDevice> getConnectedDevices() {
         List<BluetoothDevice> devices = new ArrayList<>();
         try {
@@ -859,7 +887,7 @@ public class BluetoothManager {
             for (BluetoothDevice device : connected) {
                 if (devicesBoosterBle.size() > 0) {
                     boolean contains = false;
-                    for (BluetoothDevice d : devicesBoosterBle) {
+                    for (BluetoothDevice d : devicesBoosterBle.values()) {
                         if (device.getName().equalsIgnoreCase(d.getName())) {
                             contains = true;
                             break;
@@ -876,7 +904,7 @@ public class BluetoothManager {
 
             if (removed.size() > 0) {
                 for (BluetoothDevice dd : removed) {
-                    Iterator<BluetoothDevice> i = devicesBoosterBle.iterator();
+                    Iterator<BluetoothDevice> i = devicesBoosterBle.values().iterator();
                     while (i.hasNext()) {
                         if (i.next().getName().equalsIgnoreCase(dd.getName()))
                             i.remove();

@@ -105,6 +105,31 @@ class RxlExercises(
 
             return RxlLight.UNKNOWN
         }
+
+        fun lightLogic2(type: Int?): life.mibo.hardware.rxl.program.RxlLight {
+            when (type) {
+                1 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.SEQUENCE
+                }
+                2 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.RANDOM
+                }
+                3 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.FOCUS
+                }
+                4 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE
+                }
+                5 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.TAP_AT_ALL
+                }
+                6 -> {
+                    return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ALL
+                }
+            }
+
+            return life.mibo.hardware.rxl.program.RxlLight.UNKNOWN
+        }
     }
 
 }

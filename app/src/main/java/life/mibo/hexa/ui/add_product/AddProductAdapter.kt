@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.utils.Constants
-import life.mibo.views.HexagonMaskView
+import life.mibo.views.hexa.HexagonMaskView
 import java.util.*
 
 class AddProductAdapter(

@@ -10,7 +10,7 @@
     android:layout_height="wrap_content">
 
 
-    <life.mibo.views.HexagonMaskView
+    <life.mibo.views.hexa.HexagonMaskView
         android:id="@+id/iv_dashboard_1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
         android:visibility="visible"
         app:constraint_referenced_ids="iv_dashboard_1_text,iv_dashboard_1_icon,iv_dashboard_1" />
 
-    <life.mibo.views.HexagonMaskView
+    <life.mibo.views.hexa.HexagonMaskView
         android:id="@+id/iv_dashboard_2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
         app:constraint_referenced_ids="iv_dashboard_2_text,iv_dashboard_2_icon,iv_dashboard_2"
         app:layout_constraintStart_toEndOf="@id/group" />
 
-    <life.mibo.views.HexagonMaskView
+    <life.mibo.views.hexa.HexagonMaskView
         android:id="@+id/iv_dashboard_3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

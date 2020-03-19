@@ -166,7 +166,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintWidth_percent="0.45">
 
-            <life.mibo.views.loadingbutton.customViews.CircularProgressButton
+            <life.mibo.views.loadingbutton.CircularProgressButton
                 android:id="@+id/button_connect_all"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
         </RelativeLayout>
 
 
-        <life.mibo.views.loadingbutton.customViews.CircularProgressButton
+        <life.mibo.views.loadingbutton.CircularProgressButton
             android:id="@+id/button_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

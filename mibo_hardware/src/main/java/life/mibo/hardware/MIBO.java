@@ -39,4 +39,12 @@ public class MIBO {
             });
         }
     }
+
+    public static void log(String msg) {
+
+    }
+
+    public static void log(Exception msg) {
+
+    }
 }

@@ -14,6 +14,7 @@ import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.member.MemberAvatar
+import life.mibo.hexa.models.product.Products
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.models.register.RegisterMember
@@ -69,6 +70,7 @@ class API {
     companion object {
         val request: API by lazy { API() }
         fun get() = lazy { API() }
+
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
         const val baseUrl = "http://test.mibo.world/api/consumer/"
@@ -91,7 +93,7 @@ class API {
 
     interface ApiService {
 
-        @Headers("Accept: application/json" , "Content-Type: application/json")
+        @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("registerUser")
         fun register(@Body data: RegisterMember): Call<RegisterResponse>
 
@@ -195,5 +197,9 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("deleteRXLExerciseProgram")
         fun deleteRXLExerciseProgram(@Body data: DeleteRxlExercise): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getProductList")
+        fun getProductList(@Body data: MemberPost): Call<Products>
     }
 }

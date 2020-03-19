@@ -12,7 +12,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg_gradient">
 
-    <life.mibo.views.HexagonMaskView
+    <life.mibo.views.hexa.HexagonMaskView
         android:id="@+id/iv_user_pic"
         android:layout_width="96dp"
         android:layout_height="96dp"

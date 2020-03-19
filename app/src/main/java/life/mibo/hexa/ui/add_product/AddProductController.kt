@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
-import life.mibo.hexa.models.login.Member
-import life.mibo.hexa.models.session.SessionDetails
-import life.mibo.hexa.models.session.SessionReport
+import life.mibo.hexa.models.base.MemberPost
+import life.mibo.hexa.models.product.Products
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,7 +36,7 @@ class AddProductController(val fragment: AddProductFragment, val observer: Produ
         recyclerView = recycler
     }
 
-    var isApi = false
+    var isApi = true
 
     fun getProduct() {
         if (!isApi) {
@@ -45,45 +44,59 @@ class AddProductController(val fragment: AddProductFragment, val observer: Produ
             return
         }
         val member =
-            Prefs.get(this.fragment.context).member
-                ?: return
+            Prefs.get(this.fragment.context).member ?: return
         fragment.getDialog()?.show()
-        val session = SessionDetails("${member.id}", member.accessToken)
-        API.request.getApi().getSessionDetails(session).enqueue(object : Callback<SessionReport> {
-            override fun onFailure(call: Call<SessionReport>, t: Throwable) {
-                fragment.getDialog()?.dismiss()
-                t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
-            }
-
-            override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {
-
-                val data = response.body()
-                if (data != null && data.status.equals("success", true)) {
-                    parseData(data)
-                } else {
-
-                    val err = data?.error?.get(0)?.message
-                    if (err.isNullOrEmpty())
-                        Toasty.error(fragment.context!!, R.string.error_occurred).show()
-                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+        API.request.getApi()
+            .getProductList(MemberPost("${member.id}", "${member.accessToken}", "ProductList"))
+            .enqueue(object : Callback<Products> {
+                override fun onFailure(call: Call<Products>, t: Throwable) {
+                    fragment.getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
                 }
-                fragment.getDialog()?.dismiss()
-            }
-        })
+
+                override fun onResponse(call: Call<Products>, response: Response<Products>) {
+
+                    val data = response.body()
+                    if (data != null && data.isSuccess()) {
+                        parseData(data)
+                    } else {
+                        val err = data?.errors?.get(0)?.message
+                        if (err.isNullOrEmpty())
+                            Toasty.error(fragment.context!!, R.string.error_occurred).show()
+                        else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                    }
+                    fragment.getDialog()?.dismiss()
+                }
+            })
     }
 
-    fun parseData(report: SessionReport?) {
+    fun parseData(products: Products?) {
+        fragment.getDialog()?.dismiss()
         val list = ArrayList<ProductItem>()
-        if (report == null) {
-            list.add(ProductItem(1, "10 Channel Booster", R.drawable.ic_dashboard_booster, false))
-            list.add(ProductItem(1, "6 Channel Booster", R.drawable.ic_dashboard_booster, true))
-            list.add(ProductItem(1, "4 Channel Booster", R.drawable.ic_dashboard_booster))
-            list.add(ProductItem(1, "Heart Rate Sensor", R.drawable.ic_dashboard_booster))
-            list.add(ProductItem(1, "Reaction Lights (RXL)", R.drawable.ic_dashboard_booster, true))
-            list.add(ProductItem(1, "RXl Rope", R.drawable.ic_dashboard_booster))
-            list.add(ProductItem(1, "Weight Scale", R.drawable.ic_dashboard_booster))
-            list.add(ProductItem(1, "Weight Scale", R.drawable.ic_dashboard_booster))
+        if (products?.data != null) {
+            for (data in products.data!!) {
+                data?.let {
+                    list.add(
+                        ProductItem(
+                            it.id!!,
+                            "${it.name}",
+                            R.drawable.ic_dashboard_booster,
+                            false
+                        )
+                    )
+                }
+            }
+        }
+        if (products == null) {
+//            list.add(ProductItem(1, "10 Channel Booster", R.drawable.ic_dashboard_booster, false))
+//            list.add(ProductItem(1, "6 Channel Booster", R.drawable.ic_dashboard_booster, true))
+//            list.add(ProductItem(1, "4 Channel Booster", R.drawable.ic_dashboard_booster))
+//            list.add(ProductItem(1, "Heart Rate Sensor", R.drawable.ic_dashboard_booster))
+//            list.add(ProductItem(1, "Reaction Lights (RXL)", R.drawable.ic_dashboard_booster, true))
+//            list.add(ProductItem(1, "RXl Rope", R.drawable.ic_dashboard_booster))
+//            list.add(ProductItem(1, "Weight Scale", R.drawable.ic_dashboard_booster))
+//            list.add(ProductItem(1, "Weight Scale", R.drawable.ic_dashboard_booster))
         }
 
         //val adapter = AddProductAdapter(list)

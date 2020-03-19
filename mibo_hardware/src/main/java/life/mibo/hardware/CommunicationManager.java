@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.OnBleCharChanged;
@@ -29,6 +30,7 @@ import life.mibo.hardware.events.DeviceSearchEvent;
 import life.mibo.hardware.events.PodEvent;
 import life.mibo.hardware.events.ProximityEvent;
 import life.mibo.hardware.events.RxlBlinkEvent;
+import life.mibo.hardware.events.RxlStatusEvent;
 import life.mibo.hardware.events.SendChannelsLevelEvent;
 import life.mibo.hardware.events.SendCircuitEvent;
 import life.mibo.hardware.events.SendDevicePlayEvent;
@@ -44,6 +46,7 @@ import life.mibo.hardware.models.program.Program;
 import life.mibo.hardware.network.CommunicationListener;
 import life.mibo.hardware.network.TCPClient;
 import life.mibo.hardware.network.UDPServer;
+import life.mibo.hardware.rxl.RXLManager;
 
 import static java.lang.Thread.sleep;
 import static life.mibo.hardware.constants.Config.ASYNC_PROGRAM_STATUS;
@@ -61,11 +64,13 @@ import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR_RESPO
 import static life.mibo.hardware.constants.Config.COMMAND_SET_MAIN_LEVEL_RESPONSE;
 import static life.mibo.hardware.constants.Config.COMMAND_START_CURRENT_CYCLE_RESPONSE;
 import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
+import static life.mibo.hardware.constants.Config.RXL_TAP_EVENT;
 import static life.mibo.hardware.constants.Config.TCP_PORT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCONNECTED;
+import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCOVERED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
@@ -221,6 +226,21 @@ public class CommunicationManager {
         }
     }
 
+    public void removeNotConnectedDevices() {
+        log("reScanNonConnectedDevices");
+        try {
+            Iterator<Device> i = mDiscoveredDevices.iterator();
+            while (i.hasNext()) {
+                Device d = i.next();
+                if (d.getStatusConnected() == DEVICE_DISCOVERED || d.getStatusConnected() == DEVICE_NEUTRAL || d.getStatusConnected() == DEVICE_DISCONNECTED) {
+                    SessionManager.getInstance().getSession().removeRegisteredDevice(d);
+                    i.remove();
+                }
+            }
+        } catch (Exception e) {
+            // MiboEvent.log(e);
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public synchronized void reScanning(final Activity context, boolean isWifi) {
@@ -369,12 +389,14 @@ public class CommunicationManager {
 
     public void onDestroy() {
         try {
+            tcpClients.clear();
+            mDiscoveredDevices.clear();
             commRunning = false;
             bluetoothManager = null;
             listener = null;
             udpServer = null;
             //pingThread.stop();
-            //pingThread = null;
+            pingThread = null;
         } catch (Exception e) {
 
         }
@@ -985,8 +1007,13 @@ public class CommunicationManager {
     }
 
     private void parseCommandsRxl(byte[] command, String uid) {
-        log("parseCommandsRxl msg " + Utils.getChars(command) + " : UID " + uid);
         log("parseCommandsRxl msg " + Utils.getBytes(command) + " : UID " + uid);
+        if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
+            // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
+            RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            return;
+        }
+
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid);
     }

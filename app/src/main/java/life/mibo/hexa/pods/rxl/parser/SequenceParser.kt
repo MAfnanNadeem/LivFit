@@ -84,9 +84,9 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
     @Synchronized
     override fun onNext(player: RxlPlayer, event: RxlStatusEvent) {
-        log("child nextLightEvent called")
+        log("child nextLightEvent called $event")
         if (player.lastUid == event.uid) {
-            log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
+            log("RxlStatusEvent UID Matched ${player.lastUid} == ${event.uid} time="+event.time)
             player.events.add(
                 Event(
                     player.events.size + 1,

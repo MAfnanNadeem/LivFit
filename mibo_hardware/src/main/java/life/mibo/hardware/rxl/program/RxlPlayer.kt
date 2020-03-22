@@ -7,6 +7,7 @@
 
 package life.mibo.hardware.rxl.program
 
+import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.rxl.Event
 import kotlin.random.Random
@@ -26,6 +27,7 @@ data class RxlPlayer(
     var isFocus = false
     var isTapReceived = false
     var isStarted = false
+
     //var station = RxlStation().addColor(color, 0, colorId)
     var events = ArrayList<Event>()
     var wrongEvents = ArrayList<Event>()
@@ -65,6 +67,57 @@ data class RxlPlayer(
     fun inc() {
         lastPod += 1
     }
+
+    // Sequence
+    private var sequence: IntArray = IntArray(1)
+    fun defaultSeq() {
+        sequence = IntArray(noOfPods)
+        for (i in 0 until noOfPods) {
+            sequence[i] = i
+        }
+
+        Logger.e("Default Sequence ${sequence.contentToString()}")
+    }
+
+    fun createSeq(s: List<String>) {
+        sequence = IntArray(s.size)
+        s.forEachIndexed { index, i ->
+            sequence[index] = getSeq(i)
+        }
+        Logger.e("Create Sequence ${sequence.contentToString()}")
+    }
+
+    private fun getSeq(string: String): Int {
+        try {
+            return Integer.parseInt(string).minus(1)
+        } catch (e: Exception) {
+
+        }
+        return 0
+    }
+
+    fun setSeq(array: IntArray) {
+        sequence = array
+    }
+
+    private var lastSeq = 0;
+
+    fun nextSeq(): Int {
+        Logger.e("sequence nextSeq $lastSeq")
+        if (lastSeq >= sequence.size)
+            lastSeq = 0
+        lastPod = sequence[lastSeq]
+
+        if (lastPod >= pods.size)
+            lastPod = 0
+
+        return lastPod
+    }
+
+    fun incSeq() {
+        lastSeq += 1
+    }
+    // end
 
     private fun isNextFocus(): Boolean {
         isFocus = Random.nextInt(50) % 3 == 0

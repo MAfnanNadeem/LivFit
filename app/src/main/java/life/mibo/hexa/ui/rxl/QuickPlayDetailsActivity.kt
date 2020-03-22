@@ -5,6 +5,7 @@ package life.mibo.hexa.ui.rxl
 //import life.mibo.hexa.pods.rxl.program.RxlLight
 //import life.mibo.hexa.pods.rxl.program.RxlPlayer
 //import life.mibo.hexa.pods.rxl.program.RxlProgram
+//import life.mibo.hardware.rxl.RXLManager
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -31,7 +32,6 @@ import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hardware.rxl.RXLManager
-//import life.mibo.hardware.rxl.RXLManager
 import life.mibo.hardware.rxl.RxlListener
 import life.mibo.hardware.rxl.program.RxlLight
 import life.mibo.hardware.rxl.program.RxlPlayer
@@ -282,6 +282,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                     getPause(),
                     getCycles(),
                     0,
+                    getSequence(),
                     rxlPlayers,
                     getLightLogic()
                 )
@@ -304,6 +305,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                     getPause(),
                     getCycles(),
                     0,
+                    getSequence(),
                     rxlPlayers,
                     getLightLogic()
                 )
@@ -332,7 +334,14 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //        }
 
         currentProgram = RxlProgram.getExercise(
-            getDuration(), getAction(), getPause(), getCycles(), 0, rxlPlayers, getLightLogic()
+            getDuration(),
+            getAction(),
+            getPause(),
+            getCycles(),
+            0,
+            getSequence(),
+            rxlPlayers,
+            getLightLogic()
         )
         currentProgram?.let {
             RXLManager.getInstance().with(it).withListener(this).start(tap)
@@ -620,7 +629,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                             log("blinkPods RxlPlayer sent blink command ${t.uid}")
                             EventBus.getDefault()
                                 .postSticky(RxlBlinkEvent(t.uid, 200, 200, 3, player.color))
-                            //Thread.sleep(50)
+                            //delay(20)
+                            Thread.sleep(20)
                         }
 
                         override fun onError(e: Throwable) {
@@ -1346,6 +1356,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         return getInt(tv_select_duration?.text)
     }
 
+    private fun getSequence(): String? {
+        return program?.sequence
+    }
+
     private fun getPause(): Int {
         //return getInt(tv_select_delay?.text)
         return getInt(tv_select_pause?.text)
@@ -1437,6 +1451,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //unregister(this)
         //RXLManager.getInstance().unregister()
         //EventBus.getDefault().unregister(this)
+        giffVideoView?.onDestroy()
         super.onStop()
     }
 

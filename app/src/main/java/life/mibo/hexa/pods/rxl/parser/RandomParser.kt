@@ -9,10 +9,10 @@ package life.mibo.hexa.pods.rxl.parser
 
 import io.reactivex.Single
 import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hexa.pods.rxl.Event
 import life.mibo.hexa.pods.rxl.program.RxlPlayer
 import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
+import life.mibo.hexa.pods.rxl.Event
 import java.util.concurrent.TimeUnit
 
 class RandomParser(program: RxlProgram, listener: Listener) :

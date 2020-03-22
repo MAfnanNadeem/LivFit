@@ -16,6 +16,7 @@ import android.view.ViewOutlineProvider
 import life.mibo.hexa.R
 import kotlin.math.min
 
+// created custom view for color/circle
 class CircleView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
     companion object {

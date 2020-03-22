@@ -13,6 +13,7 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import com.polidea.rxandroidble2.RxBleClient
+import com.polidea.rxandroidble2.RxBleDevice
+import com.polidea.rxandroidble2.scan.ScanFilter
+import com.polidea.rxandroidble2.scan.ScanSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,10 +35,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_devices2.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
-import life.mibo.hardware.events.DeviceStatusEvent
-import life.mibo.hardware.events.NewConnectionStatus
-import life.mibo.hardware.events.NewDeviceDiscoveredEvent
-import life.mibo.hardware.events.RemoveConnectionStatus
+import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hardware.models.User
@@ -85,6 +87,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
         setRecycler()
         tv_scan?.setOnClickListener {
+            //scanRxTest()
             checkAndScan()
             //loadTest()
         }
@@ -193,6 +196,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     }
 
     var isConnectTrigger = false
+
     @SuppressLint("CheckResult")
     fun revertNextButton(time: Long = 1000) {
         Single.timer(time, TimeUnit.MILLISECONDS)
@@ -346,6 +350,9 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         if (devices.isNotEmpty()) {
             devices?.forEach {
                 availabeAdapter?.addDevice(it)
+//                if (isRxl)
+//                    availabeAdapter?.addDevice(it, isRxl)
+//                else availabeAdapter?.addDevice(it)
             }
         }
     }
@@ -379,6 +386,16 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             //device?.statusConnected = 1
         }
 
+        override fun onClicked(device: Device?) {
+            blinkDevice(device?.uid, Color.RED)
+        }
+
+    }
+
+    fun blinkDevice(uid: String?, color: Int) {
+        uid?.let {
+            EventBus.getDefault().postSticky(RxlBlinkEvent(it, 200, 200, 3, color))
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -420,6 +437,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     //var list = ArrayList<ScanDeviceAdapter.ScanItem>()
     //private var connectedList = ArrayList<Device>()
     private var availabeList = ArrayList<Device>()
+
     //private var list = ArrayList<Device>()
     private var availabeAdapter: ScanDeviceAdapter? = null
     //private var connectedAdapter: ScanDeviceAdapter? = null
@@ -534,7 +552,12 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         val data = event.data
         if (data is Device) {
             activity?.runOnUiThread {
-                availabeAdapter?.addDevice(data)
+                if (isRxl) {
+                    if (data.isPod)
+                        availabeAdapter?.addDevice(data, true)
+                } else {
+                    availabeAdapter?.addDevice(data)
+                }
                 tv_no_available?.visibility = View.GONE
                 showConnectAll()
             }
@@ -564,7 +587,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     private fun connectAllDevices(rxl: Boolean = false) {
         if (availabeAdapter!!.list!!.size > 0) {
-            Observable.fromIterable(availabeAdapter!!.list!!).doOnError {  }.subscribeOn(Schedulers.io())
+            Observable.fromIterable(availabeAdapter!!.list!!).doOnError { }
+                .subscribeOn(Schedulers.io())
                 .subscribe(object : io.reactivex.Observer<Device> {
                     override fun onSubscribe(d: Disposable) {
                         button_connect_all?.startAnimation {
@@ -823,13 +847,74 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         EventBus.getDefault().unregister(this)
         SessionManager.getInstance().userSession.isScanning = false
         controller.onStop()
+        button_connect_all?.dispose()
         log("onStop")
     }
 
     override fun onDestroy() {
         button_next?.dispose()
+        button_connect_all?.dispose()
         super.onDestroy()
     }
+
+
+    // TODO RX BLE TEST
+    var bleClient = lazy {
+        RxBleClient.create(requireContext())
+    }
+
+    fun statusRxTest() {
+
+        val d = bleClient.value?.observeStateChanges()?.subscribe {
+            when (it) {
+                RxBleClient.State.READY -> {
+                    scanRxTest()
+                }
+                RxBleClient.State.BLUETOOTH_NOT_ENABLED -> {
+
+                }
+                RxBleClient.State.LOCATION_SERVICES_NOT_ENABLED -> {
+
+                }
+            }
+        }
+    }
+
+    fun scanRxTest() {
+        log("scanRxTest ...... ")
+        val filters = ScanFilter.Builder().build()
+        val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+            .setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
+            .setShouldCheckLocationServicesState(true).build()
+
+        val d = bleClient.value?.scanBleDevices(settings, filters)?.doOnError {
+            log("scanRxTest: error $it")
+        }?.subscribe {
+            log("scanRxTest: subscribe $it")
+
+            if (it.bleDevice != null) {
+                log("scanRxTest: subscribe name >> ${it.bleDevice.name}")
+
+            }
+
+        }
+    }
+
+
+    private val rxDeviceList = HashMap<String, RxBleDevice?>()
+    fun connectRxTest(mac: String, connect: Boolean) {
+        log("connectRxTest $mac :: $connect")
+        val d = bleClient.value?.getBleDevice(mac)
+        rxDeviceList[mac] = d
+        if (connect) {
+            val d = d?.establishConnection(true)?.subscribe {
+                log("establishConnection $it")
+            }
+        } else {
+            bleClient.value?.getBleDevice(mac)?.establishConnection(false)
+        }
+    }
+
 
 
 }

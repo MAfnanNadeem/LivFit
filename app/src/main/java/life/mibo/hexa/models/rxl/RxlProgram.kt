@@ -73,7 +73,9 @@ data class RxlProgram(
     @SerializedName("type")
     var type: Int?,
     @SerializedName("work_station")
-    var workStation: Int?
+    var workStation: Int?,
+    @SerializedName("sequence")
+    var sequence: String?
 ) : BaseModel, Serializable {
 
     var isFavourite: Boolean = false

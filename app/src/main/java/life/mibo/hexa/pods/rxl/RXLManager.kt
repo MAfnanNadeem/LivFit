@@ -20,9 +20,11 @@ import life.mibo.hardware.events.PodResponseEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
+import life.mibo.hardware.rxl.Event
+import life.mibo.hardware.rxl.RxlListener
 import life.mibo.hexa.events.NotifyEvent
 import life.mibo.hexa.pods.pod.PodType
-import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hardware.rxl.program.PlayerType
 import life.mibo.hexa.pods.rxl.program.RxlColor
 import life.mibo.hexa.pods.rxl.program.RxlProgram
 import life.mibo.hexa.ui.main.MiboEvent
@@ -54,8 +56,7 @@ class RXLManager private constructor() {
         fun getInstance(): RXLManager =
             INSTANCE ?: synchronized(this) {
                 life.mibo.hardware.core.Logger.e("RXLManager INSTANCE init ")
-                INSTANCE =
-                    RXLManager()
+                INSTANCE = RXLManager()
                 INSTANCE!!
             }
     }

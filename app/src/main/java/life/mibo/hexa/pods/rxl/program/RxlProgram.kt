@@ -10,6 +10,7 @@ package life.mibo.hexa.pods.rxl.program
 import android.util.SparseArray
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
+import life.mibo.hardware.rxl.program.PlayerType
 
 class RxlProgram() {
 

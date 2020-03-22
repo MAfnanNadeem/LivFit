@@ -9,7 +9,7 @@ package life.mibo.hexa.pods.parser
 
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hexa.pods.base.RXLParser
-import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hardware.rxl.program.PlayerType
 import life.mibo.hexa.pods.rxl.program.RxlLight
 
 class FocusParser : RXLParser {

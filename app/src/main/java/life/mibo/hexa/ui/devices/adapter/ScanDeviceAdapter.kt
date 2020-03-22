@@ -231,6 +231,12 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 }
             }
 
+            view?.setOnClickListener {
+                if (item.statusConnected == 1) {
+                    callback?.onClicked(item)
+                }
+
+            }
             connect?.setOnClickListener {
                 if (item.statusConnected == 1) {
                     return@setOnClickListener
@@ -350,6 +356,20 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         notifyItemInserted(list!!.size)
     }
 
+    fun addDevice(item: Device, rxl: Boolean) {
+        Logger.e("ScanDevice addDevice device")
+        for (l in list!!) {
+            if (l.uid == item.uid) {
+                Logger.e("ScanDevice addDevice already added")
+                return
+            }
+        }
+        if (rxl)
+            item.name = "RXL ${list!!.size.plus(1)}"
+        list!!.add(item)
+        notifyItemInserted(list!!.size)
+    }
+
     fun addDevices(l: ArrayList<Device>) {
         Logger.e("ScanDevice addDevices list $l")
         this.list?.addAll(l)
@@ -387,5 +407,6 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     interface Listener {
         fun onConnectClicked(device: Device?)
         fun onCancelClicked(device: Device?)
+        fun onClicked(device: Device?)
     }
 }

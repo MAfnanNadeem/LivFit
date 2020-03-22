@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     android:background="@drawable/device_list_item_bg"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_horizontal"
     android:padding="@dimen/grid_1x">
 
@@ -25,7 +26,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="@dimen/grid_1x"
             android:layout_marginBottom="@dimen/grid_1x"
-            android:background="@drawable/ic_dashboard_booster"
+            tools:src="@drawable/ic_dashboard_booster"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,7 +40,7 @@
             android:maxLines="1"
             android:paddingStart="4dp"
             android:singleLine="true"
-            android:text="@string/device_name"
+            tools:text="@string/device_name"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/tv_deviceMac"

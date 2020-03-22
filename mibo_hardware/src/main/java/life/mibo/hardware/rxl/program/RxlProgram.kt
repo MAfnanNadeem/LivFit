@@ -225,6 +225,10 @@ class RxlProgram() {
         return players[currentPlayer].colorId
     }
 
+    fun sequence(): String? {
+        return cycles[currentCycle].sequence
+    }
+
     fun cycles(): Int = count
 
     fun totalDuration(): Int {
@@ -339,6 +343,7 @@ class RxlProgram() {
             pause: Int,
             cycle: Int,
             delay: Int = 0,
+            sequence: String?,
             players: SparseArray<RxlPlayer>,
             logic: RxlLight
         ): RxlProgram {
@@ -349,7 +354,7 @@ class RxlProgram() {
                         action,
                         pause,
                         delay,
-                        "",
+                        sequence,
                         logic
                     )
                 )

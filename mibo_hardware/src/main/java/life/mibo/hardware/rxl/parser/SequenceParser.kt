@@ -22,6 +22,36 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
     }
 
+    override fun onProgramStart() {
+        super.onProgramStart()
+        log("child onProgramStart")
+        val seq = program.sequence()
+        if (seq.isNullOrEmpty()) {
+            for (p in program.players) {
+                p.defaultSeq()
+            }
+        } else {
+            if (seq.length == 1) {
+                for (p in program.players) {
+                    p.defaultSeq()
+                }
+            } else {
+                // init sequence from api
+                val s = seq.split(",")
+                for (p in program.players) {
+                    p.createSeq(s)
+                }
+            }
+
+        }
+
+        log("child createSequence")
+    }
+
+    fun createSequence() {
+
+    }
+
     fun nextEvent(event: RxlStatusEvent) {
 
         players.forEach {
@@ -117,6 +147,16 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
 
     private fun lightOnSequence(player: RxlPlayer) {
+        log("child lightOnSequence $player")
+        log("lightOnSequence lastPod ${player.lastPod}, size ${player.pods.size}")
+        val pod = player.pods[player.nextSeq()]
+        player.lastUid = pod.uid
+        listener.sendColorEvent(pod, player.color, actionTime, player.id, true)
+        //EventBus.getDefault().postSticky(PodEvent(d.uid, exercise?.colors!!.activeColor, exercise?.duration!!.actionTime, false))
+        player.incSeq()
+    }
+
+    private fun lightOnSequenceOld(player: RxlPlayer) {
         log("child lightOnSequence $player")
         log("lightOnSequence lastPod ${player.lastPod}, size ${player.pods.size}")
         if (player.lastPod >= player.pods.size)

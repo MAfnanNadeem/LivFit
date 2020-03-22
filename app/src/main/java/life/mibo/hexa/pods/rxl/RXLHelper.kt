@@ -113,8 +113,7 @@ class RXLHelper private constructor() {
         fun getInstance(): RXLHelper =
             INSTANCE ?: synchronized(this) {
                 life.mibo.hardware.core.Logger.e("RXLManager INSTANCE init ")
-                INSTANCE =
-                    RXLHelper()
+                INSTANCE = RXLHelper()
                 INSTANCE!!
             }
     }
@@ -657,7 +656,8 @@ class RXLHelper private constructor() {
         isPaused = false
         //colorSent = false
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
-        isStarted.set(true)
+        if (!isStarted.get())
+            isStarted.set(true)
         //isPaused = false
         // this will create time sync issue with multiple users and start exercise again
 //        if (isTap)
@@ -672,7 +672,8 @@ class RXLHelper private constructor() {
         logi(".......... pauseCycle .......... " + getTime())
         rxlListener?.onCyclePaused(cycle, time)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle paused"))
-        isStarted.set(true)
+        if (isStarted.get())
+            isStarted.set(false)
         //publisher.onNext("pauseCycle")
     }
 

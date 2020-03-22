@@ -8,7 +8,7 @@
 package life.mibo.hexa.pods.base
 
 import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hexa.pods.rxl.program.PlayerType
+import life.mibo.hardware.rxl.program.PlayerType
 import life.mibo.hexa.pods.rxl.program.RxlLight
 
 interface RXLParser {

@@ -41,10 +41,11 @@ public class MIBO {
     }
 
     public static void log(String msg) {
-
+        // save to server
     }
 
     public static void log(Exception msg) {
+        // save to server
 
     }
 }

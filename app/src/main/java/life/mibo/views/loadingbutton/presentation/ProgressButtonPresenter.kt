@@ -1,7 +1,7 @@
 /*
- *  Created by Sumeet Kumar on 2/20/20 10:17 AM
+ *  Created by Sumeet Kumar on 3/11/20 11:37 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/20/20 10:16 AM
+ *  Last modified 3/11/20 11:35 AM
  *  Mibo Hexa - app
  */
 
@@ -11,7 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Handler
 import life.mibo.hardware.core.Logger
-import life.mibo.views.loadingbutton.customViews.ProgressButton
+import life.mibo.views.loadingbutton.ProgressButton
 
 enum class State {
     BEFORE_DRAW,

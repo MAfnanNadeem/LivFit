@@ -7,14 +7,16 @@
 
 package life.mibo.hexa.ui.main
 
+//import com.facebook.drawee.backends.pipeline.Fresco
 import android.app.Application
 import android.content.Context
 import coil.util.CoilLogger
-//import com.facebook.drawee.backends.pipeline.Fresco
 import com.jakewharton.threetenabp.AndroidThreeTen
-import life.mibo.hardware.BuildConfig
+///import leakcanary.AppWatcher
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.fastble.BleManager
+import life.mibo.hardware.fastble.scan.BleScanRuleConfig
 
 
 class MiboApplication : Application() {
@@ -33,8 +35,23 @@ class MiboApplication : Application() {
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
         MiboEvent.init(applicationContext)
+        //AppWatcher.config = AppWatcher.config.copy(watchFragmentViews = false)
+        initBle()
         //Fresco.initialize(this);
 
+    }
+
+
+    fun initBle() {
+        BleManager.getInstance()
+            .init(context!!.applicationContext as Application)
+        val scanRuleConfig =
+            BleScanRuleConfig.Builder()
+                .setDeviceName(true, "MBRXL", "MIBO")
+                .setAutoConnect(true)
+                .setScanTimeOut(15000)
+                .build()
+        BleManager.getInstance().initScanRule(scanRuleConfig)
     }
 
     fun setHandler(){

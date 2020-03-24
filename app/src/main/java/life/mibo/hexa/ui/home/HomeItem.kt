@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import life.mibo.views.DashboardItem
-import life.mibo.views.HexagonMaskView
+import life.mibo.views.hexa.HexagonMaskView
 
 data class HomeItem(
     val id: Int,

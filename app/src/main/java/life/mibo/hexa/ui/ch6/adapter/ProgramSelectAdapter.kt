@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 1/16/20 11:54 AM
+ *  Created by Sumeet Kumar on 3/24/20 10:07 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/16/20 11:54 AM
+ *  Last modified 1/16/20 12:03 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.ui.select_program
+package life.mibo.hexa.ui.ch6.adapter
 
 import android.content.Context
 import android.content.res.Resources
@@ -18,7 +18,7 @@ import life.mibo.hexa.R
 import life.mibo.hexa.models.program.Program
 
 
-class ProgramArrayAdapter(var c: Context, val res: Int, val list: ArrayList<Program?>) :
+class ProgramSelectAdapter(var c: Context, val res: Int, val list: ArrayList<Program?>) :
     ArrayAdapter<Program>(c, res, list) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -32,10 +32,10 @@ class ProgramArrayAdapter(var c: Context, val res: Int, val list: ArrayList<Prog
     }
 
     fun createView(position: Int, view: View?, parent: ViewGroup?): View {
-        val holder: ProgramSpinnerAdapter.Holder
+        val holder: Holder
         val row: View
         if (view == null) {
-            holder = ProgramSpinnerAdapter.Holder()
+            holder = Holder()
             row = LayoutInflater.from(parent?.context)
                 .inflate(R.layout.list_item_spinner_programs, null)
             holder.name = row.findViewById(R.id.tv_name_value)
@@ -44,7 +44,7 @@ class ProgramArrayAdapter(var c: Context, val res: Int, val list: ArrayList<Prog
             row.tag = holder
 
         } else {
-            holder = view.tag as ProgramSpinnerAdapter.Holder
+            holder = view.tag as Holder
             row = view
         }
         val item = getItem(position)

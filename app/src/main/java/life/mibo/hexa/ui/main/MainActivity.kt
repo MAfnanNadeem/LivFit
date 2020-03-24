@@ -78,6 +78,7 @@ import life.mibo.hexa.ui.main.Navigator.Companion.RXL_QUICKPLAY_DETAILS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS
 import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS_2
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
+import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_MUSCLES
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION_POP
@@ -860,6 +861,13 @@ class MainActivity : BaseActivity(), Navigator {
                     bundle = data
                 navigate(0, R.id.navigation_select_program, bundle)
             }
+
+            SELECT_MUSCLES -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_select_muscles, bundle)
+            }
             SESSION -> {
                 var bundle: Bundle? = null
                 if (data is Bundle)
@@ -1181,8 +1189,10 @@ class MainActivity : BaseActivity(), Navigator {
         Database.getInstance(this).clearAll()
         if (::commHandler.isInitialized)
             commHandler.unregister()
-        super.onDestroy()
         manager?.onDestroy()
+        CommunicationManager.getInstance().onDestroy()
+        super.onDestroy()
+
     }
 
     val TIME_INTERVAL = 2000
@@ -1214,10 +1224,11 @@ class MainActivity : BaseActivity(), Navigator {
 
     override fun onBackPressed() {
         log("onBackPressed")
-        if (drawerLayout?.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-            return
-        }
+        if (::drawerLayout.isInitialized)
+            if (drawerLayout?.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                return
+            }
         if (!childBackPressed())
             return
         // Navigation.findNavController(this, R.id.nav_host_fragment)

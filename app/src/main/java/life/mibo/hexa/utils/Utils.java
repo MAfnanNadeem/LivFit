@@ -277,8 +277,8 @@ public class Utils {
         ArrayList<Program> list = new ArrayList<>();
         list.add(new Program(0xFFFF0000));
         list.add(new Program(0xFF00FF00));
-        list.add(new Program(0xFF0000FF));
         list.add(new Program(0xFFFFFF00));
+        list.add(new Program(0xFF0000FF));
         list.add(new Program(0xFFFF00FF));
         list.add(new Program(0xFF00FFFF));
         list.add(new Program(0xFF00b75b));

@@ -99,7 +99,12 @@
 
     <fragment
         android:id="@+id/navigation_select_program"
-        android:name="life.mibo.hexa.ui.select_program.SelectProgramFragment"
+        android:name="life.mibo.hexa.ui.ch6.ProgramSelectionFragment"
+        android:label="@string/select_program"
+        tools:layout="@layout/fragment_weight" />
+ <fragment
+        android:id="@+id/navigation_select_muscles"
+        android:name="life.mibo.hexa.ui.ch6.MuscleSelectionFragment"
         android:label="@string/select_program"
         tools:layout="@layout/fragment_weight" />
 

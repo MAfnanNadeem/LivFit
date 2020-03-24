@@ -7,6 +7,7 @@
 
 package life.mibo.hardware.rxl.parser
 
+import androidx.core.util.valueIterator
 import io.reactivex.Single
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.events.RxlStatusEvent
@@ -27,7 +28,7 @@ class RandomParser(program: RxlProgram, listener: Listener) :
         log("child STARTING PROGRAM")
 
         if (isTap) {
-            for (p in players) {
+            for (p in getPlayers()) {
                 if (p.isTapReceived) {
                     if (!p.isStarted) {
                         log("child STARTING PROGRAM starting player $p")
@@ -39,7 +40,7 @@ class RandomParser(program: RxlProgram, listener: Listener) :
                 }
             }
         } else {
-            for (p in players) {
+            for (p in getPlayers()) {
                 //p.lastPod = 250
                 nextRandomLight(p)
                 Thread.sleep(THREAD_SLEEP)
@@ -49,7 +50,7 @@ class RandomParser(program: RxlProgram, listener: Listener) :
 
     override fun onCycleTapStart(playerId: Int) {
         log("child STARTING onCycleTapStart")
-        for (p in players) {
+        for (p in getPlayers()) {
             if (p.id == playerId) {
                 nextRandomLight(p)
                 break

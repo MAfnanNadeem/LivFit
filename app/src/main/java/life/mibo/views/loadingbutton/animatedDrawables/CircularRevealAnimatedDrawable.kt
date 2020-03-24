@@ -1,7 +1,7 @@
 /*
- *  Created by Sumeet Kumar on 2/20/20 10:17 AM
+ *  Created by Sumeet Kumar on 3/11/20 11:37 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/20/20 10:16 AM
+ *  Last modified 3/11/20 11:35 AM
  *  Mibo Hexa - app
  */
 
@@ -21,8 +21,8 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.view.animation.DecelerateInterpolator
-import life.mibo.views.loadingbutton.customViews.ProgressButton
-import life.mibo.views.loadingbutton.disposeAnimator
+import life.mibo.views.loadingbutton.ProgressButton
+import life.mibo.views.loadingbutton.utils.disposeAnimator
 
 private const val REVEAL_DURATION = 120L
 private const val ALPHA_ANIMATION_DURATION = 80L

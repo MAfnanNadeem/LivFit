@@ -18,6 +18,7 @@ import android.view.WindowManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.util.size
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
@@ -143,6 +144,15 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             MiboEvent.log(e)
         }
 
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+        if (program?.lightLogic() == life.mibo.hexa.pods.rxl.program.RxlLight.SEQUENCE) {
+            checkSequenceIndicators()
+
+        }
     }
 
     private fun loadGlide(url: List<String>?) {
@@ -333,6 +343,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //            }
 //        }
 
+
         currentProgram = RxlProgram.getExercise(
             getDuration(),
             getAction(),
@@ -343,8 +354,22 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             rxlPlayers,
             getLightLogic()
         )
-        currentProgram?.let {
-            RXLManager.getInstance().with(it).withListener(this).start(tap)
+        try {
+            currentProgram?.let {
+                RXLManager.getInstance().with(it).withListener(this).start(tap)
+            }
+        } catch (e: java.lang.Exception) {
+            // TODO check later, issue faced NetworkOnMainThreadException
+            //life.mibo.hardware.network.TCPClient.sendMessage
+
+            MiboEvent.log(e)
+            Single.fromCallable {
+                currentProgram?.let {
+                    RXLManager.getInstance().with(it).withListener(this).start(tap)
+                }
+            }.subscribeOn(Schedulers.io()).doOnError {
+                MiboEvent.log("startProgram fromCallable error: $e")
+            }.subscribe()
         }
 
 
@@ -364,6 +389,33 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //   Toasty.info(context!!, "Tap Reaction Light to start").show()
     }
 
+
+    fun checkSequenceIndicators() {
+        val pods = getProgramConnectedPods()
+        Observable.fromIterable(pods).subscribeOn(Schedulers.io())
+            .subscribe(object : Observer<Device> {
+                override fun onComplete() {
+
+                }
+
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onNext(t: Device) {
+                    log("blinkPods RxlPlayer sent blink command ${t.uid}")
+                    EventBus.getDefault()
+                        .postSticky(RxlBlinkEvent(t.uid, 500, 500, 15, t.colorPalet))
+                    //delay(20)
+                    Thread.sleep(20)
+                }
+
+                override fun onError(e: Throwable) {
+
+                }
+
+            })
+    }
 
     private fun setProgram() {
         toolbar?.title = program?.name
@@ -402,14 +454,51 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         selectedPlayers.clear()
 
         val list = SessionManager.getInstance().userSession.devices
+        val colors = Utils.getColors();
+        val players = SessionManager.getInstance().userSession.rxlPlayers
+        var playerSize = 0
+        if (players is List<*>)
+            playerSize = players.size
         // userDevices.addAll(SessionManager.getInstance().userSession.devices)
-        if (list.size > 0) {
-            list.forEach {
-                if (it.isPod) {
-                    userPods.add(it)
+        if (playerSize == 1) {
+            if (program?.pods == list.size) {
+                list.forEachIndexed { i, it ->
+                    if (it.isPod) {
+                        it.colorPalet = colors[i].id!!
+                        userPods.add(it)
+                    }
+                }
+            } else {
+                if (list.size > program?.pods!!) {
+                    for (i in 0 until program?.pods!!) {
+                        list[i].let {
+                            if (it.isPod) {
+                                it.colorPalet = colors[i].id!!
+                                userPods.add(it)
+                            }
+                        }
+                    }
+                }
+
+            }
+        } else {
+            if (list.size > 0) {
+                list.forEachIndexed { i, it ->
+                    if (it.isPod) {
+                        it.colorPalet = colors[i].id!!
+                        userPods.add(it)
+                    }
                 }
             }
         }
+//        if (list.size > 0) {
+//            list.forEachIndexed { i, it ->
+//                if (it.isPod) {
+//                    it.colorPalet = colors[i].id!!
+//                    userPods.add(it)
+//                }
+//            }
+//        }
         //TODO test
         if (isTest && userPods.size == 0) {
             userPods.clear()
@@ -426,7 +515,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             log("createTestDevices created...... ${SessionManager.getInstance().userSession.devices.size}")
         }
 
-        val players = SessionManager.getInstance().userSession.rxlPlayers
+
         log("createView players >> $players")
         if (players is List<*>) {
             log("setPlayers players >>> ${players.size}")
@@ -1077,12 +1166,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
                     override fun onComplete() {
                         if (value > 0) {
-                            Toasty.info(
-                                this@QuickPlayDetailsActivity,
+                            Snackbar.make(
+                                nestedScrollView,
                                 R.string.sensor_enable,
-                                Toasty.LENGTH_SHORT,
-                                false
-                            ).show()
+                                Snackbar.LENGTH_SHORT
+                            ).setAction(R.string.close, null).show()
                         }
 //                        Toasty.info(
 //                            this@ReflexDetailsFragment.context!!,
@@ -1178,6 +1266,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         }
 
         return 0
+    }
+
+    private fun getProgramConnectedPods(): ArrayList<Device> {
+        return userPods
     }
 
     private fun checkPlayersPods(): Boolean {
@@ -1494,7 +1586,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_start_now?.isEnabled = true
             btn_start_hit?.isEnabled = true
             //tv_desc?.text = "Completed..."
-            showScoreDialog(RXLManager.getInstance().getPlayers())
+            val list = ArrayList<RxlPlayer>()
+            RXLManager.getInstance().getPlayers()?.forEach {
+                list.add(it)
+            }
+            showScoreDialog(list)
 //            MessageDialog.info(
 //                this,
 //                "Completed",
@@ -1614,10 +1710,21 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         }.subscribe()
     }
 
+    fun turnOffAll() {
+        Observable.fromIterable(userPods).subscribeOn(Schedulers.io()).doOnNext {
+
+        }.doOnError {
+
+        }.doOnComplete {
+
+        }.subscribe()
+    }
+
     private var isSessionActive = false
     override fun onBackPressed() {
-        if (canBack())
+        if (canBack()) {
             super.onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

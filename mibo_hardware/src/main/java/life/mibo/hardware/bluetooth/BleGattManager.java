@@ -290,17 +290,23 @@ public class BleGattManager {
     }
 
     private static void waitIdle() {
-        int i = 300;
-        i /= 10;
-        while (--i > 0) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        //  int i = 300;
+        // i /= 10;
+        try {
+            Thread.sleep(150);
             CommunicationManager.log("BleGattManager: waitIdle waiting ");
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+//        while (--i > 0) {
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//           // CommunicationManager.log("BleGattManager: waitIdle waiting ");
+//
+//        }
         //return i > 0;
     }
 

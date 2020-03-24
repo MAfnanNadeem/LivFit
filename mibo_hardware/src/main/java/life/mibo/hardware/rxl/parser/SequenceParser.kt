@@ -7,6 +7,7 @@
 
 package life.mibo.hardware.rxl.parser
 
+import androidx.core.util.valueIterator
 import io.reactivex.Single
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.rxl.Event
@@ -54,18 +55,18 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
     fun nextEvent(event: RxlStatusEvent) {
 
-        players.forEach {
-            if (it.id == event.data) {
-                if (delayTime > 0) {
-                    Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess { _ ->
-                        lightOnSequence(it)
-                    }.subscribe()
-                } else {
-                    lightOnSequence(it)
-                }
-                return@forEach
-            }
-        }
+//        players.forEach {
+//            if (it.id == event.data) {
+//                if (delayTime > 0) {
+//                    Single.timer(delayTime.toLong(), TimeUnit.MILLISECONDS).doOnSuccess { _ ->
+//                        lightOnSequence(it)
+//                    }.subscribe()
+//                } else {
+//                    lightOnSequence(it)
+//                }
+//                return@forEach
+//            }
+//        }
 
     }
 
@@ -91,7 +92,7 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
     override fun onCycleStart() {
         log("child STARTING PROGRAM isTap $isTap")
         if (isTap) {
-            for (p in players) {
+            for (p in getPlayers()) {
                 if (p.isTapReceived) {
                     if (!p.isStarted) {
                         log("child STARTING PROGRAM starting player $p")
@@ -103,7 +104,7 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
                 }
             }
         } else {
-            for (p in players) {
+            for (p in getPlayers()) {
                 //p.lastPod = 250
                 lightOnSequence(p)
                 Thread.sleep(THREAD_SLEEP)
@@ -116,7 +117,7 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
     override fun onNext(player: RxlPlayer, event: RxlStatusEvent) {
         log("child nextLightEvent called")
         if (player.lastUid == event.uid) {
-            log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
+            // log("RxlStatusEvent UID Matched ${player.lastUid} == $event.uid ")
             player.events.add(
                 Event(
                     player.events.size + 1,
@@ -147,8 +148,7 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
 
     private fun lightOnSequence(player: RxlPlayer) {
-        log("child lightOnSequence $player")
-        log("lightOnSequence lastPod ${player.lastPod}, size ${player.pods.size}")
+        log("child lightOnSequence lastPod ${player.lastPod}, size ${player.pods.size}")
         val pod = player.pods[player.nextSeq()]
         player.lastUid = pod.uid
         listener.sendColorEvent(pod, player.color, actionTime, player.id, true)

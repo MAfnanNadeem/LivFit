@@ -1,4 +1,11 @@
-package life.mibo.views.recycler;
+/*
+ *  Created by Sumeet Kumar on 3/11/20 11:28 AM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 1/6/20 3:18 PM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.views.hexa;
 
 import android.content.Context;
 import android.util.AttributeSet;

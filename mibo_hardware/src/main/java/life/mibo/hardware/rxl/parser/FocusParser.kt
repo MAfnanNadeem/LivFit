@@ -7,6 +7,7 @@
 
 package life.mibo.hardware.rxl.parser
 
+import androidx.core.util.valueIterator
 import io.reactivex.Single
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Utils
@@ -37,7 +38,7 @@ class FocusParser(program: RxlProgram, listener: Listener) :
         log("child STARTING onCycleStart")
         //colorSent = false
         if (isTap) {
-            for (p in players) {
+            for (p in getPlayers()) {
                 if (p.isTapReceived) {
                     if (!p.isStarted) {
                         p.isStarted = true
@@ -48,7 +49,7 @@ class FocusParser(program: RxlProgram, listener: Listener) :
                 }
             }
         } else {
-            for (p in players) {
+            for (p in getPlayers()) {
                 //p.lastPod = 250
                 nextFocusLight(p)
                 Thread.sleep(THREAD_SLEEP)
@@ -58,7 +59,7 @@ class FocusParser(program: RxlProgram, listener: Listener) :
 
     override fun onCycleTapStart(playerId: Int) {
         log("child STARTING onCycleTapStart")
-        for (p in players) {
+        for (p in getPlayers()) {
             if (p.id == playerId) {
                 nextFocusLight(p)
                 break

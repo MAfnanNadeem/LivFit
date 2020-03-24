@@ -111,7 +111,8 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
             override fun onFailure(call: Call<Calories>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
+                Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+               // Toasty.error(fragment.context!!, "Unable to connect").show()
             }
 
             override fun onResponse(call: Call<Calories>, response: Response<Calories>) {

@@ -33,10 +33,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_devices2.*
+import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hardware.models.User
 import life.mibo.hexa.R
@@ -182,7 +184,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                     for (i in SessionManager.getInstance().userSession.devices) {
                         if (i.isBooster) {
                             SessionManager.getInstance().userSession.booster = i
-                            navigate(Navigator.SELECT_PROGRAM, null)
+                            navigate(Navigator.SELECT_MUSCLES, null)
                             return
                         }
                     }
@@ -360,8 +362,11 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     private val connectionListener = object : ScanDeviceAdapter.Listener {
         override fun onConnectClicked(device: Device?) {
-            log("connectionListener onConnectClicked ")
+            log("connectionListener onConnectClicked " + device?.statusConnected)
+            if (device?.statusConnected == DEVICE_CONNECTED)
+                return
             //SessionManager.getInstance().userSession = UserSession.from(device)
+            CommunicationManager.getInstance().connectDevice(device)
             try {
                 Prefs.get(this@DeviceScanFragment.context).settJson(device?.uid, device)
             } catch (e: java.lang.Exception) {
@@ -372,15 +377,18 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                 //SessionManager.getInstance().userSession.addDevice(device)
                 Prefs.get(this@DeviceScanFragment.activity)["user_uid"] = device.uid
             }
-            navigate(Navigator.CONNECT, device)
+
+            //navigate(Navigator.CONNECT, device)
             button_next?.visibility = View.VISIBLE
             //testColors()
         }
 
         override fun onCancelClicked(device: Device?) {
             //SessionManager.getInstance().userSession.device = null
+            //DEVICE_CONNECTED
             log("connectionListener onCancelClicked " + device?.statusConnected)
-            navigate(Navigator.DISCONNECT, device)
+            CommunicationManager.getInstance().disconnectDevice(device)
+            //navigate(Navigator.DISCONNECT, device)
             isConnected = false
             updateButton()
             //device?.statusConnected = 1
@@ -599,7 +607,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                     override fun onNext(t: Device) {
                         log("connectAllDevices onNext")
                         if (rxl) {
-                            if (t.isPod && t.statusConnected != 1) {
+                            if (t.isPod) {
                                 connectionListener?.onConnectClicked(t)
                                 // Thread.currentThread().sleep(100)
                                 isConnectTrigger = true
@@ -607,7 +615,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                                 log("connectAllDevices statusConnected ${t.statusConnected}")
                             }
                         } else {
-                            if (t.isBooster && t.statusConnected != 1) {
+                            if (t.isBooster) {
                                 connectionListener?.onConnectClicked(t)
                                 isConnectTrigger = true
                                 Thread.sleep(100)
@@ -831,7 +839,6 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     override fun onResume() {
         super.onResume()
         log("onResume")
-
     }
 
 
@@ -848,12 +855,13 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         SessionManager.getInstance().userSession.isScanning = false
         controller.onStop()
         button_connect_all?.dispose()
+        //button_next?.dispose()
         log("onStop")
+        // button_connect_all?.dispose()
     }
 
     override fun onDestroy() {
-        button_next?.dispose()
-        button_connect_all?.dispose()
+        button_connect_all?.release()
         super.onDestroy()
     }
 

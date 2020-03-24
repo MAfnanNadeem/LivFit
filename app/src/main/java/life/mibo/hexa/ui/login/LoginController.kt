@@ -10,7 +10,6 @@ import android.text.TextWatcher
 import android.widget.EditText
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
@@ -45,32 +44,32 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     private var isLogin = false;
     override fun onLogin(user: String, password: String) {
-        var usr = user;
-        var pwd = password;
-        if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
-            //usr = "test@mibo.life"
-            //usr = "christie.ffrench@gmail.com"
-            //usr = "sumeetgehi@gmail.com"
-            usr = "diana@gmail.com"
-            //usr = "sameerk@gmail.com"
-           // usr = "alisher@mibo.life"
-            //pwd = "Qwe123@@"
-            pwd = "123456"
-        }
+        //var usr = user;
+       // var pwd = password;
+//        if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
+//            //usr = "test@mibo.life"
+//            //usr = "christie.ffrench@gmail.com"
+//            //usr = "sumeetgehi@gmail.com"
+//            usr = "diana@gmail.com"
+//            //usr = "sameerk@gmail.com"
+//           // usr = "alisher@mibo.life"
+//            //pwd = "Qwe123@@"
+//            pwd = "123456"
+//        }
 
-        if(usr.isEmpty())
+        if(user.isEmpty())
         {
             Toasty.info(context, context.getString(R.string.enter_username)).show()
             return
         }
-        if(pwd.isEmpty())
+        if(password.isEmpty())
         {
             Toasty.info(context, R.string.enter_your_password).show()
             return
         }
 
         context.getDialog()?.show()
-        API.request.getApi().login(LoginUser(usr, pwd)).enqueue(object : Callback<LoginResponse> {
+        API.request.getApi().login(LoginUser(user, password)).enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
                 t.printStackTrace()
@@ -90,9 +89,9 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                         //Toasty.success(context, context.getString(R.string.logged_succes)).show()
                         isLogin = true
                         Prefs.get(this@LoginController.context).member = data.data
-                        Prefs.get(this@LoginController.context).set("user_email",usr)
+                        Prefs.get(this@LoginController.context).set("user_email",user)
                         MiboEvent.loginSuccess(
-                            "${data.data?.firstName} - ${data.data?.lastName}", "$usr"
+                            "${data.data?.firstName} - ${data.data?.lastName}", "$user"
                         )
 
 

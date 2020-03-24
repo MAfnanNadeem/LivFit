@@ -232,24 +232,25 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
             }
 
             view?.setOnClickListener {
+                //callback?.onClicked(item)
                 if (item.statusConnected == 1) {
                     callback?.onClicked(item)
                 }
 
             }
             connect?.setOnClickListener {
-                if (item.statusConnected == 1) {
-                    return@setOnClickListener
-                }
+//                if (item.statusConnected == 1) {
+//                    return@setOnClickListener
+//                }
                 callback?.onConnectClicked(item)
             }
             disconnect?.setOnClickListener {
-                if (item.statusConnected == 0) {
-                    return@setOnClickListener
-                }
+               // if (item.statusConnected == 0) {
+                    // return@setOnClickListener
+               // }
                 item.statusConnected = 0
-                disconnect?.setColorFilter(grey)
                 callback?.onCancelClicked(item)
+                disconnect?.setColorFilter(grey)
             }
 
 //            Logger.e("DeviceStatusEvent batteryLevel ${item.batteryLevel} - signalLevel ${item.signalLevel} ")

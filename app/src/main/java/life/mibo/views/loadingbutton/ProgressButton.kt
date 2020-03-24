@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/20/20 10:17 AM
+ *  Created by Sumeet Kumar on 3/11/20 11:37 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/20/20 10:16 AM
+ *  Last modified 3/11/20 11:35 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.views.loadingbutton.customViews
+package life.mibo.views.loadingbutton
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -30,17 +30,17 @@ import life.mibo.hexa.R
 import life.mibo.views.loadingbutton.animatedDrawables.CircularProgressAnimatedDrawable
 import life.mibo.views.loadingbutton.animatedDrawables.ProgressType
 import life.mibo.views.loadingbutton.presentation.State
-import life.mibo.views.loadingbutton.updateHeight
-import life.mibo.views.loadingbutton.updateWidth
+import life.mibo.views.loadingbutton.utils.*
 import life.mibo.views.loadingbutton.utils.addLifecycleObserver
 import life.mibo.views.loadingbutton.utils.parseGradientDrawable
+import life.mibo.views.loadingbutton.utils.updateWidth
 
 //import life.mibo.views.loadingbutton.animatedDrawables.CircularRevealAnimatedDrawable
 //import life.mibo.views.loadingbutton.animatedDrawables.ProgressType
 //import br.com.simplepass.loadingbutton.customViews.OnAnimationEndListener
 //import life.mibo.views.loadingbutton.presentation.State
-//import life.mibo.views.loadingbutton.updateHeight
-//import life.mibo.views.loadingbutton.updateWidth
+//import life.mibo.views.loadingbutton.utils.updateHeight
+//import life.mibo.views.loadingbutton.utils.updateWidth
 //import life.mibo.views.loadingbutton.utils.addLifecycleObserver
 //import life.mibo.views.loadingbutton.utils.parseGradientDrawable
 

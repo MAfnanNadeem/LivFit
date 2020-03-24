@@ -88,7 +88,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             override fun onFailure(call: Call<SessionReport>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
+                Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
             }
 
             override fun onResponse(call: Call<SessionReport>, response: Response<SessionReport>) {

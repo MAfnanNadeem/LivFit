@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -17,16 +16,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import kotlin.jvm.Synchronized;
 import life.mibo.hardware.bluetooth.BleGattManager;
@@ -40,6 +34,11 @@ import life.mibo.hardware.bluetooth.operations.GattSetNotificationOperation;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
 import life.mibo.hardware.encryption.Encryption;
+import life.mibo.hardware.fastble.BleManager;
+import life.mibo.hardware.fastble.callback.BleReadCallback;
+import life.mibo.hardware.fastble.callback.BleScanAndConnectCallback;
+import life.mibo.hardware.fastble.callback.BleWriteCallback;
+import life.mibo.hardware.fastble.exception.BleException;
 import life.mibo.hardware.models.BleDevice;
 
 /**
@@ -655,12 +654,14 @@ public class BluetoothManager {
 
         int aux = -1;
         for (BluetoothDevice d : devicesConnectedBle) {
-            if (d.getName().contains(Id)) {
-
-                getGattManager().queue(new GattDisconnectOperation(d));
-                aux = devicesConnectedBle.indexOf(d);
-                //devicesConnectedBle.remove(d);
+            if(d.getName() != null){
+                if (d.getName().contains(Id)) {
+                    getGattManager().queue(new GattDisconnectOperation(d));
+                    aux = devicesConnectedBle.indexOf(d);
+                    //devicesConnectedBle.remove(d);
+                }
             }
+
         }
         if (aux != -1)
             devicesConnectedBle.remove(aux);
@@ -930,124 +931,6 @@ public class BluetoothManager {
         final int heartRate = characteristic.getIntValue(format, 1);
         return heartRate;
     }
-
-    public class Manager {
-        BluetoothAdapter bluetoothAdapter;
-        BluetoothSocket bluetoothSocket;
-        BluetoothDevice bluetoothDevice;
-        OutputStream outputStream;
-        InputStream inputStream;
-        Thread thread;
-        byte[] readBuffer;
-        int readBufferPosition;
-        int counter;
-        volatile boolean stopWorker;
-
-        public void start() {
-            log("BluetoothManager Bluetooth starting");
-            try {
-                find();
-                open();
-            } catch (Exception e) {
-                Logger.e("BluetoothManager Bluetooth start crashed......", e);
-            }
-        }
-
-        void find() {
-            log("BluetoothManager Bluetooth finding");
-
-            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (bluetoothAdapter == null) {
-                log(" BluetoothManager No bluetooth adapter available");
-            }
-
-            if (!bluetoothAdapter.isEnabled()) {
-                //Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                //startActivityForResult(enableBluetooth, 0);
-                log(" BluetoothManager bluetooth adapter available isEnabled");
-            }
-
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0) {
-
-                for (BluetoothDevice device : pairedDevices) {
-                    log(" BluetoothManager BluetoothDevice pairedDevices " + device);
-                    if (device.getName().equals("MattsBlueTooth")) {
-                        bluetoothDevice = device;
-                        break;
-                    }
-                }
-            }
-            log("BluetoothManager Device pairedDevices.size()  " + pairedDevices.size());
-        }
-
-        void open() throws IOException {
-            log("BluetoothManager Bluetooth Opening");
-
-            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
-            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
-            bluetoothSocket.connect();
-            outputStream = bluetoothSocket.getOutputStream();
-            inputStream = bluetoothSocket.getInputStream();
-            beginListenForData();
-        }
-
-        private void beginListenForData() {
-            log("BluetoothManager Bluetooth beginListenForData");
-            final byte delimiter = 10; //This is the ASCII code for a newline character
-
-            stopWorker = false;
-            readBufferPosition = 0;
-            readBuffer = new byte[1024];
-            thread = new Thread(new Runnable() {
-                public void run() {
-                    while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                        try {
-                            int bytesAvailable = inputStream.available();
-                            log("BluetoothManager data available  " + bytesAvailable);
-                            if (bytesAvailable > 0) {
-                                byte[] packetBytes = new byte[bytesAvailable];
-                                inputStream.read(packetBytes);
-                                for (int i = 0; i < bytesAvailable; i++) {
-                                    byte b = packetBytes[i];
-                                    if (b == delimiter) {
-                                        byte[] encodedBytes = new byte[readBufferPosition];
-                                        System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                        final String data = new String(encodedBytes, "US-ASCII");
-                                        readBufferPosition = 0;
-                                        log("BluetoothManager data received " + data);
-
-                                    } else {
-                                        readBuffer[readBufferPosition++] = b;
-                                    }
-                                }
-                            }
-                        } catch (IOException ex) {
-                            Logger.e("BluetoothManager executing exception  ", ex);
-                            stopWorker = true;
-                        }
-                    }
-                }
-            });
-
-            thread.start();
-        }
-
-        public void send(String msg) throws IOException {
-            msg += "\n";
-            outputStream.write(msg.getBytes());
-            log("BluetoothManager sendData Data Sent " + msg);
-        }
-
-        public void close() throws IOException {
-            stopWorker = true;
-            outputStream.close();
-            inputStream.close();
-            bluetoothSocket.close();
-            log("BluetoothManager Closed.......");
-        }
-    }
-
 
     private void log(String msg) {
         CommunicationManager.log("BluetoothManager: " + msg);

@@ -351,7 +351,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
-                Toasty.error(context, "Failed " + t.message).show()
+                Toasty.error(context, R.string.unable_to_connect).show()
                 t.printStackTrace()
                 Logger.e("RegisterActivity : register API ", t)
 
@@ -453,7 +453,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             override fun onFailure(call: Call<SendOtpResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
-                Toasty.error(context, "Failed " + t.message).show()
+                Toasty.error(context, R.string.unable_to_connect).show()
+                //Toasty.error(context, "Failed " + t.message).show()
                 t.printStackTrace()
                 Logger.e("RegisterActivity : register API ", t)
             }
@@ -515,7 +516,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             override fun onFailure(call: Call<VerifyOtpResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
-                error("Failed " + t.message)
+               // error("Failed " + t.message)
+                error(R.string.unable_to_connect)
                 t.printStackTrace()
                 Logger.e("RegisterActivity : register API ", t)
             }

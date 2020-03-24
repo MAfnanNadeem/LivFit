@@ -114,6 +114,8 @@ class RxlProgramDetailsFragment : BaseFragment() {
             tv_select_pods?.text = "0"
         }
 
+        btn_next?.isEnabled = pods.size >= program?.pods ?: 0
+
         if (program?.pods == pods.size) {
             tv_required_pods.visibility = View.GONE
         } else {

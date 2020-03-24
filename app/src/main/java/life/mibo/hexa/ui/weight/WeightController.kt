@@ -52,7 +52,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
                 fragment?.context?.let {
-                    Toasty.error(it, "Unable to connect").show()
+                    Toasty.error(it, R.string.unable_to_connect).show()
                 }
             }
 
@@ -82,7 +82,7 @@ class WeightController(val fragment: WeightFragment, val observer: WeightObserve
             override fun onFailure(call: Call<WeightAllResponse>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
+                Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
                 MiboEvent.log(t)
             }
 

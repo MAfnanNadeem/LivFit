@@ -7,6 +7,7 @@
 
 package life.mibo.hardware.rxl.parser
 
+import androidx.core.util.valueIterator
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -42,7 +43,7 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
 //            Thread.sleep(20)
 //        }
         if (isTap) {
-            for (p in players) {
+            for (p in getPlayers()) {
                 if (p.isTapReceived) {
                     if (!p.isStarted) {
                         p.isStarted = true
@@ -53,7 +54,7 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
                 }
             }
         } else {
-            for (p in players) {
+            for (p in getPlayers()) {
                 p.lastPod = 250
                 lightOnAllAtOnce(p)
                 Thread.sleep(THREAD_SLEEP)
@@ -63,7 +64,7 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
 
     override fun onCycleTapStart(playerId: Int) {
         log("child STARTING onCycleTapStart")
-        for (p in players) {
+        for (p in getPlayers()) {
             if (p.id == playerId) {
                 lightOnAllAtOnce(p)
                 break

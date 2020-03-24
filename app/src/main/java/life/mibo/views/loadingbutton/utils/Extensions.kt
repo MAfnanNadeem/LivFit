@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/20/20 10:19 AM
+ *  Created by Sumeet Kumar on 3/11/20 11:37 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/20/20 10:16 AM
+ *  Last modified 3/11/20 11:35 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.views.loadingbutton
+package life.mibo.views.loadingbutton.utils
 
 import android.animation.Animator
 import android.view.View

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
@@ -82,6 +83,11 @@ import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
+//import life.mibo.hardware.fastble.callback.BleScanAndConnectCallback;
+//import life.mibo.hardware.fastble.callback.BleScanCallback;
+//import life.mibo.hardware.fastble.data.BleDevice;
+//import life.mibo.hardware.fastble.exception.BleException;
+
 /**
  * Created by Fer on 18/03/2019.
  * updated by Sumeet Kumar on 17/12/2019.
@@ -95,7 +101,7 @@ public class CommunicationManager {
     private UDPServer udpServer;
     private BluetoothManager bluetoothManager;
     //public ScaleManager scaleManager;
-    private ArrayList<Device> mDiscoveredDevices = new ArrayList<>();
+    private HashMap<String, Device> mDiscoveredDevices = new HashMap<String, Device>();
     //private Activity activity;
     private boolean commRunning = true;
     private Thread pingThread;
@@ -229,7 +235,7 @@ public class CommunicationManager {
     public void removeNotConnectedDevices() {
         log("reScanNonConnectedDevices");
         try {
-            Iterator<Device> i = mDiscoveredDevices.iterator();
+            Iterator<Device> i = mDiscoveredDevices.values().iterator();
             while (i.hasNext()) {
                 Device d = i.next();
                 if (d.getStatusConnected() == DEVICE_DISCOVERED || d.getStatusConnected() == DEVICE_NEUTRAL || d.getStatusConnected() == DEVICE_DISCONNECTED) {
@@ -250,17 +256,6 @@ public class CommunicationManager {
         //bluetoothManager = null;
         startScanning(context, isWifi);
 
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public synchronized void startScanning(final Activity context, boolean isWifi) {
-        this.isWifi = isWifi;
-        log("Starting scanning...." + isWifi);
-        rxlCount = 0;
-        if (isWifi)
-            scanWifi(context);
-        else
-            scanBluetooth(context);
     }
 
     private UDPServer.OnBroadcastReceived wifiListener = new UDPServer.OnBroadcastReceived() {
@@ -341,7 +336,18 @@ public class CommunicationManager {
         }
     };
 
-    public void scanWifi(Activity context) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public synchronized void startScanning(final Activity context, boolean isWifi) {
+        this.isWifi = isWifi;
+        log("Starting scanning...." + isWifi);
+        rxlCount = 0;
+        if (isWifi)
+            scanWifi();
+        else
+            scanBluetooth(context);
+    }
+
+    public void scanWifi() {
         if (udpServer == null) {
             mDiscoveredDevices.clear();
             udpServer = new UDPServer();
@@ -352,6 +358,7 @@ public class CommunicationManager {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scanBluetooth(Context context) {
+
         //TODO: Change to not overwrite the current one if its initialized and only start discovery
         if (bluetoothManager == null) {
             bluetoothManager = new BluetoothManager(context);
@@ -400,6 +407,12 @@ public class CommunicationManager {
         } catch (Exception e) {
 
         }
+
+    }
+
+    public void release() {
+        onDestroy();
+        manager = null;
 
     }
 
@@ -556,7 +569,7 @@ public class CommunicationManager {
     }
 
     private void bleHrConsumer(int hr, String uid) {
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getUid().equals(uid)) {
                 if (d.getStatusConnected() != DEVICE_WAITING && d.getStatusConnected() != DEVICE_CONNECTED) {
 //                    if (d.getStatusConnected() == DEVICE_DISCONNECTED) {
@@ -585,7 +598,7 @@ public class CommunicationManager {
 
     private synchronized void checkBoosterDevice(byte[] command, InetAddress ip) {
         log("checkNewDevice --- " + true);
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getIp().equals(ip)) {
                 log("checkBoosterDevice --- found1 " + ip);
                 return;
@@ -599,7 +612,7 @@ public class CommunicationManager {
     private synchronized void checkRxlDevice(InetAddress ip, byte[] command) {
         log("checkRxlDevice --- " + ip);
         // log("checkRxlDevice uid: " + DataParser.getUIDRxl(ip.getAddress(), command));
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getIp().equals(ip)) {
                 log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
                 return;
@@ -613,7 +626,7 @@ public class CommunicationManager {
         // log("checkRxlDevice mac --- " + new String(DataParser.getUIDRxl(ip.getAddress(),cmd)));
         //log("checkRxlDevice mac --- " + new String(DataParser.getUIDRxl(ip.getAddress(),cmd)));
         //debugCommands("checkRxlDevice mac", DataParser.getUIDRxl(ip.getAddress(),cmd));
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getIp().equals(ip)) {
                 log("checkRxlDevice --- found in mDiscoveredDevices " + ip);
                 return;
@@ -625,7 +638,7 @@ public class CommunicationManager {
     private void checkNewDevice(byte[] command, InetAddress ip) {
         boolean newDevice = true;
         log("checkNewDevice --- " + true);
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getIp().equals(ip)) {
                 log("checkNewDevice --- found1 " + ip);
                 newDevice = false;
@@ -659,20 +672,14 @@ public class CommunicationManager {
     private synchronized void add(Device device) {
         log("mDiscoveredDevices add Device............. --- " + device);
         if (mDiscoveredDevices == null)
-            mDiscoveredDevices = new ArrayList<>();
+            mDiscoveredDevices = new HashMap<>();
         if (bluetoothManager != null) {
             // if (bluetoothManager.contains(device.getUid()))
             //    return;
         }
-        for (Device d : mDiscoveredDevices) {
-            if (d.getUid().equalsIgnoreCase(device.getUid())) {
-//                if (d.getType() == device.getType()) {
-//                    return;
-//                }
-                return;
-            }
-        }
-        mDiscoveredDevices.add(device);
+        if (mDiscoveredDevices.containsKey(device.getUid()))
+            return;
+        mDiscoveredDevices.put(device.getUid(), device);
         log("mDiscoveredDevices Device added............. --- " + device);
         if (listener != null)
             listener.onDeviceDiscoveredEvent(device);
@@ -683,30 +690,11 @@ public class CommunicationManager {
         }
     }
 
-    private synchronized void addRxl(Device device) {
-        log("mDiscoveredDevices Device check............. --- " + device);
-        if (mDiscoveredDevices == null)
-            mDiscoveredDevices = new ArrayList<>();
-        for (Device d : mDiscoveredDevices) {
-            if (d.getIp().equals(device.getIp())) {
-                return;
-            }
-        }
-        mDiscoveredDevices.add(device);
-        log("mDiscoveredDevices Device added............. --- " + device);
-        if (listener != null)
-            listener.onDeviceDiscoveredEvent(device);
-        try {
-            Thread.sleep(50);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void addDeviceToDiscoveredDevices(Device device) {
         log("addDeviceToDiscoveredDevices --- " + device);
         boolean newDevice = true;
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getUid().equals(device.getUid())) {
                 newDevice = false;
             }
@@ -714,10 +702,6 @@ public class CommunicationManager {
         if (newDevice) {
             add(device);
         }
-    }
-
-    public ArrayList<Device> getDiscoveredDevices() {
-        return mDiscoveredDevices;
     }
 
     // todo not implemented yet
@@ -739,15 +723,6 @@ public class CommunicationManager {
         return list;
     }
 
-    public boolean isDiscoveredbyUid(String uid) {
-        for (Device d : mDiscoveredDevices) {
-            if (d.getUid().equals(uid)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
 
     public void connectDevice(Device device) {
@@ -757,7 +732,7 @@ public class CommunicationManager {
         switch (device.getType()) {
             case WIFI_STIMULATOR: {
                 String disc = "Not Found!";
-                for (Device d : mDiscoveredDevices) {
+                for (Device d : mDiscoveredDevices.values()) {
                     if (d.getUid().equals(device.getUid()) && (d.getType() == WIFI_STIMULATOR)) {
                         connectTCPDevice(d.getIp().getHostAddress(), TCP_PORT, d.getUid(), DataParser.BOOSTER);
                         SessionManager.getInstance().getUserSession().addDevice(device);
@@ -1023,153 +998,6 @@ public class CommunicationManager {
         log("parseCommandsRXT msg " + Utils.getBytes(command) + " : UID " + uid);
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid);
-    }
-
-    private void parseCommands(byte[] command, String uid) {
-        //Log.e("commManager", "consummer msg uid: " + uid);
-        log("parseCommands msg " + Arrays.toString(command) + " : UID " + uid);
-
-        switch (DataParser.getCommand(command)) {
-            case COMMAND_PING_RESPONSE:
-                log("parseCommands COMMAND_PING_RESPONSE");
-                break;
-            case COMMAND_DEVICE_STATUS_RESPONSE:
-                log("parseCommands COMMAND_DEVICE_STATUS_RESPONSE");
-                for (Device d : mDiscoveredDevices) {
-                    if (d.getUid().equals(uid)) {
-                        d.setBatteryLevel(DataParser.getStatusBattery(command));
-                        d.setSignalLevel(DataParser.getStatusSignal(command));
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setBatteryLevel(DataParser.getStatusBattery(command));
-                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setSignalLevel(DataParser.getStatusSignal(command));
-                        if (listener != null)
-                            listener.DeviceStatusEvent(d.getUid());
-                        //EventBus.getDefault().postSticky(new DeviceStatusEvent(d.getUid()));
-                        if (d.getStatusConnected() != DEVICE_WAITING && d.getStatusConnected() != DEVICE_CONNECTED) {
-                            if (d.getStatusConnected() == DEVICE_DISCONNECTED) {
-                                if (listener != null)
-                                    listener.ChangeColorEvent(d, d.getUid());
-                                //EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
-                            }
-                            d.setStatusConnected(DEVICE_CONNECTED);
-                            SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_CONNECTED);
-
-                            if (listener != null)
-                                listener.onConnectionStatus(uid);
-                            //EventBus.getDefault().postSticky(new onConnectionStatus(uid));
-                        } else {
-                            d.setStatusConnected(DEVICE_CONNECTED);
-                            SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setStatusConnected(DEVICE_CONNECTED);
-                        }
-                        if (SessionManager.getInstance().getSession().getCurrentSessionStatus() == 1 ||
-                                SessionManager.getInstance().getSession().getCurrentSessionStatus() == 2) {
-                            if (SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setNewDeviceChannelAlarms(
-                                    DataParser.getChannelAlarms(command))) {
-                                AlarmManager.getInstance().getAlarms().AddDeviceChannelAlarm(
-                                        SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).getDeviceChannelAlarms(),
-                                        d.getUid());
-
-                                if (listener != null)
-                                    listener.onAlarmEvent();
-                                //EventBus.getDefault().postSticky(new onAlarmEvent());
-                            }
-                        }
-                        SessionManager.getInstance().getSession().checkDeviceStatus(DataParser.getStatusFlags(command), uid);
-                        // Log.e("commManager", "signal: " + DataParser.getStatusSignal(command)+" bat:"+DataParser.getStatusBattery(command));
-                    }
-
-                }
-                //  Log.e("commManager", "Receiver PING");
-                break;
-            case COMMAND_FIRMWARE_REVISION_RESPONSE:
-                log("parseCommands COMMAND_FIRMWARE_REVISION_RESPONSE");
-                break;
-            case COMMAND_SET_DEVICE_COLOR_RESPONSE:
-                log("parseCommands COMMAND_SET_DEVICE_COLOR_RESPONSE");
-                break;
-            case COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE:
-                log("parseCommands COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE");
-                //Log.e("commManager", "Receiver PROGRAM");
-                break;
-            case COMMAND_SET_MAIN_LEVEL_RESPONSE:
-                log("parseCommands COMMAND_SET_MAIN_LEVEL_RESPONSE");
-                if (listener != null)
-                    listener.GetMainLevelEvent(DataParser.getMainLevel(command), uid);
-                //EventBus.getDefault().postSticky(new GetMainLevelEvent(DataParser.getMainLevel(command), uid));
-                SessionManager.getInstance().getSession().getUserByBoosterUid(uid).setMainLevel(DataParser.getMainLevel(command));
-                //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
-                break;
-            case COMMAND_SET_CHANNELS_LEVELS_RESPONSE:
-                log("parseCommands COMMAND_SET_CHANNELS_LEVELS_RESPONSE");
-                if (listener != null)
-                    listener.GetLevelsEvent(uid);
-
-                //EventBus.getDefault().postSticky(new GetLevelsEvent(uid));
-                //  Log.e("commManager", "Receiver LEVELS");
-                break;
-            case COMMAND_START_CURRENT_CYCLE_RESPONSE:
-                log("parseCommands COMMAND_START_CURRENT_CYCLE_RESPONSE");
-                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(true);
-                if (listener != null)
-                    listener.GetLevelsEvent(uid);
-                //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                //Log.e("commManager", "Receiver START");
-                break;
-            case COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE:
-                log("parseCommands COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE");
-                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(false);
-                //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
-                if (listener != null)
-                    listener.GetLevelsEvent(uid);
-                //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                //Log.e("commManager", "Receiver PAUSE");
-                break;
-            case COMMAND_RESET_CURRENT_CYCLE_RESPONSE:
-                log("parseCommands COMMAND_RESET_CURRENT_CYCLE_RESPONSE");
-                //Log.e("commManager", "Receiver RESET");
-                break;
-            case ASYNC_PROGRAM_STATUS:
-                log("parseCommands ASYNC_PROGRAM_STATUS");
-                if (listener != null) {
-                    //listener.onStatus(DataParser.getProgramStatusTime(command), DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command), DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid);
-                    listener.onStatus(command, uid);
-                }
-                SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
-                //EventBus.getDefault().postSticky(new onStatus(DataParser.getProgramStatusTime(command),
-                //  DataParser.getProgramStatusAction(command), DataParser.getProgramStatusPause(command),
-                //    DataParser.getProgramStatusCurrentBlock(command), DataParser.getProgramStatusCurrentProgram(command), uid));
-                // SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setDeviceSessionTimer(DataParser.getProgramStatusTime(command));
-
-                //  Log.e("commManager", "Receiver ASYNC PROGRAM STATUS");
-                break;
-            case COMMAND_ASYNC_SET_MAIN_LEVEL:
-                log("parseCommands COMMAND_ASYNC_SET_MAIN_LEVEL");
-                if (listener != null)
-                    listener.GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid);
-                //EventBus.getDefault().postSticky(new GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid));
-                SessionManager.getInstance().getSession().getUserByBoosterUid(uid).setMainLevel(DataParser.getMainLevelAsync(command));
-                //Log.e("commManager", "Receiver ASYNC MAINLEVEL");
-                break;
-            case COMMAND_ASYNC_PAUSE:
-                log("parseCommands COMMAND_ASYNC_PAUSE");
-                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(false);
-                if (listener != null)
-                    listener.DevicePlayPauseEvent(uid);
-
-                //  EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                //Log.e("commManager", "Receiver ASYNC Pause");
-                break;
-            case COMMAND_ASYNC_START:
-                log("parseCommands COMMAND_ASYNC_START");
-                SessionManager.getInstance().getUserSession().getBooster().setIsStarted(true);
-                if (listener != null)
-                    listener.DevicePlayPauseEvent(uid);
-                //EventBus.getDefault().postSticky(new DevicePlayPauseEvent(uid));
-                //Log.e("commManager", "Receiver ASYNC Pause");
-                break;
-            default:
-                log("parseCommands DEFAULTS");
-                break;
-        }
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
@@ -1486,7 +1314,7 @@ public class CommunicationManager {
             }
         }
 
-        for (Device d : mDiscoveredDevices) {
+        for (Device d : mDiscoveredDevices.values()) {
             if (d.getUid().equals(event.getname())) {
 
                 d.setStatusConnected(DEVICE_CONNECTED);
@@ -1514,6 +1342,15 @@ public class CommunicationManager {
     public CommunicationManager setListener(CommunicationListener listener) {
         this.listener = listener;
         return this;
+    }
+
+    public void sendMessage(TCPClient client, byte[] msg) {
+        client.sendMessage(msg);
+    }
+
+    public void sendBleMessage(String uid, byte[] msg) {
+        if (bluetoothManager != null)
+            bluetoothManager.sendMessage(uid, msg, "sendBleMessage");
     }
 
 

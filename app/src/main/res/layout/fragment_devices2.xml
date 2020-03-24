@@ -182,7 +182,7 @@
         </RelativeLayout>
 
 
-        <life.mibo.views.loadingbutton.CircularProgressButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -191,27 +191,11 @@
             android:enabled="false"
             android:text="@string/select_program"
             android:textColor="@color/white"
-            app:finalCornerAngle="32dp"
-            app:initialCornerAngle="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/rl_connect"
-            app:layout_constraintWidth_percent="0.45"
-            app:spinning_bar_color="#FFF"
-            app:spinning_bar_padding="6dp"
-            app:spinning_bar_width="4dp" />
-
-        <!--        <androidx.appcompat.widget.AppCompatButton-->
-        <!--            android:id="@+id/button_next"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="@dimen/grid_1x"-->
-        <!--            android:visibility="invisible"-->
-        <!--            android:text="@string/select_program"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent" />-->
+            app:layout_constraintWidth_percent="0.45" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -83,7 +83,7 @@ class LoginActivity : BaseActivity() {
         // debug()
         if (DEBUG) {
             btn_login?.setOnLongClickListener {
-               controller.onLogin(et_username?.text.toString(), et_password?.text.toString())
+               controller.onLogin("diana@gmail.com", "123456")
                 return@setOnLongClickListener true
             }
         }

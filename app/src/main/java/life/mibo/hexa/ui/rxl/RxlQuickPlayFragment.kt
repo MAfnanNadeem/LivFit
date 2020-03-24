@@ -1,5 +1,6 @@
 package life.mibo.hexa.ui.rxl
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -109,6 +110,7 @@ class RxlQuickPlayFragment : BaseFragment(),
     private fun setBackdrop() {
 
         backdropBehavior?.addOnDropListener(object : BackdropBehavior.OnDropListener {
+            @SuppressLint("RestrictedApi")
             override fun onDrop(dropState: BackdropBehavior.DropState, fromUser: Boolean) {
                 if (dropState == BackdropBehavior.DropState.CLOSE && isAdded) {
                     isFilterOpen = false
@@ -275,6 +277,12 @@ class RxlQuickPlayFragment : BaseFragment(),
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return super.onContextItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        recycler?.adapter = null
+        adapter = null
+        super.onDestroy()
     }
 
 }

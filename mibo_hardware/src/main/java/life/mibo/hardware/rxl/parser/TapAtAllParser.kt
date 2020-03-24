@@ -28,7 +28,7 @@ class TapAtAllParser(program: RxlProgram, listener: Listener) :
     override fun onCycleStart() {
         log("child STARTING PROGRAM")
         if (isTap) {
-            for (p in players) {
+            for (p in getPlayers()) {
                 if (p.isTapReceived) {
                     if (!p.isStarted) {
                         log("child STARTING PROGRAM starting player $p")
@@ -40,7 +40,7 @@ class TapAtAllParser(program: RxlProgram, listener: Listener) :
                 }
             }
         } else {
-            for (p in players) {
+            for (p in getPlayers()) {
                 //p.lastPod = 250
                 turnOnAll(p)
                 Thread.sleep(THREAD_SLEEP)

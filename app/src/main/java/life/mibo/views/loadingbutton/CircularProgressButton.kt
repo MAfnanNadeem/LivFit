@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 2/20/20 10:17 AM
+ *  Created by Sumeet Kumar on 3/11/20 11:37 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 2/20/20 10:16 AM
+ *  Last modified 3/11/20 11:35 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.views.loadingbutton.customViews
+package life.mibo.views.loadingbutton
 
 import android.animation.AnimatorSet
 import android.content.Context
@@ -15,19 +15,20 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
-import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
-import life.mibo.hardware.core.Logger
 import life.mibo.views.loadingbutton.animatedDrawables.CircularProgressAnimatedDrawable
 import life.mibo.views.loadingbutton.animatedDrawables.CircularRevealAnimatedDrawable
 import life.mibo.views.loadingbutton.animatedDrawables.ProgressType
-import life.mibo.views.loadingbutton.disposeAnimator
+import life.mibo.views.loadingbutton.utils.disposeAnimator
 import life.mibo.views.loadingbutton.presentation.ProgressButtonPresenter
 import life.mibo.views.loadingbutton.presentation.State
 
-open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
+//https://github.com/leandroBorgesFerreira/LoadingButtonAndroid
+open class CircularProgressButton : AppCompatButton,
+    ProgressButton {
 
     constructor(context: Context) : super(context) {
         init()
@@ -48,20 +49,28 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
     override var paddingProgress = 0F
 
     override var spinningBarWidth = 10F
-    override var spinningBarColor = ContextCompat.getColor(context, android.R.color.black)
+    override var spinningBarColor = ContextCompat.getColor(context, android.R.color.white)
 
     override var finalCorner = 0F
     override var initialCorner = 0F
 
+    private var listener: () -> Unit = {}
+
+    fun setListener(l: () -> Unit) {
+        listener = l
+    }
+
+    // private var savedAnimationEndListener: () -> Unit = {}
     private lateinit var initialState: InitialState
 
-    override val finalHeight: Int by lazy { height }
-    private val initialHeight: Int by lazy { height }
     override val finalWidth: Int by lazy {
         val padding = Rect()
         drawableBackground.getPadding(padding)
         finalHeight - (Math.abs(padding.top - padding.left) * 2)
     }
+
+    override val finalHeight: Int by lazy { height }
+    private val initialHeight: Int by lazy { height }
 
     override var progressType: ProgressType
         get() = progressAnimatedDrawable.progressType
@@ -69,7 +78,7 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
             progressAnimatedDrawable.progressType = value
         }
     override var view: View?
-        get() = this;
+        get() = this
         set(value) {}
 
     override lateinit var drawableBackground: Drawable
@@ -81,25 +90,25 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
     private val morphAnimator by lazy {
         AnimatorSet().apply {
             playTogether(
-                life.mibo.views.loadingbutton.customViews.cornerAnimator(
+                cornerAnimator(
                     drawableBackground,
                     initialCorner,
                     finalCorner
                 ),
-                life.mibo.views.loadingbutton.customViews.widthAnimator(
-                    this@CircularProgressImageButton,
+                widthAnimator(
+                    this@CircularProgressButton,
                     initialState.initialWidth,
                     finalWidth
                 ),
-                life.mibo.views.loadingbutton.customViews.heightAnimator(
-                    this@CircularProgressImageButton,
+                heightAnimator(
+                    this@CircularProgressButton,
                     initialHeight,
                     finalHeight
                 )
             )
 
             addListener(
-                life.mibo.views.loadingbutton.customViews.morphListener(
+                morphListener(
                     presenter::morphStart,
                     presenter::morphEnd
                 )
@@ -110,25 +119,25 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
     private val morphRevertAnimator by lazy {
         AnimatorSet().apply {
             playTogether(
-                life.mibo.views.loadingbutton.customViews.cornerAnimator(
+                cornerAnimator(
                     drawableBackground,
                     finalCorner,
                     initialCorner
                 ),
-                life.mibo.views.loadingbutton.customViews.widthAnimator(
-                    this@CircularProgressImageButton,
+                widthAnimator(
+                    this@CircularProgressButton,
                     finalWidth,
                     initialState.initialWidth
                 ),
-                life.mibo.views.loadingbutton.customViews.heightAnimator(
-                    this@CircularProgressImageButton,
+                heightAnimator(
+                    this@CircularProgressButton,
                     finalHeight,
                     initialHeight
                 )
             )
 
             addListener(
-                life.mibo.views.loadingbutton.customViews.morphListener(
+                morphListener(
                     presenter::morphRevertStart,
                     presenter::morphRevertEnd
                 )
@@ -145,12 +154,27 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
     override fun getState(): State = presenter.state
 
     override fun saveInitialState() {
-        initialState = InitialState(width)
+        initialState =
+            InitialState(
+                width,
+                text,
+                compoundDrawables
+            )
     }
 
-    override fun recoverInitialState() {}
+    override fun recoverInitialState() {
+        text = initialState.initialText
+        setCompoundDrawables(
+            initialState.compoundDrawables[0],
+            initialState.compoundDrawables[1],
+            initialState.compoundDrawables[2],
+            initialState.compoundDrawables[3]
+        )
+    }
 
-    override fun hideInitialState() {}
+    override fun hideInitialState() {
+        text = null
+    }
 
     override fun drawProgress(canvas: Canvas) {
         progressAnimatedDrawable.drawProgress(canvas)
@@ -166,19 +190,17 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
 
     override fun startMorphAnimation() {
         applyAnimationEndListener(
-            morphAnimator
-        ) {
-            Logger.e("ProgressButton startMorphAnimation onAnimationEnd")
-        }
+            morphAnimator,
+            savedAnimationEndListener
+        )
         morphAnimator.start()
     }
 
     override fun startMorphRevertAnimation() {
         applyAnimationEndListener(
-            morphAnimator
-        ) {
-            Logger.e("ProgressButton startMorphRevertAnimation onAnimationEnd")
-        }
+            morphRevertAnimator,
+            savedAnimationEndListener
+        )
         morphRevertAnimator.start()
     }
 
@@ -214,8 +236,22 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun dispose() {
-        morphAnimator.disposeAnimator()
-        morphRevertAnimator.disposeAnimator()
+        if (presenter.state != State.BEFORE_DRAW) {
+            morphAnimator.disposeAnimator()
+            morphRevertAnimator.disposeAnimator()
+        }
+    }
+
+    fun release() {
+        try {
+            morphAnimator.end()
+            morphRevertAnimator.end()
+            morphAnimator.removeAllListeners()
+            morphRevertAnimator.removeAllListeners()
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -235,13 +271,9 @@ open class CircularProgressImageButton : AppCompatImageButton, ProgressButton {
         }
     }
 
-    override fun setCompoundDrawables(
-        left: Drawable?,
-        top: Drawable?,
-        right: Drawable?,
-        bottom: Drawable?
-    ) {
-    }
-
-    data class InitialState(var initialWidth: Int)
+    data class InitialState(
+        var initialWidth: Int,
+        val initialText: CharSequence,
+        val compoundDrawables: Array<Drawable>
+    )
 }

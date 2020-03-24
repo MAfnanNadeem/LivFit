@@ -69,6 +69,8 @@ data class RxlPlayer(
     }
 
     // Sequence
+    private var lastSeq = 0;
+
     private var sequence: IntArray = IntArray(1)
     fun defaultSeq() {
         sequence = IntArray(noOfPods)
@@ -78,6 +80,7 @@ data class RxlPlayer(
 
         Logger.e("Default Sequence ${sequence.contentToString()}")
     }
+
 
     fun createSeq(s: List<String>) {
         sequence = IntArray(s.size)
@@ -96,18 +99,11 @@ data class RxlPlayer(
         return 0
     }
 
-    fun setSeq(array: IntArray) {
-        sequence = array
-    }
-
-    private var lastSeq = 0;
-
     fun nextSeq(): Int {
-        Logger.e("sequence nextSeq $lastSeq")
         if (lastSeq >= sequence.size)
             lastSeq = 0
         lastPod = sequence[lastSeq]
-
+        Logger.e("sequence nextSeq $lastSeq")
         if (lastPod >= pods.size)
             lastPod = 0
 

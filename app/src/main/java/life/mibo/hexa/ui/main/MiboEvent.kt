@@ -9,8 +9,8 @@ package life.mibo.hexa.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import com.crashlytics.android.Crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 object MiboEvent {
 
@@ -81,9 +81,9 @@ object MiboEvent {
         }
     }
 
-    fun log(throwable: Throwable?) {
+    fun log(throwable: Throwable) {
         try {
-            Crashlytics.logException(throwable)
+            FirebaseCrashlytics.getInstance().recordException(throwable)
         } catch (e: Exception) {
 
         }
@@ -91,7 +91,7 @@ object MiboEvent {
 
     fun log(msg: String) {
         try {
-            Crashlytics.log(msg)
+            FirebaseCrashlytics.getInstance().log(msg)
         } catch (e: Exception) {
             log(e)
         }

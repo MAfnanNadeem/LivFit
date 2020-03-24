@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.ArrayList
 
 
 class RXLManager private constructor() {
@@ -333,7 +334,9 @@ class RXLManager private constructor() {
 
         tapPlayerCount = programParser!!.players.size
         log("RxlStatusEvent2 isStarted >> $isStarted : $isInternalStarted $tapPlayerCount")
-        programParser!!.players?.forEach { player ->
+
+        for (player in programParser!!.getPlayers())
+        {
             log("RxlStatusEvent2 send tap to player $player")
             if (player.pods.size > 0) {
                 val d: Device? = player.pods[0]
@@ -355,6 +358,10 @@ class RXLManager private constructor() {
             }
             Thread.sleep(15)
         }
+
+//        programParser!!.players?.forEach { player ->
+//
+//        }
         log("RxlStatusEvent onTapColorSent ")
         rxlListener?.onTapColorSent(0)
     }
@@ -385,7 +392,8 @@ class RXLManager private constructor() {
 
         tapPlayerCount = programParser!!.players.size
         log("RxlStatusEvent2 isStarted >> $isStarted : $isInternalStarted $tapPlayerCount")
-        programParser!!.players?.forEach { player ->
+
+        for (player in programParser!!.getPlayers()){
             log("RxlStatusEvent2 send tap to player $player")
             if (player.pods.size > 0) {
                 val d: Device? = player.pods[0]
@@ -401,6 +409,9 @@ class RXLManager private constructor() {
             }
             Thread.sleep(15)
         }
+//        programParser!!.players?.forEach { player ->
+//
+//        }
         log("RxlStatusEvent onTapColorSent ")
         rxlListener?.onTapColorSent(0)
     }
@@ -833,7 +844,7 @@ class RXLManager private constructor() {
             return getHitsFocus()
         val b = StringBuilder()
         b.append("\n")
-        programParser?.players?.forEach { it ->
+        for (it in programParser!!.getPlayers()) {
             b.append(it.name)
             b.append("\n")
             b.append("--------------")
@@ -853,47 +864,49 @@ class RXLManager private constructor() {
             b.append("\n")
             b.append("\n")
         }
+//        programParser?.players?.forEach {
+//        }
 
         return b.toString()
         // return ""
     }
 
-    fun getPlayers() = programParser?.players
+    fun getPlayers() = programParser?.getPlayers()
     fun getProgram() = programParser?.program
 
     private fun getHitsFocus(): String {
 
         val b = StringBuilder()
-        b.append("\n")
-        programParser?.players?.forEach { it ->
-            b.append(it.name)
-            b.append("\n")
-            b.append("--------------")
-            b.append("\n")
-            var hits = 0
-            var total = 0
-            var missed = 0
-            var wrong = 0
-            it.events?.forEach { ev ->
-                if (ev.isFocus) {
-                    total++
-                    if (ev.tapTime > 1)
-                        hits++
-                    else
-                        missed++
-                } else {
-                    if (ev.tapTime > 1)
-                        wrong++
-                }
-            }
-            b.append("Total: $total")
-            b.append(", Hits: $hits")
-            b.append(", Missed: $missed")
-            b.append(", Wrong hits: $wrong")
-            b.append("\n")
-            b.append("\n")
-            b.append("\n")
-        }
+//        b.append("\n")
+//        programParser?.players?.forEach { it ->
+//            b.append(it.name)
+//            b.append("\n")
+//            b.append("--------------")
+//            b.append("\n")
+//            var hits = 0
+//            var total = 0
+//            var missed = 0
+//            var wrong = 0
+//            it.events?.forEach { ev ->
+//                if (ev.isFocus) {
+//                    total++
+//                    if (ev.tapTime > 1)
+//                        hits++
+//                    else
+//                        missed++
+//                } else {
+//                    if (ev.tapTime > 1)
+//                        wrong++
+//                }
+//            }
+//            b.append("Total: $total")
+//            b.append(", Hits: $hits")
+//            b.append(", Missed: $missed")
+//            b.append(", Wrong hits: $wrong")
+//            b.append("\n")
+//            b.append("\n")
+//            b.append("\n")
+//        }
 
         return b.toString()
         // return ""

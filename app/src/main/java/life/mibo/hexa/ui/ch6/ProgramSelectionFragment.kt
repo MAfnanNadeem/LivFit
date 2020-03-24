@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 1/16/20 11:49 AM
+ *  Created by Sumeet Kumar on 3/24/20 10:01 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/16/20 8:27 AM
+ *  Last modified 3/24/20 10:01 AM
  *  Mibo Hexa - app
  */
 
-package life.mibo.hexa.ui.select_program
+package life.mibo.hexa.ui.ch6
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,14 +23,15 @@ import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.events.EventBusEvent
 import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
-import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -39,8 +40,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
-class SelectProgramFragment : BaseFragment() {
+class ProgramSelectionFragment : BaseFragment() {
 
 
     val programs = ArrayList<Program?>()
@@ -61,7 +61,8 @@ class SelectProgramFragment : BaseFragment() {
                 Toasty.info(context!!, "Please select program").show()
                 return@setOnClickListener
             }
-            Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
+            Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(
+                    AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<Program> {
                     override fun onComplete() {
                         log("Observable onComplete")
@@ -282,5 +283,4 @@ class SelectProgramFragment : BaseFragment() {
         navigate(Navigator.CLEAR_HOME, null)
         return false
     }
-
 }

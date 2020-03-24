@@ -96,7 +96,6 @@ class RxlMyPlayFragment : BaseFragment(),
         list.clear()
         list.addAll(programs)
 
-
         adapter = ReflexAdapter(list)
         val manager = LinearLayoutManager(this@RxlMyPlayFragment.activity)
         recyclerView?.layoutManager = manager
@@ -163,6 +162,12 @@ class RxlMyPlayFragment : BaseFragment(),
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return super.onContextItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        recyclerView?.adapter = null
+        adapter = null
+        super.onDestroy()
     }
 
 }

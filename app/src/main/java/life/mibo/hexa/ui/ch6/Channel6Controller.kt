@@ -594,7 +594,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             sendMain = true
         }
         if (sendMain) {
-            Handler().postDelayed({
+            Single.fromCallable {
                 EventBus.getDefault().postSticky(
                     SendMainLevelEvent(
                         SessionManager.getInstance().userSession.user.mainLevel,
@@ -602,7 +602,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     )
                 )
                 log("onMainPlusMinusClicked level " + SessionManager.getInstance().userSession.user.mainLevel)
-            }, 200)
+            }.subscribeOn(Schedulers.io()).delay(200, TimeUnit.MILLISECONDS).subscribe()
+//            Handler().postDelayed({
+//
+//                log("onMainPlusMinusClicked level " + SessionManager.getInstance().userSession.user.mainLevel)
+//            }, 200)
         }
     }
 
@@ -1289,7 +1293,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             override fun onFailure(call: Call<UserDetails>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, "Unable to connect").show()
+                Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
             }
 
             override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {

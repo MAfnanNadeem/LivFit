@@ -104,11 +104,17 @@ abstract class RxlParser(
 
     //var colorSent = false
     var players = ArrayList<RxlPlayer>()
+    //var mapPlayers = SparseArray<RxlPlayer>(4)
     //var devices = ArrayList<Device>()
 
     //var lastPod = 0
     var lastRandom = 0
     //var lastUid = ""
+    fun getPlayers(): Iterator<RxlPlayer> = object : Iterator<RxlPlayer> {
+        var index = 0
+        override fun hasNext() = index < players.size
+        override fun next() = players[index++]
+    }
 
     //private var random: Random? = null
 
@@ -169,7 +175,7 @@ abstract class RxlParser(
             onAllATOnce(event, event.data)
             return
         }
-        log("onEvent RxlStatusEvent2 ${event.data} size: ${players.size}")
+        //log("onEvent RxlStatusEvent2 ${event.data} size: ${players.size}")
         players.forEach {
             if (it.id == event.data) {
                 onNext(it, event)

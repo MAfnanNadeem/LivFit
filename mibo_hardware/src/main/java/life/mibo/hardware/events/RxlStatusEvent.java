@@ -56,7 +56,7 @@ public class RxlStatusEvent {
         return 0;
     }
 
-    private int data;
+    private int data = 0;
 
     public int getData() {
         Logger.e("RxlStatusEvent getData " + Arrays.toString(command));

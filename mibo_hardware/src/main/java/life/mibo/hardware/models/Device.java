@@ -73,6 +73,7 @@ public class Device implements Serializable, BaseModel {
     private String comments = "";
 
     private int active = 1;
+    private int adapterPosition = 0;
 
     private int deviceSessionTimer = 0;
 
@@ -503,6 +504,14 @@ public class Device implements Serializable, BaseModel {
 
 
         }
+    }
+
+    public void setAdapterPosition(int adapterPosition) {
+        this.adapterPosition = adapterPosition;
+    }
+
+    public int getAdapterPosition() {
+        return adapterPosition;
     }
 
     public Object getData() {

@@ -44,7 +44,7 @@ public class MIBO {
         // save to server
     }
 
-    public static void log(Exception msg) {
+    public static void log(Throwable msg) {
         // save to server
 
     }

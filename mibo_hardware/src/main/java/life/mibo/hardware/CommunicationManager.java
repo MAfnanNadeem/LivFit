@@ -50,20 +50,6 @@ import life.mibo.hardware.network.UDPServer;
 import life.mibo.hardware.rxl.RXLManager;
 
 import static java.lang.Thread.sleep;
-import static life.mibo.hardware.constants.Config.ASYNC_PROGRAM_STATUS;
-import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_PAUSE;
-import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_SET_MAIN_LEVEL;
-import static life.mibo.hardware.constants.Config.COMMAND_ASYNC_START;
-import static life.mibo.hardware.constants.Config.COMMAND_DEVICE_STATUS_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_FIRMWARE_REVISION_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_PING_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_RESET_CURRENT_CYCLE_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_SET_CHANNELS_LEVELS_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_SET_MAIN_LEVEL_RESPONSE;
-import static life.mibo.hardware.constants.Config.COMMAND_START_CURRENT_CYCLE_RESPONSE;
 import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
 import static life.mibo.hardware.constants.Config.RXL_TAP_EVENT;
 import static life.mibo.hardware.constants.Config.TCP_PORT;
@@ -99,7 +85,7 @@ public class CommunicationManager {
     private static CommunicationManager manager;
     private ArrayList<TCPClient> tcpClients = new ArrayList<>();
     private UDPServer udpServer;
-    private BluetoothManager bluetoothManager;
+    private BluetoothManager2 bluetoothManager;
     //public ScaleManager scaleManager;
     private HashMap<String, Device> mDiscoveredDevices = new HashMap<String, Device>();
     //private Activity activity;
@@ -152,7 +138,7 @@ public class CommunicationManager {
                     }
                     if (bluetoothManager != null) {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
-                            log("PingThread bluetoothManager sendMessage");
+                            log("PingThread bluetoothManager " + bluetoothManager + " sendMessage " + d);
                             if (d.getName() != null) {
                                 if (d.getName().contains("MBRXL")) {
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
@@ -361,7 +347,7 @@ public class CommunicationManager {
 
         //TODO: Change to not overwrite the current one if its initialized and only start discovery
         if (bluetoothManager == null) {
-            bluetoothManager = new BluetoothManager(context);
+            bluetoothManager = new BluetoothManager2(context);
             bluetoothManager.initBlueTooth();
         }
         //bluetoothManager.initBlueTooth();
@@ -769,14 +755,6 @@ public class CommunicationManager {
             }
             break;
 
-            case RXT_WIFI: {
-                log("RXT_WIFI connect " + device.getIp());
-                connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), DataParser.RXT);
-                SessionManager.getInstance().getUserSession().addDevice(device);
-                device.setStatusConnected(DEVICE_CONNECTING);
-            }
-            break;
-
             case RXL_BLE: {
                 log("connectDevice RXL_BLE " + bluetoothManager);
                 if (bluetoothManager != null) {
@@ -790,6 +768,13 @@ public class CommunicationManager {
             }
             break;
 
+            case RXT_WIFI: {
+                log("RXT_WIFI connect " + device.getIp());
+                connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), DataParser.RXT);
+                SessionManager.getInstance().getUserSession().addDevice(device);
+                device.setStatusConnected(DEVICE_CONNECTING);
+            }
+            break;
             case HR_MONITOR: {
                 //stopDiscoveryServers();
                 if (bluetoothManager != null)

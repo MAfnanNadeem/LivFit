@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import kotlin.jvm.Synchronized;
 import life.mibo.hardware.bluetooth.BleGattManager;
@@ -34,11 +35,6 @@ import life.mibo.hardware.bluetooth.operations.GattSetNotificationOperation;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
 import life.mibo.hardware.encryption.Encryption;
-import life.mibo.hardware.fastble.BleManager;
-import life.mibo.hardware.fastble.callback.BleReadCallback;
-import life.mibo.hardware.fastble.callback.BleScanAndConnectCallback;
-import life.mibo.hardware.fastble.callback.BleWriteCallback;
-import life.mibo.hardware.fastble.exception.BleException;
 import life.mibo.hardware.models.BleDevice;
 
 /**
@@ -53,7 +49,7 @@ public class BluetoothManager {
     private ArrayList<BluetoothDevice> devicesRxl;
     private ArrayList<BluetoothDevice> devicesHRBle;
     private ArrayList<BluetoothDevice> devicesScaleBle;
-    private ArrayList<BluetoothDevice> devicesConnectedBle;
+    private HashMap<String, BluetoothDevice> devicesConnectedBle;
     private ArrayList<BluetoothDevice> devices;
 
     private static final long SCAN_PERIOD = 5000;
@@ -223,9 +219,9 @@ public class BluetoothManager {
         return devicesBoosterBle;
     }
 
-    private ArrayList<BluetoothDevice> getDevicesConnectedBle() {
+    private HashMap<String, BluetoothDevice> getDevicesConnectedBle() {
         if (devicesConnectedBle == null) {
-            devicesConnectedBle = new ArrayList<>();
+            devicesConnectedBle = new HashMap<>();
         }
         return devicesConnectedBle;
     }
@@ -264,7 +260,7 @@ public class BluetoothManager {
     private int rxlCount() {
         int count = 0;
         if (devicesConnectedBle.size() > 0) {
-            for (BluetoothDevice d : devicesConnectedBle) {
+            for (BluetoothDevice d : devicesConnectedBle.values()) {
                 if (d.getName().contains("MBRXL"))
                     count++;
             }
@@ -293,7 +289,7 @@ public class BluetoothManager {
 
     public boolean contains(String uid) {
         if (devicesBoosterBle != null && devicesBoosterBle.size() > 0) {
-            for (BluetoothDevice t : devicesConnectedBle) {
+            for (BluetoothDevice t : devicesConnectedBle.values()) {
                 if (t.getName() != null)
                     return t.getName().contains(uid);
             }
@@ -407,7 +403,7 @@ public class BluetoothManager {
 
     public void connectHrGattDevice(String Id) {
         boolean newDevice = true;
-        for (BluetoothDevice t : devicesConnectedBle) {
+        for (BluetoothDevice t : devicesConnectedBle.values()) {
             if (t.toString().equals(Id)) {
                 newDevice = false;
             }
@@ -415,7 +411,7 @@ public class BluetoothManager {
         if (newDevice) {
             for (BluetoothDevice d : devicesHRBle) {
                 if (d.toString().equals(Id)) {
-                    devicesConnectedBle.add(d);
+                    devicesConnectedBle.put(d.getName(), d);
 
 
                     getGattManager().queue(new GattSetNotificationOperation(d,
@@ -456,7 +452,7 @@ public class BluetoothManager {
     void connectMIBOBoosterGattDevice(String Id) {
         log("connectMIBOBoosterGattDevice " + Id);
         boolean newDevice = true;
-        for (BluetoothDevice t : devicesConnectedBle) {
+        for (BluetoothDevice t : devicesConnectedBle.values()) {
             if (t.getName() != null)
                 if (t.getName().contains(Id)) {
                     newDevice = false;
@@ -466,7 +462,7 @@ public class BluetoothManager {
             for (BluetoothDevice d : devicesBoosterBle.values()) {
                 if (d.getName() != null)
                     if (d.getName().contains(Id)) {
-                        devicesConnectedBle.add(d);
+                        devicesConnectedBle.put(d.getName(), d);
 
                         getGattManager().queue(new GattCharacteristicWriteOperation(d,
                                 BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID,
@@ -486,6 +482,24 @@ public class BluetoothManager {
 
     }
 
+    public boolean isConnected(BluetoothDevice device) {
+        try {
+            android.bluetooth.BluetoothManager manager = (android.bluetooth.BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+            List<BluetoothDevice> devices = manager.getConnectedDevices(BluetoothProfile.GATT);
+            for (BluetoothDevice ble : devices) {
+                if (ble.getName().equalsIgnoreCase(device.getName()))
+                    return true;
+            }
+
+        } catch (Exception e) {
+            //return false;
+        }
+        return false;
+//        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//        return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()
+//                && mBluetoothAdapter.getProfileConnectionState(BluetoothHeadset.GATT) == BluetoothHeadset.STATE_CONNECTED;
+    }
+
     void connectRXLGattDevice(String Id) {
         log("connectRXLGattDevice id " + Id);
 //        if (isTest) {
@@ -493,11 +507,15 @@ public class BluetoothManager {
 //            return;
 //        }
         boolean newDevice = true;
-        for (BluetoothDevice t : devicesConnectedBle) {
+        for (BluetoothDevice t : devicesConnectedBle.values()) {
             if (t.getName() != null)
                 if (t.getName().contains(Id)) {
-                    newDevice = false;
+                    if (isConnected(t))
+                        newDevice = false;
                 }
+        }
+        if (!newDevice) {
+
         }
         log("connectRXLGattDevice newDevice " + newDevice + " size:" + devicesBoosterBle.size());
         if (newDevice) {
@@ -507,7 +525,8 @@ public class BluetoothManager {
                         log("connectRXLGattDevice name: " + d.getName());
                         if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
                             log("connectRXLGattDevice matched " + d.getName());
-                            devicesConnectedBle.add(d);
+                            // devicesConnectedBle.add(d);
+                            devicesConnectedBle.put(d.getName(), d);
 
                             // Not work with MIBO_RXL_SERVICE_CHAR_UUID , MIBO_RXL_TRANSMISSION_CHAR_UUID
 //                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
@@ -542,7 +561,8 @@ public class BluetoothManager {
                         log("connectRXLGattDevice name: " + d.getName());
                         if (d.getName().toLowerCase().contains(Id.toLowerCase())) {
                             log("connectRXLGattDevice matched ");
-                            devicesConnectedBle.add(d);
+                            // devicesConnectedBle.add(d);
+                            devicesConnectedBle.put(d.getName(), d);
 
                             // Not work with MIBO_RXL_SERVICE_CHAR_UUID , MIBO_RXL_TRANSMISSION_CHAR_UUID
 //                        getGattManager().queue(new GattCharacteristicWriteOperation(d,
@@ -652,20 +672,20 @@ public class BluetoothManager {
     int disconnectMIBOBoosterGattDevice(String Id) {
         log("disconnectMIBOBoosterGattDevice " + Id);
 
-        int aux = -1;
-        for (BluetoothDevice d : devicesConnectedBle) {
-            if(d.getName() != null){
-                if (d.getName().contains(Id)) {
-                    getGattManager().queue(new GattDisconnectOperation(d));
-                    aux = devicesConnectedBle.indexOf(d);
+        String aux = "";
+        for (Map.Entry<String, BluetoothDevice> d : devicesConnectedBle.entrySet()) {
+            if (d.getValue().getName() != null) {
+                if (d.getValue().getName().contains(Id)) {
+                    getGattManager().queue(new GattDisconnectOperation(d.getValue()));
+                    aux = d.getKey();
                     //devicesConnectedBle.remove(d);
                 }
             }
 
         }
-        if (aux != -1)
+        if (aux.length() > 1)
             devicesConnectedBle.remove(aux);
-        return aux;
+        return 0;
     }
 
     void disconnectHrGattDevice(String Id) {
@@ -680,9 +700,9 @@ public class BluetoothManager {
 
     ArrayList<BluetoothDevice> getConnectedBleDevices() {
         if (devicesConnectedBle == null)
-            devicesConnectedBle = new ArrayList<>();
+            devicesConnectedBle = new HashMap<>();
             //devicesBoosterBle = new ArrayList<>();
-        return devicesConnectedBle;
+        return new ArrayList<>(devicesConnectedBle.values());
     }
 
 

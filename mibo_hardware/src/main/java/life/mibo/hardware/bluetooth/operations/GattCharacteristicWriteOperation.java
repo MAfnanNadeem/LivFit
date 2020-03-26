@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.os.RemoteException;
 
 import java.util.UUID;
 
@@ -39,7 +40,14 @@ public class GattCharacteristicWriteOperation extends GattOperation {
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(mCharacteristic);
             characteristic.setValue(mValue);
             gatt.writeCharacteristic(characteristic);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            if(e instanceof RemoteException){
+//                BluetoothGattService service = gatt.getService(mService);
+//                service.disconnect();
+//                service.close();
+//                mBluetoothLeService.stopSelf();
+//                connectBleservice();
+            }
             MIBO.log("GattCharacteristicWriteOperation execute error");
             MIBO.log(e);
         }

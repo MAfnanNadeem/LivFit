@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.hexa"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10
-        versionName "0.0.10"
+        versionCode 12
+        versionName "0.0.12"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -91,6 +91,7 @@ dependencies {
     implementation "androidx.transition:transition:1.3.1"
     //implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.kroegerama:barcode-kaiteki:1.1.1'
+    implementation 'com.danikula:videocache:2.7.1'
 
     //    implementation 'com.journeyapps:zxing-android-embedded:4.0.2'
     // had issues in library so directly imported int to life.mibo.views.progressbutton

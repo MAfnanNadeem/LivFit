@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
@@ -30,6 +31,7 @@ import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
+import life.mibo.hexa.ui.ch6.adapter.ProgramAdapter
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
@@ -47,50 +49,46 @@ class ProgramSelectionFragment : BaseFragment() {
     var isProgram = false
     val stateBundle = Bundle()
 
+    //private var programDialog: ProgramDialog? = null
+    private var colorDialog: ProgramDialog? = null
+    var programAdapter: ProgramAdapter? = null
+
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
         super.onCreateView(i, c, s)
         log("onCreateView $arguments")
         return i.inflate(R.layout.fragment_select_program, c, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated $arguments")
         button_next?.setOnClickListener {
-            if (program == null) {
-                Toasty.info(context!!, "Please select program").show()
-                return@setOnClickListener
-            }
-            Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(
-                    AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<Program> {
-                    override fun onComplete() {
-                        log("Observable onComplete")
-                        navigate(Navigator.SESSION, stateBundle)
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                        log("Observable onSubscribe")
-                    }
-
-                    override fun onNext(t: Program) {
-                        log("Observable onNext $t")
-                        SessionManager.getInstance().userSession.program = t.create()
-                        Prefs.get(context).settJson("user_program", t)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        log("Observable onError $e")
-                    }
-
-                })
+          onNextClicked()
         }
         button_next?.isEnabled = false
         loadPrograms()
-        select_program?.setOnClickListener {
-            programDialog?.showPrograms()
-            //checkDialog()
-        }
+        programAdapter = ProgramAdapter(programs, object : ItemClickListener<Program> {
+            override fun onItemClicked(item: Program?, position: Int) {
+                item?.name?.let {
+                    isProgram = true
+                    program = item
+                    //select_program.text = it
+                    button_next.isEnabled = true
+                    //stateBundle.putParcelable("program_data", item)
+                    stateBundle.putString("program_name", it)
+                }
+            }
+
+        })
+        recyclerView?.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView?.adapter = programAdapter
+//        select_program?.setOnClickListener {
+//            programDialog?.showPrograms()
+//            //checkDialog()
+//        }
+
 
         select_color?.setOnClickListener {
             colorDialog?.showColors()
@@ -100,8 +98,37 @@ class ProgramSelectionFragment : BaseFragment() {
     }
 
 
-    private var programDialog: ProgramDialog? = null
-    private var colorDialog: ProgramDialog? = null
+    private fun onNextClicked(){
+        if (program == null) {
+            Toasty.info(context!!, "Please select program").show()
+            return
+        }
+        Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(
+                AndroidSchedulers.mainThread())
+            .subscribe(object : Observer<Program> {
+                override fun onComplete() {
+                    log("Observable onComplete")
+                    navigate(Navigator.SESSION, stateBundle)
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    log("Observable onSubscribe")
+                }
+
+                override fun onNext(t: Program) {
+                    log("Observable onNext $t")
+                    SessionManager.getInstance().userSession.program = t.create()
+                    Prefs.get(context).settJson("user_program", t)
+                }
+
+                override fun onError(e: Throwable) {
+                    log("Observable onError $e")
+                }
+
+            })
+    }
+
+
 
     private fun loadProgramObservables() {
         Single.fromCallable {
@@ -148,6 +175,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
     var program: Program? = null
     private fun parse(list: ArrayList<Program?>?) {
+        log("Parse Programs ${list?.size}")
         if (list == null)
             return
 
@@ -155,6 +183,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
         programs.clear()
         programs.addAll(list)
+        programAdapter?.notifyDataSetChanged()
         //spinner_program.adapter = ProgramSpinnerAdapter(programs, null);
 //        spinner_program.adapter = ProgramArrayAdapter(
 //            this.requireContext(),
@@ -174,21 +203,21 @@ class ProgramSelectionFragment : BaseFragment() {
 //            e.printStackTrace()
 //        }
 
-        programDialog = ProgramDialog(context!!, programs, object : ItemClickListener<Program> {
-
-            override fun onItemClicked(item: Program?, position: Int) {
-                // Toasty.info(context!!, "$position").show()
-                item?.name?.let {
-                    isProgram = true
-                    program = item
-                    select_program.text = it
-                    button_next.isEnabled = true
-                    //stateBundle.putParcelable("program_data", item)
-                    stateBundle.putString("program_name", it)
-                }
-            }
-
-        }, ProgramDialog.PROGRAMS)
+//        programDialog = ProgramDialog(context!!, programs, object : ItemClickListener<Program> {
+//
+//            override fun onItemClicked(item: Program?, position: Int) {
+//                // Toasty.info(context!!, "$position").show()
+//                item?.name?.let {
+//                    isProgram = true
+//                    program = item
+//                    select_program.text = it
+//                    button_next.isEnabled = true
+//                    //stateBundle.putParcelable("program_data", item)
+//                    stateBundle.putString("program_name", it)
+//                }
+//            }
+//
+//        }, ProgramDialog.PROGRAMS)
 
         colorDialog =
             ProgramDialog(context!!, ArrayList(), object : ItemClickListener<Program> {
@@ -261,12 +290,14 @@ class ProgramSelectionFragment : BaseFragment() {
             prg?.name?.let {
                 isProgram = true
                 program = prg
-                select_program.text = it
+                programAdapter?.select(prg?.id)
+                //select_program.text = it
                 button_next.isEnabled = true
                 stateBundle.putString("program_name", it)
             }
         }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -278,9 +309,9 @@ class ProgramSelectionFragment : BaseFragment() {
         super.onStop()
     }
 
-    override fun onBackPressed(): Boolean {
-        log("onBackPressed")
-        navigate(Navigator.CLEAR_HOME, null)
-        return false
-    }
+//    override fun onBackPressed(): Boolean {
+//        log("onBackPressed")
+//       // navigate(Navigator.CLEAR_HOME, null)
+//        return false
+//    }
 }

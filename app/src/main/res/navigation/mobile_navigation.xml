@@ -105,7 +105,12 @@
  <fragment
         android:id="@+id/navigation_select_muscles"
         android:name="life.mibo.hexa.ui.ch6.MuscleSelectionFragment"
-        android:label="@string/select_program"
+     android:label="@string/select_channels"
+        tools:layout="@layout/fragment_weight" />
+    <fragment
+        android:id="@+id/navigation_select_suit"
+        android:name="life.mibo.hexa.ui.ch6.SuitSelectionFragment"
+        android:label="@string/select_suit"
         tools:layout="@layout/fragment_weight" />
 
     <!-- RXL -->

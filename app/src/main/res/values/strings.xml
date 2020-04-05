@@ -114,6 +114,8 @@
     <string name="scan_product_title">Scan the Product</string>
     <string name="heart_rate">Heart Rate</string>
     <string name="weight">Weight</string>
+    <string name="select_channels">Select Channels</string>
+    <string name="select_suit">Select Suit</string>
     <string name="select_program">Select Program</string>
     <string name="connect">Connect</string>
     <string name="connect_all">Connect All</string>
@@ -199,5 +201,7 @@
     <string name="logic_not_supported">Selected logic not supported</string>
     <string name="my_muscle">My Muscle</string>
     <string name="presets">Presets</string>
+    <string name="_6_channels">6 Channels</string>
+    <string name="start_session">Start Session</string>
 
 </resources>

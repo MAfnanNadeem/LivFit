@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_horizontal"
+    android:layout_margin="2dp"
     android:paddingStart="8dp"
     android:paddingEnd="8dp">
 
@@ -13,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="88dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_channel_glutes"
+        tools:src="@drawable/ic_channel_glutes"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.3" />
@@ -27,13 +29,12 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_minus_hexa"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tv_perc"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_muscle"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.15" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_perc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -43,7 +44,7 @@
         android:inputType="numberDecimal"
         android:maxLines="1"
         android:padding="@dimen/grid_1x"
-        android:text="25 %"
+        tools:text="25 %"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +67,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tv_perc"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.15" />
 

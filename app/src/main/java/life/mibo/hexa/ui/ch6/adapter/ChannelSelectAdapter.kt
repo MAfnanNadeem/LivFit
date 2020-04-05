@@ -11,24 +11,30 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
+import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.models.muscle.Muscle
 import life.mibo.hexa.ui.base.ItemClickListener
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.log
 
 
 class ChannelSelectAdapter(
-    var list: ArrayList<Item>?,
-    val type: Int = 0
+    var list: ArrayList<Muscle>?,
+    val type: Int = 0, var listener: ItemClickListener<Muscle>?
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     //var list: ArrayList<Item>? = null
-    private var listener: ItemClickListener<Item>? = null
+    // private var listener: ItemClickListener<Item>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (type == 2)
@@ -48,9 +54,6 @@ class ChannelSelectAdapter(
         )
     }
 
-    fun setListener(listener: ItemClickListener<Item>) {
-        this.listener = listener
-    }
 
     override fun getItemCount(): Int {
         if (list != null)
@@ -58,7 +61,7 @@ class ChannelSelectAdapter(
         return 0
     }
 
-    private fun getItem(position: Int): Item? {
+    private fun getItem(position: Int): Muscle? {
         return list?.get(position)
     }
 
@@ -75,22 +78,60 @@ class ChannelSelectAdapter(
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
     }
 
-    fun update(newList: ArrayList<Item>) {
+    fun update(item: Muscle) {
+        if (list == null)
+            return
+        var add = true
+        var pos = 0;
+        val iterator = list!!.iterator()
+        while (iterator.hasNext()) {
+            val it = iterator.next()
+            if (it.position == item.position) {
+                add = false;
+                iterator.remove()
+                notifyItemRemoved(pos)
+                return
+            }
+            pos++
 
+        }
+
+        if (add) {
+            list!!.add(item)
+            notifyItemInserted(list!!.size)
+        }
     }
+
+    fun update(newList: Collection<Muscle>?) {
+        if (newList == null)
+            return
+        if (list == null)
+            list = ArrayList();
+        list!!.clear()
+        list!!.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun append(newList: Collection<Muscle>) {
+        if (list == null)
+            list = ArrayList();
+        list!!.addAll(newList)
+        notifyDataSetChanged()
+    }
+
 
     class MuscleHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // var text: TextView? = itemView.findViewById(R.id.test_text)
         var image: ImageView? = itemView.findViewById(R.id.iv_muscle)
+        var imageBg: View? = itemView.findViewById(R.id.iv_muscle_select)
         var odd: View? = itemView.findViewById(R.id.iv_muscle1)
         var even: View? = itemView.findViewById(R.id.iv_muscle2)
         var isSelected = false;
 
-        fun bind(position: Int, item: Item?, listener: ItemClickListener<Item>?) {
+        fun bind(position: Int, item: Muscle?, listener: ItemClickListener<Muscle>?) {
             if (item == null)
                 return
-
-            image?.setBackgroundResource(item.imageRes)
+            image?.load(item.image)
             if (position % 2 == 0) {
                 odd?.visibility = View.GONE
                 even?.visibility = View.VISIBLE
@@ -101,6 +142,11 @@ class ChannelSelectAdapter(
 
             image?.setOnClickListener {
                 item.isSelected = item.isSelected.not()
+                if (item.isSelected)
+                    imageBg?.visibility = View.VISIBLE
+                else
+                    imageBg?.visibility = View.INVISIBLE
+
                 listener?.onItemClicked(item, adapterPosition)
             }
         }
@@ -109,48 +155,40 @@ class ChannelSelectAdapter(
     class ChanelHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // var text: TextView? = itemView.findViewById(R.id.test_text)
         var image: AppCompatImageView? = itemView.findViewById(R.id.iv_muscle)
-        var perc: TextView? = itemView.findViewById(R.id.et_perc)
+        var perc: EditText? = itemView.findViewById(R.id.et_perc)
         var minusBtn: AppCompatImageButton? = itemView.findViewById(R.id.button_minus)
         var plusBtn: AppCompatImageButton? = itemView.findViewById(R.id.button_plus)
-        var data: Item? = null;
+        var data: Muscle? = null;
 
-        fun bind(item: Item?, listener: ItemClickListener<Item>?) {
+        fun bind(item: Muscle?, listener: ItemClickListener<Muscle>?) {
             if (item == null)
                 return
             data = item;
 
-            image?.setBackgroundResource(item.imageRes);
+            image?.load(item.image)
+            perc?.setText("${item.value} %")
+            perc?.keyListener = null
+//            perc?.addTextChangedListener {
+//                Logger.e("addTextChangedListener $it")
+//            }
+            //image?.setImageResource(item.imageRes)
             //image?.setBackgroundResource(item.imageRes)
             minusBtn?.setOnClickListener {
                 if (item.value > 0) {
                     item?.decValue()
-                    perc?.text = "${item.value} %"
+                    perc?.setText("${item.value} %")
                 }
             }
 
             plusBtn?.setOnClickListener {
                 if (item.value < 50) {
                     item?.incValue()
-                    perc?.text = "${item.value} %"
+                    perc?.setText("${item.value} %")
                 }
             }
 
-            perc?.text = "${item.value} %"
+           // perc?.text = "${item.value} %"
 
-        }
-    }
-
-    data class Item(var position: Int, var imageRes: Int) {
-
-        var isSelected = false
-        var value: Int = 25
-
-        fun incValue() {
-            value += 1
-        }
-
-        fun decValue() {
-            value -= 1
         }
     }
 }

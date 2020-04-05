@@ -13,38 +13,14 @@
 
 
     <RelativeLayout
-        android:id="@+id/relativeLayout2"
+        android:id="@+id/rl_color"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_4x"
+        android:layout_marginTop="@dimen/grid_2x"
         android:background="@drawable/program_sppiner_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.75">
-
-        <TextView
-            android:id="@+id/select_program"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:padding="12dp"
-            android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
-            android:drawableTint="@color/white"
-            android:text="@string/select_program"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_4x"
-        android:background="@drawable/program_sppiner_item"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
         app:layout_constraintWidth_percent="0.75">
 
         <life.mibo.views.CircleView
@@ -71,14 +47,29 @@
             android:textSize="18sp" />
     </RelativeLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/grid_1x"
+        app:layout_constraintBottom_toTopOf="@id/button_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rl_color" />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_next"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_1x"
-        android:text="Start Session"
+        android:background="@drawable/button_shape_rounded"
+        android:text="@string/start_session"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.8" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

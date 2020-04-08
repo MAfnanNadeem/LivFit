@@ -1,6 +1,7 @@
 package life.mibo.hardware.core;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.io.BufferedWriter;
@@ -17,7 +18,7 @@ import java.util.logging.Level;
 import life.mibo.hardware.MIBO;
 
 public class Logger {
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = true;
     private static final String TAG = "MIBO-LIFE";
     //Timber Log =  Timber.d();
 
@@ -43,6 +44,24 @@ public class Logger {
     public static void e(String msg, Throwable t) {
         if (DEBUG)
             Log.e(TAG, msg, t);
+    }
+
+    public static void e(String msg, Bundle b) {
+        if (DEBUG) {
+            Log.e(TAG, msg + " :: " + getString(b));
+        }
+    }
+
+    public static String getString(Bundle bundle) {
+        if (bundle == null) {
+            return "NULL";
+        }
+        StringBuilder builder = new StringBuilder("Bundle{");
+        for (String key : bundle.keySet()) {
+            builder.append(" ").append(key).append(" => ").append(bundle.get(key)).append(";");
+        }
+        builder.append(" }");
+        return builder.toString();
     }
 
     public static void e(String tag, String msg, Throwable t) {

@@ -25,7 +25,7 @@ import java.util.concurrent.Callable
 
 @androidx.room.Database(
     entities = [Member::class, Device::class, UserDetails::class, Program::class, RxlProgram::class],
-    version = 14,
+    version = 15,
     exportSchema = false
 )
 @TypeConverters(Converters::class, ProgramConverter::class)

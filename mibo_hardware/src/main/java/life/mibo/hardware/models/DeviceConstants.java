@@ -12,6 +12,7 @@ public class DeviceConstants {
     public static final int DEVICE_DISCONNECTED = 4;
     public static final int DEVICE_DISCOVERED = 5;
     public static final int DEVICE_CONNECTING = 6;
+    public static final int DEVICE_FAILED = 10;
 
 
     public static final int DEVICE_ALARM_DISCONNECTED = 400;

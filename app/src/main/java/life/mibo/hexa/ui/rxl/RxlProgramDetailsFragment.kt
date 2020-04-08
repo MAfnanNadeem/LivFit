@@ -18,9 +18,11 @@ import coil.api.load
 import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.models.Device
+import life.mibo.hexa.BuildConfig
 import life.mibo.hexa.R
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
+import life.mibo.hexa.ui.main.MiboApplication
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Constants
 

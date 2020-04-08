@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
@@ -43,7 +44,7 @@ public class UserSession implements BaseModel {
     private int currentSessionTimer = 0;
     private static CountDownTimer cTimer = null;
 
-    private ArrayList<Device> registeredDevices = new ArrayList<>();
+    //private ArrayList<Device> registeredDevices = new ArrayList<>();
 
     private ArrayList<Device> connectedDevices = new ArrayList<>();
     private BluetoothDevice connectedScale;
@@ -132,52 +133,28 @@ public class UserSession implements BaseModel {
     }
 
 
-    public ArrayList<Device> getRegisteredDevices() {
-        return registeredDevices;
-    }
 
-    public void addRegisteredDevice(Device device) {
-        boolean newDevice = true;
-        for (Device d : registeredDevices) {
-            if (d.getUid().equals(device.getUid())) {
-                newDevice = false;
-            }
-        }
-        if (newDevice) {
-            this.registeredDevices.add(device);
-        }
-    }
 
-    public void removeRegisteredDevice(Device device) {
-        if (registeredDevices != null) {
-            int aux = -1;
-            for (Device t : registeredDevices) {
-                if (t.getUid().equals(device.getUid())) {
-                    aux = registeredDevices.indexOf(t);
-                }
-            }
-            if (aux != -1)
-                registeredDevices.remove(aux);
-        }
-    }
-
-    private Device getRegisteredDevicebyUid(String uid) {
-        //boolean newDevice = true;
-        for (Device d : registeredDevices) {
-            if (d.getUid().equals(uid)) {
-                return d;
-            }
-        }
-
-        return new Device();
-    }
 
     public void setDeviceStatus(String uid, int status) {
         //boolean newDevice = true;
         Logger.e("UserSession: setDeviceStatus " + uid + " : status " + status);
-        for (Device d : registeredDevices) {
+        for (Device d : connectedDevices) {
             if (d.getUid().equals(uid)) {
                 d.setStatusConnected(status);
+                break;
+            }
+        }
+    }
+
+    public void setDeviceStatusByName(String name, int status) {
+        if (name == null)
+            return;
+        //boolean newDevice = true;
+        for (Device d : connectedDevices) {
+            if (name.contains(d.getUid())) {
+                d.setStatusConnected(status);
+                Logger.e("UserSession: FastBle DeviceStatus " + name + " : status " + status);
                 break;
             }
         }
@@ -186,7 +163,7 @@ public class UserSession implements BaseModel {
     public boolean setDeviceAlarm(String uid, byte[] command) {
         //boolean newDevice = true;
         Logger.e("UserSession: setDeviceAlarm " + uid + " : status " + command);
-        for (Device d : registeredDevices) {
+        for (Device d : connectedDevices) {
             if (d.getUid().equals(uid)) {
                 return d.setNewDeviceChannelAlarms(DataParser.getChannelAlarms(command));
             }
@@ -198,7 +175,7 @@ public class UserSession implements BaseModel {
     public boolean[] getDeviceAlarm(String uid) {
         //boolean newDevice = true;
         Logger.e("UserSession: getDeviceAlarm " + uid + " : status " );
-        for (Device d : registeredDevices) {
+        for (Device d : connectedDevices) {
             if (d.getUid().equals(uid)) {
                 return d.getDeviceChannelAlarms();
             }
@@ -207,9 +184,6 @@ public class UserSession implements BaseModel {
         return new boolean[]{false, false, false, false, false, false, false, false, false, false};
     }
 
-    public void setRegisteredDevices(ArrayList<Device> registeredDevices) {
-        this.registeredDevices = registeredDevices;
-    }
 
     public ArrayList<Device> getDevices() {
         return connectedDevices;
@@ -629,7 +603,6 @@ public class UserSession implements BaseModel {
                 ", currentSessionMainLevelMultiplier=" + currentSessionMainLevelMultiplier +
                 ", currentSessionStatus=" + currentSessionStatus +
                 ", currentSessionTimer=" + currentSessionTimer +
-                ", registeredDevices=" + registeredDevices +
                 ", connectedDevices=" + connectedDevices +
                 ", connectedScale=" + connectedScale +
                 ", boosterMode=" + boosterMode +

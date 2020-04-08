@@ -1,9 +1,12 @@
 package life.mibo.hexa.ui.ch6.adapter
 
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.api.load
 import life.mibo.hexa.R
+import life.mibo.hexa.models.muscle.Muscle
 import life.mibo.views.PlayButton
 
 class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -11,20 +14,26 @@ class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var percentChannel: TextView? = itemView.findViewById(R.id.tv_perc_main_channel)
     var percent: TextView? = itemView.findViewById(R.id.tv_perc)
     var view: View? = itemView.findViewById(R.id.view)
-    var image: View? = itemView.findViewById(R.id.iv_device)
+    var image: ImageView? = itemView.findViewById(R.id.iv_device)
     var plus: View? = itemView.findViewById(R.id.button_plus)
     var minus: View? = itemView.findViewById(R.id.button_minus)
     var play: PlayButton? = itemView.findViewById(R.id.button_start)
+    var item_view: View? = itemView.findViewById(R.id.itemView)
     // var hexa: HexagonImageView? = itemView.findViewById(R.id.test_image_hexa)
-    var data: Channel6Model? = null
+    var data: Muscle? = null
 
-    fun bind(item: Channel6Model?, listener: Channel6Listener?) {
+    fun bind(item: Muscle?, listener: Channel6Listener?) {
         if (item == null)
             return
         data = item
-        percent?.text = "${item.percentMain} %"
-        percentChannel?.text = "${item.percentChannel} %"
-        image?.setBackgroundResource(item.image)
+        percent?.text = "${item.mainValue} %"
+        percentChannel?.text = "${item.channelValue} %"
+        if (adapterPosition % 2 == 0)
+            item_view?.setBackgroundColor(0xffdddddd.toInt())
+        else item_view?.setBackgroundColor(0xffffffff.toInt())
+
+        //image?.setBackgroundResource(item.image)
+        image?.load(item.image)
         play?.isChecked = item.isPlay
 
         play?.setOnClickListener {
@@ -39,5 +48,6 @@ class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         plus?.setOnClickListener {
             listener?.onPlusClicked(item)
         }
+
     }
 }

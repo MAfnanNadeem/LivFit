@@ -276,4 +276,11 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
     private fun notifyListeners(fromUser: Boolean) {
         dropListeners?.onDrop(dropState, fromUser)
     }
+
+    fun dispose() {
+        toolbar = null
+        backLayout = null
+        frontLayout = null
+        dropListeners = null
+    }
 }

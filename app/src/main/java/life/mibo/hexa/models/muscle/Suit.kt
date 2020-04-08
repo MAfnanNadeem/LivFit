@@ -37,11 +37,11 @@ data class Suit(
     var quadriceps: Int?,
     @SerializedName("shoulders")
     var shoulders: Int?,
-    @SerializedName("suit_description")
+    @SerializedName("description")
     var suitDescription: String?,
     @SerializedName("suit_model")
     var suitModel: Any?,
-    @SerializedName("suit_name")
+    @SerializedName("name")
     var suitName: String?,
     @SerializedName("type")
     var type: String?,

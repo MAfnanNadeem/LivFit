@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_reactions.*
+import kotlinx.android.synthetic.main.fragment_rxl_backdrop.*
 import life.mibo.hexa.R
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseFragment
@@ -30,7 +31,7 @@ class RxlQuickPlayFragment : BaseFragment(),
     ReactionObserver {
 
 
-    private lateinit var rxl: RxlViewModel
+   // private lateinit var rxl: RxlViewModel
     private lateinit var controller: ReactionLightController
     var recycler: RecyclerView? = null
 
@@ -65,13 +66,13 @@ class RxlQuickPlayFragment : BaseFragment(),
 
         controller = ReactionLightController(this, this)
         //ViewModelProvider(this).get(RxlViewModel::class.java)
-        rxl = ViewModelProvider(this).get(RxlViewModel::class.java)
+        //rxl = ViewModelProvider(this).get(RxlViewModel::class.java)
         // rxl = ViewModelProviders.of(this).get(RxlViewModel::class.java)d
 
         recycler = root.findViewById(R.id.recyclerView)
-        rxl.text.observe(this.viewLifecycleOwner, Observer {
-            //    textView.text = ""//it
-        })
+//        rxl.text.observe(this.viewLifecycleOwner, Observer {
+//            //    textView.text = ""//it
+//        })
 
         val types = arguments?.getSerializable(Constants.BUNDLE_DATA)
 
@@ -279,11 +280,28 @@ class RxlQuickPlayFragment : BaseFragment(),
         return super.onContextItemSelected(item)
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onStop() {
+        recyclerView?.adapter = null
+        backdropBehavior?.dispose()
+        controller?.dispose(frontLayout)
+        super.onStop()
+    }
+
     override fun onDestroy() {
         recycler?.adapter = null
         adapter = null
         super.onDestroy()
     }
+
+
 
 }
 

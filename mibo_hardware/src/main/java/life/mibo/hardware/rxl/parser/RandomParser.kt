@@ -94,7 +94,7 @@ class RandomParser(program: RxlProgram, listener: Listener) :
 
 
     private fun nextRandomLight(player: RxlPlayer) {
-        log("child lightOnSequence $player")
+        log("child lightOnRandom $player")
 
         val id = player.nextRandom()
         val pod = player.pods[id]

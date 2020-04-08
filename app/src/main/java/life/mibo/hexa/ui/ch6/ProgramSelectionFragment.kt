@@ -47,7 +47,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
     val programs = ArrayList<Program?>()
     var isProgram = false
-    val stateBundle = Bundle()
+    var stateBundle = Bundle()
 
     //private var programDialog: ProgramDialog? = null
     private var colorDialog: ProgramDialog? = null
@@ -55,14 +55,16 @@ class ProgramSelectionFragment : BaseFragment() {
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
         super.onCreateView(i, c, s)
-        log("onCreateView $arguments")
+        // log("onCreateView $arguments")
         return i.inflate(R.layout.fragment_select_program, c, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log("onViewCreated $arguments")
+       // log("onViewCreated $arguments")
+        if (arguments != null)
+            stateBundle = arguments!!
         button_next?.setOnClickListener {
           onNextClicked()
         }
@@ -74,6 +76,7 @@ class ProgramSelectionFragment : BaseFragment() {
                     isProgram = true
                     program = item
                     //select_program.text = it
+                    programAdapter?.select(item.id)
                     button_next.isEnabled = true
                     //stateBundle.putParcelable("program_data", item)
                     stateBundle.putString("program_name", it)
@@ -90,10 +93,11 @@ class ProgramSelectionFragment : BaseFragment() {
 //        }
 
 
-        select_color?.setOnClickListener {
-            colorDialog?.showColors()
-        }
+//        select_color?.setOnClickListener {
+//            colorDialog?.showColors()
+//        }
         button_next.isEnabled = false
+        //life.mibo.hardware.core.Logger.e("Program Select ", stateBundle)
 
     }
 
@@ -162,7 +166,6 @@ class ProgramSelectionFragment : BaseFragment() {
                 if (data != null) {
                     if (data.status.equals("success", true)) {
                         parse(data.data?.programs)
-
                     } else if (data.status.equals("error", true)) {
                         Toasty.error(context!!, "${data.errors?.get(0)?.message}").show()
                     }
@@ -183,7 +186,11 @@ class ProgramSelectionFragment : BaseFragment() {
 
         programs.clear()
         programs.addAll(list)
-        programAdapter?.notifyDataSetChanged()
+        //programs.addAll(list)
+        // programs.addAll(list)
+        // programs.addAll(list)
+
+        programAdapter!!.notifyDataSetChanged()
         //spinner_program.adapter = ProgramSpinnerAdapter(programs, null);
 //        spinner_program.adapter = ProgramArrayAdapter(
 //            this.requireContext(),
@@ -237,7 +244,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
             }, ProgramDialog.COLORS)
 
-        // Database.getInstance(context!!).insert(programs)
+       // Database.getInstance(context!!).insert(programs)
 
     }
 

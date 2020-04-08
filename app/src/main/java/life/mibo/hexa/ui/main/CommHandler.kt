@@ -160,14 +160,14 @@ class CommHandler(val activity: MainActivity) {
     fun onGetMainLevelEvent(event: GetMainLevelEvent) {
         log("onBleConnect $event")
         EventBus.getDefault().removeStickyEvent(event)
-        android.os.Handler(activity.mainLooper).postDelayed({
-            CommunicationManager.getInstance().onMainLevelEvent(
-                SendMainLevelEvent(
-                    SessionManager.getInstance().userSession.user.mainLevel,
-                    SessionManager.getInstance().userSession.booster.uid
-                )
-            )
-        }, 200)
+//        android.os.Handler(activity.mainLooper).postDelayed({
+//            CommunicationManager.getInstance().onMainLevelEvent(
+//                SendMainLevelEvent(
+//                    SessionManager.getInstance().userSession.user.mainLevel,
+//                    SessionManager.getInstance().userSession.booster.uid
+//                )
+//            )
+//        }, 200)
 
     }
 

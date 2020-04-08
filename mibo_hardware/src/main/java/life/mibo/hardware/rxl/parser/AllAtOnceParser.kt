@@ -24,6 +24,10 @@ import kotlin.random.Random
 class AllAtOnceParser(program: RxlProgram, listener: Listener) :
     RxlParser(program, listener, "AllAtOnceParser") {
 
+    init {
+        log("AllAtOnceParser init..........")
+    }
+
     private val DELAY: Int = 100
 
 
@@ -73,8 +77,10 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
     }
 
     override fun onProgramStart() {
+        //log("onProgramStart")
         super.onProgramStart()
         setColors()
+        //log("onProgramStart end")
     }
 
     @Synchronized
@@ -226,7 +232,7 @@ class AllAtOnceParser(program: RxlProgram, listener: Listener) :
     private fun setColors() {
         val list = Utils.getColors()
         colors.clear()
-        list.addAll(list)
+        colors.addAll(list)
     }
 
     private fun randomColor(player: RxlPlayer): Int {

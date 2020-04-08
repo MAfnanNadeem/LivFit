@@ -2,6 +2,8 @@ package life.mibo.hexa.ui.rxl
 
 import android.annotation.SuppressLint
 import android.util.SparseArray
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.util.forEach
 import androidx.core.util.size
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,10 +15,10 @@ import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.core.toIntOrZero
+import life.mibo.hexa.database.Database
 import life.mibo.hexa.models.base.MemberPost
 import life.mibo.hexa.models.base.ResponseData
 import life.mibo.hexa.models.rxl.*
-import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.base.BaseController
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.main.MiboEvent
@@ -433,6 +435,20 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
             adapter.setListener(filterListener)
             view.layoutManager = manager
             view.adapter = adapter
+
+        }
+    }
+
+    fun dispose(root: View) {
+        try {
+            if (root is ViewGroup)
+                for (i in 0 until root.childCount) {
+                    val r = root.getChildAt(i)
+                    if (r is RecyclerView) {
+                        r.adapter = null
+                    }
+                }
+        } catch (e: Exception) {
 
         }
     }

@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.models.muscle.Muscle
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = false) :
+class ChannelAdapter(var list: ArrayList<Muscle>?, val type: Boolean = false) :
     RecyclerView.Adapter<Channel6Holder>() {
 
     //var list: ArrayList<Item>? = null
@@ -38,7 +39,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         return 0
     }
 
-    private fun getItem(position: Int): Channel6Model? {
+    private fun getItem(position: Int): Muscle? {
         return list?.get(position)
     }
 
@@ -67,14 +68,14 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         }
     }
 
-    fun updateData(newList: ArrayList<Channel6Model>) {
+    fun updateData(newList: ArrayList<Muscle>) {
 //        list?.observe(this, androidx.lifecycle.Observer {
 //            it.clear()
 //            it.addAll(newList)
 //        })
     }
 
-    fun update(newList: ArrayList<Channel6Model>) {
+    fun update(newList: ArrayList<Muscle>) {
         if (list == null || list?.isEmpty()!!) {
             list = newList
             notifyDataSetChanged()
@@ -95,7 +96,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
             }
 
             override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return newList[newItem].percentMain == list!![oldItem].percentMain && newList[newItem].percentChannel == list!![oldItem].percentChannel
+                return newList[newItem].mainValue == list!![oldItem].mainValue && newList[newItem].channelValue == list!![oldItem].channelValue
             }
 
         })
@@ -104,7 +105,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
 
     }
 
-    fun updateList(items: ArrayList<Channel6Model>?) {
+    fun updateList(items: ArrayList<Muscle>?) {
         Logger.e("updateList")
         if (items == null || items.isEmpty()!!) {
             return
@@ -123,8 +124,8 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
             }
 
             override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                Logger.e("updateList ${items[newItem].percentChannel} == ${list!![oldItem].percentChannel} && ${items[newItem].percentMain} == ${list!![newItem].percentMain}")
-                return items[newItem].percentChannel == list!![oldItem].percentChannel && items[newItem].percentMain == list!![oldItem].percentMain
+                Logger.e("updateList ${items[newItem].channelValue} == ${list!![oldItem].channelValue} && ${items[newItem].mainValue} == ${list!![newItem].mainValue}")
+                return items[newItem].channelValue == list!![oldItem].channelValue && items[newItem].mainValue == list!![oldItem].mainValue
             }
 
         })
@@ -136,7 +137,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
     fun getMainLevel(): Int {
         var level = 0
         list?.get(0)?.let {
-            level = it.percentMain
+            level = it.mainValue
         }
 
         return level
@@ -147,7 +148,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         val array = IntArray(list?.size ?: 6)
 
         list?.forEachIndexed { i, j ->
-            array[i] = j.percentChannel
+            array[i] = j.channelValue
         }
 
         //return intArrayOf(0, 0, 0, 0, 0, 0)
@@ -159,7 +160,7 @@ class ChannelAdapter(var list: ArrayList<Channel6Model>?, val type: Boolean = fa
         val array = ArrayList<Int>()
 
         list?.forEach {
-            array.add(it.percentChannel)
+            array.add(it.channelValue)
         }
 
         //return intArrayOf(0, 0, 0, 0, 0, 0)

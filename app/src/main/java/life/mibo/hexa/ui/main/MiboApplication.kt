@@ -8,22 +8,38 @@
 package life.mibo.hexa.ui.main
 
 //import com.facebook.drawee.backends.pipeline.Fresco
+///import leakcanary.AppWatcher
 import android.app.Application
 import android.content.Context
 import coil.util.CoilLogger
+import com.danikula.videocache.HttpProxyCacheServer
 import com.jakewharton.threetenabp.AndroidThreeTen
-///import leakcanary.AppWatcher
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.fastble.BleManager
 import life.mibo.hardware.fastble.scan.BleScanRuleConfig
+import life.mibo.hexa.BuildConfig
 
 
 class MiboApplication : Application() {
 
     companion object {
         var context : Context? = null
-        val DEBUG = life.mibo.hexa.BuildConfig.DEBUG
+
+        val DEBUG = false
+        //val DEBUG = BuildConfig.DEBUG
+        val SCAN_TIME: Long = 15000L
+
+        private var proxy: HttpProxyCacheServer? = null
+
+        fun getProxy(context: Context?): HttpProxyCacheServer? {
+            return if (proxy == null) newProxy(context)
+                .also { proxy = it } else proxy
+        }
+
+        private fun newProxy(c: Context?): HttpProxyCacheServer? {
+            return HttpProxyCacheServer(c)
+        }
     }
 
    // private var mFirebaseAnalytics: FirebaseAnalytics? = null
@@ -35,6 +51,7 @@ class MiboApplication : Application() {
         CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
         MiboEvent.init(applicationContext)
+        Logger.DEBUG = DEBUG
         //AppWatcher.config = AppWatcher.config.copy(watchFragmentViews = false)
         initBle()
         //Fresco.initialize(this);
@@ -49,7 +66,7 @@ class MiboApplication : Application() {
             BleScanRuleConfig.Builder()
                 .setDeviceName(true, "MBRXL", "MIBO")
                 .setAutoConnect(true)
-                .setScanTimeOut(15000)
+                .setScanTimeOut(SCAN_TIME)
                 .build()
         BleManager.getInstance().initScanRule(scanRuleConfig)
     }

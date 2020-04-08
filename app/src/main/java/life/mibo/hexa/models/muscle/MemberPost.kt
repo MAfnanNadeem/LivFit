@@ -14,7 +14,7 @@ class GetSuitPost(suitType: String, token: String, request: String = "GetSuits")
     BasePost<GetSuitPost.SuitType>(GetSuitPost.SuitType(suitType), request, token) {
 
     data class SuitType(
-        @SerializedName("SuitType")
+        @SerializedName("Category")
         var suitType: String?
     )
 
@@ -23,5 +23,6 @@ class GetSuitPost(suitType: String, token: String, request: String = "GetSuits")
         const val CHANEL_6 = "6 Channel"
         const val CHANEL_4 = "4 Channel"
         const val CHANEL_2 = "2 Channel"
+        const val CHANEL_ALL = ""
     }
 }

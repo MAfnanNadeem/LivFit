@@ -19,7 +19,8 @@ import java.util.*
 
 
 abstract class BaseActivity : AppCompatActivity() {
-    var DEBUG = MiboApplication.DEBUG
+    //var DEBUG = MiboApplication.DEBUG
+    var DEBUG = life.mibo.hexa.BuildConfig.DEBUG
 
     fun log(msg: String) {
         Logger.e("${this.javaClass} : $msg")

@@ -19,6 +19,7 @@ public class BleDevice implements Parcelable {
     private byte[] mScanRecord;
     private int mRssi;
     private long mTimestampNanos;
+    private String uid = "";
 
     public BleDevice(BluetoothDevice device) {
         mDevice = device;
@@ -36,6 +37,7 @@ public class BleDevice implements Parcelable {
         mScanRecord = in.createByteArray();
         mRssi = in.readInt();
         mTimestampNanos = in.readLong();
+        uid = in.readString();
     }
 
     @Override
@@ -44,6 +46,7 @@ public class BleDevice implements Parcelable {
         dest.writeByteArray(mScanRecord);
         dest.writeInt(mRssi);
         dest.writeLong(mTimestampNanos);
+        dest.writeString(uid);
     }
 
     @Override
@@ -103,6 +106,10 @@ public class BleDevice implements Parcelable {
 
     public void setRssi(int rssi) {
         this.mRssi = rssi;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     public long getTimestampNanos() {

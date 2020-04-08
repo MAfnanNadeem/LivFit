@@ -164,6 +164,11 @@ class RxlMyPlayFragment : BaseFragment(),
         return super.onContextItemSelected(item)
     }
 
+    override fun onStop() {
+        recyclerView?.adapter = null
+        super.onStop()
+    }
+
     override fun onDestroy() {
         recyclerView?.adapter = null
         adapter = null

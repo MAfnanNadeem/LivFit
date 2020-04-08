@@ -35,6 +35,12 @@ public class NotifyEvent {
         this.id = id;
     }
 
+    public static NotifyEvent drawer(boolean lock) {
+        if (lock)
+            return new NotifyEvent(2001, null);
+        return new NotifyEvent(2002, null);
+    }
+
     @NonNull
     @Override
     public String toString() {

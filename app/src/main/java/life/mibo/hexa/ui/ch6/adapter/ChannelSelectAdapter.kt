@@ -166,7 +166,7 @@ class ChannelSelectAdapter(
             data = item;
 
             image?.load(item.image)
-            perc?.setText("${item.value} %")
+            perc?.setText("${item.channelValue} %")
             perc?.keyListener = null
 //            perc?.addTextChangedListener {
 //                Logger.e("addTextChangedListener $it")
@@ -174,16 +174,16 @@ class ChannelSelectAdapter(
             //image?.setImageResource(item.imageRes)
             //image?.setBackgroundResource(item.imageRes)
             minusBtn?.setOnClickListener {
-                if (item.value > 0) {
+                if (item.channelValue > 0) {
                     item?.decValue()
-                    perc?.setText("${item.value} %")
+                    perc?.setText("${item.channelValue} %")
                 }
             }
 
             plusBtn?.setOnClickListener {
-                if (item.value < 50) {
+                if (item.channelValue < 50) {
                     item?.incValue()
-                    perc?.setText("${item.value} %")
+                    perc?.setText("${item.channelValue} %")
                 }
             }
 

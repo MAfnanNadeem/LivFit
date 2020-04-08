@@ -40,37 +40,50 @@ class ProgramAdapter(val list: ArrayList<Program?>, var listener: ItemClickListe
     }
 
     fun select(id: Int?) {
-        id?.let {
-
+        if (id == null)
+            return
+        for (p in list) {
+            if (id == p?.id) {
+                p.isSelected = true
+            } else p?.isSelected = false
         }
 
+        notifyDataSetChanged()
     }
+
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         var name: TextView? = view.findViewById(R.id.tv_name_value)
         var duration: TextView? = view.findViewById(R.id.tv_duration_value)
         var desc: TextView? = view.findViewById(R.id.tv_desc_value)
         var child: View? = view.findViewById(R.id.childView)
+        var selected: View? = view.findViewById(R.id.selectedView)
 
         fun bind(program: Program, listener: ItemClickListener<Program>?) {
-            Logger.e("Program Holder bind $program")
+            //Logger.e("Program Holder bind $program")
             name?.text = "${program?.name}"
             duration?.text = "${program?.duration?.value?.toInt()?.div(60)} Minutes"
             desc?.text = "${program?.description}"
 
+            if (program.isSelected)
+                selected?.visibility = View.VISIBLE
+            else
+                selected?.visibility = View.INVISIBLE
+
             itemView?.setOnClickListener {
-                program.isSelected = program.isSelected.not()
+               // program.isSelected = program.isSelected.not()
                 listener?.onItemClicked(program, adapterPosition)
             }
-            child?.setBackgroundResource(getBg(adapterPosition))
+            child?.setBackgroundResource(getBg(adapterPosition.plus(1)))
 
         }
 
-        fun getBg(position: Int): Int {
-            if (position % 2 == 0)
-                return R.drawable.bg_select_program_2
-            if (position % 3 == 0)
+        private fun getBg(position: Int): Int {
+            Logger.e("Program Holder getBg $position")
+            if ((position % 3) == 0)
                 return R.drawable.bg_select_program_3
+            if ((position % 2) == 0)
+                return R.drawable.bg_select_program_2
             return R.drawable.bg_select_program_1
         }
     }

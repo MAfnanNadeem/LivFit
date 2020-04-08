@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -40,6 +39,7 @@ import life.mibo.hardware.events.SendDeviceStopEvent;
 import life.mibo.hardware.events.SendMainLevelEvent;
 import life.mibo.hardware.events.SendProgramChangesHotEvent;
 import life.mibo.hardware.events.SendProgramEvent;
+import life.mibo.hardware.fastble.data.BleDevice;
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
 import life.mibo.hardware.models.program.Circuit;
@@ -58,6 +58,7 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCOVERED;
+import static life.mibo.hardware.models.DeviceConstants.DEVICE_FAILED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
@@ -294,6 +295,21 @@ public class CommunicationManager {
             bleScaleDiscoverConsumer(uid, serial);
 
         }
+
+        @Override
+        public void onConnect(String name) {
+            SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_CONNECTED);
+        }
+
+        @Override
+        public void onDisconnect(String name) {
+            SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_DISCONNECTED);
+        }
+
+        @Override
+        public void onConnectFailed(String name) {
+            SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_FAILED);
+        }
     };
 
     private OnBleCharChanged bleCharChanged = new OnBleCharChanged() {
@@ -326,14 +342,16 @@ public class CommunicationManager {
     public synchronized void startScanning(final Activity context, boolean isWifi) {
         this.isWifi = isWifi;
         log("Starting scanning...." + isWifi);
+        log("Starting scanning...." + this.isWifi);
         rxlCount = 0;
-        if (isWifi)
+        if (this.isWifi)
             scanWifi();
         else
             scanBluetooth(context);
     }
 
     public void scanWifi() {
+        log("WIFI Scanning.....");
         if (udpServer == null) {
             mDiscoveredDevices.clear();
             udpServer = new UDPServer();
@@ -344,6 +362,7 @@ public class CommunicationManager {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scanBluetooth(Context context) {
+        log("BLUETOOTH Scanning.....");
 
         //TODO: Change to not overwrite the current one if its initialized and only start discovery
         if (bluetoothManager == null) {
@@ -918,7 +937,7 @@ public class CommunicationManager {
                                 for (int j = 0; j < message[i + 6] + 2; j++) {
                                     command[j] = message[i + 5 + j];
                                 }
-                                parseCommands2(command, uid);
+                                parseCommandsBooster(command, uid);
                                 //log("receiveCommands i "+i);
                                 return;
                             }
@@ -960,7 +979,7 @@ public class CommunicationManager {
     }
 
 
-    private void parseCommands2(byte[] command, String uid) {
+    private void parseCommandsBooster(byte[] command, String uid) {
         log("parseCommands2 msg " + Arrays.toString(command) + " : UID " + uid);
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid);
@@ -994,11 +1013,11 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendProgram(1, 0, event.getProgram()));
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendProgram(1, 0, event.getProgram()), "SendProgramEvent");
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
 
     }
 
@@ -1011,11 +1030,11 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendProgramOnHot(1, 0, event.getProgram()));
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendProgramOnHot(1, 0, event.getProgram()), "SendProgramChangesHotEvent");
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
 
     }
 
@@ -1030,7 +1049,7 @@ public class CommunicationManager {
         sendCircuitGATT(event.getCircuit(), event.getUid());
 
         //tcpClients.get(0).sendMessage(DataParser.sendProgram( event.getProgram()));
-        Log.e("CommManager", "Program EVENT");
+        log("Program EVENT");
     }
 
     private void sendCircuitTCP(Circuit circuit, TCPClient TCPSocket) {
@@ -1050,8 +1069,8 @@ public class CommunicationManager {
         int index = 0;
         for (Program p : circuit.getPrograms()) {
             if (bluetoothManager != null)
-                bluetoothManager.sendToMIBOBoosterGattDevice(Uid,
-                    DataParser.sendProgram(circuit.getPrograms().length, index, p));
+                bluetoothManager.sendMessage(Uid,
+                        DataParser.sendProgram(circuit.getPrograms().length, index, p), "sendCircuitGATT");
             index++;
         }
     }
@@ -1092,9 +1111,9 @@ public class CommunicationManager {
         if (bluetoothManager != null) {
             if (event.getDevice().getType() == RXL_BLE) {
                 //t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
-                bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL));
+                bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL), "ChangeColorEvent", DataParser.RXL);
             } else {
-                bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), event.getDevice().type()));
+                bluetoothManager.sendMessage(event.getUid(), DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), event.getDevice().type()), "ChangeColorEvent");
             }
 
 
@@ -1113,7 +1132,7 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null) {
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL));
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL), "DelayColorEvent", DataParser.RXL);
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onChangeColorEvent color changed..................... " + event.getUid());
@@ -1130,7 +1149,7 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null) {
-            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlBlink(event.getColor(), event.getCycles(), event.getTimeOn(), event.getTimeOff()), "onBlinkEvent");
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlBlink(event.getColor(), event.getCycles(), event.getTimeOn(), event.getTimeOff()), "onBlinkEvent", DataParser.RXL);
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onBlinkEvent blink color changed..................... " + event.getUid());
@@ -1145,8 +1164,8 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendProximitySensor(event.getType()));
-        Log.e("CommManager", "ProximityEvent");
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendProximitySensor(event.getType()), "ProximityEvent", DataParser.RXL);
+        log("ProximityEvent");
     }
 
 
@@ -1158,10 +1177,10 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()), "ChangeColorEvent");
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        Log.e("CommManager", "Color EVENT");
+        log("Color EVENT");
 
     }
 
@@ -1174,10 +1193,10 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendSearchCommand());
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendSearchCommand(), "DeviceSearchEvent");
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        Log.e("CommManager", "Search EVENT");
+        log("Search EVENT");
 
     }
 
@@ -1190,11 +1209,18 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendMain(event.getLevel()));
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendMain(event.getLevel()), "SendMainLevelEvent");
         // tcpClients.get(0).sendMessage(DataParser.sendMain( event.getLevel()));
-        Log.e("CommManager", "MainLevel EVENT");
+        log("MainLevel EVENT");
 
+    }
+
+    public @Nullable
+    BleDevice getBle(String uid) {
+        if (bluetoothManager != null)
+            return bluetoothManager.getBle(uid);
+        return null;
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
@@ -1207,10 +1233,9 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                    DataParser.sendLevels(event.getLevels()));
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendLevels(event.getLevels()), "SendChannelsLevelEvent");
         //tcpClients.get(0).sendMessage(DataParser.sendLevels( event.getLevels()));
-        Log.e("CommManager", "Channels EVENT");
 
     }
 
@@ -1226,7 +1251,7 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendStart());
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendStart(), "SendDevicePlayEvent");
 
 //        if (isWifi) {
 //            for (TCPClient t : tcpClients) {
@@ -1238,8 +1263,6 @@ public class CommunicationManager {
 //            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(), DataParser.sendStart());
 //        }
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
-        Log.e("CommManager", "Play EVENT");
-
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
@@ -1251,12 +1274,13 @@ public class CommunicationManager {
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
+                log("onDeviceStartEvent ");
                 t.sendMessage(DataParser.sendReStart());
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendReStart());
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendReStart(), "onDeviceStartEvent");
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
         log("RESTART EVENT");
 
@@ -1272,10 +1296,10 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null)
-            bluetoothManager.sendToMIBOBoosterGattDevice(event.getUid(),
-                DataParser.sendStop());
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendStop(), "SendDeviceStopEvent");
         //tcpClients.get(0).sendMessage(DataParser.sendStop());
-        Log.e("CommManager", "Stop EVENT");
+        log("onDeviceStopEvent Stop EVENT");
 
     }
 

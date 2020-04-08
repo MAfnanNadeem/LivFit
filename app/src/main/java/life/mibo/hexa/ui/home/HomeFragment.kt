@@ -16,6 +16,7 @@ import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
+import life.mibo.hardware.SessionManager
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.events.NotifyEvent
@@ -86,6 +87,9 @@ class HomeFragment : BaseFragment(), HomeObserver {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
         }
         loadImage(iv_user_pic)
+
+        SessionManager.getInstance().userSession.isBooster = false;
+        SessionManager.getInstance().userSession.isRxl = false;
     }
 
     private fun videoBg() {
@@ -355,6 +359,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         videoView?.stopPlayback()
         super.onStop()
         controller.onStop()
+        recyclerView?.adapter = null
         navigate(HOME_VIEW, false)
         EventBus.getDefault().unregister(this)
     }

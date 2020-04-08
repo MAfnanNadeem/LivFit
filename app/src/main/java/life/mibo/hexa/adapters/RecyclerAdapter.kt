@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
 import life.mibo.hexa.R
+import life.mibo.views.hexa.HexagonImageView
 import java.util.*
 
 
@@ -51,7 +51,7 @@ class RecyclerAdapter(var list: List<Item>, val type: Int = 0) :
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var text: TextView? = itemView.findViewById(R.id.test_text)
         var view: View? = itemView.findViewById(R.id.itemView)
-        var image: life.mibo.views.recycler.HexagonImageView? =
+        var image: HexagonImageView? =
             itemView.findViewById(R.id.test_image)
         // var hexa: HexagonImageView? = itemView.findViewById(R.id.test_image_hexa)
     }

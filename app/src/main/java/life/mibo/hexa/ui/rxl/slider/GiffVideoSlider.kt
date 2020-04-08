@@ -35,6 +35,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.ui.main.MiboApplication
 
 class GiffVideoSlider(
     context: Context?,
@@ -95,6 +96,7 @@ class GiffVideoSlider(
 
     class VideoGiffFragment : Fragment() {
         var video: VideoView? = null
+        var videoChild: View? = null
         var play: View? = null
         var tutorial: View? = null
         var progress: View? = null
@@ -140,6 +142,7 @@ class GiffVideoSlider(
             if (isVideo) {
                 root?.findViewById<View>(R.id.videoContainer)?.visibility = View.VISIBLE
                 video = root?.findViewById(R.id.videoView)
+                videoChild = root?.findViewById(R.id.videoViewChild)
             } else {
                 image = root?.findViewById(R.id.imageView)
                 image?.visibility = View.VISIBLE
@@ -162,19 +165,24 @@ class GiffVideoSlider(
         }
 
         override fun onPause() {
+            log("onPause")
             video?.pause()
             super.onPause()
+            updatePlayButton(true)
         }
 
         override fun onResume() {
+            log("onResume")
             super.onResume()
             video?.resume()
         }
 
         override fun onStop() {
+            log("onStop")
             video?.stopPlayback()
             //video?.suspend()
             image?.setImageDrawable(null)
+            updatePlayButton(true)
             super.onStop()
         }
 
@@ -196,9 +204,14 @@ class GiffVideoSlider(
                 if (url.isEmpty()) {
                     return
                 }
-                video?.setVideoPath(url)
+                val proxy = MiboApplication.getProxy(context);
+                val proxyUrl = proxy?.getProxyUrl(url);
+                log("url : $url")
+                log("proxyUrl : $proxyUrl")
+                video?.setVideoPath(proxyUrl)
 
                 video?.setOnPreparedListener {
+                    videoChild?.visibility = View.GONE
                     progress?.visibility = View.GONE
                     // it.data
                 }

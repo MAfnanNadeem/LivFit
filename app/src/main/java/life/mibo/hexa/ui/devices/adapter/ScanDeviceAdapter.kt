@@ -39,7 +39,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 false
             )
         )
-        return Holder(
+        return ScanItem(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.list_item_devices,
                 parent,
@@ -68,7 +68,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         //val item = getItem(position)
-        if (holder is Holder)
+        if (holder is ScanItem)
             holder.bind(getItem(position), listener)
         else if (holder is Header)
             holder.bind(getItem(position))
@@ -89,7 +89,131 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
         }
     }
 
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    fun resetRxlCount() {
+        RxlCount = 0
+    }
+
+
+    fun getRandomColor(): Int {
+        val rnd = Random()
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+    }
+
+    fun addDevice(ble: BluetoothDevice) {
+        Logger.e("ScanDevice addDevice ")
+        var contain = false
+        for (l in list!!) {
+            if (l.serial == ble.address) {
+                contain = true
+                break;
+            }
+        }
+        if (!contain) {
+            list!!.add(Device(ble.name, ble.address, ble.address, DeviceTypes.BLE_STIMULATOR))
+            notifyItemInserted(list!!.size)
+        }
+    }
+
+    fun move(from: Int, to: Int) {
+        if (list?.size!! > 1 && from != to) {
+            Collections.swap(list, from, to)
+            notifyItemMoved(from, to)
+
+        }
+    }
+
+
+    fun remove(uid: String) {
+        Logger.e("ScanDevice remove device uid")
+        list?.forEachIndexed { i, d ->
+            if (d.uid == uid) {
+                list!!.removeAt(i)
+                notifyItemRemoved(i)
+                return
+            }
+        }
+    }
+
+    fun remove(item: Device) {
+        Logger.e("ScanDevice remove device")
+        list?.forEachIndexed { i, d ->
+            if (d.uid == item.uid) {
+                list!!.removeAt(i)
+                notifyItemRemoved(i)
+                return
+            }
+        }
+    }
+
+    fun addConnectedDevice(item: Device) {
+        var d = item
+        for (l in list!!) {
+            if (l.uid == item.uid) {
+                // l = item
+                d.update(item)
+            }
+        }
+        list!!.add(d)
+        notifyDataSetChanged()
+    }
+
+    fun addDevice(devices: ArrayList<Device>, rxl: Boolean) {
+        list!!.clear()
+        devices.forEachIndexed { index, device ->
+            if (rxl) {
+                device.id = "$index"
+                device.name = "RXL ${index.plus(1)}"
+            }
+            list!!.add(device)
+        }
+    }
+
+    fun addDevice(item: Device, rxl: Boolean) {
+        for (l in list!!) {
+            if (l.uid == item.uid) {
+                l.connectionType = item.connectionType
+                l.type = item.type
+                return
+            }
+        }
+        if (rxl) {
+            item.id = "${list!!.size}"
+            item.name = "RXL ${list!!.size.plus(1)}"
+        }
+        list!!.add(item)
+        notifyItemInserted(list!!.size)
+    }
+
+    fun addDevice(item: Device) {
+        Logger.e("ScanDevice addDevice device")
+        for (l in list!!) {
+            if (l.uid == item.uid) {
+                Logger.e("ScanDevice addDevice already added")
+                return
+            }
+        }
+        list!!.add(item)
+        notifyItemInserted(list!!.size)
+    }
+
+    fun addDevices(l: ArrayList<Device>) {
+        Logger.e("ScanDevice addDevices list $l")
+        this.list?.addAll(l)
+        notifyDataSetChanged()
+    }
+
+    fun updateDevice(device: Device?) {
+        device?.let {
+            list?.forEachIndexed { index, device ->
+                if (device.uid == it.uid) {
+                    list!![index] = it
+                    notifyItemChanged(index, it)
+                }
+            }
+        }
+    }
+
+    class ScanItem(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var view: View? = itemView.findViewById(R.id.itemView)
         var name: TextView? = itemView.findViewById(R.id.tv_deviceName)
         var address: TextView? = itemView.findViewById(R.id.tv_deviceMac)
@@ -125,8 +249,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 name?.text = item.name
                 address?.text = item.serial
                 battery?.text = ""
-            }
-            else {
+            } else {
                 name?.text = item.name?.split("-")!![0]
                 var txt = item.id
                 if (txt.isNullOrBlank())
@@ -173,6 +296,20 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 connect?.setColorFilter(grey)
             }
 
+            image?.background = null
+            if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
+                image?.setImageResource(R.drawable.ic_rxl_pods_icon_200)
+                Logger.e(
+                    "PorterDuff.Mode.SRC_OUT $adapterPosition " + life.mibo.hexa.utils.Utils.getColorAt(
+                        adapterPosition
+                    )
+                )
+            } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
+                image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
+            } else if (item.type == DeviceTypes.RXT_WIFI) {
+                image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
+            }
+
             view?.background = null
             if (item.statusConnected == 1) {
                 disconnect?.setColorFilter(Color.RED)
@@ -182,18 +319,35 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     R.drawable.device_list_item_bg_selected
                 )
 
-                if (item.batteryLevel > 20) {
-                    battery?.visibility = View.VISIBLE
-                    battery?.text = "${item.batteryLevel}"
-                    battery?.setBackgroundResource(R.drawable.ic_battery_empty)
-                    battery?.background?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
-                } else if (item.batteryLevel > 0) {
-                    battery?.visibility = View.VISIBLE
-                    battery?.setBackgroundResource(R.drawable.ic_battery_empty)
-                    battery?.text = "${item.batteryLevel}"
-                    battery?.background?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP)
-                } else {
-                    battery?.visibility = View.INVISIBLE
+                if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
+                    image?.setImageDrawable(
+                        life.mibo.hexa.utils.Utils.getColorFilterDrawable(
+                            image?.context,
+                            R.drawable.ic_rxl_pods_icon_200,
+                            life.mibo.hexa.utils.Utils.getColorAt(item.id)
+                        )
+                    )
+//                    image?.drawable?.setColorFilter(
+//                        life.mibo.hexa.utils.Utils.getColorAt(item.id), PorterDuff.Mode.SRC_IN
+//                    )
+                }
+
+                when {
+                    item.batteryLevel > 20 -> {
+                        battery?.visibility = View.VISIBLE
+                        battery?.text = "${item.batteryLevel}"
+                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                        battery?.background?.setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP)
+                    }
+                    item.batteryLevel > 0 -> {
+                        battery?.visibility = View.VISIBLE
+                        battery?.setBackgroundResource(R.drawable.ic_battery_empty)
+                        battery?.text = "${item.batteryLevel}"
+                        battery?.background?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP)
+                    }
+                    else -> {
+                        battery?.visibility = View.INVISIBLE
+                    }
                 }
 
 //                when {
@@ -204,21 +358,17 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 //                    // else -> battery?.setImageResource(R.drawable.ic_battery_0)
 //                }
             } else {
+                if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
+                    image?.drawable?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
+                }
+
                 disconnect?.setColorFilter(grey)
                 connect?.setColorFilter(Color.GREEN)
                 view?.background =
                     ContextCompat.getDrawable(itemView.context, R.drawable.device_list_item_bg)
-               // battery?.background = null
+                // battery?.background = null
                 battery?.visibility = View.INVISIBLE
 
-            }
-            image?.background = null
-            if (item.type == DeviceTypes.RXL_WIFI || item.type == DeviceTypes.RXL_BLE) {
-                image?.setBackgroundResource(R.drawable.ic_rxl_pods_icon)
-            } else if (item.type == DeviceTypes.WIFI_STIMULATOR || item.type == DeviceTypes.BLE_STIMULATOR) {
-                image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
-            } else if (item.type == DeviceTypes.RXT_WIFI) {
-                image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
             }
 
             if (isWifi) {
@@ -245,9 +395,9 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 callback?.onConnectClicked(item)
             }
             disconnect?.setOnClickListener {
-               // if (item.statusConnected == 0) {
-                    // return@setOnClickListener
-               // }
+                // if (item.statusConnected == 0) {
+                // return@setOnClickListener
+                // }
                 item.statusConnected = 0
                 callback?.onCancelClicked(item)
                 disconnect?.setColorFilter(grey)
@@ -261,147 +411,6 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
 //                )
 //            )
 
-        }
-    }
-
-    fun resetRxlCount(){
-        RxlCount = 0
-    }
-
-
-    fun getRandomColor(): Int {
-        val rnd = Random()
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-    }
-
-    fun addDevice(ble: BluetoothDevice) {
-        Logger.e("ScanDevice addDevice ")
-        var contain = false
-        for (l in list!!) {
-            if (l.serial == ble.address) {
-                contain = true
-                break;
-            }
-        }
-        if (!contain) {
-            list!!.add(Device(ble.name, ble.address, ble.address, DeviceTypes.BLE_STIMULATOR))
-            notifyItemInserted(list!!.size)
-        }
-    }
-
-    fun move(from: Int, to: Int) {
-        if (list?.size!! > 1 && from != to) {
-            Collections.swap(list, from, to)
-            notifyItemMoved(from, to)
-
-        }
-    }
-
-    fun addDevice(item: ScanItem) {
-//        Logger.e("ScanDevice addDevice ")
-//        var contain = false
-//        for (l in list!!) {
-//            if (l.address == item.address) {
-//                contain = true
-//                break;
-//            }
-//        }
-//        if (!contain) {
-//            list!!.add(item)
-//            notifyItemInserted(list!!.size)
-//        }
-    }
-
-    fun remove(uid: String) {
-        Logger.e("ScanDevice remove device uid")
-        list?.forEachIndexed { i, d ->
-            if (d.uid == uid) {
-                list!!.removeAt(i)
-                notifyItemRemoved(i)
-                return
-            }
-        }
-    }
-
-    fun remove(item: Device) {
-        Logger.e("ScanDevice remove device")
-        list?.forEachIndexed { i, d ->
-            if (d.uid == item.uid) {
-                list!!.removeAt(i)
-                notifyItemRemoved(i)
-                return
-            }
-        }
-    }
-
-    fun addConnectedDevice(item: Device) {
-        var d = item
-        for (l in list!!) {
-            if (l.uid == item.uid) {
-                // l = item
-                d.update(item)
-            }
-        }
-        list!!.add(d)
-        notifyDataSetChanged()
-    }
-    fun addDevice(item: Device) {
-        Logger.e("ScanDevice addDevice device")
-        for (l in list!!) {
-            if (l.uid == item.uid) {
-                Logger.e("ScanDevice addDevice already added")
-                return
-            }
-        }
-        list!!.add(item)
-        notifyItemInserted(list!!.size)
-    }
-
-    fun addDevice(item: Device, rxl: Boolean) {
-        Logger.e("ScanDevice addDevice device")
-        for (l in list!!) {
-            if (l.uid == item.uid) {
-                Logger.e("ScanDevice addDevice already added")
-                return
-            }
-        }
-        if (rxl)
-            item.name = "RXL ${list!!.size.plus(1)}"
-        list!!.add(item)
-        notifyItemInserted(list!!.size)
-    }
-
-    fun addDevices(l: ArrayList<Device>) {
-        Logger.e("ScanDevice addDevices list $l")
-        this.list?.addAll(l)
-        notifyDataSetChanged()
-    }
-
-    fun updateDevice(device: Device?) {
-        device?.let {
-            list?.forEachIndexed { index, device ->
-                if(device.uid == it.uid)
-                {
-                    list!![index] = it
-                    notifyItemChanged(index, it)
-                }
-            }
-        }
-    }
-
-    data class ScanItem(
-        val name: String?,
-        val address: String? = "",
-        var type: Int = 0,
-        var image: Int = 0
-    ) {
-        var isBluetooth = false
-        var isWifi = false
-        var isConnected = false
-        var device: Device? = null
-
-        constructor(d: Device) : this(d.name, d.serial, d.type.ordinal) {
-            this.device = d
         }
     }
 

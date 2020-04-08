@@ -44,6 +44,7 @@ import life.mibo.hardware.fastble.data.BleScanState;
 import life.mibo.hardware.fastble.exception.OtherException;
 import life.mibo.hardware.fastble.scan.BleScanRuleConfig;
 import life.mibo.hardware.fastble.scan.BleScanner;
+import life.mibo.hardware.fastble.utils.BleConfig;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleManager {
@@ -54,6 +55,12 @@ public class BleManager {
     private MultipleBluetoothController multipleBluetoothController;
     private BluetoothManager bluetoothManager;
 
+    private int maxConnectCount = BleConfig.DEFAULT_MAX_MULTIPLE_DEVICE;
+    private int operateTimeout = BleConfig.DEFAULT_OPERATE_TIME;
+    private int reConnectCount = BleConfig.DEFAULT_CONNECT_RETRY_COUNT;
+    private long reConnectInterval = BleConfig.DEFAULT_CONNECT_RETRY_INTERVAL;
+    private int splitWriteNum = BleConfig.DEFAULT_WRITE_DATA_SPLIT_COUNT;
+    private long connectOverTime = BleConfig.DEFAULT_CONNECT_OVER_TIME;
 
     public static BleManager getInstance() {
         return BleManagerHolder.sBleManager;
@@ -145,8 +152,8 @@ public class BleManager {
      * @return BleManager
      */
     public BleManager setMaxConnectCount(int count) {
-        if (count > DEFAULT_MAX_MULTIPLE_DEVICE)
-            count = DEFAULT_MAX_MULTIPLE_DEVICE;
+        if (count > BleConfig.DEFAULT_MAX_MULTIPLE_DEVICE)
+            count = BleConfig.DEFAULT_MAX_MULTIPLE_DEVICE;
         this.maxConnectCount = count;
         return this;
     }
@@ -196,7 +203,7 @@ public class BleManager {
      * @return BleManager
      */
     public BleManager setReConnectCount(int count) {
-        return setReConnectCount(count, DEFAULT_CONNECT_RETRY_INTERVAL);
+        return setReConnectCount(count, BleConfig.DEFAULT_CONNECT_RETRY_INTERVAL);
     }
 
     /**
@@ -596,7 +603,7 @@ public class BleManager {
      * @param intervalBetweenTwoPackage
      * @param callback
      */
-    public void write(BleDevice bleDevice,
+    public synchronized void write(BleDevice bleDevice,
                       String uuid_service,
                       String uuid_write,
                       byte[] data,
@@ -694,13 +701,13 @@ public class BleManager {
             throw new IllegalArgumentException("BleMtuChangedCallback can not be Null!");
         }
 
-        if (mtu > DEFAULT_MAX_MTU) {
+        if (mtu > BleConfig.DEFAULT_MAX_MTU) {
             log("requiredMtu should lower than 512 !");
             callback.onSetMTUFailure(new OtherException("requiredMtu should lower than 512 !"));
             return;
         }
 
-        if (mtu < DEFAULT_MTU) {
+        if (mtu < BleConfig.DEFAULT_MTU) {
             log("requiredMtu should higher than 23 !");
             callback.onSetMTUFailure(new OtherException("requiredMtu should higher than 23 !"));
             return;
@@ -953,7 +960,10 @@ public class BleManager {
     }
 
     public static void log(String msg) {
-        Logger.e("BleManager:", msg);
+        Logger.e("BleManager FastBle", msg);
     }
+
+
+
 
 }

@@ -414,7 +414,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
             getInt(tv_select_players.text),
             getInt(tv_select_pods.text),
             "",
-            tv_select_delay.text?.toString(),
+            "" + getInt(tv_select_delay.text),
             "$proximity",
             "$tap",
             "$tap",
@@ -431,7 +431,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
     private var avatarBase64 = ""
 
     fun getInt(text: CharSequence): Int = text.toString().toIntOrZero()
-    private fun getType(): Int = RxlExercises.getType(tv_select_lights?.text?.toString())
+    private fun getType(): Int = RxlExercises.getType(tv_title?.text?.toString())
 
     private fun saveProgram(program: SaveRXLProgram?) {
         if (program == null) {

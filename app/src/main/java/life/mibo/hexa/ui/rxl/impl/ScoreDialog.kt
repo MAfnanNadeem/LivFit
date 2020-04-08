@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.hardware.core.Logger
 import life.mibo.hexa.R
+import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.rxl.adapter.ScoreAdapter
 
 class ScoreDialog(
@@ -28,6 +29,7 @@ class ScoreDialog(
 
     private var recyclerView: RecyclerView? = null
     private var dialogAdapter: ScoreAdapter? = null
+    var listener: ItemClickListener<ScoreAdapter.ScoreItem>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.rxl_score_dialog)
@@ -77,6 +79,7 @@ class ScoreDialog(
             recyclerView?.layoutParams?.height = height.times(0.6).toInt()
         close?.setOnClickListener {
             dismiss()
+            listener?.onItemClicked(null, 0)
         }
     }
 

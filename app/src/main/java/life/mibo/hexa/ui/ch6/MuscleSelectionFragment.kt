@@ -7,27 +7,43 @@
 
 package life.mibo.hexa.ui.ch6
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_select_muscles.*
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.fastble.BleManager
+import life.mibo.hardware.fastble.callback.BleMtuChangedCallback
+import life.mibo.hardware.fastble.exception.BleException
+import life.mibo.hardware.models.Device
 import life.mibo.hexa.R
 import life.mibo.hexa.core.API
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.models.base.MemberPost
 import life.mibo.hexa.models.muscle.Muscle
 import life.mibo.hexa.models.muscle.MuscleCollection
+import life.mibo.hexa.models.program.Program
 import life.mibo.hexa.ui.base.BaseFragment
 import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.ch6.adapter.ChannelSelectAdapter
 import life.mibo.hexa.ui.dialog.MyDialog
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
+import life.mibo.hexa.ui.select_program.ProgramDialog
 import life.mibo.hexa.utils.Toasty
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
 class MuscleSelectionFragment : BaseFragment() {
 
@@ -41,10 +57,15 @@ class MuscleSelectionFragment : BaseFragment() {
 
     private var muscleAdapter: ChannelSelectAdapter? = null
     private var channelAdapter: ChannelSelectAdapter? = null
+    private var colorDialog: ProgramDialog? = null
+
+    //var isProgram = false
+    var stateBundle = Bundle()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        if (arguments != null)
+            stateBundle = arguments!!
         loadMuscles()
         loadChannels()
 
@@ -52,6 +73,18 @@ class MuscleSelectionFragment : BaseFragment() {
             onNextClicked()
         }
         getMusclesApi()
+        rl_color?.setOnClickListener {
+            showColors()
+        }
+        life.mibo.hardware.core.Logger.e("Muscle Select ", stateBundle)
+        initBooster()
+
+    }
+
+    private fun initBooster() {
+        SessionManager.getInstance().userSession.currentSessionStatus = 0
+        changeColor(Color.RED)
+        //updateMtu(300)
     }
 
     private fun onNextClicked() {
@@ -60,9 +93,72 @@ class MuscleSelectionFragment : BaseFragment() {
             return
         }
         if (checkLimit(channelAdapter?.list?.size ?: 0)) {
-            navigate(Navigator.SELECT_PROGRAM, null)
-        }
+            log("onNextClicked " + channelAdapter?.list)
+            stateBundle.putSerializable("program_channels", channelAdapter?.list)
 
+            navigate(Navigator.SELECT_PROGRAM, stateBundle)
+        }
+    }
+
+    private fun showColors() {
+        if (colorDialog == null) {
+            colorDialog =
+                ProgramDialog(context!!, ArrayList(), object : ItemClickListener<Program> {
+                    override fun onItemClicked(item: Program?, position: Int) {
+                        //Toasty.info(context!!, "$position").show()
+
+                        item?.id?.let {
+                            //select_color?.visibility = View.VISIBLE
+                            //circleImage?.circleColor = it
+                            val drawable = select_color.background
+                            if (drawable is GradientDrawable) {
+                                drawable.setColor(it)
+                            } else {
+                                select_color.setBackgroundColor(it)
+                            }
+                            //val shape = ShapeDrawable()
+
+                            changeColor(it)
+                        }
+                    }
+
+                }, ProgramDialog.COLORS)
+        }
+        colorDialog?.showColors()
+    }
+
+    private fun changeColor(color: Int) {
+        Single.fromCallable {
+            val d: Device? = SessionManager.getInstance().userSession.booster
+            d?.colorPalet = color
+            EventBus.getDefault().postSticky(ChangeColorEvent(d, d?.uid))
+            stateBundle.putInt("program_color", color)
+        }.subscribeOn(Schedulers.io()).doOnError {
+
+        }.subscribe()
+    }
+
+    private fun updateMtu(mtu: Int) {
+        Single.fromCallable {
+            try {
+                val d = CommunicationManager.getInstance()
+                    .getBle(SessionManager.getInstance().userSession.booster?.uid)
+                BleManager.getInstance().setMtu(d, 300,
+                    object : BleMtuChangedCallback() {
+                        override fun onSetMTUFailure(exception: BleException) {
+                            log("setMtu: onSetMTUFailure " + exception.message)
+                        }
+
+                        override fun onMtuChanged(mtu: Int) {
+                            log("setMtu: onMtuChanged $mtu")
+                        }
+                    })
+            } catch (e: Exception) {
+                MiboEvent.log(e)
+            }
+        }.subscribeOn(Schedulers.io()).delay(600, TimeUnit.MILLISECONDS).doOnError {
+
+        }.subscribe()
     }
 
     var deviceTye = 6;
@@ -159,16 +255,21 @@ class MuscleSelectionFragment : BaseFragment() {
                     response: Response<MuscleCollection>
                 ) {
                     dialog.value.dismiss()
+                    val data = response.body();
                     val list = ArrayList<Muscle>()
                     log("getMusclesApi onResponse: " + response.body())
-
-                    response.body()?.data?.forEach {
-                        it?.let { m ->
-                            list.add(m)
+                    if (data != null && data.isSuccess()) {
+                        data.data?.forEach {
+                            it?.let { m ->
+                                list.add(m)
+                            }
                         }
+                        log("getMusclesApi onResponse size: " + list.size)
+                        muscleAdapter?.update(list)
+                    } else {
+                        checkSession(data)
                     }
-                    log("getMusclesApi onResponse size: " + list.size)
-                    muscleAdapter?.update(list)
+
                 }
 
             })

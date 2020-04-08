@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/grid_1x">
+    android:paddingTop="@dimen/grid_1x"
+    android:paddingBottom="@dimen/grid_1x">
 
     <ImageView
         android:id="@+id/iv_play"
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="36dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_play_hexa"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +23,7 @@
         android:layout_height="@dimen/ch_6_button_size"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_stop_hexa"
+        android:layout_marginStart="@dimen/grid_1x"
         android:translationY="-20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_play" />
@@ -30,7 +32,7 @@
         android:id="@+id/iv_plus"
         android:layout_width="@dimen/ch_6_button_size"
         android:layout_height="@dimen/ch_6_button_size"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="36dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_plus_main"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,6 +45,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_minus_main"
         android:translationY="-24dp"
+        android:layout_marginEnd="@dimen/grid_1x"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_plus" />
 
@@ -71,22 +74,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="Timer"
+        android:text="00:00"
         android:textColor="@color/textColor"
-        android:textSize="18sp"
-        android:typeface="monospace"
-        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        android:textSize="@dimen/text_size_large"
+        android:typeface="serif"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hexagonImageView" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:minHeight="8dp"
-        android:maxHeight="8dp"
-        android:layout_height="8dp"
-        android:layout_margin="4dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:max="100"
         android:progress="0"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
@@ -99,6 +102,7 @@
         android:layout_height="4dp"
         android:orientation="horizontal"
         android:weightSum="1"
+        android:visibility="gone"
         android:background="@color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
+            app:layout_constraintGuide_end="314dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline7"

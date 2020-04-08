@@ -24,7 +24,10 @@ interface Navigator {
         const val RXL_QUICKPLAY_DETAILS = 117;
         const val RXL_QUICKPLAY_DETAILS_PLAY = 118;
         const val SELECT_MUSCLES = 119;
+        const val SELECT_SUITS= 120;
         const val POST = 201;
+        const val DRAWER_LOCK = 301;
+        const val DRAWER_UNLOCK = 302;
 
         //var SELECT_REFLEX = 106;
     }

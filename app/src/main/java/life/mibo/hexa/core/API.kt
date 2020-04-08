@@ -14,6 +14,9 @@ import life.mibo.hexa.models.create_session.SaveSessionPost
 import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.models.member.MemberAvatar
+import life.mibo.hexa.models.muscle.GetSuitPost
+import life.mibo.hexa.models.muscle.GetSuits
+import life.mibo.hexa.models.muscle.MuscleCollection
 import life.mibo.hexa.models.product.Products
 import life.mibo.hexa.models.program.ProgramPost
 import life.mibo.hexa.models.program.SearchPrograms
@@ -201,5 +204,13 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getProductList")
         fun getProductList(@Body data: MemberPost): Call<Products>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMuscleCollection")
+        fun getMuscleCollection(@Body data: MemberPost): Call<MuscleCollection>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getSuits")
+        fun getSuits(@Body data: GetSuitPost): Call<GetSuits>
     }
 }

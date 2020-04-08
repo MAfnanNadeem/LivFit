@@ -19,8 +19,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import life.mibo.hardware.fastble.BleManager;
-import life.mibo.hardware.fastble.bluetooth.BleConnector;
 import life.mibo.hardware.fastble.callback.BleGattCallback;
 import life.mibo.hardware.fastble.callback.BleIndicateCallback;
 import life.mibo.hardware.fastble.callback.BleMtuChangedCallback;
@@ -34,11 +38,6 @@ import life.mibo.hardware.fastble.data.BleMsg;
 import life.mibo.hardware.fastble.exception.ConnectException;
 import life.mibo.hardware.fastble.exception.OtherException;
 import life.mibo.hardware.fastble.exception.TimeoutException;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 
@@ -257,6 +256,7 @@ public class BleBluetooth {
 
         @Override
         public void handleMessage(Message msg) {
+            BleManager.log("BleBluetooth handleMessage " + msg);
             switch (msg.what) {
                 case BleMsg.MSG_CONNECT_FAIL: {
                     disconnectGatt();

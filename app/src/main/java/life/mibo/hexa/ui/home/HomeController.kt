@@ -190,7 +190,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         list.add(
             HomeItem(
-                "Reflex", "",
+                "RXL", "",
                 HomeItem.Type.RXL_SCAN, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
             )
         )
@@ -262,7 +262,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         list.add(
             HomeItem(
-                "Reflex", "",
+                "RXL", "",
                 HomeItem.Type.RXL_SCAN, R.drawable.ic_rxl_pods_icon, R.drawable.dashboard_item_bg_9
             )
         )

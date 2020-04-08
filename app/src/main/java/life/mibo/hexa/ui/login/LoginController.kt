@@ -17,6 +17,7 @@ import life.mibo.hexa.models.login.LoginResponse
 import life.mibo.hexa.models.login.LoginUser
 import life.mibo.hexa.database.Database
 import life.mibo.hexa.ui.main.MainActivity
+import life.mibo.hexa.ui.main.MiboApplication
 import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.utils.Toasty
 import retrofit2.Call
@@ -74,6 +75,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 context.getDialog()?.dismiss()
                 t.printStackTrace()
                 Toasty.error(context, R.string.unable_to_connect).show()
+               // if(MiboApplication.DEBUG)
+               //     loginSucceed()
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {

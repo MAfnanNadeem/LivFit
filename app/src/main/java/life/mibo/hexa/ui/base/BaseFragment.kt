@@ -73,39 +73,27 @@ abstract class BaseFragment : Fragment() {
         EventBus.getDefault().unregister(any)
     }
 
-    fun <V : BaseResponse<*>> checkError(data: V?) {
-
-        if (data?.status.equals("error", true)) {
-            data?.errors?.get(0)?.message?.let {
-                context?.let {
-                    Toasty.error(it, data.errors?.get(0)?.message!!).show()
-                }
-            }
-            MiboEvent.log("error $data")
-            if (data?.errors?.get(0)?.code == 401) {
-                MiboEvent.log("Session Expired - $data")
-                logout()
-            }
-        }
-    }
-
     fun <V : BaseResponse<*>> checkSession(data: V?) {
-
-        data?.errors?.get(0)?.code?.let { code ->
-            if (code == 401) {
-                context?.let {
-                    Toasty.error(it, data.errors?.get(0)?.message!!).show()
+        try {
+            data?.errors?.get(0)?.code?.let { code ->
+                if (code == 401) {
+                    context?.let {
+                        Toasty.error(it, data.errors?.get(0)?.message!!).show()
+                    }
+                    MiboEvent.log("Session Expired - $data")
+                    logout()
                 }
-                MiboEvent.log("Session Expired - $data")
-                logout()
             }
+        } catch (e: java.lang.Exception) {
+
         }
         MiboEvent.log("error $data")
     }
 
-    private fun logout() {
+    fun logout() {
         try {
             startActivity(Intent(this@BaseFragment.context, LoginActivity::class.java))
+            activity?.finish()
         } catch (e: Exception) {
             MiboEvent.log(e)
         }

@@ -38,6 +38,7 @@ class SuitSelectionFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_select_suit, container, false)
     }
 
+    private val stateBundle = Bundle()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,9 +50,9 @@ class SuitSelectionFragment : BaseFragment() {
     }
 
     private fun onNextClicked() {
-        val bundle = Bundle()
-        bundle.putSerializable("selected_suit", selectedSuit)
-        navigate(Navigator.SELECT_MUSCLES, bundle)
+        // val bundle = Bundle()
+        stateBundle.putSerializable("program_suit", selectedSuit)
+        navigate(Navigator.SELECT_MUSCLES, stateBundle)
     }
 
     val dialog = lazy { MyDialog.get(requireContext()) }
@@ -72,7 +73,7 @@ class SuitSelectionFragment : BaseFragment() {
                 ) {
                     dialog.value.dismiss()
                     val list = ArrayList<Suit>()
-                    log("getMusclesApi onResponse: " + response.body())
+                    //log("getMusclesApi onResponse: " + response.body())
 
                     response.body()?.data?.forEach {
                         it?.let { m ->
@@ -81,6 +82,8 @@ class SuitSelectionFragment : BaseFragment() {
                     }
                     log("getMusclesApi onResponse size: " + list.size)
                     updateSuits(list)
+
+                    checkSession(response.body())
                 }
 
             })
@@ -112,13 +115,16 @@ class SuitSelectionFragment : BaseFragment() {
         allSuits.addAll(suits)
         log("updateSuits :: " + suits.size)
         val adapter = SliderAdapter(suits, context)
-        // tabDots.setupWithViewPager(sliderViewPager)
+        tabDots?.setupWithViewPager(sliderViewPager)
         sliderViewPager.addOnPageChangeListener(listener)
         sliderViewPager.adapter = adapter;
         updateText(0)
     }
 
     private fun updateText(position: Int) {
+        log("updateText1 $selectedSuit")
+        log("updateText2 " + selectedSuit?.suitName)
+        log("updateText3 " + selectedSuit?.suitDescription)
         if (position < allSuits.size) {
             selectedSuit = allSuits[position]
             selectedSuit?.let {

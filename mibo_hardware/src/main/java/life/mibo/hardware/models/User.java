@@ -494,10 +494,6 @@ public class User implements Serializable, BaseModel{
         this.userChannelLevels = userChannelLevels;
     }
 
-    public int[] getCurrentChannelLevels() {
-        return currentChannelLevels;
-    }
-
     public void setCurrentChannelLevels(int[] currentChannelLevels) {
         this.currentChannelLevels = currentChannelLevels;
     }
@@ -521,6 +517,11 @@ public class User implements Serializable, BaseModel{
             getCurrentChannelLevels()[muscleGroup - 1]--;
     }
 
+
+    public int[] getCurrentChannelLevels() {
+        return currentChannelLevels;
+    }
+
     public boolean checkAndIncreaseChannel(int pos) {
         int current = currentChannelLevels[pos - 1];
         if (current < userChannelCaps[pos - 1]) {
@@ -537,6 +538,14 @@ public class User implements Serializable, BaseModel{
             return true;
         }
         return false;
+    }
+
+    public void checkAndSetChannelValue(int pos, int value) {
+        try {
+            currentChannelLevels[pos] = value;
+        } catch (Exception e) {
+
+        }
     }
 
     public int getMainLevel() {

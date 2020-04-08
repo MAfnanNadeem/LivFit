@@ -20,14 +20,14 @@ class Channel6Model() : ViewModel() {
         }
     }
 
-    fun from(chPerc: Int): Channel6Model {
-        Logger.e("Channel6Model "+toString())
-        val ch6 = Channel6Model(id, image, chPerc, percentMain, title)
-        Logger.e("Channel6Model Copy $ch6")
-        if(chPerc == 0)
-            ch6.isPlay = true
-        return ch6
-    }
+//    fun from(chPerc: Int): Channel6Model {
+//        Logger.e("Channel6Model "+toString())
+//        val ch6 = Channel6Model(id, image, chPerc, percentMain, title)
+//        Logger.e("Channel6Model Copy $ch6")
+//        if(chPerc == 0)
+//            ch6.isPlay = true
+//        return ch6
+//    }
 
     var uid: String = ""
     var id: Int = 0

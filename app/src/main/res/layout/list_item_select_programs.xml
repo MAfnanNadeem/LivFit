@@ -5,80 +5,92 @@
   ~  Mibo Hexa - app
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/childView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:background="@drawable/bg_select_program_1"
-    android:orientation="horizontal"
-    android:padding="@dimen/grid_1x">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="Name:"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="Duration:"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/grid_1x"
-            android:singleLine="true"
-            android:text="Description:"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-    </LinearLayout>
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_select_program_1">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="@dimen/grid_1x">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_name_value"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            tools:text="Name:"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_duration_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            tools:text="Duration:"
-            android:textColor="@color/white" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="Name:"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_desc_value"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="Duration:"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/grid_1x"
+                android:singleLine="true"
+                android:text="Description:"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            tools:text="@string/leak_canary_about_message"
-            android:textColor="@color/white" />
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_name_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="Name:" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_duration_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                tools:text="Duration:" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_desc_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                android:textColor="@color/white"
+                tools:text="@string/leak_canary_about_message" />
+        </LinearLayout>
     </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/selectedView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/bg_select_program_selected" />
 
-</LinearLayout>
+</FrameLayout>

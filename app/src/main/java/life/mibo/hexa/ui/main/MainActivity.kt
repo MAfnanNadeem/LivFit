@@ -60,7 +60,6 @@ import life.mibo.hexa.models.ScanComplete
 import life.mibo.hexa.models.rxl.RxlProgram
 import life.mibo.hexa.ui.base.BaseActivity
 import life.mibo.hexa.ui.base.BaseFragment
-import life.mibo.hexa.ui.base.ItemClickListener
 import life.mibo.hexa.ui.base.PermissionHelper
 import life.mibo.hexa.ui.home.HomeItem
 import life.mibo.hexa.ui.login.LoginActivity
@@ -80,6 +79,7 @@ import life.mibo.hexa.ui.main.Navigator.Companion.RXL_TABS_2
 import life.mibo.hexa.ui.main.Navigator.Companion.SCAN
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_MUSCLES
 import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_PROGRAM
+import life.mibo.hexa.ui.main.Navigator.Companion.SELECT_SUITS
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION
 import life.mibo.hexa.ui.main.Navigator.Companion.SESSION_POP
 import life.mibo.hexa.ui.rxl.adapter.ReflexModel
@@ -149,16 +149,16 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
 
-    private fun setBottomBar() {
-        bottomBarHelper.register(item1, item2, item3, item4)
-        bottomBarHelper.listener = object : ItemClickListener<Any> {
-            override fun onItemClicked(item: Any?, position: Int) {
-                bottomBarClicked(position)
-            }
-        }
-
-        bottomBarHelper.bind(bottom_bar)
-    }
+//    private fun setBottomBar() {
+//        bottomBarHelper.register(item1, item2, item3, item4)
+//        bottomBarHelper.listener = object : ItemClickListener<Any> {
+//            override fun onItemClicked(item: Any?, position: Int) {
+//                bottomBarClicked(position)
+//            }
+//        }
+//
+//        bottomBarHelper.bind(bottom_bar)
+//    }
 
     fun getNavigation(): NavigationView {
         if (navigation == null)
@@ -278,6 +278,13 @@ class MainActivity : BaseActivity(), Navigator {
 //            }
     }
 
+    private fun drawerLockMode(lock: Boolean) {
+        if (lock)
+            drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        else
+            drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
     fun setToolbar(drawerLayout: DrawerLayout) {
         val toolbar = supportActionBar
         if (toolbar != null) {
@@ -291,33 +298,33 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    private fun updateMenu() {
-        // bottom_nav_view.menu.clear()
-        try {
-            Thread.sleep(100)
-        } catch (e: Exception) {
-        }
-        if (bottom_nav_view.maxItemCount < 5)
-            bottom_nav_view?.menu?.add(
-                Menu.NONE,
-                R.id.navigation_devices,
-                Menu.NONE,
-                "Home"
-            )?.setIcon(R.drawable.ic_home_black_24dp);
-        //bottom_nav_view?.inflateMenu(R.menu.bottom_nav_menu_rxl)
-        //val menu = bottom_nav_view.menu as BottomNavigationMenu
-
-//        appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.navigation_discover,
-//                R.id.navigation_create,
-//                R.id.navigation_analytic,
-//                R.id.navigation_more
-//            )
-//        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        bottom_nav_view.setupWithNavController(navController)
-    }
+//    private fun updateMenu() {
+//        // bottom_nav_view.menu.clear()
+//        try {
+//            Thread.sleep(100)
+//        } catch (e: Exception) {
+//        }
+//        if (bottom_nav_view.maxItemCount < 5)
+//            bottom_nav_view?.menu?.add(
+//                Menu.NONE,
+//                R.id.navigation_devices,
+//                Menu.NONE,
+//                "Home"
+//            )?.setIcon(R.drawable.ic_home_black_24dp);
+//        //bottom_nav_view?.inflateMenu(R.menu.bottom_nav_menu_rxl)
+//        //val menu = bottom_nav_view.menu as BottomNavigationMenu
+//
+////        appBarConfiguration = AppBarConfiguration(
+////            setOf(
+////                R.id.navigation_discover,
+////                R.id.navigation_create,
+////                R.id.navigation_analytic,
+////                R.id.navigation_more
+////            )
+////        )
+////        setupActionBarWithNavController(navController, appBarConfiguration)
+////        bottom_nav_view.setupWithNavController(navController)
+//    }
 
     val permissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -678,7 +685,8 @@ class MainActivity : BaseActivity(), Navigator {
         else
             manager?.startScanning(this, wifi)
         scanDisposable =
-            Single.just("").delay(15, TimeUnit.SECONDS).subscribe { i -> stopScanning() }
+            Single.just("").delay(MiboApplication.SCAN_TIME, TimeUnit.MILLISECONDS)
+                .subscribe { i -> stopScanning() }
 
     }
 
@@ -868,6 +876,13 @@ class MainActivity : BaseActivity(), Navigator {
                     bundle = data
                 navigate(0, R.id.navigation_select_muscles, bundle)
             }
+
+            SELECT_SUITS -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_select_suit, bundle)
+            }
             SESSION -> {
                 var bundle: Bundle? = null
                 if (data is Bundle)
@@ -903,6 +918,13 @@ class MainActivity : BaseActivity(), Navigator {
             }
             Navigator.POST -> {
                 postObservable(data)
+            }
+
+            Navigator.DRAWER_LOCK -> {
+                drawerLockMode(true)
+            }
+            Navigator.DRAWER_UNLOCK -> {
+                drawerLockMode(false)
             }
 
             else -> {
@@ -979,7 +1001,8 @@ class MainActivity : BaseActivity(), Navigator {
                 //startScanning(false)
                 //updateMenu()
                 // test
-                navigate(0, R.id.navigation_rxl_home)
+                //navigate(0, R.id.navigation_rxl_home)
+                navigate(0, R.id.navigation_select_suit)
 
             }
             R.id.navigation_add_product -> {

@@ -13,7 +13,6 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -49,6 +48,7 @@ import life.mibo.hexa.ui.base.BaseListener
 import life.mibo.hexa.ui.base.PermissionHelper
 import life.mibo.hexa.ui.devices.adapter.ScanDeviceAdapter
 import life.mibo.hexa.ui.main.MessageDialog
+import life.mibo.hexa.ui.main.MiboEvent
 import life.mibo.hexa.ui.main.Navigator
 import life.mibo.hexa.utils.Toasty
 import life.mibo.hexa.utils.Utils
@@ -184,7 +184,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                     for (i in SessionManager.getInstance().userSession.devices) {
                         if (i.isBooster) {
                             SessionManager.getInstance().userSession.booster = i
-                            navigate(Navigator.SELECT_MUSCLES, null)
+                            navigate(Navigator.SELECT_SUITS, null)
                             return
                         }
                     }
@@ -350,12 +350,18 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     override fun onConnectedDevices(devices: ArrayList<Device>) {
         log("onConnectedDevices ${devices.size}")
         if (devices.isNotEmpty()) {
-            devices?.forEach {
-                availabeAdapter?.addDevice(it)
-//                if (isRxl)
-//                    availabeAdapter?.addDevice(it, isRxl)
-//                else availabeAdapter?.addDevice(it)
+//            log("onConnectedDevices before ${devices}")
+            devices.sortBy {
+                it.id
             }
+//            log("onConnectedDevices after ${devices}")
+            availabeAdapter?.addDevice(devices, isRxl)
+//            devices?.forEach {
+//                availabeAdapter?.addDevice(it)
+////                if (isRxl)
+////                    availabeAdapter?.addDevice(it, isRxl)
+////                else availabeAdapter?.addDevice(it)
+//            }
         }
     }
 
@@ -395,14 +401,19 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         }
 
         override fun onClicked(device: Device?) {
-            blinkDevice(device?.uid, Color.RED)
+            blinkDevice(device?.id, device?.uid)
         }
 
     }
 
-    fun blinkDevice(uid: String?, color: Int) {
+    fun blinkDevice(id: String?, uid: String?) {
         uid?.let {
-            EventBus.getDefault().postSticky(RxlBlinkEvent(it, 200, 200, 3, color))
+            Single.fromCallable {
+                val color = Utils.getColorAt(id)
+                EventBus.getDefault().postSticky(RxlBlinkEvent(it, 200, 200, 3, color))
+            }.subscribeOn(Schedulers.io()).doOnError {
+                MiboEvent.log(it)
+            }.subscribe()
         }
     }
 
@@ -504,10 +515,11 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         availabeAdapter?.updateDevice(event.device)
         if (!isConnected || button_next?.visibility != View.VISIBLE) {
             isConnected = true
-            updateButton()
+            //updateButton()
             button_next?.visibility = View.VISIBLE
             log("DeviceStatusEvent Device updateButton......................")
         }
+        updateButton()
     }
 
     @Subscribe
@@ -554,6 +566,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     }
 
 
+    // MainActivity
     @Subscribe
     public fun onNewDevice(event: NewDeviceDiscoveredEvent) {
         log("NewDeviceDiscoveredEvent received " + event.data)

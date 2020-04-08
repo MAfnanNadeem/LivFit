@@ -43,6 +43,20 @@ public class Toasty {
     }
 
     @CheckResult
+    public static Snackbar snackbar(View view, @StringRes int message) {
+        Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+        bar.show();
+        return bar;
+    }
+
+    @CheckResult
+    public static Snackbar snackbar(View view, String message) {
+        Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+        bar.show();
+        return bar;
+    }
+
+    @CheckResult
     public static Snackbar snackbar(View view, @StringRes int message, int action, View.OnClickListener listener) {
         Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).setAction(action, listener);
         bar.show();

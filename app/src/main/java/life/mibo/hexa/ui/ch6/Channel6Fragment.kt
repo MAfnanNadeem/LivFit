@@ -3,8 +3,6 @@ package life.mibo.hexa.ui.ch6
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,7 +12,7 @@ import life.mibo.hardware.events.*
 import life.mibo.hexa.R
 import life.mibo.hexa.core.Prefs
 import life.mibo.hexa.ui.base.BaseFragment
-import life.mibo.hexa.utils.Utils
+import life.mibo.hexa.ui.main.Navigator
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -23,21 +21,22 @@ import java.util.concurrent.TimeUnit
 
 class Channel6Fragment : BaseFragment(), ChannelObserver {
 
-    private lateinit var viewModel: Channel6ViewModel
+    //private lateinit var viewModel: Channel6ViewModel
     private lateinit var controller: Channel6Controller
     private lateinit var userId: String
     var recyclerView: RecyclerView? = null
+    var stateBundle = Bundle()
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
         log("onCreateView")
-        viewModel =
-            ViewModelProviders.of(this).get(Channel6ViewModel::class.java)
+//        viewModel =
+//            ViewModelProviders.of(this).get(Channel6ViewModel::class.java)
         val root = i.inflate(R.layout.fragment_channel6, c, false)
         //  val textView: TextView = root.findViewById(R.id.text_dashboard)
         //recyclerView = root.findViewById(R.id.recyclerView)
-        viewModel.text.observe(this, Observer {
-            //    textView.text = ""//it
-        })
+//        viewModel.text.observe(this, Observer {
+//            //    textView.text = ""//it
+//        })
 
         this.activity?.actionBar?.hide()
         controller = Channel6Controller(this@Channel6Fragment, this)
@@ -54,8 +53,10 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
         //controller = Channel6Controller(this@Channel6Fragment)
+        if (arguments != null)
+            stateBundle = arguments!!
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
-        controller.onViewCreated(view)
+        controller.onViewCreated(view, stateBundle)
 
         iv_plus?.setOnClickListener {
             controller.onMainPlusClicked()
@@ -87,7 +88,13 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
             controller.onMainStopClicked()
         }
 
-        Utils.loadImage(hexagonImageView, "", R.drawable.ic_person_black_24dp)
+        //Utils.loadImage(hexagonImageView, "", R.drawable.ic_person_black_24dp)
+        // life.mibo.hardware.core.Logger.e("Session Start ", stateBundle)
+
+        val name: String? = stateBundle.getString("program_name", null);
+        name?.let {
+            activity?.title = it
+        }
     }
 
 
@@ -165,10 +172,12 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         log("onStart")
         super.onStart()
         EventBus.getDefault().register(this)
+        navigate(Navigator.DRAWER_LOCK, null)
     }
 
     override fun onStop() {
         log("onStop")
+        navigate(Navigator.DRAWER_UNLOCK, null)
         EventBus.getDefault().unregister(this)
         controller.onStop()
         super.onStop()
@@ -195,7 +204,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         fun onMainPlayClicked()
         fun onMainStopClicked()
         fun onStop()
-        fun onViewCreated(view: View)
+        fun onViewCreated(view: View, bundle: Bundle)
     }
 
     override fun onNavBackPressed(): Boolean {

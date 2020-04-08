@@ -10,6 +10,7 @@ import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Html
 import android.util.SparseArray
 import android.view.MenuItem
@@ -26,7 +27,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_quickplay_detail_play.*
+import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hardware.events.ProximityEvent
 import life.mibo.hardware.events.RxlBlinkEvent
 import life.mibo.hardware.events.RxlStatusEvent
@@ -255,6 +258,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             tv_select_pause?.setOnClickListener {
                 delegate.showDialog(CourseCreateImpl.Type.DELAY)
             }
+
+            tv_customize?.setOnClickListener {
+                changeSensor(100)
+            }
         }
     }
 
@@ -359,6 +366,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 RXLManager.getInstance().with(it).withListener(this).start(tap)
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
             // TODO check later, issue faced NetworkOnMainThreadException
             //life.mibo.hardware.network.TCPClient.sendMessage
 
@@ -390,7 +398,19 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
 
-    fun checkSequenceIndicators() {
+    private fun turnOffAll() {
+        Observable.fromIterable(userPods).subscribeOn(Schedulers.io()).doOnNext {
+            CommunicationManager.getInstance()
+                .onChangeColorEvent(ChangeColorEvent(it, it.uid, 0, 0))
+            Thread.sleep(10)
+        }.doOnError {
+            MiboEvent.log(it)
+        }.doOnComplete {
+
+        }.subscribe()
+    }
+
+    private fun checkSequenceIndicators() {
         val pods = getProgramConnectedPods()
         Observable.fromIterable(pods).subscribeOn(Schedulers.io())
             .subscribe(object : Observer<Device> {
@@ -411,7 +431,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 }
 
                 override fun onError(e: Throwable) {
-
+                    MiboEvent.log(e)
                 }
 
             })
@@ -1308,10 +1328,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     private var size = 1
     private fun checkStartCondition(action: (ArrayList<Device>) -> Unit) {
         //val list = SessionManager.getInstance().userSession.devices
-        if (userPods.size < size) {
-            MessageDialog.info(this, "RXL Requirement", getString(R.string.three_pods_required))
-            return
-        }
+        turnOffAll()
+//        if (userPods.size < size) {
+//            MessageDialog.info(this, "RXL Requirement", getString(R.string.three_pods_required))
+//            return
+//        }
 //        val pods = ArrayList<Device>()
 //        list.forEach {
 //            if (it.isPod) {
@@ -1540,6 +1561,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     override fun onStop() {
+        turnOffAll()
+        cancelTimer()
         //unregister(this)
         //RXLManager.getInstance().unregister()
         //EventBus.getDefault().unregister(this)
@@ -1596,9 +1619,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //                "Completed",
 //                "Exercise finished " + RXLHelper.getInstance().getScore()
 //            )
+            cancelTimer()
             progressBar!!.visibility = GONE
             tv_cycle_heading?.visibility = INVISIBLE
             tv_cycle_count?.text = ""
+            tv_cycle_timer?.text = ""
         }
 
 //        Single.just("").delay(500, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
@@ -1626,7 +1651,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
         }
-        progress(0, 100, duration.times(1000), 1)
+        startTimer(duration)
+        // progress(0, 100, duration.times(1000), 1)
     }
 
     override fun onCyclePaused(cycle: Int, time: Int) {
@@ -1662,31 +1688,77 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
         }
+        resumeTimer(remaining)
         //animator?.resume()
-        val i = lastAnimator2
-        if (i is Int) {
-            log("onExerciseResumed lastAnimator2 is Int... $i :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
-            progress(i, 100, remaining.times(1000), 1)
-        } else {
-            val p = remaining.div(getDuration().toFloat()).times(100f)
-            log("onExerciseResumed percent $p :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
-            progress(100 - p.toInt(), 100, remaining.times(1000), 1)
-        }
+//        val i = lastAnimator2
+//        if (i is Int) {
+//            log("onExerciseResumed lastAnimator2 is Int... $i :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
+//            progress(i, 100, remaining.times(1000), 1)
+//        } else {
+//            val p = remaining.div(getDuration().toFloat()).times(100f)
+//            log("onExerciseResumed percent $p :: lastAnimator $lastAnimator  lastAnimator2 $lastAnimator2 ")
+//            progress(100 - p.toInt(), 100, remaining.times(1000), 1)
+//        }
     }
 
-    var lastAnimator = 0f
-    var lastAnimator2: Any? = null
+    //var lastAnimator = 0f
+    // var lastAnimator2: Any? = null
     override fun onExercisePaused(cycle: Int, totalTime: Int, remaining: Int) {
         log("onExercisePaused ")
         runOnUiThread {
             btn_pause?.setText(R.string.resume)
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_green)
-            lastAnimator = animator?.animatedFraction ?: 0f
-            lastAnimator2 = animator?.animatedValue
-            animator?.cancel()
+            //lastAnimator = animator?.animatedFraction ?: 0f
+            // lastAnimator2 = animator?.animatedValue
+            //animator?.cancel()
+            pauseTimer(remaining)
         }
     }
+
+    private var isTimer = true;
+    private var countTimer: CountDownTimer? = null
+
+    private fun startTimer(time: Int) {
+        log("startTimer $time")
+        startCountDown(time)
+    }
+
+    private fun pauseTimer(time: Int) {
+        log("pauseTimer $time")
+        cancelTimer()
+    }
+
+    private fun resumeTimer(time: Int) {
+        log("resumeTimer $time")
+        startCountDown(time)
+    }
+
+    private fun onTimerUpdate(time: Long) {
+        tv_cycle_timer?.text = String.format("%02d:%02d", time / 60000, time/1000 % 60 )
+    }
+
+    internal fun cancelTimer() {
+        countTimer?.cancel()
+    }
+
+    private fun startCountDown(seconds: Int) {
+        cancelTimer()
+        countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
+            override fun onTick(it: Long) {
+                log("CountDownTimer $it")
+                onTimerUpdate(it)
+            }
+
+            override fun onFinish() {
+                onTimerUpdate(0L)
+                cancelTimer()
+            }
+        }
+        countTimer?.start()
+    }
+
+
 
     // var lastFrom = -1
     var animator: ObjectAnimator? = null
@@ -1707,16 +1779,6 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             animator = ObjectAnimator.ofInt(progressBar, "progress", valueFrom, valueTo)
                 .setDuration(duration.toLong())
             animator?.start()
-        }.subscribe()
-    }
-
-    fun turnOffAll() {
-        Observable.fromIterable(userPods).subscribeOn(Schedulers.io()).doOnNext {
-
-        }.doOnError {
-
-        }.doOnComplete {
-
         }.subscribe()
     }
 

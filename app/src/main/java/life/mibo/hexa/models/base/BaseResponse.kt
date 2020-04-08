@@ -21,4 +21,5 @@ abstract class BaseResponse<T>(@SerializedName(value = "data", alternate = ["Dat
     fun status() : String =  status?.toLowerCase() ?: ""
 
     fun isSuccess() = "success".equals(status, true)
+    fun isError() = "error".equals(status, true)
 }

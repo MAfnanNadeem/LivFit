@@ -22,8 +22,8 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/button_minus"
-        android:layout_width="59dp"
-        android:layout_height="@dimen/ch_6_list_item_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_centerVertical="true"
         android:background="@null"
         android:scaleType="fitCenter"
@@ -31,6 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_muscle"
+        app:layout_constraintEnd_toStartOf="@id/et_perc"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.15" />
 
@@ -49,7 +50,6 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_plus"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/button_minus"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.3" />
@@ -58,7 +58,7 @@
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/button_plus"
         android:layout_width="0dp"
-        android:layout_height="@dimen/ch_6_list_item_button"
+        android:layout_height="0dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/button_minus"
         android:background="@null"

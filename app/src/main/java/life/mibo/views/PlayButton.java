@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 
 public class PlayButton extends AppCompatImageButton {

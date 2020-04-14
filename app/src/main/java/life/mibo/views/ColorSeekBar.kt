@@ -14,7 +14,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ArrayRes
-import life.mibo.hexa.R
+import life.mibo.android.R
 
 class ColorSeekBar(context: Context, attributeSet: AttributeSet) : View(context, attributeSet) {
 

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import life.mibo.hexa.R
+import life.mibo.android.R
 
 /**
  * Created by Sumeet Gehi 29/12/2019

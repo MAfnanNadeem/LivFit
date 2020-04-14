@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import life.mibo.hardware.core.Logger;
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 import life.mibo.views.recycler.HorizontalOverlapDecorator;
 import life.mibo.views.recycler.VerticalOverlapDecorator;
 

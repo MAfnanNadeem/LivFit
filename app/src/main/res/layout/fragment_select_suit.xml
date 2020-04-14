@@ -83,6 +83,7 @@
         android:layout_margin="@dimen/grid_1x"
         android:background="@drawable/button_shape_rounded"
         android:text="@string/dialog_continue"
+        android:enabled="false"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

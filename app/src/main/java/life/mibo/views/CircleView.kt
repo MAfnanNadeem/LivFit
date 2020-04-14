@@ -13,7 +13,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
-import life.mibo.hexa.R
+import life.mibo.android.R
 import kotlin.math.min
 
 // created custom view for color/circle

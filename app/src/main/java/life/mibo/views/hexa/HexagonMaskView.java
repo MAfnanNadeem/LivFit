@@ -23,7 +23,7 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
-import life.mibo.hexa.utils.Utils;
+import life.mibo.android.utils.Utils;
 
 public class HexagonMaskView extends AppCompatImageView {
     private Path hexagonPath;

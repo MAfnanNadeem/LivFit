@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatSeekBar;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 public class TextThumbSeekBar extends AppCompatSeekBar {
 

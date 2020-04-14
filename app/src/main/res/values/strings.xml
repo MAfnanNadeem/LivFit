@@ -24,7 +24,9 @@
     <string name="enter_email">Email Id is Required</string>
     <string name="enter_your_password">Please enter your password</string>
     <string name="enter_password">Enter Your Password</string>
-    <string name="enter_confirm_password">Confirm Password is Required</string>
+    <string name="enter_current_password">Enter current password</string>
+    <string name="enter_new_password">Enter new password</string>
+    <string name="enter_confirm_password">Confirm password is Required</string>
     <string name="enter_city">Enter Your City</string>
     <string name="accept_term_conditions">Please accept terms and conditions</string>
     <string name="enter_dob">Enter Your Date of Birth</string>
@@ -207,5 +209,16 @@
     <string name="presets">Presets</string>
     <string name="_6_channels">6 Channels</string>
     <string name="start_session">Start Session</string>
+    <string name="sumeet">Sumeet Kumar</string>
+    <string name="current_password"><small>Current Password</small></string>
+    <string name="new_password"><small>New Password</small></string>
+    <string name="confirm_password"><small>Confirm Password</small></string>
+    <string name="change_password">Change Password</string>
+    <string name="sessions">Sessions</string>
+    <string name="hours">Hours</string>
+    <string name="calories">Calories</string>
+    <string name="all_images">All Images</string>
+    <string name="password_req"><![CDATA[Password must be 8 character in length, must contain 1 Upper & Lower case, 1 number and 1 special character]]></string>
+    <string name="pwd_not_match">Confirm password not matched</string>
 
 </resources>

@@ -33,9 +33,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
 import life.mibo.hardware.core.Logger;
-import life.mibo.hexa.R;
-import life.mibo.hexa.utils.Constants;
-import life.mibo.hexa.utils.Utils;
+import life.mibo.android.R;
+import life.mibo.android.utils.Constants;
+import life.mibo.android.utils.Utils;
 
 
 public class IconSwitch extends ViewGroup {

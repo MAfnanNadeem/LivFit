@@ -21,7 +21,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.lang.ref.WeakReference;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 
 public class AnimateView {

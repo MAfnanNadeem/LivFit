@@ -23,11 +23,11 @@ android {
     buildToolsVersion "29.0.2"
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId "life.mibo.hexa"
-        minSdkVersion 21
+        applicationId "life.mibo.android"
+        minSdkVersion 23
         targetSdkVersion 29
-        versionCode 13
-        versionName "0.0.13"
+        versionCode 2
+        versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -45,14 +45,13 @@ android {
 
         }
         debug {
-            applicationIdSuffix ".debug"
+            //applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
             signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
             buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
             matchingFallbacks = ['debug']
-
         }
 
     }
@@ -98,11 +97,11 @@ dependencies {
     //implementation 'br.com.simplepass:loading-button-android:2.2.0'
 
     //test
-    implementation 'com.clj.fastble:FastBleLib:2.3.4'
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
+    //implementation 'com.clj.fastble:FastBleLib:2.3.4'
+    //implementation "com.polidea.rxandroidble2:rxandroidble:1.11.0"
     implementation 'com.ogaclejapan.smarttablayout:library:2.0.0'
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
-    implementation "com.github.DichotoMe.ProfileBar:profilebar:1.6.4"
+    //implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+    //implementation "com.github.DichotoMe.ProfileBar:profilebar:1.6.4"
 
 
     // Google
@@ -112,8 +111,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
     //Google Firebase
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta02'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta04'
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation "androidx.security:security-crypto:1.0.0-beta01"
+
     //implementation 'com.google.firebase:firebase-analytics:17.2.2'
     //implementation 'com.google.firebase:firebase-core:17.2.2'
     //implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
@@ -137,7 +138,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.18'
     implementation 'com.squareup.retrofit2:retrofit:2.7.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
 
     // image loading (picasso, glide, coil-kotlin)
@@ -157,6 +159,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':mibo_hardware')
     implementation project(path: ':ShapeImageView')
+    implementation project(path: ':imagepicker')
 
     //implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
     // implementation 'com.github.joielechong:countrycodepicker:2.4.1'

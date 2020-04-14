@@ -10,7 +10,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
-import life.mibo.hexa.R
+import life.mibo.android.R
 
 fun View.visible(show: Boolean) {
     visibility = if (show) View.VISIBLE else View.GONE

@@ -30,7 +30,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 
 public class ExpandableTextView extends LinearLayout implements View.OnClickListener {

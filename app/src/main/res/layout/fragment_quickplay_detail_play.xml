@@ -40,7 +40,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:title="@string/rxl_title">
 
-            <life.mibo.hexa.ui.rxl.slider.GiffVideoSlider
+            <life.mibo.android.ui.rxl.slider.GiffVideoSlider
                 android:id="@+id/giffVideoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

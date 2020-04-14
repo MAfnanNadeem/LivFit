@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:201589375301:android:f3eff81326e97c35eabe2c",
+        "android_client_info": {
+          "package_name": "life.mibo.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201589375301-nmuvhdnos8pets17tb18ju12n1h1hslf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "life.mibo.android",
+            "certificate_hash": "201058769667985af39555ae1ac80684eac5b992"
+          }
+        },
+        {
+          "client_id": "201589375301-qnqv9otf9r3ccf0vfeekm21ggb71v3gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZE4hGeND-SiixF4QGDSrebO1BktZOzzw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201589375301-qnqv9otf9r3ccf0vfeekm21ggb71v3gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:201589375301:android:470010bbbd5e4691eabe2c",
         "android_client_info": {
           "package_name": "life.mibo.hexa"

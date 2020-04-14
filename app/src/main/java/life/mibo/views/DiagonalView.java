@@ -26,7 +26,7 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 

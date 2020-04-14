@@ -16,7 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import life.mibo.hardware.core.Logger;
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 public class NumberPicker extends LinearLayout {
     private TextView number;

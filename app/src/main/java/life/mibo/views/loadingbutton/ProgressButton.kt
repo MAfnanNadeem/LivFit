@@ -26,7 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleObserver
 import life.mibo.hardware.core.Logger
 import life.mibo.views.loadingbutton.animatedDrawables.CircularRevealAnimatedDrawable
-import life.mibo.hexa.R
+import life.mibo.android.R
 import life.mibo.views.loadingbutton.animatedDrawables.CircularProgressAnimatedDrawable
 import life.mibo.views.loadingbutton.animatedDrawables.ProgressType
 import life.mibo.views.loadingbutton.presentation.State

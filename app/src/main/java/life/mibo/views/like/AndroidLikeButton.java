@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 
 public class AndroidLikeButton extends FrameLayout implements View.OnClickListener {

@@ -26,7 +26,7 @@ import com.google.zxing.DecodeHintType
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.Result
 import kotlin.math.max
-import life.mibo.hexa.R
+import life.mibo.android.R
 
 class BarcodeView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

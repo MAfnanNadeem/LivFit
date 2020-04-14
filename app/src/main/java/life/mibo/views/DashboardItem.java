@@ -29,8 +29,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import life.mibo.hardware.core.Logger;
-import life.mibo.hexa.R;
-import life.mibo.hexa.utils.Utils;
+import life.mibo.android.R;
+import life.mibo.android.utils.Utils;
 
 
 public class DashboardItem extends FrameLayout {

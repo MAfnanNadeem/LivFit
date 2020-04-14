@@ -23,7 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import life.mibo.hexa.R;
+import life.mibo.android.R;
 
 
 public class OtpEditText extends AppCompatEditText implements TextWatcher {

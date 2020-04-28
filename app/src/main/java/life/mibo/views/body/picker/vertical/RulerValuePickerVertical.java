@@ -361,10 +361,29 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
         return value;
     }
 
+    public String getCurrentValueAsString() {
+        int absoluteValue = mScrollView.getScrollY() / mRulerView.getIndicatorIntervalWidth();
+        int value = mRulerView.getMinValue() + absoluteValue;
+
+        if (value > mRulerView.getMaxValue()) {
+            return mRulerView.getMaxValue() + absoluteValue + "'0";
+        } else if (value < mRulerView.getMinValue()) {
+            return mRulerView.getMaxValue() + "'0";
+        } else {
+            int divVal = value / 12;
+            int feet = 2 + divVal;
+            int inches = value - (divVal * 12);
+            return feet + "'" + inches;
+        }
+    }
+
     @Override
     public void onScrollChanged() {
         RulerValuePicker.log("onScrollChanged----------");
-        if (mListener != null) mListener.onIntermediateValueChange(getCurrentValue());
+        if (mListener != null)
+            if (isFeetMode)
+                mListener.onIntermediateValueChange(getCurrentValueAsString());
+            else mListener.onIntermediateValueChange(getCurrentValue());
     }
 
     @Override
@@ -372,7 +391,10 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
         RulerValuePicker.log("onScrollStopped-------------------");
         makeOffsetCorrection(mRulerView.getIndicatorIntervalWidth());
         if (mListener != null) {
-            mListener.onValueChange(getCurrentValue());
+            if (isFeetMode)
+                mListener.onValueChange(getCurrentValueAsString());
+            else
+                mListener.onValueChange(getCurrentValue());
         }
     }
 
@@ -601,11 +623,42 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
      * @see #getMinValue()
      * @see #getMaxValue()
      */
+    private void setMinMaxValue() {
+        mRulerView.setValueRange(mRulerView.getMinValue(), mRulerView.getMaxValue());
+        invalidate();
+        selectValue(mRulerView.getMinValue());
+    }
+
     public void setMinMaxValue(final int minValue, final int maxValue) {
         mRulerView.setValueRange(minValue, maxValue);
-        invalidate();
+        //invalidate();
+        requestLayout();
         selectValue(minValue);
     }
+
+    // @Override
+//    public void invalidate() {
+//        refresh();
+//        super.invalidate();
+//
+//    }
+
+    public void refresh() {
+        for (int i = 0; i < getChildCount(); i++) {
+            try {
+                getChildAt(i).forceLayout();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //todo do it later
+        //mScrollView.setVisibility(GONE);
+       // mScrollView.setVisibility(VISIBLE);
+        requestLayout();
+        super.invalidate();
+    }
+
+
 
     /**
      * @return Get distance between two indicator in pixels.
@@ -710,5 +763,43 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
             super.writeToParcel(out, flags);
             out.writeInt(value);
         }
+    }
+
+    int type = 1;
+    private boolean isFeetMode = false;
+
+    public synchronized void refreshCmToInches() {
+        mRulerView.setFeetMode(false);
+        if (type == 1)
+            setMinMaxValue((int) (mRulerView.getMinValue() * 0.3937), (int) (mRulerView.getMaxValue() * 0.3937));
+        else
+            setMinMaxValue();
+        type = 2;
+        invalidate();
+    }
+
+    public void setFeetMode(boolean feetMode) {
+        this.isFeetMode = feetMode;
+        mRulerView.setFeetMode(feetMode);
+    }
+
+    public synchronized void refreshInchesToCm() {
+        mRulerView.setFeetMode(false);
+        if (type == 2 || type == 3)
+            setMinMaxValue((int) (mRulerView.getMinValue() * 2.54), (int) (mRulerView.getMaxValue() * 2.54));
+        else
+            setMinMaxValue();
+        type = 1;
+        invalidate();
+    }
+
+    public synchronized void refreshInchesToFeet() {
+        mRulerView.setFeetMode(true);
+        if (type == 1)
+            setMinMaxValue((int) (mRulerView.getMinValue() * 0.3937), (int) (mRulerView.getMaxValue() * 0.3937));
+        else
+            setMinMaxValue();
+        type = 3;
+        invalidate();
     }
 }

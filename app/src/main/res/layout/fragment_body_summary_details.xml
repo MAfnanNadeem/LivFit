@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/25/20 3:45 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/22/20 4:08 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:gravity="center"
+        android:text="@string/my_bmi_title"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:gravity="center"
+        android:minHeight="200dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        tools:background="@drawable/bg_body_measure_summary_details">
+
+
+        <ImageView
+            android:id="@+id/image_circle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:paddingEnd="@dimen/grid_1x"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.45"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.3"
+            tools:src="@drawable/ic_body_summary_bmi" />
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginEnd="@dimen/grid_2x"
+            android:minHeight="120dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_intro_male_chest" />
+
+
+        <TextView
+            android:id="@+id/tv_value_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toStartOf="@+id/tv_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/bmi_title" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tv_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_extra_large"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/view1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.5"
+                tools:text="101" />
+
+            <TextView
+                android:id="@+id/tv_value_unit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white_eee"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/tv_value"
+                app:layout_constraintStart_toEndOf="@id/tv_value"
+                app:layout_constraintTop_toTopOf="@id/tv_value"
+                tools:text="101" />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/textColor"
+                app:layout_constraintBottom_toTopOf="@id/tv_value_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_value_normal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Normal Range is.."
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:paddingEnd="@dimen/grid_2x"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toTopOf="@id/image_circle"
+            app:layout_constraintEnd_toEndOf="@id/image_circle"
+            tools:text="Today, 9:29 PM" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        app:cardCornerRadius="@dimen/grid_1x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/grid_2x">
+
+            <TextView
+                android:id="@+id/tv_gender"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                tools:text="Male" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey_ddd" />
+
+            <TextView
+                android:id="@+id/tv_weight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                tools:text="68.8 KG" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey_ddd" />
+
+            <TextView
+                android:id="@+id/tv_height"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                tools:text="168 CM" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/bg_chart_gradient"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardview">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabBackground="@color/transparent"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="#70C5FF"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorHeight="8dp"
+            app:tabSelectedTextColor="@color/textColor"
+            app:tabTextColor="@color/textColor2">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Week" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Month" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/15/20 6:24 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/21/20 10:29 AM
+  ~  Mibo Hexa - app
+  -->
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@android:id/text1"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="marquee"
+    android:minWidth="48dp"
+    android:paddingTop="@dimen/grid_2x"
+    android:paddingBottom="@dimen/grid_2x"
+    android:singleLine="true"
+    tools:text="@string/sumeet" />

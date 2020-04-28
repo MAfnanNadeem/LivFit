@@ -81,6 +81,14 @@ object MiboEvent {
         }
     }
 
+    private fun event(type: String, bundle: Bundle?) {
+        try {
+            firebase.logEvent(type, bundle)
+        } catch (e: Exception) {
+            log(e)
+        }
+    }
+
     fun log(throwable: Throwable) {
         try {
             FirebaseCrashlytics.getInstance().recordException(throwable)

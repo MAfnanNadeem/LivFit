@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/20/20 10:44 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/20/20 4:34 PM
+  ~  Mibo Hexa - app
+  -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_1x"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/tv_type"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.5"
+        tools:src="@drawable/ic_body_female_i" />
+
+
+    <TextView
+        android:id="@+id/tv_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/imageView"
+        app:layout_constraintStart_toStartOf="@id/imageView"
+        tools:text="Type A" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

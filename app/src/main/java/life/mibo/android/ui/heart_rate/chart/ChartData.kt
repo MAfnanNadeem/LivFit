@@ -7,6 +7,8 @@
 
 package life.mibo.android.ui.heart_rate.chart
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -18,7 +20,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
@@ -27,8 +28,10 @@ import life.mibo.android.models.session.Report
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
 import life.mibo.android.models.weight.Data
+import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.utils.Constants
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -457,11 +460,22 @@ class ChartData {
 
                     }
                 } else {
-
                     val err = data?.error?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(chart?.context!!, R.string.error_occurred).show()
                     else Toasty.error(chart?.context!!, err, Toasty.LENGTH_SHORT).show()
+                }
+                if (data != null && data.status?.toLowerCase()?.contains("error") == true) {
+                  if(data.error?.get(0)?.code == 401) {
+                      try {
+                          chart?.context?.startActivity(
+                              Intent(chart?.context, LoginActivity::class.java)
+                          )
+                          (chart?.context as Activity).finish()
+                      } catch (e: Exception) {
+
+                      }
+                  }
                 }
                 //fragment.getDialog()?.dismiss()
             }

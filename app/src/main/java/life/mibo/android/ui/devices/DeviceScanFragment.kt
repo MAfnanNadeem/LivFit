@@ -864,6 +864,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     override fun onStop() {
         super.onStop()
+        CommunicationManager.getInstance().stopScanning()
         EventBus.getDefault().unregister(this)
         SessionManager.getInstance().userSession.isScanning = false
         controller.onStop()

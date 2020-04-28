@@ -8,6 +8,7 @@
 package life.mibo.android.ui.profile
 
 //import com.dichotome.profilebar.ui.tabPager.TabFragment
+import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -38,6 +39,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.member.Avatar
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
@@ -123,11 +125,11 @@ class ProfileFragment : BaseFragment() {
         )
         //setGradient(constraintLayout1, userImage.drawable)
         userImage?.setOnClickListener {
-            openPicker2()
+            openPicker()
         }
     }
 
-    private fun openPicker() {
+    private fun openPickerOld() {
         log("openPicker called")
         RxGalleryFinal.with(requireActivity()).image()
             .single()
@@ -139,6 +141,18 @@ class ProfileFragment : BaseFragment() {
                 }
             })
             .openGallery();
+    }
+
+    private val permissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA
+    )
+
+    private fun openPicker() {
+        PermissionHelper.requestPermission(this@ProfileFragment, permissions) {
+            openPicker2()
+        }
     }
 
     private fun openPicker2() {
@@ -208,7 +222,9 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    private fun uploadPicApi(base64: String) {
+    private fun uploadPicApi(base64: String?) {
+        if (base64 == null || base64.length < 100)
+            return
         val member = Prefs.get(context).member ?: return
         API.request.getApi()
             .memberAvatar(Avatar(Avatar.Data(base64, member.id()), member.accessToken))

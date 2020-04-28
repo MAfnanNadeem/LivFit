@@ -4,6 +4,6 @@
 
 package life.mibo.android.ui.base
 
-public interface ItemClickListener<A> {
-    fun onItemClicked(item: A?, position: Int)
+public interface ItemClickListener<Item> {
+    fun onItemClicked(item: Item?, position: Int)
 }

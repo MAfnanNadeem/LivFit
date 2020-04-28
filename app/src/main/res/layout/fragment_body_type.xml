@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/20/20 10:05 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/16/20 2:06 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/bg_body_header_female" />
+
+    <ImageView
+        android:id="@+id/header_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:src="@drawable/bg_body_header_female_bottom" />
+
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:gravity="center"
+        android:lines="2"
+        android:text="@string/choose_your_body_type"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintBottom_toBottomOf="@+id/header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/header" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tabLayout"
+        app:layout_constraintTop_toBottomOf="@id/header_bottom" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        app:layout_constraintBottom_toTopOf="@id/tv_continue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/tab_selector_body"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp" />
+
+
+    <Button
+        android:id="@+id/tv_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_1x"
+        android:background="@color/transparent"
+        android:gravity="center"
+        android:text="@string/skip"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_continue"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/grid_2x"
+        android:gravity="center"
+        android:text="@string/dialog_continue"
+        android:textColor="@color/textColor"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/imageNext"
+        app:layout_constraintEnd_toStartOf="@id/imageNext"
+        app:layout_constraintTop_toTopOf="@+id/imageNext" />
+
+    <ImageView
+        android:id="@+id/imageNext"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/button_shape_rounded"
+        android:padding="12dp"
+        android:src="@drawable/ic_arrow_forward_24dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

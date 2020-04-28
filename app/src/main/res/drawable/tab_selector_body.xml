@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Created by Sumeet Kumar on 4/20/20 1:51 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/7/20 1:30 PM
+  ~  Mibo Hexa - app
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/tab_indicator_body_selected"
+        android:state_selected="true"/>
+
+    <item android:drawable="@drawable/tab_indicator_default_suit"/>
+</selector>

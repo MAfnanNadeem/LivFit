@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/14/20 2:30 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/14/20 10:14 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/profile_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_intro_profile"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/profile_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:src="@drawable/ic_intro_profile_bg"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:text="@string/upload_profile_photo"
+        android:textColor="@color/textColor"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_pic" />
+
+    <com.github.siyamed.shapeimageview.HexagonImageView
+        android:id="@+id/profile_pic_uploaded"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/user_welcome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_name"
+        app:layout_constraintWidth_percent="0.5"
+        tools:src="@drawable/ic_user_test" />
+
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:scaleType="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/sumeet" />
+
+    <TextView
+        android:id="@+id/user_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:scaleType="center"
+        android:text="@string/welcome"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--    <Button-->
+    <!--        android:id="@+id/tv_continue"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_margin="@dimen/grid_1x"-->
+    <!--        android:background="@color/transparent"-->
+    <!--        android:gravity="center"-->
+    <!--        android:text="@string/skip"-->
+    <!--        android:visibility="gone"-->
+    <!--        android:textColor="@color/colorPrimary"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@drawable/bg_gradient">-->
+
+
+<!--        <life.mibo.views.body.picker.vertical.RulerValuePickerVertical-->
+<!--            android:id="@+id/rulerDemo"-->
+<!--            android:layout_width="96dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:background="@color/transparent"-->
+<!--            app:rv_indicator_color="@color/white"-->
+<!--            app:rv_indicator_interval="14dp"-->
+<!--            app:rv_indicator_width="1dp"-->
+<!--            app:rv_long_indicator_color="@color/textColor"-->
+<!--            app:rv_max_value="180"-->
+<!--            app:rv_min_value="0"-->
+<!--            app:rv_notch_color="@color/btn_red"-->
+<!--            app:rv_ruler_text_color="@color/btn_red"-->
+<!--            app:rv_ruler_text_size="6sp" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textDemo"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center|top"-->
+<!--            android:layout_margin="@dimen/grid_2x"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="@dimen/text_size_large"-->
+<!--            android:text="0000"-->
+<!--            android:textColor="@color/textColor" />-->
+
+<!--    </FrameLayout>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

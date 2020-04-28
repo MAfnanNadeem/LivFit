@@ -1,11 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="colorSurface">#FFFFFF</item>
+
+    </style><style name="AppTheme2" parent="Theme.MaterialComponents.Light.DarkActionBar.Bridge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="colorSurface">#FFFFFF</item>
+
     </style>
 
     <style name="AppTheme.FullScreen" parent="Theme.AppCompat.NoActionBar">
@@ -142,6 +157,22 @@
 
     <style name="DialogBounceAnimation">
         <item name="android:windowEnterAnimation">@anim/bounce_anim</item>
+    </style>
+
+
+
+    <style name="Widget.RulerView" parent="android:Widget">
+        <item name="indicator">@drawable/ruler_indicator</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#999999</item>
+        <item name="scaleSize">0.5dp</item>
+        <item name="rulerSize">0.5dp</item>
+        <item name="scaleColor">#ffa90c</item>
+        <item name="stepWidth">12.5dp</item>
+        <item name="scaleMaxHeight">20dp</item>
+        <item name="scaleMinHeight">10dp</item>
+        <item name="rulerColor">#e5e5e5</item>
+        <item name="rulerValueFormatter">@null</item>
     </style>
 
 </resources>

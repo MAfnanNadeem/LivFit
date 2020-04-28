@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.reactivex.Single
@@ -22,11 +23,11 @@ import kotlinx.android.synthetic.main.fragment_schedule.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.database.Database
 import life.mibo.android.models.program.Program
 import life.mibo.android.models.program.ProgramPost
 import life.mibo.android.models.program.ProgramPostData
 import life.mibo.android.models.program.SearchPrograms
-import life.mibo.android.database.Database
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
 import life.mibo.android.ui.base.ItemClickListener
@@ -82,11 +83,17 @@ class ScheduleFragment : BaseFragment() {
         loadProgramObservables()
         val now = Calendar.getInstance()
         tv_date?.text = String.format(
-            "%02d/%02d/%d", now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.MONTH).plus(1), now.get(Calendar.YEAR)
+            "%02d/%02d/%d",
+            now.get(Calendar.DAY_OF_MONTH),
+            now.get(Calendar.MONTH).plus(1),
+            now.get(Calendar.YEAR)
         )
         val hours = now.get(Calendar.HOUR_OF_DAY)
         tv_action?.text = String.format(
-            "%02d:%02d %s", now.get(Calendar.HOUR_OF_DAY) % 12, now.get(Calendar.MINUTE), if (hours > 12) "PM" else "AM"
+            "%02d:%02d %s",
+            now.get(Calendar.HOUR_OF_DAY) % 12,
+            now.get(Calendar.MINUTE),
+            if (hours > 12) "PM" else "AM"
         )
 
         button_book?.setOnClickListener {
@@ -172,7 +179,7 @@ class ScheduleFragment : BaseFragment() {
             now.get(Calendar.DAY_OF_MONTH)
         )
         dpd.minDate = now
-        dpd.accentColor = ContextCompat.getColor(context!!, R.color.colorPrimary)
+        dpd.accentColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
         dpd.show(childFragmentManager, "DatePickerDialog")
     }
 
@@ -194,10 +201,32 @@ class ScheduleFragment : BaseFragment() {
             now.get(Calendar.MINUTE),
             false
         )
-        dpd.accentColor = ContextCompat.getColor(context!!, R.color.colorPrimary)
-       // dpd.
+        dpd.accentColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+        // dpd.
         dpd.show(childFragmentManager, "TimePickerDialog")
     }
+
+    private fun timePickerDialog2() {
+        val now = Calendar.getInstance()
+        val listener = android.app.TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+
+        }
+        val dialog = android.app.TimePickerDialog(
+            requireContext(),
+            listener,
+            now.get(Calendar.HOUR_OF_DAY),
+            now.get(Calendar.MINUTE),
+            true
+        )
+        dialog.show()
+    }
+
+    private fun datePickerDialog2() {
+        val now = Calendar.getInstance()
+        val dialog = MaterialDatePicker.Builder.datePicker()
+        dialog.build().show(childFragmentManager, "MaterialDatePicker")
+    }
+
 
     //val events = ArrayList<IEvent>()
     //val popups = ArrayList<IPopup>();
@@ -227,10 +256,11 @@ class ScheduleFragment : BaseFragment() {
         log("CalendarDayView setEvents")
         // val d = com.android.calendar.DayView
         //calendarDayView.invalidate()
-        Single.just(h).delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-            recyclerView.scrollToPosition(it)
-            log("DayAdapter : recyclerView.scrollToPosition $h")
-        }.subscribe()
+        Single.just(h).delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess {
+                recyclerView.scrollToPosition(it)
+                log("DayAdapter : recyclerView.scrollToPosition $h")
+            }.subscribe()
     }
 
 //    fun addEvent(string: String) {
@@ -270,8 +300,7 @@ class ScheduleFragment : BaseFragment() {
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
             if (it.isEmpty()) {
                 loadPrograms()
-            }
-            else
+            } else
                 parsePrograms(it)
 
         }.subscribe()
@@ -367,7 +396,6 @@ class ScheduleFragment : BaseFragment() {
         }, ProgramDialog.PROGRAMS)
 
     }
-
 
 
     override fun onStop() {

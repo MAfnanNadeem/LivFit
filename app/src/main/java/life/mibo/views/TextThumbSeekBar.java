@@ -31,6 +31,8 @@ public class TextThumbSeekBar extends AppCompatSeekBar {
 
     private int mThumbSize;
     private TextPaint mTextPaint;
+    private String value = " cm";
+    private int min_ = 0;
 
 
     public TextThumbSeekBar(Context context) {
@@ -74,8 +76,21 @@ public class TextThumbSeekBar extends AppCompatSeekBar {
 
     }
 
+    @Override
+    public synchronized void setMin(int min) {
+        super.setMin(min);
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setMin_(int min) {
+        this.min_ = min;
+    }
+
     public Drawable getThumb(int progress) {
-        ((TextView) thumbView.findViewById(R.id.tvProgress)).setText(progress + " cm");
+        ((TextView) thumbView.findViewById(R.id.tvProgress)).setText(progress + value);
 
         thumbView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         Bitmap bitmap = Bitmap.createBitmap(thumbView.getMeasuredWidth(), thumbView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
@@ -99,7 +114,7 @@ public class TextThumbSeekBar extends AppCompatSeekBar {
     protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         try {
-            setThumb(getThumb(getProgress()));
+            setThumb(getThumb(getProgress()+min_));
         } catch (Exception e) {
 
         }

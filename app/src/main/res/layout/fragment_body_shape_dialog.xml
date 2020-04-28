@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/16/20 2:29 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/16/20 2:11 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:gravity="center"
+        android:lines="2"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/what_is_your_bmi" />
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/grid_4x"
+        android:layout_marginBottom="@dimen/grid_4x"
+        android:minHeight="120dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/tv_weight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintWidth_percent="0.6" />
+
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:checked="false"
+        android:textOff="CM"
+        android:textOn="Inch"
+        app:layout_constraintBottom_toTopOf="@id/frame_bottom"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:lines="1"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/frame_bottom"
+        app:layout_constraintEnd_toEndOf="@id/frame_bottom"
+        app:layout_constraintStart_toStartOf="@id/frame_bottom"
+        tools:text="50 CM" />
+
+    <FrameLayout
+        android:id="@+id/frame_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginBottom="@dimen/grid_2x"
+        app:layout_constraintBottom_toTopOf="@id/btn_done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.1">
+
+        <life.mibo.views.body.picker.RulerValuePicker
+            android:id="@+id/rulerValuePicker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:visibility="visible"
+            app:rv_indicator_color="@color/light_blink_grey"
+            app:rv_indicator_interval="14dp"
+            app:rv_indicator_width="1dp"
+            app:rv_long_indicator_color="@color/textColor2"
+            app:rv_max_value="180"
+            app:rv_min_value="0"
+            app:rv_notch_color="@color/colorPrimary"
+            app:rv_ruler_text_color="@color/textColor2"
+            app:rv_ruler_text_size="6sp" />
+
+    </FrameLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_done"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/login_button_green"
+        android:ems="13"
+        android:text="@string/done"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

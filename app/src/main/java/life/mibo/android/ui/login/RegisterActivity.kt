@@ -14,6 +14,7 @@ import life.mibo.android.R
 import life.mibo.android.receiver.SMSBroadcastReceiver
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.main.MessageDialog
+import life.mibo.android.utils.Toasty
 
 
 class RegisterActivity : BaseActivity() {
@@ -56,7 +57,8 @@ class RegisterActivity : BaseActivity() {
         }
         btn_otp_confirmed?.setOnClickListener {
             if (et_otp?.text.isNullOrEmpty()) {
-                error(getString(R.string.enter_otp))
+               // error(getString(R.string.enter_otp))
+                Toasty.error(this, getString(R.string.enter_otp)).show()
                 return@setOnClickListener
             }
             controller.onVerifyOtpClicked(et_otp?.text?.toString())

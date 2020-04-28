@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/22/20 10:36 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/22/20 10:36 AM
+  ~  Mibo Hexa - app
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="70.7dp"
+    android:height="100dp"
+    android:viewportWidth="339"
+    android:viewportHeight="479">
+    <group
+        android:translateX="34.5"
+        android:translateY="31.5">
+        <path
+            android:pathData="M20 0H70A200 200 0 0 1 270 200V390a20 20 0 0 1 -20 20H20A20 20 0 0 1 0 390V20A20 20 0 0 1 20 0Z"
+            android:fillColor="#5DCEED" />
+    </group>
+
+<!--    <path-->
+<!--        android:fillColor="#5dceed"-->
+<!--        android:pathData="M20,0H70A200,200,0,0,1,270,200V390a20,20,0,0,1-20,20H20A20,20,0,0,1,0,390V20A20,20,0,0,1,20,0Z" />-->
+</vector>
+
+    <!--<vector xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:width="339px"-->
+    <!--android:height="479px"-->
+    <!--android:viewportWidth="339"-->
+    <!--android:viewportHeight="479">-->
+    <!--<path-->
+    <!--    android:fillColor="#5dceed"-->
+    <!--    android:pathData="M20,0H70A200,200,0,0,1,270,200V390a20,20,0,0,1-20,20H20A20,20,0,0,1,0,390V20A20,20,0,0,1,20,0Z" />-->
+    <!--</vector>-->

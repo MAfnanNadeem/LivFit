@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/14/20 2:30 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/14/20 10:14 AM
+  ~  Mibo Hexa - app
+  -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/bg_body_header_male" />
+
+    <ImageView
+        android:id="@+id/header_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:src="@drawable/bg_body_header_male_bottom" />
+
+
+    <TextView
+        android:id="@+id/profile_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:gravity="center"
+        android:lines="2"
+        android:text="@string/what_is_your_bmi"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintBottom_toBottomOf="@+id/header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/header" />
+
+
+    <TextView
+        android:id="@+id/age_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:lines="1"
+        android:scaleType="center"
+        android:text="@string/age"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_bottom" />
+
+    <TextView
+        android:id="@+id/age_text_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:gravity="center"
+        android:lines="1"
+        android:scaleType="center"
+        tools:text="@string/age"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="@+id/age_text"
+        app:layout_constraintStart_toStartOf="@id/age_text"
+        app:layout_constraintTop_toBottomOf="@+id/age_text" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinner_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/age_text"
+        app:layout_constraintTop_toBottomOf="@+id/age_text" />
+
+
+    <TextView
+        android:id="@+id/height_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:layout_marginEnd="@dimen/grid_2x"
+        android:lines="1"
+        android:paddingStart="@dimen/grid_1x"
+        android:scaleType="center"
+        android:text="@string/unit"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintStart_toStartOf="@id/spinner_height"
+        app:layout_constraintTop_toBottomOf="@+id/header_bottom" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinner_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/height_text" />
+
+    <TextView
+        android:id="@+id/weight_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:paddingStart="@dimen/grid_1x"
+        android:scaleType="center"
+        android:text="@string/weight"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintBottom_toTopOf="@+id/spinner_weight"
+        app:layout_constraintStart_toStartOf="@id/spinner_weight" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/spinner_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/frame_bottom"
+        app:layout_constraintStart_toStartOf="@id/age_text" />
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:scaleType="center"
+        android:text="BMI"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_bottom" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/tv_weight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_text"
+        app:layout_constraintWidth_percent="0.5"
+        tools:src="@drawable/ic_intro_gender_male" />
+
+
+    <!--    <life.mibo.views.body.LineRulerView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_margin="@dimen/grid_1x"-->
+    <!--        android:visibility="visible"-->
+    <!--        app:layout_constraintHeight_percent="0.2"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+    <!--    <life.mibo.views.body.picker.RulerView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_margin="@dimen/grid_1x"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHeight_percent="0.2"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <TextView
+        android:id="@+id/tv_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:text="50 KG"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toTopOf="@+id/frame_bottom"
+        app:layout_constraintEnd_toEndOf="@id/frame_bottom"
+        app:layout_constraintStart_toStartOf="@id/frame_bottom" />
+
+    <TextView
+        android:id="@+id/tv_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:rotation="-90"
+        android:text="50 CM"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_right"
+        app:layout_constraintEnd_toStartOf="@id/frame_right"
+        app:layout_constraintTop_toTopOf="@+id/frame_right" />
+
+
+    <FrameLayout
+        android:id="@+id/frame_right"
+        android:layout_width="56dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/frame_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinner_height">
+
+        <!--        <ScrollView-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content">-->
+
+        <!--            <life.mibo.views.body.picker.vertical.RulerValuePickerVertical-->
+        <!--                android:id="@+id/rulerValuePickerHeight"-->
+        <!--                android:layout_width="48dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginTop="@dimen/grid_1x"-->
+        <!--                android:layout_marginBottom="@dimen/grid_1x"-->
+        <!--                android:background="@color/transparent"-->
+        <!--                android:visibility="visible"-->
+        <!--                app:rv_indicator_color="@color/light_blink_grey"-->
+        <!--                app:rv_indicator_interval="14dp"-->
+        <!--                app:rv_indicator_width="1dp"-->
+        <!--                app:rv_long_indicator_color="@color/textColor"-->
+        <!--                app:rv_max_value="120"-->
+        <!--                app:rv_min_value="35"-->
+        <!--                app:rv_notch_color="@color/colorAccent"-->
+        <!--                app:rv_ruler_text_color="@color/textColor2"-->
+        <!--                app:rv_ruler_text_size="6sp" />-->
+        <!--        </ScrollView>-->
+        <life.mibo.views.body.picker.vertical.RulerValuePickerVertical
+            android:id="@+id/rulerValuePickerHeight"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:background="@color/transparent"
+            android:visibility="visible"
+            app:rv_indicator_color="@color/light_blink_grey"
+            app:rv_indicator_interval="14dp"
+            app:rv_indicator_width="1dp"
+            app:rv_long_indicator_color="@color/textColor2"
+            app:rv_max_value="200"
+            app:rv_min_value="100"
+            app:rv_notch_color="@color/colorPrimary"
+            app:rv_ruler_text_color="@color/textColor2"
+            app:rv_ruler_text_size="8sp" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!--        <com.kevalpatel2106.rulerpicker.RulerValuePicker-->
+        <!--            android:id="@+id/rulerValuePicker"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="100dp"-->
+        <!--            android:background="@android:color/darker_gray"-->
+        <!--            app:indicator_color="@android:color/white"-->
+        <!--            app:indicator_interval="14dp"-->
+        <!--            app:indicator_width="2dp"-->
+        <!--            app:max_value="100"-->
+        <!--            app:min_value="0"-->
+        <!--            app:notch_color="@android:color/white"-->
+        <!--            app:ruler_text_size="6sp" />-->
+
+        <life.mibo.views.body.picker.RulerValuePicker
+            android:id="@+id/rulerValuePicker"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/transparent"
+            android:visibility="visible"
+            app:rv_indicator_color="@color/light_blink_grey"
+            app:rv_indicator_interval="14dp"
+            app:rv_indicator_width="1dp"
+            app:rv_long_indicator_color="@color/textColor2"
+            app:rv_max_value="190"
+            app:rv_min_value="30"
+            app:rv_notch_color="@color/colorPrimary"
+            app:rv_ruler_text_color="@color/textColor2"
+            app:rv_ruler_text_size="8sp" />
+
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

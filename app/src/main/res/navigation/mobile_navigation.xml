@@ -172,6 +172,21 @@
         android:name="life.mibo.android.ui.rxl.RxlProgramDetailsFragment"
         android:label="@string/rxl_title"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_measurement"
+        android:name="life.mibo.android.ui.body_measure.MeasurementFragment"
+        android:label="Basic Info"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_bmi"
+        android:name="life.mibo.android.ui.body_measure.BMIFragment"
+        android:label="Basic Info"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_webview"
+        android:name="life.mibo.android.ui.base.WebViewFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_profile" />
 <!--    <fragment-->
 <!--        android:id="@+id/navigation_quickplay_details_play"-->
 <!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->

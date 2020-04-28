@@ -56,6 +56,7 @@ import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
+import life.mibo.android.ui.base.WebViewFragment
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.Navigator.Companion.CLEAR_HOME
@@ -106,6 +107,7 @@ class MainActivity : BaseActivity(), Navigator {
     lateinit var navController: NavController
     private lateinit var commHandler: CommHandler
     private var bottomBarHelper = BottomBarHelper()
+
     //private var navigator: ScreenNavigator? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var drawerLayout: DrawerLayout
@@ -206,6 +208,7 @@ class MainActivity : BaseActivity(), Navigator {
             log("loadImage fromCallable")
             var bitmap: Bitmap? = null
             val img = Prefs.get(this@MainActivity).member?.imageThumbnail
+            log("loadImage size: ${img?.length}")
             bitmap = if (!img.isNullOrEmpty())
                 Utils.base64ToBitmap(img)
             else
@@ -403,8 +406,8 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun onBluetoothDeviceFound(result: ScanResult?) {
                 //log("onBluetoothDeviceFound " + result)
-               // EventBus.getDefault()
-                 //   .post(NewDeviceDiscoveredEvent(result?.device))
+                // EventBus.getDefault()
+                //   .post(NewDeviceDiscoveredEvent(result?.device))
             }
 
             override fun udpDeviceReceiver(msg: ByteArray?, ip: InetAddress?) {
@@ -808,7 +811,7 @@ class MainActivity : BaseActivity(), Navigator {
 
     // TODO Navigation
     override fun navigateTo(type: Int, data: Any?) {
-        if(data is HomeItem.Type){
+        if (data is HomeItem.Type) {
             navigate(data)
             return
         }
@@ -949,6 +952,13 @@ class MainActivity : BaseActivity(), Navigator {
                 popup(R.id.navigation_select_program)
                 //updateBar(true)
             }
+            Navigator.BODY_MEASURE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_measurement, bundle)
+                //updateBar(true)
+            }
             Navigator.POST -> {
                 postObservable(data)
             }
@@ -1035,7 +1045,9 @@ class MainActivity : BaseActivity(), Navigator {
                 //updateMenu()
                 // test
                 //navigate(0, R.id.navigation_rxl_home)
-                navigate(0, R.id.navigation_select_suit)
+                //navigate(0, R.id.navigation_select_suit)
+                // navigate(0, R.id.navigation_bmi)
+                navigate(0, R.id.navigation_measurement)
 
             }
             R.id.navigation_add_product -> {
@@ -1049,6 +1061,21 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_rxl_test -> {
                 navigate(0, R.id.navigation_rxl_test)
 
+            }
+            R.id.nav_policy -> {
+                navigate(
+                    0,
+                    R.id.navigation_webview,
+                    WebViewFragment.bundle("http://test.mibo.life/privacy-policy-mobile/")
+                )
+            }
+            R.id.nav_help -> {
+                navigate(
+                    0,
+                    R.id.navigation_webview,
+                    WebViewFragment.bundle("http://test.mibo.life/faq-mobile-application/")
+                )
+                title = "Frequently asked questions"
             }
 
 //            R.id.nav_test4 -> {
@@ -1160,7 +1187,7 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.PROFILE -> {
-              //  if (DEBUG)
+                //  if (DEBUG)
                 navigate(0, R.id.navigation_profile)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }

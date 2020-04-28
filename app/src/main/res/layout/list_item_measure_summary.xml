@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/22/20 10:50 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/21/20 6:25 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:gravity="center"
+    android:minHeight="200dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/bg_body_measure_summary" />
+
+    <ImageView
+        android:id="@+id/image_circle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingEnd="@dimen/grid_2x"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_body_summary_bmi" />
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:layout_marginEnd="@dimen/grid_2x"
+        android:minHeight="120dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/image_bg"
+        app:layout_constraintEnd_toEndOf="@id/image_bg"
+        app:layout_constraintStart_toStartOf="@id/image_bg"
+        app:layout_constraintTop_toTopOf="@id/image_bg"
+        tools:src="@drawable/ic_intro_male_chest" />
+
+
+    <TextView
+        android:id="@+id/tv_value_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="2dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_circle"
+        tools:text="BMI " />
+
+    <TextView
+        android:id="@+id/tv_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_value_text"
+        tools:text="101.012" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/tv_value_unit"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="@dimen/text_size_small"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/tv_value"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@id/tv_value"-->
+<!--        app:layout_constraintTop_toTopOf="@id/tv_value"-->
+<!--        tools:text="@string/ffmi_unit" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
@@ -35,6 +36,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class HomeFragment : BaseFragment(), HomeObserver {
 
@@ -91,18 +93,28 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
+        // checkIntro()
+    }
+
+    fun checkIntro() {
+        Single.just("test").delay(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+            .doOnError {
+
+            }.doOnSuccess {
+                navigate(Navigator.BODY_MEASURE, null)
+            }.subscribe()
     }
 
     private fun videoBg() {
         try {
-            val uri = Uri.parse("android.resource://" + context?.packageName + "/" + R.raw.login_video)
-            videoView.setVideoURI(uri)
-            videoView.start()
-            videoView?.setOnPreparedListener {
-                it.isLooping = true
-            }
-        }
-        catch (e: Exception){
+            val uri =
+                Uri.parse("android.resource://" + context?.packageName + "/" + R.raw.login_video)
+//            videoView.setVideoURI(uri)
+//            videoView.start()
+//            videoView?.setOnPreparedListener {
+//                it.isLooping = true
+//            }
+        } catch (e: Exception) {
             MiboEvent.log(e)
         }
     }
@@ -117,8 +129,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
                 Utils.base64ToBitmap(img)
             else
                 BitmapFactory.decodeResource(resources, defaultImage)
-           // else
-             //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
+            // else
+            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
             bitmap
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
             log("loadImage doOnSuccess $it")
@@ -272,8 +284,9 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private fun setRecyclerView(width: Int) {
         log("setRecyclerView $width")
-        if(width == 0){
-            Toasty.info(context!!, "Oops device width is zero (0)", Toasty.LENGTH_SHORT, false).show()
+        if (width == 0) {
+            Toasty.info(context!!, "Oops device width is zero (0)", Toasty.LENGTH_SHORT, false)
+                .show()
         }
         adapter = HomeAdapter(data, width)
         val size = data.size - 1
@@ -341,6 +354,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         //recyclerView.adapter = adapter
     }
 
+
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onPostEvent(event: NotifyEvent) {
         if (event.id == Navigator.HOME) {
@@ -352,21 +366,20 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
     }
 
+    var isStoped = false
     override fun onResume() {
         log("onResume")
         super.onResume()
-       // videoView?.resume()
-        //videoBg()
-    }
 
-    override fun onStop() {
-        log("onStop")
-        //videoView?.stopPlayback()
-        super.onStop()
-        //controller.onStop()
-        recyclerView?.adapter = null
-        navigate(HOME_VIEW, false)
-        EventBus.getDefault().unregister(this)
+        if (isStoped && recyclerView?.adapter == null) {
+            if (!::controller.isInitialized)
+                controller = HomeController(this@HomeFragment, this)
+
+            controller?.getDashboard()
+        }
+        isStoped = false
+        // videoView?.resume()
+        //videoBg()
     }
 
     override fun onStart() {
@@ -374,5 +387,18 @@ class HomeFragment : BaseFragment(), HomeObserver {
         super.onStart()
         EventBus.getDefault().register(this)
     }
+    override fun onStop() {
+        log("onStop")
+        //videoView?.stopPlayback()
+        isStoped = true
+        super.onStop()
+        //controller.onStop()
+        navigate(HOME_VIEW, false)
+        EventBus.getDefault().unregister(this)
+    }
 
+    override fun onDestroy() {
+        recyclerView?.adapter = null
+        super.onDestroy()
+    }
 }

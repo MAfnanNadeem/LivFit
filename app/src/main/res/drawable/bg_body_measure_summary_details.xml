@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/25/20 3:48 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/22/20 11:00 AM
+  ~  Mibo Hexa - app
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#5DCEED" />
+
+    <corners
+        android:bottomLeftRadius="16dp"
+        android:bottomRightRadius="0dp"
+        android:topLeftRadius="16dp"
+        android:topRightRadius="64dp" />
+</shape>

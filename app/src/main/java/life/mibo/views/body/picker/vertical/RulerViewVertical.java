@@ -45,6 +45,10 @@ public final class RulerViewVertical extends View {
 
     private int mViewWidth;
     private float mTextHeight = 0;
+    private boolean isFeetMode = false;
+    private int feet = 2;
+    private int inches = 0;
+    private int count = 0;
     /**
      * {@link Paint} for the line in the ruler view.
      *
@@ -315,16 +319,27 @@ public final class RulerViewVertical extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         log("onDraw");
+        resetCount();
         // canvas.rotate(-90);
         // canvas.translate(-getHeight(), 0);
-        for (int value = 1; value < mMaxValue - mMinValue; value++) {
 
-            if (value % 5 == 0) {
-                drawLongIndicator(canvas, value);
-                drawValueText(canvas, value);
+        for (int value = 1; value < mMaxValue - mMinValue; value++) {
+            if (isFeetMode) {
+                if (value % 6 == 0) {
+                    drawValueText(canvas, value);
+                    drawLongIndicator(canvas, value);
+                } else {
+                    drawSmallIndicator(canvas, value);
+                }
             } else {
-                drawSmallIndicator(canvas, value);
+                if (value % 5 == 0) {
+                    drawLongIndicator(canvas, value);
+                    drawValueText(canvas, value);
+                } else {
+                    drawSmallIndicator(canvas, value);
+                }
             }
+
         }
 
         //Draw the first indicator.
@@ -375,19 +390,86 @@ public final class RulerViewVertical extends View {
             Paint.FontMetrics fm = mTextPaint.getFontMetrics();
             mTextHeight = fm.descent - fm.ascent;
         }
-//        String text = String.valueOf(value + mMinValue);
-//        Rect r = new Rect();
-//        log("drawValueText value " + value + ", text " + text + " : " + r);
-//        mTextPaint.getTextBounds(text, 0, text.length(), r);
-//        int height = r.top + r.bottom;
-//        Paint.FontMetrics fm = mTextPaint.getFontMetrics();
-//        float height2 = fm.descent - fm.ascent;
-        canvas.drawText(String.valueOf(value + mMinValue),
-                mLongIndicatorWidth + mTextPaint.getTextSize(),
-                mIndicatorInterval * value + (mTextHeight / 4),
-                mTextPaint);
-        //  log("drawValueText value " + value + ", text " + text + " : " + r);
-        // log("drawValueText height " + height + ", height2 " + height2);
+        if (isFeetMode) {
+            count++;
+            if (count == 1) {
+                inches = 6;
+            }
+            if (count == 2) {
+                count = 0;
+                feet++;
+                inches = 0;
+            }
+
+            canvas.drawText(feet + "'" + inches,
+                    mIndicatorInterval * value,
+                    mTextPaint.getTextSize(),
+                    mTextPaint);
+        } else {
+//            canvas.drawText(String.valueOf(value + mMinValue),
+//                    mIndicatorInterval * value,
+//                    mTextPaint.getTextSize(),
+//                    mTextPaint);
+            canvas.drawText(String.valueOf(value + mMinValue),
+                    mLongIndicatorWidth + mTextPaint.getTextSize(),
+                    mIndicatorInterval * value + (mTextHeight / 4),
+                    mTextPaint);
+        }
+////        String text = String.valueOf(value + mMinValue);
+////        Rect r = new Rect();
+////        log("drawValueText value " + value + ", text " + text + " : " + r);
+////        mTextPaint.getTextBounds(text, 0, text.length(), r);
+////        int height = r.top + r.bottom;
+////        Paint.FontMetrics fm = mTextPaint.getFontMetrics();
+////        float height2 = fm.descent - fm.ascent;
+//        canvas.drawText(String.valueOf(value + mMinValue),
+//                mLongIndicatorWidth + mTextPaint.getTextSize(),
+//                mIndicatorInterval * value + (mTextHeight / 4),
+//                mTextPaint);
+//        //  log("drawValueText value " + value + ", text " + text + " : " + r);
+//        // log("drawValueText height " + height + ", height2 " + height2);
+    }
+
+    private void drawSmallIndicator2(@NonNull final Canvas canvas,
+                                     final int value) {
+        canvas.drawLine(mIndicatorInterval * value,
+                mTextPaint.getTextSize() + 15,
+                mIndicatorInterval * value,
+                mShortIndicatorWidth,
+                mIndicatorPaint);
+    }
+
+    private void drawLongIndicator2(@NonNull final Canvas canvas,
+                                    final int value) {
+        canvas.drawLine(mIndicatorInterval * value,
+                mTextPaint.getTextSize() + 15,
+                mIndicatorInterval * value,
+                mLongIndicatorWidth,
+                mIndicatorPaint);
+    }
+
+    private void drawValueText2(@NonNull final Canvas canvas, final int value) {
+        if (isFeetMode) {
+            count++;
+            if (count == 1) {
+                inches = 6;
+            }
+            if (count == 2) {
+                count = 0;
+                feet++;
+                inches = 0;
+            }
+
+            canvas.drawText(feet + "'" + inches,
+                    mIndicatorInterval * value,
+                    mTextPaint.getTextSize(),
+                    mTextPaint);
+        } else {
+            canvas.drawText(String.valueOf(value + mMinValue),
+                    mIndicatorInterval * value,
+                    mTextPaint.getTextSize(),
+                    mTextPaint);
+        }
     }
 
     /////////////////////// Properties getter/setter ///////////////////////
@@ -515,7 +597,14 @@ public final class RulerViewVertical extends View {
     void setValueRange(final int minValue, final int maxValue) {
         mMinValue = minValue;
         mMaxValue = maxValue;
+        forceLayout();
+        requestLayout();
         invalidate();
+    }
+
+    void refresh() {
+        requestLayout();
+        forceLayout();
     }
 
     /**
@@ -595,6 +684,16 @@ public final class RulerViewVertical extends View {
         updateIndicatorHeight(mLongIndicatorWidthRatio, mShortIndicatorWidthRatio);
 
         invalidate();
+    }
+
+    public void setFeetMode(boolean feetMode) {
+        isFeetMode = feetMode;
+    }
+
+    void resetCount() {
+        feet = 0;
+        inches = 0;
+        count = 0;
     }
 
     void log(String msg) {

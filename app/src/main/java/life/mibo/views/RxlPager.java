@@ -9,12 +9,15 @@ package life.mibo.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 public class RxlPager extends ViewPager {
+
+    private boolean isEnable = true;
     public RxlPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -26,5 +29,27 @@ public class RxlPager extends ViewPager {
         }
 
         return super.canScroll(v, checkV, dx, x, y);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (this.isEnable) {
+            return super.onTouchEvent(event);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (this.isEnable) {
+            return super.onInterceptTouchEvent(event);
+        }
+
+        return false;
+    }
+
+    public void setPagingEnabled(boolean enabled) {
+        this.isEnable = enabled;
     }
 }

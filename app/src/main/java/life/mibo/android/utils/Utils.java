@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -34,6 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import life.mibo.android.R;
 import life.mibo.android.models.program.Program;
 import life.mibo.android.ui.main.MiboEvent;
+import life.mibo.hardware.core.Logger;
 
 public class Utils {
 
@@ -190,8 +193,46 @@ public class Utils {
         }
     }
 
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static String bitmapToBase64(Drawable drawable) {
+        try {
+            Bitmap bitmap = drawableToBitmap(drawable);
+            Logger.e("bitmapToBase64 Drawable Bitmap size: " + bitmap.getByteCount() / 1024);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] imageBytes = stream.toByteArray();
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            MiboEvent.INSTANCE.log(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static String bitmapToBase64(Bitmap bitmap) {
         try {
+            Logger.e("bitmapToBase64 Bitmap size: " + bitmap.getByteCount() / 1024);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] imageBytes = stream.toByteArray();
@@ -206,6 +247,8 @@ public class Utils {
     public static @Nullable
     Bitmap base64ToBitmap(String bitmap) {
         try {
+            Logger.e("bitmapToBase64 String length: " + bitmap.length());
+            Logger.e("bitmapToBase64 String size: " + bitmap.length() / 1024);
             byte[] imageBytes = Base64.decode(bitmap, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         } catch (Exception e) {
@@ -408,5 +451,20 @@ public class Utils {
             return stretch_width;
     }
 
+
+    public static int dp2px(Context context, float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
+
+    public static int px2dp(Context context, float px) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (px / scale + 0.5f);
+    }
+
+    public static int sp2px(Context context, float sp) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (sp * fontScale + 0.5f);
+    }
 
 }

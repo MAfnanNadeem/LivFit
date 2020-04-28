@@ -638,9 +638,9 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         AlertDialog.Builder(context).setTitle("Select Gender")
             .setItems(animals) { _, which ->
                 if (which == 0)
-                    gender = "MALE"
+                    gender = "Male"
                 else if (which == 1)
-                    gender = "FEMALE"
+                    gender = "Female"
                 observer.onGenderSelect(gender)
                 //gender?.text = gender
                 isGender = true

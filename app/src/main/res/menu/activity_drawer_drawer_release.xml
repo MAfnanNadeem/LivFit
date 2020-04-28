@@ -49,12 +49,16 @@
                 android:title="@string/menu_share" />
             <item
                 android:id="@+id/nav_help"
-                android:icon="@drawable/ic_dashboard_black_24dp"
-                android:title="@string/help" />
+                android:icon="@drawable/info_mark"
+                android:title="@string/faq" />
             <item
                 android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/contact_us" />
+            <item
+                android:id="@+id/nav_policy"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/privacy_policy" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_logout_24dp"

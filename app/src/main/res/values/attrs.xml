@@ -179,18 +179,18 @@
 
 
     <declare-styleable name="CircularProgressButton">
-        <attr name="spinning_bar_width" format="dimension"/>
-        <attr name="spinning_bar_color" format="color"/>
-        <attr name="spinning_bar_padding" format="dimension"/>
-        <attr name="initialCornerAngle" format="dimension"/>
-        <attr name="finalCornerAngle" format="dimension"/>
+        <attr name="spinning_bar_width" format="dimension" />
+        <attr name="spinning_bar_color" format="color" />
+        <attr name="spinning_bar_padding" format="dimension" />
+        <attr name="initialCornerAngle" format="dimension" />
+        <attr name="finalCornerAngle" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="RangeSeekBarView">
-        <attr name="stepValue" format="integer|dimension"/>
-        <attr name="minValue" format="integer|dimension"/>
-        <attr name="maxValue" format="integer|dimension"/>
-        <attr name="currentValue" format="integer|dimension"/>
+        <attr name="stepValue" format="integer|dimension" />
+        <attr name="minValue" format="integer|dimension" />
+        <attr name="maxValue" format="integer|dimension" />
+        <attr name="currentValue" format="integer|dimension" />
         <attr name="seekBarHeight" format="dimension" />
         <attr name="circleRadius" format="dimension" />
         <attr name="circleTextSize" format="dimension" />
@@ -204,5 +204,47 @@
         <attr name="civ_border_color" format="color" />
         <attr name="civ_border_overlay" format="boolean" />
         <attr name="civ_circle_background_color" format="color" />
+    </declare-styleable>
+
+    <attr name="rulerViewStyle" format="reference" />
+    <declare-styleable name="RulerView">
+        <attr name="stepWidth" format="dimension" />
+        <attr name="rulerValueFormatter" format="string" />
+        <attr name="scaleColor" format="color|reference" />
+        <attr name="rulerColor" format="color|reference" />
+        <attr name="sectionScaleCount" format="integer" />
+        <attr name="scaleMinHeight" format="dimension" />
+        <attr name="scaleMaxHeight" format="dimension" />
+        <attr name="scaleSize" format="dimension" />
+        <attr name="rulerSize" format="dimension" />
+        <attr name="indicator" format="reference" />
+        <attr name="rlMaxValue" format="integer" />
+        <attr name="rlMinValue" format="integer" />
+        <attr name="value" format="integer" />
+        <attr name="android:textSize" />
+        <attr name="android:textColor" />
+    </declare-styleable>
+
+
+
+
+    <declare-styleable name="RulerValuePicker">
+
+        <attr name="rv_min_value" format="integer"/>
+        <attr name="rv_max_value" format="integer"/>
+
+        <attr name="rv_long_height_height_ratio" format="fraction"/>
+        <attr name="rv_short_height_height_ratio" format="fraction"/>
+
+        <attr name="rv_ruler_text_color" format="color"/>
+        <attr name="rv_ruler_text_size" format="dimension"/>
+
+        <attr name="rv_indicator_interval" format="dimension"/>
+        <attr name="rv_indicator_color" format="color"/>
+        <attr name="rv_long_indicator_color" format="color"/>
+        <attr name="rv_indicator_width" format="dimension"/>
+
+        <!-- Color of the top notch -->
+        <attr name="rv_notch_color" format="color"/>
     </declare-styleable>
 </resources>

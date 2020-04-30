@@ -8,6 +8,7 @@
 package life.mibo.android.ui.base
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -46,7 +47,6 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         url = arguments?.getString("url_url", "") ?: ""
         webView?.setListener(this, this)
         webView?.loadUrl(url)
-
     }
 
     override fun onPause() {

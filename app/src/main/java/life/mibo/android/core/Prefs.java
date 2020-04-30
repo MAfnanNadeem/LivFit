@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import life.mibo.hardware.core.Logger;
 import life.mibo.android.models.login.Member;
+import life.mibo.hardware.core.Logger;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class Prefs {
@@ -43,18 +43,23 @@ public class Prefs {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public static Prefs get(Context context) {
-        if (instance == null)
-            instance = new Prefs(context);
-        return instance;
-    }
-
     /**
      * @name SharedPreferences name
      */
     public Prefs(Context context, String name) {
         preferences = context.getSharedPreferences(name, Context.MODE_PRIVATE);
     }
+
+    public static Prefs get(Context context) {
+        if (instance == null)
+            instance = new Prefs(context);
+        return instance;
+    }
+
+    public static Prefs getTemp(Context context) {
+        return new Prefs(context, "miboPrefs");
+    }
+
 
     public SharedPreferences getPreferences() {
         if (preferences == null)

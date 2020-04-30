@@ -9,7 +9,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eee">
+    android:background="#fff">
 
     <TextView
         android:id="@+id/title_text"
@@ -32,6 +32,7 @@
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/grid_2x"
         android:layout_marginEnd="@dimen/grid_2x"
+        android:background="#fdfdfd"
         android:layout_marginBottom="@dimen/grid_2x"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

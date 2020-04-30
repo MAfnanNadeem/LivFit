@@ -93,15 +93,24 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
-        // checkIntro()
+        checkIntro()
     }
 
-    fun checkIntro() {
+    fun checkBody() {
+
+    }
+
+    private fun checkIntro() {
+        val done = Prefs.getTemp(context).get("body_measure")?.toLowerCase()
+        if (done == "done" || done == "skip") {
+            return
+        }
         Single.just("test").delay(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
             .doOnError {
 
             }.doOnSuccess {
-                navigate(Navigator.BODY_MEASURE, null)
+                //navigate(Navigator.BODY_MEASURE, null)
+                onItemClicked(HomeItem(HomeItem.Type.PROGRAMS))
             }.subscribe()
     }
 

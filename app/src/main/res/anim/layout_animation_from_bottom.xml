@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Created by Sumeet Kumar on 4/30/20 4:16 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/30/20 4:12 PM
+  ~  Mibo Hexa - app
+  -->
+
+<layoutAnimation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/recycler_from_bottom"
+    android:delay="15%"
+    android:animationOrder="normal"
+    />

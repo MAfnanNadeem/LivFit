@@ -86,6 +86,11 @@ class LoginActivity : BaseActivity() {
                 return@setOnLongClickListener true
             }
         }
+
+        if (Prefs.getTemp(this).get("body_measure")?.toLowerCase() == "skip") {
+            Prefs.getTemp(this).set("body_measure", "")
+
+        }
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
        // videoBg()
     }

@@ -29,18 +29,18 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
 
     }
 
-    fun updateNextButton(enable: Boolean) {
+    fun updateNextButton(enable: Boolean, title: String = "Continue") {
         log("BodyBaseFragment updateNextButton")
         val frg = parentFragment
         if (frg is MeasurementFragment) {
-            frg.updateNext(enable)
+            frg.updateNext(enable, title)
             return
         }
         val frg2 = parentFragmentManager?.fragments
         if (frg2 != null && frg2.size > 0) {
             for (frg3 in frg2) {
                 if (frg3 is MeasurementFragment) {
-                    frg3.updateNext(enable)
+                    frg3.updateNext(enable, title)
                     return
                 }
             }

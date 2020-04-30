@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.fragment_body_measure.*
 import life.mibo.android.R
@@ -46,6 +48,10 @@ class SummaryFragment : BodyBaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         isMale = arguments?.getBoolean("profile_gender", false) ?: false
+
+    }
+
+    fun setAdapters() {
         adapter =
             SummaryAdapter(
                 getSummary(), object : ItemClickListener<SummaryAdapter.Item> {
@@ -66,17 +72,21 @@ class SummaryFragment : BodyBaseFragment() {
 
                 })
         recyclerView?.layoutManager = GridLayoutManager(requireContext(), 3)
+        recyclerView?.layoutAnimation =
+            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down);
         //recyclerView?.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView?.adapter = adapter
-
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         log("setUserVisibleHint $isVisibleToUser")
         super.setUserVisibleHint(isVisibleToUser)
         if (isVisibleToUser) {
-            //updateNextButton(false)
+            setAdapters()
+            updateNextButton(true, "Finish")
+            Prefs.getTemp(context).set("body_measure", "done")
             //updateSkipButton(false)
+
         }
     }
 
@@ -195,7 +205,7 @@ class SummaryFragment : BodyBaseFragment() {
                 1,
                 0,
                 R.drawable.ic_body_summary_bsa,
-                0xFFFF7D0F.toInt(),
+                ContextCompat.getColor(requireContext(), R.color.bsa_color),
                 "BSA",
                 bsa,
                 getString(R.string.meter_square)

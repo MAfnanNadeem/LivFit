@@ -25,6 +25,7 @@ import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
+import life.mibo.android.ui.body_measure.adapter.Calculate
 
 class MeasurementFragment : BaseFragment() {
 
@@ -112,6 +113,9 @@ class MeasurementFragment : BaseFragment() {
 //                imageView3?.visibility = View.INVISIBLE
 //            }
 //        })
+
+        Prefs.getTemp(context).set("body_measure", "skip")
+
     }
 
 
@@ -121,11 +125,12 @@ class MeasurementFragment : BaseFragment() {
     }
 
     @Synchronized
-    fun updateNext(enable: Boolean) {
+    fun updateNext(enable: Boolean, title: String) {
         log("parentFragment updateNext $enable")
         if (enable) {
             imageNext.visibility = View.VISIBLE
             tv_continue.visibility = View.VISIBLE
+            tv_continue.text = title
         } else {
             tv_continue.visibility = View.INVISIBLE
             imageNext.visibility = View.INVISIBLE
@@ -145,11 +150,14 @@ class MeasurementFragment : BaseFragment() {
     private fun getPages(): ArrayList<Fragment> {
         val member = Prefs(context).member
         val male = member?.gender.equals("male", true) ?: false
+        Calculate.clear()
+        Calculate.getMeasureData().gender(male)
         val list = ArrayList<Fragment>()
         //list.add(SummaryFragment())
         //list.add(QuestionFragment.create(1))
         //list.add(QuestionFragment.create(2))
-        list.add(ProfilePicFragment.create(1))
+        if (member?.imageThumbnail == null)
+            list.add(ProfilePicFragment.create(1))
         list.add(BMIFragment.create(if (male) 1 else 2))
         //list.add(BMIFragment.create(if (!male) 1 else 2))
         list.add(MeasureBodyFragment.create(male))
@@ -158,10 +166,10 @@ class MeasurementFragment : BaseFragment() {
         list.add(QuestionFragment.create(1))
         list.add(QuestionFragment.create(2))
         list.add(SummaryFragment())
-        list.add(QuestionFragment())
-        list.add(QuestionFragment())
-        list.add(QuestionFragment())
-        list.add(QuestionFragment())
+//        list.add(QuestionFragment())
+//        list.add(QuestionFragment())
+//        list.add(QuestionFragment())
+//        list.add(QuestionFragment())
         return list
     }
 
@@ -169,7 +177,12 @@ class MeasurementFragment : BaseFragment() {
     var lastFrg = 0;
     private fun nextClicked() {
         // startActivity(Intent(activity, TestActivity::class.java))
+        if ("finish" == tv_continue?.text?.toString()?.toLowerCase()) {
+            navigate(life.mibo.android.ui.main.Navigator.CLEAR_HOME, null)
+            return
+        }
         viewPager?.currentItem = frg++
+
     }
 
     // for ViewPager2

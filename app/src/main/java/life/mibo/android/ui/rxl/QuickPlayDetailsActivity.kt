@@ -27,19 +27,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_quickplay_detail_play.*
-import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.SessionManager
-import life.mibo.hardware.events.ChangeColorEvent
-import life.mibo.hardware.events.ProximityEvent
-import life.mibo.hardware.events.RxlBlinkEvent
-import life.mibo.hardware.events.RxlStatusEvent
-import life.mibo.hardware.models.Device
-import life.mibo.hardware.models.DeviceTypes
-import life.mibo.hardware.rxl.RXLManager
-import life.mibo.hardware.rxl.RxlListener
-import life.mibo.hardware.rxl.program.RxlLight
-import life.mibo.hardware.rxl.program.RxlPlayer
-import life.mibo.hardware.rxl.program.RxlProgram
 import life.mibo.android.R
 import life.mibo.android.core.toIntOrZero
 import life.mibo.android.events.NotifyEvent
@@ -58,6 +45,19 @@ import life.mibo.android.ui.select_program.ProgramDialog
 import life.mibo.android.utils.Constants
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.events.ProximityEvent
+import life.mibo.hardware.events.RxlBlinkEvent
+import life.mibo.hardware.events.RxlStatusEvent
+import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.DeviceTypes
+import life.mibo.hardware.rxl.RXLManager
+import life.mibo.hardware.rxl.RxlListener
+import life.mibo.hardware.rxl.program.RxlLight
+import life.mibo.hardware.rxl.program.RxlPlayer
+import life.mibo.hardware.rxl.program.RxlProgram
 import life.mibo.views.anim.AnimateView
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
@@ -258,10 +258,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             tv_select_pause?.setOnClickListener {
                 delegate.showDialog(CourseCreateImpl.Type.DELAY)
             }
-
-            tv_customize?.setOnClickListener {
-                changeSensor(100)
-            }
+//
+//            tv_customize?.setOnClickListener {
+//                changeSensor(100)
+//            }
         }
     }
 
@@ -907,16 +907,19 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private fun printPods() {
-        log("printPods start >>>>>>>>>>>>>>>")
-        for (i in 0 until rxlPlayers.size()) {
-            //val key = rxlPlayers.keyAt(i)
-            val value: RxlPlayer? = rxlPlayers.valueAt(i)
-            log("printPods RxlPlayer $value")
-            value?.pods?.forEach {
-                log("RxlPlayer ${value.id} assigned ${it.uid}")
+        try {
+            log("printPods start >>>>>>>>>>>>>>>")
+            for (i in 0 until rxlPlayers.size()) {
+                //val key = rxlPlayers.keyAt(i)
+                val value: RxlPlayer? = rxlPlayers.valueAt(i)
+                log("printPods RxlPlayer $value")
+                value?.pods?.forEach {
+                    log("RxlPlayer ${value.id} assigned ${it.uid}")
+                }
             }
+            log("printPods end >>>>>>>>>>>>>>>")
+        } catch (e: Exception) {
         }
-        log("printPods end >>>>>>>>>>>>>>>")
     }
 
     // assigning pods as FIFO
@@ -1650,8 +1653,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_pause?.setText(R.string.pause)
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
+            progressBar?.visibility = INVISIBLE
+            startTimer(duration)
         }
-        startTimer(duration)
+
         // progress(0, 100, duration.times(1000), 1)
     }
 
@@ -1688,7 +1693,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
         }
-        resumeTimer(remaining)
+        runOnUiThread {
+            resumeTimer(remaining)
+        }
         //animator?.resume()
 //        val i = lastAnimator2
 //        if (i is Int) {

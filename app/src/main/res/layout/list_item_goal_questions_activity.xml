@@ -9,8 +9,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginStart="@dimen/grid_2x"
-    android:layout_marginTop="@dimen/grid_2x"
+    android:layout_marginTop="@dimen/grid_1x"
     android:layout_marginEnd="@dimen/grid_2x"
     app:cardCornerRadius="12dp">
 
@@ -18,33 +19,63 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_goal_gues_unselected" />
+        tools:src="@drawable/bg_item_physical_activity" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="@dimen/grid_2x"
+        android:layout_marginStart="@dimen/grid_2x"
         android:paddingTop="@dimen/grid_1x"
-        android:paddingEnd="@dimen/grid_2x"
+        android:layout_marginEnd="4dp"
         android:paddingBottom="@dimen/grid_1x">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Be healthier"
-            android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/text_size_medium" />
+            android:text="@string/que_activity_6_title"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/tv_desc"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/text_size_large" />
 
 
         <TextView
             android:id="@+id/tv_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLines="3"
+            android:text="Eat and Train for optimum health"
+            android:textColor="@color/textColor2"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/activity_image1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+
+        <ImageView
+            android:id="@+id/activity_image1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Eat and Train for optimum health"
-            android:textColor="@color/grey"
-            android:textSize="@dimen/text_size_small" />
-    </LinearLayout>
+            android:layout_marginEnd="2dp"
+            android:src="@drawable/ic_activity_1_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/activity_image2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/activity_image2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_activity_1_1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

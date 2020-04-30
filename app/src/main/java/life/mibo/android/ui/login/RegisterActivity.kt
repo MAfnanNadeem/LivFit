@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_register_page3.*
 import life.mibo.android.R
 import life.mibo.android.receiver.SMSBroadcastReceiver
 import life.mibo.android.ui.base.BaseActivity
+import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.utils.Toasty
 
@@ -101,7 +102,16 @@ class RegisterActivity : BaseActivity() {
                 return@setOnCheckedChangeListener
             }
             if (isChecked) {
-                termsDialog(getString(R.string.terms_of_agreement))
+               // termsDialog(getString(R.string.terms_of_agreement))
+                TermsDialog(this, object : ItemClickListener<Int>{
+                    override fun onItemClicked(item: Int?, position: Int) {
+                        if(position == 2){
+                            isDialog = true
+                            checkbox_terms?.isChecked = true
+                        }
+                    }
+
+                }).show(supportFragmentManager, "TermsDialog")
                 checkbox_terms?.isChecked = false
             }
         }

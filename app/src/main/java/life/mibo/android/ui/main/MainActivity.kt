@@ -17,6 +17,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
@@ -1041,10 +1042,11 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             R.id.nav_test3 -> {
+                //SessionManager.getInstance().userSession.createDummy()
                 //startScanning(false)
                 //updateMenu()
                 // test
-                //navigate(0, R.id.navigation_rxl_home)
+               // navigate(0, R.id.navigation_rxl_home)
                 //navigate(0, R.id.navigation_select_suit)
                 // navigate(0, R.id.navigation_bmi)
                 navigate(0, R.id.navigation_measurement)
@@ -1069,12 +1071,18 @@ class MainActivity : BaseActivity(), Navigator {
                     WebViewFragment.bundle("http://test.mibo.life/privacy-policy-mobile/")
                 )
             }
-            R.id.nav_help -> {
+            R.id.nav_faq -> {
                 navigate(
                     0,
                     R.id.navigation_webview,
                     WebViewFragment.bundle("http://test.mibo.life/faq-mobile-application/")
                 )
+//                val builder = androidx.browser.customtabs.CustomTabsIntent.Builder()
+//                builder.setStartAnimations(this, android.R.anim.slide_in_left, R.anim.exit_to_left);
+//                builder.setExitAnimations(this, R.anim.slide_in_left, R.anim.slide_out_right);
+//                builder.setShowTitle(false)
+//                val client = builder.build()
+//                client.launchUrl(this, Uri.parse("http://test.mibo.life/faq-mobile-application/"))
                 title = "Frequently asked questions"
             }
 
@@ -1170,6 +1178,8 @@ class MainActivity : BaseActivity(), Navigator {
 
             HomeItem.Type.PROGRAMS -> {
                 //  navigateFragment(R.id.navigation_program)
+                navigate(0, R.id.navigation_measurement)
+
             }
 
             HomeItem.Type.RXL_TEST -> {

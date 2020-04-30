@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_body_questions.*
 import life.mibo.android.R
@@ -47,6 +48,10 @@ class QuestionFragment : BodyBaseFragment() {
         if (type_ == 2)
             tv_goal?.setText(R.string.what_is_physical)
         else tv_goal?.setText(R.string.what_is_goal)
+
+    }
+
+    fun setupAdapters() {
         adapter = QuestionsAdapter(type_,
             getQues(type_),
             object :
@@ -66,9 +71,14 @@ class QuestionFragment : BodyBaseFragment() {
             })
         recyclerView?.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView?.layoutAnimation =
+            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_from_bottom);
         recyclerView?.adapter = adapter
     }
 
+    override fun resumed() {
+        super.resumed()
+    }
     override fun onResume() {
         super.onResume()
         // updateNextButton(false)
@@ -80,6 +90,7 @@ class QuestionFragment : BodyBaseFragment() {
         if (isVisibleToUser) {
             updateNextButton(false)
             updateSkipButton(true)
+            setupAdapters()
         }
     }
 
@@ -91,24 +102,24 @@ class QuestionFragment : BodyBaseFragment() {
         list.add(
             QuestionsAdapter.Item(
                 1,
-                "Be healthier",
-                "Eat and Train for optimum health",
+                getString(R.string.goal_que_1_title),
+                getString(R.string.goal_que_1_desc),
                 false
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 2,
-                "Lose weight",
-                "Get leaner and increase your stamina",
+                getString(R.string.goal_que_2_title),
+                getString(R.string.goal_que_2_desc),
                 false
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 3,
-                "Gain weight",
-                "Build muscle strength and flexibility",
+                getString(R.string.goal_que_3_title),
+                getString(R.string.goal_que_3_desc),
                 false
             )
         )
@@ -118,53 +129,54 @@ class QuestionFragment : BodyBaseFragment() {
 
     private fun getPhysicalActivity(): ArrayList<QuestionsAdapter.Item> {
         val list = ArrayList<QuestionsAdapter.Item>()
+        val male = Calculate.getMeasureData().isMale()
 
         list.add(
             QuestionsAdapter.Item(
                 1,
-                "Sedentary lifestyle",
-                "Little or no exercise",
-                false
+                getString(R.string.que_activity_1_title),
+                getString(R.string.que_activity_1_desc),
+                false, male
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 2,
-                "Slightly active lifestyle",
-                "Light exercise or sports 1-2 days/week",
-                false
+                getString(R.string.que_activity_2_title),
+                getString(R.string.que_activity_2_desc),
+                false, male
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 3,
-                "Moderately active lifestyle ",
-                "Moderate exercise or sports 2-3 days/week",
-                false
+                getString(R.string.que_activity_3_title),
+                getString(R.string.que_activity_3_desc),
+                false, male
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 4,
-                "Very active lifestyle",
-                "Hard exercise or sports 4-5 days/week",
-                false
+                getString(R.string.que_activity_4_title),
+                getString(R.string.que_activity_4_desc),
+                false, male
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 5,
-                "Extra active lifestyle",
-                "Very hard exercise, physical job or sports 6-7 days/week",
-                false
+                getString(R.string.que_activity_5_title),
+                getString(R.string.que_activity_5_desc),
+                false, male
             )
         )
         list.add(
             QuestionsAdapter.Item(
                 6,
-                "Professional athlete",
-                "Moderate exercise or sports 2-3 days/week",
-                false
+                getString(R.string.que_activity_6_title),
+                getString(R.string.que_activity_6_desc),
+                false, male
             )
         )
         return list

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.android.R
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
 
 class SummaryAdapter(var list: List<Item>, var listener: ItemClickListener<Item>) :
@@ -104,13 +105,7 @@ class SummaryAdapter(var list: List<Item>, var listener: ItemClickListener<Item>
 //                }
                 icon?.setImageResource(item.iconRes)
                 try {
-                    val d =
-                        ContextCompat.getDrawable(
-                            itemView.context,
-                            R.drawable.bg_body_measure_summary
-                        )!!.constantState!!.newDrawable().mutate()
-                    d.setColorFilter(item.imageColor, PorterDuff.Mode.MULTIPLY)
-                    bgImage!!.setImageDrawable(d)
+                    bgImage!!.setImageDrawable(Utils.getColorFilterDrawable(bgImage?.context, R.drawable.bg_body_measure_summary, item.imageColor))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

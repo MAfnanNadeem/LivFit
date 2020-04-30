@@ -93,13 +93,7 @@ class SummaryDetailsDialog(
             image?.setImageResource(it)
         }
         try {
-            val d =
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.bg_body_measure_summary_details
-                )!!.constantState!!.newDrawable().mutate()
-            d.setColorFilter(data!!.imageColor, PorterDuff.Mode.MULTIPLY)
-            bgView?.background = d
+            bgView?.background = Utils.getColorFilterDrawable(context, R.drawable.bg_body_measure_summary_details, data!!.imageColor)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -249,11 +243,11 @@ class SummaryDetailsDialog(
                 //bottom
                 val xFormat: ValueFormatter = MyXFormatter(ArrayList())
                 val xAxis = chart.xAxis
-                xAxis.position = XAxisPosition.BOTTOM_INSIDE
+                xAxis.position = XAxisPosition.BOTTOM
                 //xAxis.typeface = tfLight
                 xAxis.setDrawGridLines(false)
                 xAxis.granularity = 1f // only intervals of 1 day
-                xAxis.textColor = Color.DKGRAY
+                xAxis.textColor = Color.WHITE
                 xAxis.labelCount = 7
                 xAxis.valueFormatter = xFormat
 
@@ -263,7 +257,7 @@ class SummaryDetailsDialog(
                 leftAxis.setLabelCount(8, false)
                 leftAxis.valueFormatter = yFormat
                 leftAxis.setPosition(YAxisLabelPosition.OUTSIDE_CHART)
-                leftAxis.spaceTop = 15f
+                leftAxis.spaceTop = 10f
                 leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
                 leftAxis.textColor = Color.WHITE
 
@@ -304,6 +298,7 @@ class SummaryDetailsDialog(
                 chart.data = data
                 chart.animateXY(500, 500)
             }
+
         }
 
     }

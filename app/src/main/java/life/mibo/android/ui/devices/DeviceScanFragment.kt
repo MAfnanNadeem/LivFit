@@ -7,6 +7,10 @@
 
 package life.mibo.android.ui.devices
 
+//import com.polidea.rxandroidble2.RxBleClient
+//import com.polidea.rxandroidble2.RxBleDevice
+//import com.polidea.rxandroidble2.scan.ScanFilter
+//import com.polidea.rxandroidble2.scan.ScanSettings
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -22,24 +26,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
-//import com.polidea.rxandroidble2.RxBleClient
-//import com.polidea.rxandroidble2.RxBleDevice
-//import com.polidea.rxandroidble2.scan.ScanFilter
-//import com.polidea.rxandroidble2.scan.ScanSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_devices2.*
-import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.SessionManager
-import life.mibo.hardware.core.Logger
-import life.mibo.hardware.events.*
-import life.mibo.hardware.models.Device
-import life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED
-import life.mibo.hardware.models.DeviceTypes
-import life.mibo.hardware.models.User
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.ScanComplete
@@ -52,6 +44,14 @@ import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.core.Logger
+import life.mibo.hardware.events.*
+import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED
+import life.mibo.hardware.models.DeviceTypes
+import life.mibo.hardware.models.User
 import life.mibo.views.loadingbutton.presentation.State
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -60,6 +60,15 @@ import java.util.concurrent.TimeUnit
 
 
 class DeviceScanFragment : BaseFragment(), ScanObserver {
+
+    companion object {
+        fun bundle(isRxl: Boolean, type: Int): Bundle {
+            val arg = Bundle()
+            arg.putBoolean("is_rxl", isRxl)
+            arg.putInt("is_type", type)
+            return arg
+        }
+    }
 
     interface Listener : BaseListener {
         fun onScan(isWifi: Boolean)
@@ -141,8 +150,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
         checkAndScan()
         isRxl = arguments?.getBoolean("is_rxl") ?: false
-        if (isRxl)
-            button_next?.text = getString(R.string.next)
+        //if (isRxl)
+        button_next?.text = getString(R.string.next)
 
         button_connect_all?.setOnClickListener {
             if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED) {
@@ -569,13 +578,13 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     // MainActivity
     @Subscribe
     public fun onNewDevice(event: NewDeviceDiscoveredEvent) {
-        log("NewDeviceDiscoveredEvent received " + event.data)
+        //  log("NewDeviceDiscoveredEvent received isRxl $isRxl : " + event.data)
         val data = event.data
         if (data is Device) {
             activity?.runOnUiThread {
-                if (isRxl) {
-                    if (data.isPod)
-                        availabeAdapter?.addDevice(data, true)
+                //log("NewDeviceDiscoveredEvent data.isPod ${data.isPod}")
+                if (data.isPod && isRxl) {
+                    availabeAdapter?.addDevice(data, true)
                 } else {
                     availabeAdapter?.addDevice(data)
                 }
@@ -624,7 +633,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                                 connectionListener?.onConnectClicked(t)
                                 // Thread.currentThread().sleep(100)
                                 isConnectTrigger = true
-                                Thread.sleep(100)
+                                Thread.sleep(120)
                                 log("connectAllDevices statusConnected ${t.statusConnected}")
                             }
                         } else {

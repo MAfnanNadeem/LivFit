@@ -77,7 +77,7 @@ object MiboEvent {
         try {
             firebase.logEvent(type, bundle)
         } catch (e: Exception) {
-
+            log(e)
         }
     }
 

@@ -85,10 +85,6 @@ class ProfilePicFragment : BodyBaseFragment() {
 //
 //            }
 //        })
-        Calculate.clear()
-        //Calculate.addValue("user_gender", Prefs.get(context).member?.gender)
-        val isMale = Prefs.get(context).member?.gender?.equals("male", true) ?: true
-        Calculate.getMeasureData().gender(isMale)
 
     }
 

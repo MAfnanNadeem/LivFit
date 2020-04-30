@@ -168,7 +168,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                " Programs", "",
+                " Measurement", "",
                 HomeItem.Type.PROGRAMS, R.drawable.ic_nfc_black_24dp, R.drawable.dashboard_item_bg_6
             )
         )
@@ -240,7 +240,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                " Programs", "",
+                " Measurement", "",
                 HomeItem.Type.PROGRAMS, R.drawable.ic_nfc_black_24dp, R.drawable.dashboard_item_bg_6
             )
         )
@@ -271,66 +271,66 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         observer.onDataReceived(list)
     }
 
-    fun parseData2(report: SessionReport) {
-        val list = ArrayList<HomeItem>()
-        val data = report.report?.sessionMemberReports!!
-        list.add(
-            HomeItem(
-                "Heart Rate " + data.peakHr,
-                intArrayOf(Color.parseColor("#FF0000"), Color.parseColor("#393939")),
-                HomeItem.Type.HEART, R.drawable.ic_rxl_heart_unselect
-            )
-        )
-        list.add(
-            HomeItem(
-                "Weight " + report.report?.weight,
-                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
-                HomeItem.Type.WEIGHT
-            )
-        )
-        list.add(
-            HomeItem(
-                "Calendar",
-                intArrayOf(Color.parseColor("#2A72D1"), Color.parseColor("#00FFF2")),
-                HomeItem.Type.CALENDAR, R.drawable.ic_dashboard_calendar
-            )
-        )
-        list.add(
-            HomeItem(
-                "Calories " + data.caloriesBurnt,
-                intArrayOf(Color.parseColor("#065A2A"), Color.parseColor("#CCF9AE")),
-                HomeItem.Type.CALORIES
-            )
-        )
-        list.add(
-            HomeItem(
-                "Schedule",
-                intArrayOf(Color.parseColor("#C21F2A"), Color.parseColor("#FE9001")),
-                HomeItem.Type.SCHEDULE, R.drawable.ic_dashboard_schedule
-            )
-        )
-        list.add(
-            HomeItem(
-                "Programs",
-                intArrayOf(Color.parseColor("#0084E9"), Color.parseColor("#0C1E51")),
-                HomeItem.Type.PROGRAMS, R.drawable.ic_dashboard_booster
-            )
-        )
-        list.add(
-            HomeItem(
-                "Booster",
-                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
-                HomeItem.Type.BOOSTER_SCAN, R.drawable.ic_dashboard_booster
-            )
-        )
-        list.add(
-            HomeItem(
-                "Add Product",
-                intArrayOf(Color.parseColor("#C9C8C8"), Color.parseColor("#393939")),
-                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp
-            )
-        )
-        observer.onDataReceived(list)
-    }
+//    fun parseData2(report: SessionReport) {
+//        val list = ArrayList<HomeItem>()
+//        val data = report.report?.sessionMemberReports!!
+//        list.add(
+//            HomeItem(
+//                "Heart Rate " + data.peakHr,
+//                intArrayOf(Color.parseColor("#FF0000"), Color.parseColor("#393939")),
+//                HomeItem.Type.HEART, R.drawable.ic_rxl_heart_unselect
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Weight " + report.report?.weight,
+//                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
+//                HomeItem.Type.WEIGHT
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Calendar",
+//                intArrayOf(Color.parseColor("#2A72D1"), Color.parseColor("#00FFF2")),
+//                HomeItem.Type.CALENDAR, R.drawable.ic_dashboard_calendar
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Calories " + data.caloriesBurnt,
+//                intArrayOf(Color.parseColor("#065A2A"), Color.parseColor("#CCF9AE")),
+//                HomeItem.Type.CALORIES
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Schedule",
+//                intArrayOf(Color.parseColor("#C21F2A"), Color.parseColor("#FE9001")),
+//                HomeItem.Type.SCHEDULE, R.drawable.ic_dashboard_schedule
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Programs",
+//                intArrayOf(Color.parseColor("#0084E9"), Color.parseColor("#0C1E51")),
+//                HomeItem.Type.PROGRAMS, R.drawable.ic_dashboard_booster
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Booster",
+//                intArrayOf(Color.parseColor("#2F2FF3"), Color.parseColor("#121260"), Color.DKGRAY),
+//                HomeItem.Type.BOOSTER_SCAN, R.drawable.ic_dashboard_booster
+//            )
+//        )
+//        list.add(
+//            HomeItem(
+//                "Add Product",
+//                intArrayOf(Color.parseColor("#C9C8C8"), Color.parseColor("#393939")),
+//                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp
+//            )
+//        )
+//        observer.onDataReceived(list)
+//    }
 
 }

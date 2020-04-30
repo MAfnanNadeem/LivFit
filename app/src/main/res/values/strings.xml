@@ -124,7 +124,7 @@
     <string name="connect_all">Connect All</string>
     <string name="reflex">ReFlex</string>
     <string name="rxl_title">Reaction Lights</string>
-    <string name="rxl_select">RXL Select Players</string>
+    <string name="rxl_select">Select Players</string>
     <string name="rxl_select_course">RXL Course Select</string>
     <string name="profile">Profile</string>
     <string name="rxl_details">RXL Exercise Details</string>
@@ -148,7 +148,7 @@
     <string name="no_ofpods">Number of Pods</string>
     <string name="connected_pods">No. of connected Pods</string>
     <string name="required_pods"><![CDATA[<b>%s</b> Pods required for this exercise]]></string>
-    <string name="assigned_pods"><![CDATA[Pods are mis-configured, total connected pods are <b>%s</b> and assigned pods to players are <b>%s</b> ]]></string>
+    <string name="assigned_pods" formatted="false"><![CDATA[Pods are mis-configured, total connected pods are <b>%s</b> and assigned pods to players are <b>%s</b> ]]></string>
     <string name="pods">Pods</string>
     <string name="no_pods">No Pods are connected</string>
     <string name="activity_duration">Activity Duration</string>
@@ -216,9 +216,87 @@
     <string name="change_password">Change Password</string>
     <string name="sessions">Sessions</string>
     <string name="hours">Hours</string>
+
     <string name="calories">Calories</string>
     <string name="all_images">All Images</string>
     <string name="password_req"><![CDATA[Password must be 8 character in length, must contain 1 Upper & Lower case, 1 number and 1 special character]]></string>
     <string name="pwd_not_match">Confirm password not matched</string>
+    <string name="skip">Skip</string>
+    <string name="upload_profile_photo">Take a minute to upload profile photo.</string>
+    <string name="welcome">Welcome</string>
+    <string name="what_is_your_bmi">What is your age, weight and height ?</string>
+    <string name="unit">Unit</string>
+    <string name="age">Age</string>
+    <string name="done">Done</string>
+    <string name="choose_your_body_type">Choose your body type</string>
+    <string name="your_body_type">Your body type</string>
+    <string name="body_type_a">A Type  (pear)</string>
+    <string name="body_type_i">I Type  (Rectangle)</string>
+    <string name="body_type_x">X Type  (Hourglass)</string>
+    <string name="body_type_o">O Type  (Apple)</string>
+    <string name="body_type_v">V Type  (Inverted triangle)</string>
+    <string name="your_biometrics_summary">Your Biometrics Summary</string>
+    <string name="what_is_goal">What is Goal ?</string>
+    <string name="what_is_physical">Select Your Physical Activity</string>
+    <string name="meter_square">m²</string>
+    <string name="feet_square">ft²</string>
+    <string name="ffmi_unit">kg/m²</string>
+    <string name="summary_format">"<b>%.2f</b> <small>%s</small>"</string>
+    <string name="my_bmi_title">My BMI (Body Mass Index)</string>
+
+    <string name="bmi_title">BMI (Body Mass Index)</string>
+    <string name="bmr_title">BMR (Basal Metabolic Rate)</string>
+    <string name="ibw_title">IBW (Ideal Body Weight)</string>
+    <string name="bsa_title">BSA (Body Surface Area)</string>
+    <string name="weight_loss_title">Weight Loss</string>
+    <string name="body_mass_title">Lean Body Mass</string>
+    <string name="body_fat_title">Body Fat percentage</string>
+    <string name="waist_hip_title">Waist Hip Ratio</string>
+    <string name="waist_height_title">Waist Height Ratio</string>
+    <string name="body_water_title">Total Body Water</string>
+    <string name="ffmi_title">Fat Free Mass Index</string>
+    <string name="energy_title">Total Daily Energy Expenditure</string>
+
+    <string name="bmi_normal">Normal BMI = 18.5 – 24.9</string>
+    <string name="bmr_normal">Calories required to your body</string>
+    <string name="ibw_normal">Ideal Body Weight for your height group</string>
+    <string name="bsa_normal">------------</string>
+    <string name="weight_loss_normal">------------</string>
+    <string name="body_mass_normal">------------</string>
+    <string name="body_fat_normal">Acceptable 18–24 (Obesity 25+)</string>
+    <string name="waist_hip_normal">Normal(~0.80), Obesity Men(0.90+) Women(0.85+)</string>
+    <string name="waist_height_normal">Healthy Men(0.43 – 0.52) Women(0.42 – 0.48)</string>
+    <string name="body_water_normal">Normal Men(50–60%) Women(55–65%)</string>
+    <string name="ffmi_normal">Excellent (22–23) Superior(23–26) Steroid(28+)</string>
+    <string name="energy_normal">It is the daily calorie intake recommended for maintaining your current weight</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="faq">FAQs</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="goal_que_1_title">Be healthier</string>
+    <string name="goal_que_2_title">Lose weight</string>
+    <string name="goal_que_3_title">Gain weight</string>
+    <string name="goal_que_1_desc">Eat and Train for optimum health</string>
+    <string name="goal_que_2_desc">Get leaner and increase your stamina</string>
+    <string name="goal_que_3_desc">Build muscle strength and flexibility</string>
+<!--    <string name="que_activity_1_title_">Sedentary lifestyle</string>-->
+    <string name="que_activity_1_title">LOW</string>
+    <string name="que_activity_1_desc">Little or no exercise</string>
+<!--    <string name="que_activity_2_title_">Slightly active lifestyle</string>-->
+    <string name="que_activity_2_title">AVERAGE</string>
+    <string name="que_activity_2_desc">Light exercise or sports 1–2 days/week</string>
+<!--    <string name="que_activity_3_title_">Moderately active lifestyle</string>-->
+    <string name="que_activity_3_title">ACTIVE</string>
+    <string name="que_activity_3_desc">Moderate exercise or sports 2–3 days/week</string>
+<!--    <string name="que_activity_4_title_">Very active lifestyle</string>-->
+    <string name="que_activity_4_desc">Hard exercise or sports 4–5 days/week</string>
+    <string name="que_activity_4_title">VIGOROUS</string>
+<!--    <string name="que_activity_5_title_">Extra active lifestyle</string>-->
+    <string name="que_activity_5_title">ATHLETIC</string>
+    <string name="que_activity_5_desc">Very hard exercise, physical job or sports 6–7 days/week</string>
+<!--    <string name="que_activity_6_title_">Professional athlete</string>-->
+    <string name="que_activity_6_title">PROFESSIONAL</string>
+    <string name="que_activity_6_desc">Moderate exercise or sports 2–3 days/week</string>
+    <string name="back">Back</string>
 
 </resources>

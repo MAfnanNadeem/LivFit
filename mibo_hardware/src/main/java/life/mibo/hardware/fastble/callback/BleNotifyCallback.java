@@ -16,6 +16,6 @@ public abstract class BleNotifyCallback extends BleBaseCallback {
 
     public abstract void onNotifyFailure(BleException exception);
 
-    public abstract void onCharacteristicChanged(byte[] data, String uid);
+    public abstract void onCharacteristicChanged(byte[] data, String uid, int property);
 
 }

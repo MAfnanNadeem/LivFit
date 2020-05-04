@@ -30,6 +30,7 @@ public class BleMsg {
     public static final int MSG_CHA_NOTIFY_DATA_CHANGE = 0x13;
     public static final String KEY_NOTIFY_BUNDLE_STATUS = "notify_status";
     public static final String KEY_NOTIFY_BUNDLE_VALUE = "notify_value";
+    public static final String KEY_NOTIFY_BUNDLE_PROPERTY = "notify_property";
 
     // Indicate
     public static final int MSG_CHA_INDICATE_START = 0x21;

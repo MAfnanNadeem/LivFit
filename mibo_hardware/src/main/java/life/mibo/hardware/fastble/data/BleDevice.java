@@ -12,6 +12,10 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
+import life.mibo.hardware.models.DeviceTypes;
+
 
 public class BleDevice implements Parcelable {
 
@@ -20,6 +24,7 @@ public class BleDevice implements Parcelable {
     private int mRssi;
     private long mTimestampNanos;
     private String uid = "";
+    private DeviceTypes type = DeviceTypes.GENERIC;
 
     public BleDevice(BluetoothDevice device) {
         mDevice = device;
@@ -120,4 +125,22 @@ public class BleDevice implements Parcelable {
         this.mTimestampNanos = timestampNanos;
     }
 
+    public void setType(DeviceTypes type) {
+        this.type = type;
+    }
+
+    public DeviceTypes getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "BleDevice{" +
+                "mDevice=" + mDevice +
+                ", mScanRecord=" + Arrays.toString(mScanRecord) +
+                ", mRssi=" + mRssi +
+                ", mTimestampNanos=" + mTimestampNanos +
+                ", uid='" + uid + '\'' +
+                '}';
+    }
 }

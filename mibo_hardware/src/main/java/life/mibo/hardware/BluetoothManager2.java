@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Build;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import kotlin.jvm.Synchronized;
 import life.mibo.hardware.bluetooth.BleGattManager;
@@ -40,6 +43,7 @@ import life.mibo.hardware.fastble.callback.BleScanAndConnectCallback;
 import life.mibo.hardware.fastble.callback.BleWriteCallback;
 import life.mibo.hardware.fastble.data.BleDevice;
 import life.mibo.hardware.fastble.exception.BleException;
+import life.mibo.hardware.models.DeviceTypes;
 
 /**
  * Created by Fer on 08/04/2019.
@@ -100,28 +104,31 @@ public class BluetoothManager2 {
             }
 
             @Override
-            public void onScanning(life.mibo.hardware.fastble.data.BleDevice device) {
+            public void onScanning(BleDevice device) {
                 log("FastBle: onScanning bleDevice" + device);
                 //bleRxlDiscovered(bleDevice.getMac(), bleDevice.getMac(), bleDevice.getName()+);
                 String name = device.getName();
                 if (name == null)
                     return;
                 if (name.contains("MBRXL")) {
+                    device.setType(DeviceTypes.RXL_BLE);
                     listener.bleRXLDiscovered(Utils.getUid(device.getName()), device.getName(), "RXL ");
                     deviceHashMap.put(device.getName(), device);
                     return;
                 }
 
                 if (name.contains("MIBO-")) {
+                    device.setType(DeviceTypes.BLE_STIMULATOR);
                     listener.bleBoosterDeviceDiscovered(device.getName().replace("MIBO-", ""), device.getName());
                     deviceHashMap.put(device.getName(), device);
                     return;
                 }
 
                 if (device.getName().contains("HW") || device.getName().contains("Geonaute")) {
+                    device.setType(DeviceTypes.HR_MONITOR);
                     // devicesHRBle.add(device);
-                    listener.bleHrDeviceDiscovered(device.toString(), device.getName());
-                    deviceHashMap.put(device.getName(), device);
+                    listener.bleHrDeviceDiscovered(device.getMac(), device.getName());
+                    deviceHashMap.put(device.getMac(), device);
                 }
 
             }
@@ -212,7 +219,8 @@ public class BluetoothManager2 {
 
 
     public void connectHrGattDevice(String Id) {
-        log("connectHrGattDevice Id " + Id);
+        connectBleFast(Id);
+//        log("connectHrGattDevice Id " + Id);
 //        boolean newDevice = true;
 //        for (BluetoothDevice t : devicesConnectedBle) {
 //            if (t.toString().equals(Id)) {
@@ -486,9 +494,10 @@ public class BluetoothManager2 {
 
     public void sendMessage(String Id, byte[] message, String tag, int type) {
         log(tag + ": sendMessage uid:" + Id + " ,data: " + Arrays.toString(message));
-        if (type == DataParser.BOOSTER)
+        if (type == DataParser.RXL)
+            sendMessageToRxt(Id, message);
+        else
             sendMessageToBooster(Id, message);
-        else sendMessageToRxt(Id, message);
     }
 
     void sendMessage(String Id, byte[] message, String tag) {
@@ -499,7 +508,7 @@ public class BluetoothManager2 {
 
     private void sendMessageToRxt(String Id, byte[] message) {
         Encryption.mbp_encrypt(message, message.length);
-        writeBleFast(Id, message, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
+        writeBleFastNonSync(Id, message, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
                 BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
     }
 
@@ -643,6 +652,31 @@ public class BluetoothManager2 {
 
     }
 
+    private String lastHr = "";
+
+    public void startReading(String uid) {
+        BleDevice device = null;
+        if (uid == null || uid.isEmpty()) {
+            for (BleDevice key : deviceHashMap.values()) {
+                if (key.getType() == DeviceTypes.HR_MONITOR) {
+                    device = key;
+                    uid = key.getName();
+                    break;
+                }
+            }
+        } else device = getBle(uid);
+        notifyBleFast(device, uid, BleGattManager.HEART_RATE_SERVICE_UUID.toString(),
+                BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID.toString(), false);
+
+    }
+
+    public void stopReading(String uid) {
+        BleDevice device = getBle(uid);
+        stopNotifyBleFast(device, BleGattManager.HEART_RATE_SERVICE_UUID.toString(),
+                BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID.toString(), false);
+    }
+
+
     private double extractHeartRate(BluetoothGattCharacteristic characteristic) {
 
         int flag = characteristic.getProperties();
@@ -681,7 +715,7 @@ public class BluetoothManager2 {
     }
 
     private void connectBleFast(String uid) {
-        log("connectBleFast mac:" + uid);
+        log("connectBleFast mac: " + uid);
         BleDevice device = getBle(uid);
 
         if (device == null) {
@@ -713,9 +747,23 @@ public class BluetoothManager2 {
                 if (status == BluetoothGatt.STATE_CONNECTED) {
                     setMtu(device, 300);
                 }
-                readBleFast(device);
-                notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
-                        BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString());
+                if (device.getDevice().getName().contains("HW")) {
+                    log("connectBleFast device is HW");
+                    readBleFast(device, BleGattManager.HEART_RATE_BATTERY_SERVICE.toString(), BleGattManager.HEART_RATE_BATTERY.toString());
+//                    notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.HEART_RATE_SERVICE_UUID.toString(),
+//                            BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID.toString(), false);
+                    // print(gatt, BleGattManager.HEART_RATE_SERVICE_UUID, BleGattManager.HEART_RATE_2902);
+
+//                    notifyBleFast(device, Utils.getUid(device.getName()), "0x2A37",
+//                            "0x2A37");
+//                    indicateBleFast(device, BleGattManager.HEART_RATE_SERVICE_UUID.toString(),
+//                            BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID.toString());
+
+                } else {
+                    readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
+                    notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
+                            BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString(), true);
+                }
                 //gatt.requestMtu()
                 //indicateBleFast(bleDevice, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
                 //       BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
@@ -748,13 +796,12 @@ public class BluetoothManager2 {
         });
     }
 
-    private void readBleFast(final life.mibo.hardware.fastble.data.BleDevice uid) {
-        BleManager.getInstance().read(uid, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
-                BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString(), new BleReadCallback() {
+    private void readBleFast(final BleDevice uid, String serviceUid, String writeUid) {
+        BleManager.getInstance().read(uid, serviceUid, writeUid, new BleReadCallback() {
                     @Override
                     public void onReadSuccess(byte[] data) {
                         log("readBleFast: onReadSuccess " + Arrays.toString(data));
-                        onBleCharChanged.bleBoosterChanged(data, Utils.getUid(uid.getName()));
+                        onBleCharChanged.bleBoosterChanged(data, Utils.getUid(uid.getName()), 0);
                     }
 
                     @Override
@@ -804,6 +851,25 @@ public class BluetoothManager2 {
         });
     }
 
+    private void writeBleFastNonSync(String uid, byte[] data, String serviceUid, String writeUid) {
+        log("writeBleFast: uid " + uid);
+        BleDevice device = getBle(uid);
+        log("writeBleFast: device " + device);
+        BleManager.getInstance().write2(device, serviceUid, writeUid, data, false, true, 0, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                log("FastBle: onWriteSuccess " + Arrays.toString(justWrite));
+
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                log("FastBle: onWriteFailure " + exception);
+
+            }
+        });
+    }
+
     private BleNotifyCallback notifyCallback = new BleNotifyCallback() {
         @Override
         public void onNotifySuccess() {
@@ -816,19 +882,21 @@ public class BluetoothManager2 {
         }
 
         @Override
-        public void onCharacteristicChanged(byte[] data, String uid) {
+        public void onCharacteristicChanged(byte[] data, String uid, int property) {
             log("onCharacteristicChanged:  " + Arrays.toString(data) + " : uid " + uid);
             if (onBleCharChanged != null)
-                onBleCharChanged.bleBoosterChanged(data, uid);
+                onBleCharChanged.bleBoosterChanged(data, uid, property);
         }
 
     };
 
-    private void notifyBleFast(final BleDevice device, String uid, String serviceUid, String writeUid) {
-        log("writeBleFast: uid " + device);
+    private void notifyBleFast(final BleDevice device, String uid, String serviceUid, String charUid, boolean descriptor) {
+        log("notifyBleFast: uid " + device);
+        if (device == null)
+            return;
         //BleDevice device = getBle(uid);
         // log("writeBleFast: device " + device);
-        BleManager.getInstance().notify(device, uid, serviceUid, writeUid, true, new BleNotifyCallback() {
+        BleManager.getInstance().notify(device, uid, serviceUid, charUid, descriptor, new BleNotifyCallback() {
             @Override
             public void onNotifySuccess() {
                 log("onNotifySuccess: ");
@@ -840,14 +908,23 @@ public class BluetoothManager2 {
             }
 
             @Override
-            public void onCharacteristicChanged(byte[] data, String uid) {
+            public void onCharacteristicChanged(byte[] data, String uid, int property) {
                 log("onCharacteristicChanged:  " + Arrays.toString(data) + " : uid " + uid);
                 if (onBleCharChanged != null)
-                    onBleCharChanged.bleBoosterChanged(data, uid);
+                    onBleCharChanged.bleBoosterChanged(data, uid, property);
             }
 
         });
     }
+
+
+    private void stopNotifyBleFast(final BleDevice device, String serviceUid, String charUid, boolean descriptor) {
+        log("stopNotifyBleFast: uid " + device);
+        if (device == null)
+            return;
+        BleManager.getInstance().stopNotify(device, serviceUid, charUid, descriptor);
+    }
+
 
     private void indicateBleFast(BleDevice device, String serviceUid, String writeUid) {
         //log("writeBleFast: uid " + uid);
@@ -882,6 +959,43 @@ public class BluetoothManager2 {
     }
 
 
+    public synchronized void print(BluetoothGatt mBluetoothGatt, UUID serviceUUID, UUID characteristicUUID) {
+        log("print serviceUUID " + serviceUUID);
+        log("print characteristicUUID " + characteristicUUID);
+        log("print start--------------------------------- ");
+        int count = 1;
+        if (mBluetoothGatt != null) {
+            // mBluetoothGatt.discoverServices();
+            for (BluetoothGattService service : mBluetoothGatt.getServices()) {
+                CommunicationManager.log(count + " print service " + service);
+                if (service != null) {
+                    log("print service uid " + service.getUuid());
+                    log("print service type " + service.getType());
+                    for (BluetoothGattCharacteristic chr : service.getCharacteristics()) {
+                        log(count + " print Characteristic " + chr);
+                        if (chr != null) {
+                            log("print Characteristic uid " + chr.getUuid());
+                            log("print Characteristic property " + chr.getProperties());
+                            for (BluetoothGattDescriptor desc : chr.getDescriptors()) {
+                                log(count + " print Descriptors " + desc);
+                                if (desc != null) {
+                                    log("print Descriptors uid " + desc.getUuid());
+                                    log("print Descriptors value " + Arrays.toString(desc.getValue()));
+                                }
 
+                            }
+                        }
+                    }
+                } else {
+                    log("print service is NULL ");
+                }
+                count++;
+            }
+        } else {
+            log("print mBluetoothGatt is NULL ");
+        }
+
+        log("print End--------------------------------- ");
+    }
 
 }

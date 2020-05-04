@@ -5,6 +5,7 @@
 package life.mibo.android.ui.home
 
 import android.graphics.Color
+import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -43,12 +44,15 @@ data class HomeItem(
         headerText = header
     }
 
-    constructor(type: Type) : this(0, "", 0, type)
+    constructor(type: Type, bundle: Bundle? = null) : this(0, "", 0, type) {
+        this.bundle = bundle
+    }
 
     private var colorArray: IntArray? = null
     var iconRes: Int = 0
     var imageRes: Int = 0
     var headerText: String = ""
+    var bundle: Bundle? = null
 
     enum class Type {
         HEART, WEIGHT, CALORIES, PROFILE, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER_SCAN, RXL_SCAN, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE, RXL_TEST

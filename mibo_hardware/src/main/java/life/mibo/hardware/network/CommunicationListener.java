@@ -19,7 +19,7 @@ public interface CommunicationListener {
 
     void onDeviceDiscoveredEvent(Device s);
 
-    void HrEvent(int hr, String uid);
+    void HrEvent(byte[] hr, String uid, int property);
 
     void DeviceStatusEvent(String uid);
 

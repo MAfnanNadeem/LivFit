@@ -59,7 +59,7 @@ public class CircleProgressView extends View {
 
 
     private void setDefaultValues() {
-        progress = 0;
+        progress = 33;
         width = getResources().getDimension(R.dimen.default_circle_width);
         strokeWidth = getResources().getDimension(R.dimen.default_circle_background_width);
         circleColor = Constants.PRIMARY;

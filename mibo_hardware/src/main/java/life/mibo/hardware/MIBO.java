@@ -28,16 +28,16 @@ public class MIBO {
 
     public static void init(Context c) {
         MIBO.context = c;
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        } else {
-            Timber.plant(new Timber.Tree() {
-                @Override
-                protected void log(int priority, @Nullable String tag, @NotNull String message, @Nullable Throwable t) {
-
-                }
-            });
-        }
+//        if (BuildConfig.DEBUG) {
+//            Timber.plant(new Timber.DebugTree());
+//        } else {
+//            Timber.plant(new Timber.Tree() {
+//                @Override
+//                protected void log(int priority, @Nullable String tag, @NotNull String message, @Nullable Throwable t) {
+//
+//                }
+//            });
+//        }
     }
 
     public static void log(String msg) {

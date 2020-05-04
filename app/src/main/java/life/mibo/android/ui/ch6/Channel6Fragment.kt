@@ -54,7 +54,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         log("onViewCreated")
         //controller = Channel6Controller(this@Channel6Fragment)
         if (arguments != null)
-            stateBundle = arguments!!
+            stateBundle = requireArguments()
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
         controller.onViewCreated(view, stateBundle)
 
@@ -218,7 +218,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         log("onBackPressed")
         //Toasty.info(context!!, "onBackPressed").show()
         if (controller.onBackPressed()) {
-            navigate(life.mibo.android.ui.main.Navigator.POST, arguments)
+            navigate(Navigator.POST, arguments)
             return true
         }
         return false

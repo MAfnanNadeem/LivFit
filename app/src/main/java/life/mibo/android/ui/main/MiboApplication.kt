@@ -60,7 +60,7 @@ class MiboApplication : Application() {
         super.onCreate()
         MIBO.init(this)
         context = this
-        CoilLogger.setEnabled(true)
+        //CoilLogger.setEnabled(true)
         AndroidThreeTen.init(this)
         MiboEvent.init(applicationContext)
         Logger.DEBUG = DEBUG

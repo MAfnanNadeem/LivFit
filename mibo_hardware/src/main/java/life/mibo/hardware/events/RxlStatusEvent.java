@@ -7,11 +7,11 @@
 
 package life.mibo.hardware.events;
 
-import androidx.annotation.NonNull;
+        import androidx.annotation.NonNull;
 
-import java.util.Arrays;
+        import java.util.Arrays;
 
-import life.mibo.hardware.core.Logger;
+        import life.mibo.hardware.core.Logger;
 
 /**
  * Created by Sumeet Kumar on 1/23/20 3:24 PM.

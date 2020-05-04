@@ -532,6 +532,16 @@ public class User implements Serializable, BaseModel{
         return false;
     }
 
+    public boolean checkAndIncreaseChannel(int pos, int limit) {
+        int current = currentChannelLevels[pos - 1];
+        if (current < limit) {
+            currentChannelLevels[pos - 1]++;
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean checkAndDecreaseChannel(int pos) {
         if (currentChannelLevels[pos - 1] > 0) {
             currentChannelLevels[pos - 1]--;

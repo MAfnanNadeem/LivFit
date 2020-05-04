@@ -19,8 +19,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import java.util.Arrays;
 import java.util.UUID;
 
+import life.mibo.hardware.CommunicationManager;
+import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.fastble.BleManager;
 import life.mibo.hardware.fastble.callback.BleIndicateCallback;
 import life.mibo.hardware.fastble.callback.BleMtuChangedCallback;
@@ -88,8 +91,9 @@ public class BleConnector {
                         BleNotifyCallback notifyCallback = (BleNotifyCallback) msg.obj;
                         Bundle bundle = msg.getData();
                         byte[] value = bundle.getByteArray(BleMsg.KEY_NOTIFY_BUNDLE_VALUE);
+                        int p = bundle.getInt(BleMsg.KEY_NOTIFY_BUNDLE_PROPERTY);
                         if (notifyCallback != null) {
-                            notifyCallback.onCharacteristicChanged(value, uid);
+                            notifyCallback.onCharacteristicChanged(value, uid, p);
                         }
                         break;
                     }
@@ -236,8 +240,10 @@ public class BleConnector {
         if (mGattService != null && characteristicUUID != null) {
             mCharacteristic = mGattService.getCharacteristic(characteristicUUID);
         }
+
         return this;
     }
+
 
     public BleConnector withUUIDString(String serviceUUID, String characteristicUUID) {
         return withUUID(formUUID(serviceUUID), formUUID(characteristicUUID));
@@ -256,6 +262,7 @@ public class BleConnector {
      */
     public void enableCharacteristicNotify(BleNotifyCallback bleNotifyCallback, String uuid_notify,
                                            boolean userCharacteristicDescriptor) {
+        Logger.e("enableCharacteristicNotify " + uuid_notify + " : " + userCharacteristicDescriptor);
         if (mCharacteristic != null
                 && (mCharacteristic.getProperties() | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
 
@@ -263,7 +270,18 @@ public class BleConnector {
             setCharacteristicNotification(mBluetoothGatt, mCharacteristic, userCharacteristicDescriptor, true, bleNotifyCallback);
         } else {
             if (bleNotifyCallback != null)
-                bleNotifyCallback.onNotifyFailure(new OtherException("this characteristic not support notify!"));
+                if (mCharacteristic != null)
+                    bleNotifyCallback.onNotifyFailure(new OtherException("this characteristic not support notify! " + mCharacteristic.getProperties()));
+                else
+                    bleNotifyCallback.onNotifyFailure(new OtherException("this characteristic not support notify!!"));
+
+//            if (mCharacteristic.getDescriptors() != null){
+//                mCharacteristic = mCharacteristic.getDescriptors().get(0);
+//                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getUuid());
+//                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getValue());
+//                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getPermissions());
+//            }
+
         }
     }
 
@@ -312,7 +330,17 @@ public class BleConnector {
         if (descriptor == null) {
             notifyMsgInit();
             if (bleNotifyCallback != null)
-                bleNotifyCallback.onNotifyFailure(new OtherException("descriptor equals null"));
+                bleNotifyCallback.onNotifyFailure(new OtherException("descriptor equals null : " + characteristic.getDescriptors()));
+            try {
+                if (characteristic.getDescriptors() != null)
+                    descriptor = characteristic.getDescriptors().get(0);
+                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getUuid());
+                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getValue());
+                CommunicationManager.log("setCharacteristicNotification descriptor " + descriptor.getPermissions());
+            } catch (Exception e) {
+                CommunicationManager.log("setCharacteristicNotification error " + e.getMessage());
+
+            }
             return false;
         } else {
             descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
@@ -478,8 +506,12 @@ public class BleConnector {
                     bleReadCallback.onReadFailure(new OtherException("gatt readCharacteristic fail"));
             }
         } else {
-            if (bleReadCallback != null)
-                bleReadCallback.onReadFailure(new OtherException("this characteristic not support read!"));
+            if (bleReadCallback != null) {
+                if (mCharacteristic != null)
+                    bleReadCallback.onReadFailure(new OtherException("this characteristic not support read: " + mCharacteristic.getProperties() + " : " + mCharacteristic.getDescriptors()));
+                else
+                    bleReadCallback.onReadFailure(new OtherException("this characteristic not support read mCharacteristic null"));
+            }
         }
     }
 

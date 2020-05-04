@@ -178,7 +178,7 @@ class ChannelSelectAdapter(
             }
 
             plusBtn?.setOnClickListener {
-                if (item.channelValue < 50) {
+                if (item.channelValue < item.getGovern()) {
                     item?.incValue()
                     perc?.setText("${item.channelValue} %")
                 }

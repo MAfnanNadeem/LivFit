@@ -267,6 +267,7 @@ class ChartData {
         chart.animateXY(800, 500)
         // set data
         chart.data = data
+        //chart.lineData = data
         chart.invalidate()
         Logger.e("loadChart chart.invalidate() ")
     }

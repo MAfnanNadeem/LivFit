@@ -10,5 +10,5 @@ package life.mibo.hardware.bluetooth;
 public interface OnBleCharChanged {
     void bleHrChanged(int hr, String uid);
 
-    void bleBoosterChanged(byte[] data, String uid);
+    void bleBoosterChanged(byte[] data, String uid, int property);
 }

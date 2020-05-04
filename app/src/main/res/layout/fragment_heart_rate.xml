@@ -17,6 +17,7 @@
         app:tabIndicatorColor="@color/colorPrimary"
         app:tabBackground="@color/white"
         app:tabSelectedTextColor="@color/colorPrimary"
+        android:visibility="gone"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorHeight="4dp"
         app:tabGravity="fill"

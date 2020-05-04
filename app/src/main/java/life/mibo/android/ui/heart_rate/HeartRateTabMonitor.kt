@@ -1,7 +1,7 @@
 /*
- *  Created by Sumeet Kumar on 1/8/20 11:28 AM
+ *  Created by Sumeet Kumar on 5/4/20 4:21 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/8/20 11:25 AM
+ *  Last modified 5/4/20 1:14 PM
  *  Mibo Hexa - app
  */
 
@@ -25,7 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_hr_tab1.*
+import kotlinx.android.synthetic.main.fragment_hr_monitor.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.session.Report
@@ -38,11 +38,11 @@ import life.mibo.hardware.events.HeartRateEvent
 import java.util.concurrent.TimeUnit
 
 
-class HeartRateTabFragment : BaseFragment() {
+class HeartRateTabMonitor : BaseFragment() {
 
     companion object {
-        fun create(type: Int): HeartRateTabFragment {
-            val fragment = HeartRateTabFragment()
+        fun create(type: Int): HeartRateTabMonitor {
+            val fragment = HeartRateTabMonitor()
             val args = Bundle()
             args.putInt("type_", type)
             fragment.arguments = args
@@ -59,7 +59,7 @@ class HeartRateTabFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
         log("onCreateView")
-        val root = inflater.inflate(R.layout.fragment_hr_tab1, container, false)
+        val root = inflater.inflate(R.layout.fragment_hr_monitor, container, false)
         chart = root.findViewById(R.id.lineChart)
         noDataText = root.findViewById(R.id.lineChart_no_data)
         hrValue = root.findViewById(R.id.hr_value)
@@ -73,36 +73,24 @@ class HeartRateTabFragment : BaseFragment() {
         chartData = ChartData()
         //chartData.loadChart(chart)
 
-        when(type){
-            0 -> {
-                constraintLayout1?.visibility = View.VISIBLE
-                val report: Report? = Prefs.get(context).getJson(Prefs.SESSION, Report::class.java)
-                val list = report?.heartRate
-                var total = 0
-                if(list != null && list.isNotEmpty()){
-                    list.forEach {
-                        total += it?.toInt()!!
-                    }
-
-                    hrValue?.text = "${total.div(list.size)}"
-                    animate(hr_heart_image)
-                }
+        constraintLayout1?.visibility = View.VISIBLE
+        val report: Report? = Prefs.get(context).getJson(Prefs.SESSION, Report::class.java)
+        val list = report?.heartRate
+        var total = 0
+        if (list != null && list.isNotEmpty()) {
+            list.forEach {
+                total += it?.toInt()!!
             }
-            1 -> {
 
-            }
-            2 -> {
-
-            }
-            3 -> {
-
-            }
+            hrValue?.text = "${total.div(list.size)}"
+            animate(hexaImage)
+            circleProgressView?.progress = 50f
         }
 
-        val d = Single.just(type).delay(300, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread()).subscribe { t_ ->
-                chartData.getHeartRate(chart, type)
-            }
+//        val d = Single.just(type).delay(300, TimeUnit.MILLISECONDS)
+//            .observeOn(AndroidSchedulers.mainThread()).subscribe { t_ ->
+//               // chartData.getHeartRate(chart, type)
+//            }
 
         //animate(hr_heart_image)
         start_heartrate?.setOnClickListener {
@@ -122,7 +110,7 @@ class HeartRateTabFragment : BaseFragment() {
                     isMonitoring = false
                     log("doOnSuccess $isMonitoring")
                     start_heartrate?.setText(R.string.start_heart_rate)
-                    hr_heart_image?.clearAnimation()
+                    hexaImage?.clearAnimation()
                     calculatePeak()
                     log("doOnSuccess2 $isMonitoring")
                 }.subscribe()
@@ -142,32 +130,39 @@ class HeartRateTabFragment : BaseFragment() {
                         peak = f
                     total += f
                 }
+
+                val avg = total.div(hrList.size)
                 Toasty.info(
                     requireContext(),
-                    "Peak $peak Average ${total.div(hrList.size)}",
+                    "Peak $peak Average $avg",
                     Toasty.LENGTH_LONG
                 ).show()
+                hr_value?.text = String.format("%.2f", avg)
+                circleProgressView?.progress = avg
+                scaleDown?.end()
+
             } catch (e: java.lang.Exception) {
 
             }
         }
     }
 
+    var scaleDown : ObjectAnimator? = null
     fun animate(iv: ImageView?) {
-        if(iv == null)
+        if (iv == null)
             return
-        val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+        scaleDown = ObjectAnimator.ofPropertyValuesHolder(
             iv,
             PropertyValuesHolder.ofFloat("scaleX", 1.2f),
             PropertyValuesHolder.ofFloat("scaleY", 1.2f)
         )
-        scaleDown.duration = 310
+        scaleDown?.duration = 310
 
-        scaleDown.repeatCount = ObjectAnimator.INFINITE
-       // scaleDown.repeatCount = 10
-        scaleDown.repeatMode = ObjectAnimator.REVERSE
+        scaleDown?.repeatCount = ObjectAnimator.INFINITE
+        // scaleDown.repeatCount = 10
+        scaleDown?.repeatMode = ObjectAnimator.REVERSE
 
-        scaleDown.start()
+        scaleDown?.start()
     }
 
     //@Subscribe
@@ -176,8 +171,10 @@ class HeartRateTabFragment : BaseFragment() {
         if (!isMonitoring) {
             isMonitoring = true
             activity?.run {
-                start_heartrate?.text = "Stop"
-                animate(hr_heart_image)
+                start_heartrate?.text = getString(R.string.stop)
+                hr_value?.text = "${event.hr}"
+                circleProgressView?.progress = event.hr?.toFloat()
+                animate(hexaImage)
             }
         }
         activity?.run {

@@ -57,14 +57,14 @@ object MiboEvent {
         val bundle = Bundle()
         bundle.putString("user_id", userId)
         bundle.putString("response", response)
-        post(FirebaseAnalytics.Event.SIGN_UP, bundle)
+        post(FirebaseAnalytics.Event.SIGN_UP+"_error", bundle)
     }
 
     fun otpSuccess(userId: String, otp: String) {
         val bundle = Bundle()
         bundle.putString("user_id", userId)
         bundle.putString("otp", otp)
-        post(FirebaseAnalytics.Event.SIGN_UP + "otp", bundle)
+        post(FirebaseAnalytics.Event.SIGN_UP + "_otp", bundle)
     }
 
     fun event(tag: String, value: String?) {

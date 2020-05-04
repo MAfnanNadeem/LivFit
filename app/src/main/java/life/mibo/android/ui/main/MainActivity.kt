@@ -17,7 +17,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
@@ -432,8 +431,9 @@ class MainActivity : BaseActivity(), Navigator {
 
             }
 
-            override fun HrEvent(hr: Int, uid: String?) {
+            override fun HrEvent(hr: ByteArray, uid: String, property: Int) {
                 log("HrEvent $hr : $uid")
+                parseHrCommands(hr, uid, property)
             }
 
             override fun DeviceStatusEvent(uid: String?) {
@@ -493,6 +493,56 @@ class MainActivity : BaseActivity(), Navigator {
         log("getScanning finished")
     }
 
+    private fun parseHrCommands(
+        command: ByteArray,
+        uid: String?,
+        property: Int
+    ) {
+        //        for (Device d : mDiscoveredDevices.values()) {
+//            if (d.getUid().equals(uid)) {
+//                if (d.getStatusConnected() != DEVICE_WAITING && d.getStatusConnected() != DEVICE_CONNECTED) {
+////                    if (d.getStatusConnected() == DEVICE_DISCONNECTED) {
+////                        EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
+////                    }
+//                    d.setStatusConnected(DEVICE_CONNECTED);
+//                    SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_CONNECTED);
+//
+//                    if (listener != null)
+//                        listener.onConnectionStatus(uid);
+//
+//                    //EventBus.getDefault().postSticky(new onConnectionStatus(uid));
+//
+//                }
+//            }
+//        }
+
+        //SessionManager.getInstance().userSession.setDeviceStatus(uid, DEVICE_CONNECTED);
+
+        if (command.size > 1) {
+            log("HeartRate HR >> $command")
+
+            EventBus.getDefault().post(
+                HeartRateEvent(
+                    uid,
+                    life.mibo.hardware.core.Utils.getHeartRate(command, property)
+                )
+            )
+            // HR
+        } else if (command.size == 1) {
+            SessionManager.getInstance().userSession.setDeviceStatus(uid, DEVICE_CONNECTED);
+            log("bleHrConsumer Battery >> " + command[0])
+            // Battery
+            val device =
+                SessionManager.getInstance().userSession
+                    .getDevice(uid)
+            if (device != null) {
+                device.batteryLevel = command[0].toInt()
+                device.statusConnected = DEVICE_CONNECTED
+            }
+            log("bleHrConsumer device $device")
+            EventBus.getDefault().postSticky(DeviceStatusEvent(device))
+        }
+    }
     //[77, 66, 82, 88, 76, 0, -64, 2, 26, -116, -43, -65]
     private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseCommands $code : data " + command.contentToString())
@@ -1002,7 +1052,7 @@ class MainActivity : BaseActivity(), Navigator {
     // TODO Dashboard click events
     private fun homeItemClicked(item: HomeItem?) {
         item?.let {
-            navigate(it.type)
+            navigate(it.type, it.bundle)
         }
         //testRoom()
     }
@@ -1126,11 +1176,14 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    private fun navigate(type: HomeItem.Type) {
+    private fun navigate(type: HomeItem.Type, bundle: Bundle? = null) {
         lastId = -1
         when (type) {
             HomeItem.Type.HEART -> {
-                navigate(R.id.action_navigation_home_to_navigation_heart_rate, 0)
+                navigate(
+                    R.id.action_navigation_home_to_navigation_heart_rate,
+                    R.id.navigation_heart_rate, bundle
+                )
                 //navigateFragment(R.id.navigation_heart_rate)
             }
             HomeItem.Type.WEIGHT -> {

@@ -65,7 +65,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     override fun onBackPressed(): Boolean {
         if (isSessionActive) {
             MessageDialog(
-                fragment.context!!,
+                fragment.requireContext(),
                 fragment.getString(R.string.stop_session),
                 fragment.getString(R.string.stop_session_message),
                 fragment.getString(R.string.stop_anyway),
@@ -84,7 +84,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun sessionCompleteDialog(msg: String?) {
         val d = MessageDialog(
-            fragment.context!!,
+            fragment.requireContext(),
             fragment.getString(R.string.session_completed),
             msg ?: "Congrats you have completed session",
             "",
@@ -135,7 +135,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     fun closeDialog() {
-        AlertDialog.Builder(fragment.context!!).setTitle("Stop Session?")
+        AlertDialog.Builder(fragment.requireContext()).setTitle("Stop Session?")
             .setMessage("Are you sure to want stop current session?")
             .setNeutralButton("Continue", null)
             .setPositiveButton("Stop Session") { i, j ->
@@ -189,7 +189,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
         if (!isConnected) {
             Toasty.info(
-                this.fragment.context!!,
+                this.fragment.requireContext(),
                 fragment.getString(R.string.device_not_connected),
                 Toasty.LENGTH_SHORT,
                 false
@@ -202,7 +202,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         device?.let {
             if (it.batteryLevel < 30) {
                 Toasty.error(
-                    this.fragment.context!!,
+                    this.fragment.requireContext(),
                     R.string.low_battery,
                     Toasty.LENGTH_SHORT,
                     false
@@ -247,7 +247,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             }
         } else {
             Toasty.info(
-                this.fragment.context!!,
+                this.fragment.requireContext(),
                 R.string.no_device_connected,
                 Toasty.LENGTH_SHORT,
                 false
@@ -268,13 +268,13 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     override fun onPlusClicked(data: Muscle) {
         log("onPlusClicked channel : $data")
         if (isConnected)
-            onMusclePlusClicked(data.getChanneld())
+            onMusclePlusClicked(data.getChanneld(), data.getGovern())
     }
 
     override fun onMinusClicked(data: Muscle) {
         log("onMinusClicked channel : $data")
         if (isConnected)
-            onMuscleMinusClicked(data.getChanneld())
+            onMuscleMinusClicked(data.getChanneld(), data.getGovern())
     }
 
     override fun onPlayPauseClicked(data: Muscle, isPlay: Boolean) {
@@ -393,7 +393,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     private fun startUserSession(uid: String) {
         if (SessionManager.getInstance().userSession.booster == null) {
             Toasty.warning(
-                this.fragment.activity!!,
+                this.fragment.requireContext(),
                 fragment.getString(R.string.no_device_connected)
             ).show()
             return
@@ -558,7 +558,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     private fun stopUserSession(uid: String) {
         if (SessionManager.getInstance().userSession.booster == null) {
             Toasty.warning(
-                this.fragment.activity!!,
+                this.fragment.requireActivity(),
                 "No Device Connected",
                 Toasty.LENGTH_SHORT,
                 false
@@ -589,7 +589,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         )
     }
 
-    private fun onMuscleMinusClicked(id: Int) {
+    private fun onMuscleMinusClicked(id: Int, govern: Int) {
         if (SessionManager.getInstance().userSession.user.checkAndDecreaseChannel(id)) {
             EventBus.getDefault().postSticky(
                 SendChannelsLevelEvent(
@@ -602,8 +602,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         log("onMuscleMinusClicked Minus group $id")
     }
 
-    private fun onMusclePlusClicked(id: Int) {
-        if (SessionManager.getInstance().userSession.user.checkAndIncreaseChannel(id)) {
+    private fun onMusclePlusClicked(id: Int, govern: Int) {
+        if (SessionManager.getInstance().userSession.user.checkAndIncreaseChannel(id, govern)) {
             EventBus.getDefault().postSticky(
                 SendChannelsLevelEvent(
                     SessionManager.getInstance().userSession.user.currentChannelLevels,
@@ -1190,7 +1190,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 override fun onFailure(call: Call<BookSession>, t: Throwable) {
                     fragment.getDialog()?.dismiss()
                     t.printStackTrace()
-                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+                    Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
                     MiboEvent.log(t)
                 }
 
@@ -1269,7 +1269,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 override fun onFailure(call: Call<ResponseData>, t: Throwable) {
                     fragment.getDialog()?.dismiss()
                     t.printStackTrace()
-                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+                    Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
                     MiboEvent.log(t)
                     log("SaveSession Error : " + t?.message)
                     t.printStackTrace()
@@ -1421,7 +1421,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             override fun onFailure(call: Call<UserDetails>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+                Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
             }
 
             override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {
@@ -1436,8 +1436,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
                     val err = data?.errors?.get(0)?.message
                     if (err.isNullOrEmpty())
-                        Toasty.error(fragment.context!!, R.string.error_occurred).show()
-                    else Toasty.error(fragment.context!!, err, Toasty.LENGTH_LONG).show()
+                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+                    else Toasty.error(fragment.requireContext(), err, Toasty.LENGTH_LONG).show()
                 }
                 fragment.getDialog()?.dismiss()
             }

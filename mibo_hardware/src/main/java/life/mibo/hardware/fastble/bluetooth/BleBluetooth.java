@@ -447,6 +447,7 @@ public class BleBluetooth {
                             message.obj = bleNotifyCallback;
                             Bundle bundle = new Bundle();
                             bundle.putByteArray(BleMsg.KEY_NOTIFY_BUNDLE_VALUE, characteristic.getValue());
+                            bundle.putInt(BleMsg.KEY_NOTIFY_BUNDLE_PROPERTY, characteristic.getProperties());
                             message.setData(bundle);
                             handler.sendMessage(message);
                         }

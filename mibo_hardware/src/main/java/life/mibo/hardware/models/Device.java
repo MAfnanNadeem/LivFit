@@ -21,6 +21,7 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.GENERIC;
+import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
 import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
@@ -258,6 +259,10 @@ public class Device implements Serializable, BaseModel {
 
     public boolean isPod() {
         return type == RXL_BLE || type == RXL_WIFI;
+    }
+
+    public boolean isBand() {
+        return type == HR_MONITOR;
     }
 
     public boolean isTile() {

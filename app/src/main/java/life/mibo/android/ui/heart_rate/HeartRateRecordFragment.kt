@@ -1,7 +1,7 @@
 /*
- *  Created by Sumeet Kumar on 1/8/20 11:28 AM
+ *  Created by Sumeet Kumar on 5/4/20 6:30 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 1/8/20 11:25 AM
+ *  Last modified 5/4/20 6:29 PM
  *  Mibo Hexa - app
  */
 
@@ -25,7 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_hr_tab1.*
+import kotlinx.android.synthetic.main.fragment_hr_monitor.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.session.Report
@@ -38,11 +38,11 @@ import life.mibo.hardware.events.HeartRateEvent
 import java.util.concurrent.TimeUnit
 
 
-class HeartRateTabFragment : BaseFragment() {
+class HeartRateRecordFragment : BaseFragment() {
 
     companion object {
-        fun create(type: Int): HeartRateTabFragment {
-            val fragment = HeartRateTabFragment()
+        fun create(type: Int): HeartRateRecordFragment {
+            val fragment = HeartRateRecordFragment()
             val args = Bundle()
             args.putInt("type_", type)
             fragment.arguments = args
@@ -59,7 +59,7 @@ class HeartRateTabFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
         log("onCreateView")
-        val root = inflater.inflate(R.layout.fragment_hr_tab1, container, false)
+        val root = inflater.inflate(R.layout.fragment_hr_monitor, container, false)
         chart = root.findViewById(R.id.lineChart)
         noDataText = root.findViewById(R.id.lineChart_no_data)
         hrValue = root.findViewById(R.id.hr_value)
@@ -85,7 +85,7 @@ class HeartRateTabFragment : BaseFragment() {
                     }
 
                     hrValue?.text = "${total.div(list.size)}"
-                    animate(hr_heart_image)
+                    animate(hexaImage)
                 }
             }
             1 -> {
@@ -122,7 +122,7 @@ class HeartRateTabFragment : BaseFragment() {
                     isMonitoring = false
                     log("doOnSuccess $isMonitoring")
                     start_heartrate?.setText(R.string.start_heart_rate)
-                    hr_heart_image?.clearAnimation()
+                    hexaImage?.clearAnimation()
                     calculatePeak()
                     log("doOnSuccess2 $isMonitoring")
                 }.subscribe()
@@ -147,6 +147,8 @@ class HeartRateTabFragment : BaseFragment() {
                     "Peak $peak Average ${total.div(hrList.size)}",
                     Toasty.LENGTH_LONG
                 ).show()
+                hr_value?.text = String.format("%.2d", total.div(hrList.size))
+
             } catch (e: java.lang.Exception) {
 
             }
@@ -177,7 +179,8 @@ class HeartRateTabFragment : BaseFragment() {
             isMonitoring = true
             activity?.run {
                 start_heartrate?.text = "Stop"
-                animate(hr_heart_image)
+                hr_value?.text = "${event.hr}"
+                animate(hexaImage)
             }
         }
         activity?.run {

@@ -55,6 +55,7 @@
     <string name="dialog_continue">Continue</string>
     <string name="stop_anyway">Stop Anyway</string>
     <string name="stop">Stop</string>
+    <string name="start">Start</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="send">Send</string>
@@ -298,5 +299,12 @@
     <string name="que_activity_6_title">PROFESSIONAL</string>
     <string name="que_activity_6_desc">Moderate exercise or sports 2–3 days/week</string>
     <string name="back">Back</string>
+    <string name="no_booster_found">No booster detected!</string>
+    <string name="start_heart_rate">Start Heart Rate Monitor</string>
+    <string name="lets_start_hr">Let’s start improve your \n heart together</string>
+    <string name="scan_hr_btn">Scan your HR sensor device</string>
+    <string name="scan_with_camera">Scan with Camera</string>
+    <string name="purchase">Purchase</string>
+    <string name="heart_beats_per_minute">HEART BEATS PER MINUTE</string>
 
 </resources>

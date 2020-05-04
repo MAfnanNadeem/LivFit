@@ -39,6 +39,8 @@ import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.devices.adapter.ScanDeviceAdapter
+import life.mibo.android.ui.heart_rate.HeartRateFragment
+import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
@@ -189,8 +191,16 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                         navigate(Navigator.RXL_HOME, null)
                 }
             } else {
-                if (SessionManager.getInstance().userSession.devices.size > 0) {
+                val size = SessionManager.getInstance().userSession.devices.size
+                if (size > 0) {
                     for (i in SessionManager.getInstance().userSession.devices) {
+                        if (size == 1 && i.isBand) {
+                            navigate(
+                                Navigator.HOME,
+                                HomeItem(HomeItem.Type.HEART, HeartRateFragment.bundle(1))
+                            )
+                            return
+                        }
                         if (i.isBooster) {
                             SessionManager.getInstance().userSession.booster = i
                             navigate(Navigator.SELECT_SUITS, null)
@@ -198,7 +208,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                         }
                     }
                 }
-                Toasty.info(context!!, "No booster detected!").show()
+                Toasty.info(requireContext(), getString(R.string.no_booster_found)).show()
             }
             //MessageDialog.info(this@DeviceScanFragment.requireContext(), "", "")
             //   navigate(Navigator.HOME, HomeItem(HomeItem.Type.RXL))

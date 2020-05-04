@@ -19,7 +19,9 @@ data class Muscle(
     @SerializedName("muscle_name")
     var muscleName: String?,
     @SerializedName("position")
-    var position: Int?
+    var position: Int?,
+    @SerializedName("governor")
+    var govern: Int?
 ) : Serializable {
 
     var isSelected: Boolean = false
@@ -37,6 +39,13 @@ data class Muscle(
         return channelId
     }
 
+    fun getGovern(): Int {
+        govern?.let {
+            return it
+        }
+        return 75
+    }
+
     fun incValue() {
         channelValue += 1
     }
@@ -46,7 +55,7 @@ data class Muscle(
     }
 
     fun from(chPerc: Int): Muscle {
-        val ch6 = Muscle(id, image, muscleName, position)
+        val ch6 = Muscle(id, image, muscleName, position, govern)
         Logger.e("Channel6Model Copy $ch6")
         ch6.channelValue = chPerc
         ch6.mainValue = mainValue
@@ -99,7 +108,7 @@ data class Muscle(
                 position,
                 "" + imageRes,
                 "",
-                position
+                position, 100
             )
                 m.isSelected = isSelected
             return m

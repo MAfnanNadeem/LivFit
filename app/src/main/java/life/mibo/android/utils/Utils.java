@@ -79,7 +79,7 @@ public class Utils {
     }
 
     public static boolean checkLimitValues(int level) {
-        if (level < 50)
+        if (level < 100)
             return true;
         else return false;
 //        switch (level){

@@ -479,6 +479,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         var playerSize = 0
         if (players is List<*>)
             playerSize = players.size
+       // log("setPlayers > program?.pods ${program?.pods}  connected ${list.size}")
         // userDevices.addAll(SessionManager.getInstance().userSession.devices)
         if (playerSize == 1) {
             if (program?.pods == list.size) {
@@ -511,6 +512,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 }
             }
         }
+
+       // log("setPlayers > user?.pods ${userPods?.size}")
 //        if (list.size > 0) {
 //            list.forEachIndexed { i, it ->
 //                if (it.isPod) {

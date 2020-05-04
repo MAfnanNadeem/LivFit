@@ -10,15 +10,16 @@ package life.mibo.android.ui.devices
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.view.View
+import life.mibo.android.core.Prefs
+import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.devices.adapter.ScanDeviceAdapter
 import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.DataParser
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.core.Utils
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
-import life.mibo.android.core.Prefs
-import life.mibo.android.ui.base.BaseFragment
-import life.mibo.android.ui.devices.adapter.ScanDeviceAdapter
 import java.net.InetAddress
 
 class ScanController(val context: BaseFragment, val observer: ScanObserver) :
@@ -111,7 +112,12 @@ class ScanController(val context: BaseFragment, val observer: ScanObserver) :
             for (b in devices) {
                 var d: Device? = null
                 try {
-                    d = Prefs.get(context.context).getJson(Utils.getUid(b.name), Device::class.java)
+                    context.log("getConnectedDevices connectedList1 Device $b")
+                    d = SessionManager.getInstance().userSession.getDevice(b.name)
+                    context.log("getConnectedDevices connectedList2 Device $b")
+                    if (d == null)
+                        d = Prefs.get(context.context).getJson(Utils.getUid(b.name), Device::class.java)
+                    context.log("getConnectedDevices connectedList3 Device $b")
                     context.log("getConnectedDevices bluetoothDevice.........${d}")
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()

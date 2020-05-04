@@ -641,6 +641,44 @@ public class BleManager {
         }
     }
 
+    public synchronized void write2(BleDevice bleDevice,
+                      String uuid_service,
+                      String uuid_write,
+                      byte[] data,
+                      boolean split,
+                      boolean sendNextWhenLastSuccess,
+                      long intervalBetweenTwoPackage,
+                      BleWriteCallback callback) {
+
+        if (callback == null) {
+            throw new IllegalArgumentException("BleWriteCallback can not be Null!");
+        }
+
+        if (data == null) {
+            log("data is Null!");
+            callback.onWriteFailure(new OtherException("data is Null!"));
+            return;
+        }
+
+        if (data.length > 20 && !split) {
+            Logger.w("Be careful: data's length beyond 20! Ensure MTU higher than 23, or use spilt write!");
+        }
+
+        BleBluetooth bleBluetooth = multipleBluetoothController.getBleBluetooth(bleDevice);
+        if (bleBluetooth == null) {
+            callback.onWriteFailure(new OtherException("This device not connect!"));
+        } else {
+            if (split && data.length > getSplitWriteNum()) {
+                new SplitWriter().splitWrite(bleBluetooth, uuid_service, uuid_write, data,
+                        sendNextWhenLastSuccess, intervalBetweenTwoPackage, callback);
+            } else {
+                bleBluetooth.newBleConnector()
+                        .withUUIDString(uuid_service, uuid_write)
+                        .writeCharacteristicNonSync(data, callback, uuid_write);
+            }
+        }
+    }
+
     /**
      * read
      *

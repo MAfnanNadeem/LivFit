@@ -530,7 +530,7 @@ public class BleManager {
                         final byte[] data = characteristic.getValue();
                         if (data != null && data.length > 0) {
                             onBleCharChanged.bleBoosterChanged(data
-                                    , d.getName().replace("MIBO-", ""));//deviceAddress);
+                                    , d.getName().replace("MIBO-", ""), 0);//deviceAddress);
                             //  Log.e("gattboostlistener", "booster charr: " + data.length);
                         }
                     }
@@ -554,7 +554,7 @@ public class BleManager {
                     } else {
                         final byte[] data = characteristic.getValue();
                         if (data != null && data.length > 0) {
-                            onBleCharChanged.bleBoosterChanged(data, Utils.getUid(d.getName()));//deviceAddress);
+                            onBleCharChanged.bleBoosterChanged(data, Utils.getUid(d.getName()), 0);//deviceAddress);
                             //  Log.e("gattboostlistener", "booster charr: " + data.length);
                         }
                     }

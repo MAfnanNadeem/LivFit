@@ -2,6 +2,7 @@ package life.mibo.hardware;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.os.Build;
 
@@ -139,7 +140,7 @@ public class CommunicationManager {
                     }
                     if (bluetoothManager != null) {
                         for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
-                            log("PingThread bluetoothManager " + bluetoothManager + " sendMessage " + d);
+                            log("PingThread bluetoothManager sendMessage " + d);
                             if (d.getName() != null) {
                                 if (d.getName().contains("MBRXL")) {
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
@@ -160,7 +161,7 @@ public class CommunicationManager {
                                     log("PingThread bluetoothManager to MIBO-");
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
-                                    bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
+                                    //bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     //pingSentDevice(d.toString());
                                     log("PingThread bluetoothManager to Geonaute-");
                                 }
@@ -269,9 +270,9 @@ public class CommunicationManager {
 
     private OnBleDeviceDiscovered bleListener = new OnBleDeviceDiscovered() {
         @Override
-        public void bleHrDeviceDiscovered(String uid, String serial) {
-            log("BluetoothManager bleHrDeviceDiscovered " + uid + " IP " + serial);
-            bleHrDiscoverConsumer(uid, serial);
+        public void bleHrDeviceDiscovered(String uid, String name) {
+            log("BluetoothManager bleHrDeviceDiscovered " + uid + " IP " + name);
+            bleHrDiscoverConsumer(uid, name);
 
         }
 
@@ -316,18 +317,60 @@ public class CommunicationManager {
         @Override
         public void bleHrChanged(int hr, String serial) {
             log("BluetoothManager bleHrChanged " + hr + " IP " + serial);
-            bleHrConsumer(hr, serial);
+            //bleHrConsumer(hr, serial);
 
         }
 
         @Override
-        public void bleBoosterChanged(byte[] data, String serial) {
-            log("BluetoothManager bleBoosterChanged " + Arrays.toString(data) + " - IP " + serial);
+        public void bleBoosterChanged(byte[] data, String uid, int property) {
+            log("BluetoothManager bleBoosterChanged " + Arrays.toString(data) + " - IP " + uid);
             // bleBoosterConsumer(data, serial);
-            receiveCommands(data, Utils.getUid(serial), true);
+            if (uid.startsWith("HW")) {
+                bleHrConsumer(data, uid, property);
+            } else {
+                receiveCommands(data, Utils.getUid(uid), true);
+            }
             //Log.e("commManag","Char booster changed "+data);
         }
     };
+
+    public void startHrMonitor(String uid) {
+        if (bluetoothManager != null)
+            bluetoothManager.startReading(uid);
+    }
+
+    public void stopHrMonitor(String uid) {
+        if (bluetoothManager != null)
+            bluetoothManager.stopReading(uid);
+    }
+
+    private static double extractHeartRate(BluetoothGattCharacteristic characteristic) {
+
+        int flag = characteristic.getProperties();
+        int format = -1;
+        // Heart rate bit number format
+        if ((flag & 0x01) != 0) {
+            format = BluetoothGattCharacteristic.FORMAT_UINT16;
+        } else {
+            format = BluetoothGattCharacteristic.FORMAT_UINT8;
+        }
+        final int heartRate = characteristic.getIntValue(format, 1);
+        return heartRate;
+    }
+
+    private static double extractHeartRate(byte[] characteristic) {
+//        int flag = characteristic.getProperties();
+//        int format = -1;
+//        // Heart rate bit number format
+//        if ((flag & 0x01) != 0) {
+//            format = BluetoothGattCharacteristic.FORMAT_UINT16;
+//        } else {
+//            format = BluetoothGattCharacteristic.FORMAT_UINT8;
+//        }
+//        final int heartRate = characteristic.getIntValue(format, 1);
+
+        return characteristic[1];
+    }
 
 
     private BleGattManager.OnConnection bleConnection = new BleGattManager.OnConnection() {
@@ -537,8 +580,8 @@ public class CommunicationManager {
 //        }
     }
 
-    private void bleHrDiscoverConsumer(String uid, String serial) {
-        add(new Device("", uid, serial, HR_MONITOR));
+    private void bleHrDiscoverConsumer(String uid, String name) {
+        add(new Device(name, uid, name, HR_MONITOR));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         // if (listener != null)
         //     listener.onDeviceDiscoveredEvent("");
@@ -573,30 +616,47 @@ public class CommunicationManager {
         //EventBus.getDefault().postSticky(new onDeviceDiscoveredEvent(""));
     }
 
-    private void bleHrConsumer(int hr, String uid) {
-        for (Device d : mDiscoveredDevices.values()) {
-            if (d.getUid().equals(uid)) {
-                if (d.getStatusConnected() != DEVICE_WAITING && d.getStatusConnected() != DEVICE_CONNECTED) {
-//                    if (d.getStatusConnected() == DEVICE_DISCONNECTED) {
-//                        EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
-//                    }
-                    d.setStatusConnected(DEVICE_CONNECTED);
-                    SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_CONNECTED);
-
-                    if (listener != null)
-                        listener.onConnectionStatus(uid);
-
-                    //EventBus.getDefault().postSticky(new onConnectionStatus(uid));
-
-                }
-            }
-        }
-        if (SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 1 ||
-                SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 2) {
-            SessionManager.getInstance().getUserSession().getUserByHrUid(uid).setHr(hr);
-        }
+    private void bleHrConsumer(byte[] hr, String uid, int property) {
         if (listener != null)
-            listener.HrEvent(hr, uid);
+            listener.HrEvent(hr, uid, property);
+        log("bleHrConsumer " + hr);
+//        for (Device d : mDiscoveredDevices.values()) {
+//            if (d.getUid().equals(uid)) {
+//                if (d.getStatusConnected() != DEVICE_WAITING && d.getStatusConnected() != DEVICE_CONNECTED) {
+////                    if (d.getStatusConnected() == DEVICE_DISCONNECTED) {
+////                        EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
+////                    }
+//                    d.setStatusConnected(DEVICE_CONNECTED);
+//                    SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_CONNECTED);
+//
+//                    if (listener != null)
+//                        listener.onConnectionStatus(uid);
+//
+//                    //EventBus.getDefault().postSticky(new onConnectionStatus(uid));
+//
+//                }
+//            }
+//        }
+//        if (hr.length > 1) {
+//            log("bleHrConsumer HR >> " + hr[1]);
+//            // HR
+//        } else if (hr.length == 1) {
+//            log("bleHrConsumer Battery >> " + hr[0]);
+//            // Battery
+//            Device device = SessionManager.getInstance().getUserSession().getDevice(uid);
+//            if (device != null) {
+//                device.setBatteryLevel(hr[0]);
+//                device.setStatusConnected(DEVICE_CONNECTED);
+//            }
+//            log("bleHrConsumer device " + device);
+//        }
+
+//        if (SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 1 ||
+//                SessionManager.getInstance().getUserSession().getCurrentSessionStatus() == 2) {
+//            SessionManager.getInstance().getUserSession().getUserByHrUid(uid).setHr(hr);
+//        }
+//        if (listener != null)
+//            listener.HrEvent(hr, uid);
         // EventBus.getDefault().postSticky(new HrEvent(hr, uid));
     }
 
@@ -729,8 +789,7 @@ public class CommunicationManager {
     }
 
 
-
-    public void connectDevice(Device device) {
+    public synchronized void connectDevice(Device device) {
         log("connectDevice " + device);
         if (device == null)
             return;
@@ -796,6 +855,7 @@ public class CommunicationManager {
             break;
             case HR_MONITOR: {
                 //stopDiscoveryServers();
+                log("HR_MONITOR connect " + device.getIp());
                 if (bluetoothManager != null)
                     bluetoothManager.connectHrGattDevice(device.getUid());
                 SessionManager.getInstance().getUserSession().addDevice(device);
@@ -808,7 +868,6 @@ public class CommunicationManager {
                 SessionManager.getInstance().getUserSession().addScale(bluetoothManager.getScaleDevice());
             }
             break;
-
 
         }
 
@@ -1202,6 +1261,7 @@ public class CommunicationManager {
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onMainLevelEvent(SendMainLevelEvent event) {
+        log("onMainLevelEvent " + event.getLevel());
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {

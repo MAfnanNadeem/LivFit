@@ -6,7 +6,6 @@ import android.os.CountDownTimer;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
@@ -133,9 +132,6 @@ public class UserSession implements BaseModel {
     }
 
 
-
-
-
     public void setDeviceStatus(String uid, int status) {
         //boolean newDevice = true;
         Logger.e("UserSession: setDeviceStatus " + uid + " : status " + status);
@@ -174,7 +170,7 @@ public class UserSession implements BaseModel {
 
     public boolean[] getDeviceAlarm(String uid) {
         //boolean newDevice = true;
-        Logger.e("UserSession: getDeviceAlarm " + uid + " : status " );
+        Logger.e("UserSession: getDeviceAlarm " + uid + " : status ");
         for (Device d : connectedDevices) {
             if (d.getUid().equals(uid)) {
                 return d.getDeviceChannelAlarms();
@@ -182,6 +178,23 @@ public class UserSession implements BaseModel {
         }
 
         return new boolean[]{false, false, false, false, false, false, false, false, false, false};
+    }
+
+    public void createDummy() {
+        createDummyPods();
+        createDummyBoosters();
+    }
+
+    public void createDummyPods() {
+        for (int i = 1; i <= 6; i++) {
+            addConnectedDevice(new Device("" + i, "" + i * 999999, "" + i * 999999, DeviceTypes.RXL_BLE));
+        }
+    }
+
+    public void createDummyBoosters() {
+        for (int i = 1; i < 3; i++) {
+            addConnectedDevice(new Device("" + i, "" + i * 999999, "" + i * 999999, DeviceTypes.BLE_STIMULATOR));
+        }
     }
 
 
@@ -192,6 +205,31 @@ public class UserSession implements BaseModel {
     public void addDevice(Device device) {
         addConnectedDevice(device);
     }
+
+    public Device getDevice(String uid) {
+        Logger.e("getDevice " + uid);
+        for (Device device : connectedDevices) {
+            try {
+                Logger.e("device.getUid()  " + device);
+                if (device.getName().contains(uid.trim()))
+                    return device;
+            } catch (Exception e) {
+
+            }
+        }
+
+        for (Device device : connectedDevices) {
+            try {
+                Logger.e("device.getUid()  " + device);
+                if (device.getUid().equals(uid.trim()))
+                    return device;
+            } catch (Exception e) {
+
+            }
+        }
+        return null;
+    }
+
 
     public void removeDevice(Device device) {
         removeConnectedDevice(device);
@@ -214,6 +252,10 @@ public class UserSession implements BaseModel {
     private void addConnectedDevice(Device device) {
         for (Device d : connectedDevices) {
             if (d.getUid().equals(device.getUid())) {
+                return;
+            }
+
+            if (d.getName().equals(device.getName())) {
                 return;
             }
         }
@@ -401,7 +443,8 @@ public class UserSession implements BaseModel {
         return list;
     }
 
-    public @Nullable Device getRxt() {
+    public @Nullable
+    Device getRxt() {
         if (!connectedDevices.isEmpty()) {
             if (connectedDevices.get(0).getType() == DeviceTypes.RXT_WIFI) {
                 return connectedDevices.get(0);
@@ -427,7 +470,7 @@ public class UserSession implements BaseModel {
 
         cTimer = new CountDownTimer(s * 1000, 1000) {
             public void onTick(long millisUntilFinished) {
-                Logger.e("UserSession CountDownTimer "+millisUntilFinished);
+                Logger.e("UserSession CountDownTimer " + millisUntilFinished);
                 setCurrentSessionTimer((int) (millisUntilFinished / 1000));
 //                for (int i = 0; i < currentSessionParticipants.size(); i++) {
 //                    if (currentSessionParticipants.get(i).isActive()) {

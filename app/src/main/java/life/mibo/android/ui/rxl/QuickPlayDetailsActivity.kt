@@ -90,11 +90,20 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
         program =
             intent?.getSerializableExtra(Constants.BUNDLE_DATA) as life.mibo.android.models.rxl.RxlProgram?
+        if (program == null) {
+            finish()
+            return
+        }
         isUser = !program?.memberId.isNullOrEmpty()
         updateToolbar()
         createView()
         log("program >> $program")
         //iv_icon.setFreezesAnimation()
+
+        val i = intent?.getIntExtra("from_user_int", 5) ?: 1
+        if (i != 10) {
+            finish()
+        }
 
     }
 

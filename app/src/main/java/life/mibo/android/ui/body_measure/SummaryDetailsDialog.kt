@@ -7,10 +7,7 @@
 
 package life.mibo.android.ui.body_measure
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,8 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.Legend.LegendForm
@@ -30,19 +27,16 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import io.reactivex.Maybe
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
+import life.mibo.android.models.biometric.Biometric
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.body_measure.adapter.SummaryAdapter
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.core.Logger
 import life.mibo.views.CircleImageView
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 
@@ -83,12 +77,17 @@ class SummaryDetailsDialog(
 //            data?.title = "BMI (Body Mass Index)"
 //            normal?.text = getString(R.string.bmi_normal)
 //        }
+        if (data == null) {
+            dismiss()
+            return
+        }
         val titleText =  getTitle(data?.title?.trim()?.toLowerCase())
         title?.text = titleText
         value?.text = String.format("%.2f", data?.value)
         unit?.text = "${data?.unit}"
         normal?.text = "${data?.normal}"
         header?.text = "My $titleText"
+
         data?.iconRes?.let {
             image?.setImageResource(it)
         }
@@ -98,7 +97,7 @@ class SummaryDetailsDialog(
             e.printStackTrace()
         }
         isCancelable = true
-        setupChart(chart)
+        //setupChart(chart)
 //        tabs?.addTab(TabLayout.Tab().setText("Today"))
 //        tabs?.addTab(TabLayout.Tab().setText("Week"))
 //        tabs?.addTab(TabLayout.Tab().setText("Month"))
@@ -112,31 +111,41 @@ class SummaryDetailsDialog(
         height?.text = "${pref["user_height"]}"
 
         try {
-            tvDate?.text = SimpleDateFormat.getDateInstance().format(Date())
+
+            tvDate?.text = "${pref["user_date"]}"
+            // tvDate?.text = SimpleDateFormat.getDateInstance().format(Date())
             tvName?.text = pref.member?.firstName + " " + pref.member?.lastName
-            loadImage(profilePic, pref?.member?.imageThumbnail, R.drawable.ic_user_test)
+            loadImage(profilePic, pref?.member?.profileImg, R.drawable.ic_user_test)
         } catch (e: java.lang.Exception) {
             MiboEvent.log(e)
         }
+
+        data?.title?.let {
+            getChartPrefs(it.toLowerCase(), chart)
+        }
     }
 
-    private fun loadImage(iv: ImageView?, base64: String?, defaultImage: Int) {
-        Maybe.fromCallable {
-            var bitmap: Bitmap? = null
-            bitmap = if (!base64.isNullOrEmpty())
-                Utils.base64ToBitmap(base64)
-            else
-                BitmapFactory.decodeResource(resources, defaultImage)
-            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
-            bitmap
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-            if (it != null)
-                iv?.setImageBitmap(it)
-            else
-                iv?.setImageResource(defaultImage)
-        }.doOnError {
-
-        }.subscribe()
+    private fun loadImage(iv: ImageView?, url: String?, defaultImage: Int) {
+        url?.let {
+            if (iv != null)
+                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+        }
+//        Maybe.fromCallable {
+//            var bitmap: Bitmap? = null
+//            bitmap = if (!base64.isNullOrEmpty())
+//                Utils.base64ToBitmap(base64)
+//            else
+//                BitmapFactory.decodeResource(resources, defaultImage)
+//            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
+//            bitmap
+//        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+//            if (it != null)
+//                iv?.setImageBitmap(it)
+//            else
+//                iv?.setImageResource(defaultImage)
+//        }.doOnError {
+//
+//        }.subscribe()
     }
 
     fun setData(chart: BarChart?) {
@@ -252,7 +261,7 @@ class SummaryDetailsDialog(
                 xAxis.valueFormatter = xFormat
 
                 //left
-                val yFormat: ValueFormatter = MyYFormatter(ArrayList())
+                val yFormat: ValueFormatter = MyYFormatter()
                 val leftAxis = chart.axisLeft
                 leftAxis.setLabelCount(8, false)
                 leftAxis.valueFormatter = yFormat
@@ -300,9 +309,190 @@ class SummaryDetailsDialog(
             }
 
         }
+    }
+
+    private fun setupChart(chart: BarChart?, list: ArrayList<BarEntry>, dates: ArrayList<String>) {
+        Logger.e("setupChart chart $chart size ${list.size}")
+        if (chart != null) {
+
+            val set1: BarDataSet
+
+            if (chart.data != null &&
+                chart.data.dataSetCount > 0
+            ) {
+                set1 = chart.data.getDataSetByIndex(0) as BarDataSet
+                set1.values = list
+                chart.data.notifyDataChanged()
+                chart.notifyDataSetChanged()
+            } else {
+
+                //chart.setOnChartValueSelectedListener(this)
+
+                chart.setDrawBarShadow(false)
+                chart.setDrawValueAboveBar(false)
+                chart.description.isEnabled = false
+                // chart.setMaxVisibleValueCount(60)
+                chart.setPinchZoom(false)
+                chart.setTouchEnabled(false)
+                chart.setScaleEnabled(false)
+
+                chart.setDrawGridBackground(false)
+                // chart.setDrawYLabels(false);
+
+                // chart.setDrawYLabels(false);
+                //bottom
+                val xFormat: ValueFormatter = MyDateFormatter(dates)
+                val xAxis = chart.xAxis
+                xAxis.position = XAxisPosition.BOTTOM
+                //xAxis.typeface = tfLight
+                xAxis.setDrawGridLines(false)
+                xAxis.granularity = 1f // only intervals of 1 day
+                xAxis.textColor = Color.WHITE
+                xAxis.labelCount = 7
+                xAxis.valueFormatter = xFormat
+
+                //left
+                val yFormat: ValueFormatter = MyYFormatter()
+                val leftAxis = chart.axisLeft
+                leftAxis.setLabelCount(8, false)
+                leftAxis.valueFormatter = yFormat
+                leftAxis.setPosition(YAxisLabelPosition.OUTSIDE_CHART)
+                leftAxis.spaceTop = 10f
+                leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
+                leftAxis.textColor = Color.WHITE
+
+                chart.axisRight.isEnabled = false
+//                val rightAxis = chart.axisRight
+//                rightAxis.setDrawGridLines(false)
+//                rightAxis.setLabelCount(8, false)
+//                rightAxis.valueFormatter = custom
+//                rightAxis.spaceTop = 15f
+//                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
+
+
+                val l = chart.legend
+                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+                l.orientation = Legend.LegendOrientation.HORIZONTAL
+                l.setDrawInside(false)
+                l.form = LegendForm.CIRCLE
+                l.formSize = 20f
+                l.textSize = 18f
+                l.textColor = Color.WHITE
+                l.xEntrySpace = 4f
+
+//                val mv = XYMarkerView(this, xAxisFormatter)
+//                mv.setChartView(chart) // For bounds control
+//                chart.marker = mv // Set the marker to the chart
+
+                set1 = BarDataSet(list, data?.title)
+                set1.setDrawIcons(false)
+                set1.setColor(data!!.imageColor, 150)
+                val dataSets = ArrayList<IBarDataSet>()
+                dataSets.add(set1)
+                val data = BarData(dataSets)
+                //data.setValueTextSize(10f)
+                // data.setValueTextColor(Color.WHITE)
+                data.barWidth = 0.5f
+                data.setDrawValues(false)
+                chart.data = data
+                chart.animateXY(500, 500)
+                Logger.e("setupChart chart update........")
+            }
+
+        }
+    }
+
+    fun getFloat(f: Double?): Float {
+        f?.let {
+            return it.toFloat()
+        }
+        return 0f
+    }
+
+    fun getFloat(f: String?): Float {
+        f?.let {
+            return it.toFloat()
+        }
+        return 0f
+    }
+
+    var chartType = ""
+    private fun getChartPrefs(
+        title: String,
+        chart: BarChart?
+    ) {
+        val list: List<Biometric.Data?>? = Prefs.get(requireContext())
+            .getJsonList("user_biometric", Biometric.Data::class.java)
+        Logger.e("getChartPrefs $title ${list?.size}")
+        Logger.e("getChartPrefs $list")
+
+        list?.let {
+            val entries = ArrayList<BarEntry>()
+            val dates = ArrayList<String>()
+            val parser = SimpleDateFormat("yyyy-mm-dd")
+            val formater = SimpleDateFormat("dd/mm")
+            var count = 1.0f
+            for (data in list) {
+                try {
+                    dates.add(formater.format(parser.parse(data?.createdAt?.date)))
+                } catch (e: Exception) {
+
+                }
+                when {
+                    title.contains("bmi") -> {
+                        entries.add(BarEntry(count, getFloat(data?.bMI)))
+                    }
+                    title.contains("bsa") -> {
+                        entries.add(BarEntry(count, getFloat(data?.bSA)))
+                    }
+                    title.contains("ibw") -> {
+                        entries.add(BarEntry(count, getFloat(data?.iBW)))
+                    }
+                    title.contains("bmr") -> {
+                        entries.add(BarEntry(count, getFloat(data?.bMR)))
+                    }
+                    title.contains("weight loss") -> {
+                        entries.add(BarEntry(count, getFloat(data?.weightLoss)))
+                    }
+                    title.contains("body fat") -> {
+                        entries.add(BarEntry(count, getFloat(data?.bodyFat)))
+                    }
+                    title.contains("fat free") -> {
+                        entries.add(BarEntry(count, getFloat(data?.fatFreeWeight)))
+                    }
+                    title.contains("energy") -> {
+                        entries.add(BarEntry(count, getFloat(data?.energy)))
+                    }
+                    title.contains("body water") -> {
+                        entries.add(BarEntry(count, getFloat(data?.bodyWater)))
+                    }
+                    title.contains("waist height") -> {
+                        entries.add(BarEntry(count, getFloat(data?.waistHeightRatio)))
+                    }
+                    title.contains("waist hip") -> {
+                        entries.add(BarEntry(count, getFloat(data?.waistHipRatio)))
+                    }
+
+                    title.contains("body mass") -> {
+                        entries.add(BarEntry(count, getFloat(data?.leanBodyMass)))
+                    }
+                }
+                count++
+            }
+            Logger.e("getChartPrefs $count list.size ${entries.size} ${dates.size}")
+            setupChart(chart, entries, dates)
+
+        }
 
     }
 
+    private fun parseEntry(title: String?): String? {
+        if (title == null)
+            return title
+
+        return title
+    }
 
     class MyXFormatter(var list: ArrayList<String>) : ValueFormatter() {
 
@@ -331,24 +521,20 @@ class SummaryDetailsDialog(
 
     }
 
-    class MyYFormatter(var list: ArrayList<String>) : ValueFormatter() {
+    class MyYFormatter() : ValueFormatter() {
 
         override fun getFormattedValue(value: Float): String {
             return super.getFormattedValue(value)
         }
+    }
 
-        fun dummy() {
-            val mMonths = arrayOf(
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            )
-
-            val days = arrayOf(
-                "Sun", "Mob", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            )
-            list.clear()
-            list.add("")
+    class MyDateFormatter(var dates: ArrayList<String>) : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            val i = value.toInt().minus(1)
+            if (i < dates.size)
+                return dates[i]
+            return super.getFormattedValue(value)
         }
-
     }
 
     override fun onStart() {

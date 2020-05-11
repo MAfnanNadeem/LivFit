@@ -30,10 +30,10 @@
             android:id="@id/navigation_barcode"
             android:icon="@drawable/ic_qr_24dp"
             android:title="@string/scan_product" />
-<!--        <item-->
-<!--            android:id="@+id/nav_test3"-->
-<!--            android:icon="@drawable/ic_menu_manage"-->
-<!--            android:title="TEST" />-->
+        <item
+            android:id="@+id/nav_test3"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="TEST" />
 <!--        <item-->
 <!--            android:id="@+id/nav_test4"-->
 <!--            android:icon="@drawable/ic_menu_manage"-->

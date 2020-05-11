@@ -23,5 +23,9 @@ data class Data(
     @SerializedName("countryCode")
     var countryCode: String?,
     @SerializedName("phone")
-    var phone: String?
+    var phone: String?,
+    @SerializedName("type")
+    var type: String?,
+    @SerializedName("key")
+    var key: String?
 )

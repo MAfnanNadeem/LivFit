@@ -16,13 +16,13 @@ import android.view.View
 import android.view.ViewGroup
 import coil.api.load
 import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
-import life.mibo.hardware.SessionManager
-import life.mibo.hardware.models.Device
 import life.mibo.android.R
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Constants
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.models.Device
 
 
 class RxlProgramDetailsFragment : BaseFragment() {
@@ -128,6 +128,7 @@ class RxlProgramDetailsFragment : BaseFragment() {
         program?.let {
             val intent = Intent(context, QuickPlayDetailsActivity::class.java)
             intent.putExtra(Constants.BUNDLE_DATA, it)
+            intent.putExtra("from_user_int", 10)
             startActivityForResult(intent, code)
         }
     }

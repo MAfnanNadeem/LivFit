@@ -101,7 +101,7 @@ class HearRateController(val fragment: HeartRateFragment, val observer: HeartRat
 
                 val data = response.body()
                 if (data != null && data.status.equals("success", true)) {
-                    Prefs.get(fragment.context).settJson(Prefs.SESSION, data.report)
+                    Prefs.get(fragment.context).setJson(Prefs.SESSION, data.report)
                     parseData(data)
                 } else {
 

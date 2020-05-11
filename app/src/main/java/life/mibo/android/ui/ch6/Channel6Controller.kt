@@ -39,7 +39,6 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.rxl.adapter.ScoreAdapter
 import life.mibo.android.ui.rxl.impl.ScoreDialog
 import life.mibo.android.utils.Toasty
-import life.mibo.android.utils.Utils
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
@@ -686,17 +685,13 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     private fun onMainPlusMinusClicked(isPlus: Boolean) {
         log("onMainPlusMinusClicked $isPlus")
-        var sendMain = false
-        if (isPlus) {
-            if (Utils.checkLimitValues(SessionManager.getInstance().userSession.user.mainLevel)) {
-                SessionManager.getInstance().userSession.user.incrementMainLevelUser()
-                sendMain = true
-            }
+        //var update = false
+        var update = if (isPlus) {
+            SessionManager.getInstance().userSession.user.incrementMainLevelUser()
         } else {
             SessionManager.getInstance().userSession.user.decrementMainLevelUser()
-            sendMain = true
         }
-        if (sendMain) {
+        if (update) {
             Single.fromCallable {
                 EventBus.getDefault().postSticky(
                     SendMainLevelEvent(

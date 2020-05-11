@@ -16,16 +16,27 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.fragment_body_measure.*
 import life.mibo.android.R
+import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.models.base.MemberPost
+import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.biometric.Biometric
+import life.mibo.android.models.biometric.PostBiometric
+import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
-import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.body_measure.adapter.SummaryAdapter
+import life.mibo.android.ui.main.MiboEvent
+import life.mibo.android.utils.Toasty
+import retrofit2.Call
+import retrofit2.Response
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-class SummaryFragment : BodyBaseFragment() {
+class SummaryFragment : BaseFragment() {
     companion object {
         fun create(genderMale: Boolean): SummaryFragment {
             val frg = SummaryFragment()
@@ -48,6 +59,12 @@ class SummaryFragment : BodyBaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         isMale = arguments?.getBoolean("profile_gender", false) ?: false
+
+        val fab = view?.findViewById<View?>(R.id.fab_add)
+        fab?.setOnClickListener {
+            //Toasty.snackbar(it, "clicked")
+            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+        }
 
     }
 
@@ -78,19 +95,28 @@ class SummaryFragment : BodyBaseFragment() {
         recyclerView?.adapter = adapter
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        log("setUserVisibleHint $isVisibleToUser")
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            setAdapters()
-            updateNextButton(true, "Finish")
-            Prefs.getTemp(context).set("body_measure", "done")
-            //updateSkipButton(false)
-
-        }
+    override fun onResume() {
+        super.onResume()
+        getBioMetric()
+        //setAdapters()
+        //updateNextButton(true, "Finish")
+        //Prefs.getTemp(context).set("body_measure", "done")
     }
 
+//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+//        log("setUserVisibleHint $isVisibleToUser")
+//        super.setUserVisibleHint(isVisibleToUser)
+//        if (isVisibleToUser) {
+//            setAdapters()
+//            updateNextButton(true, "Finish")
+//            Prefs.getTemp(context).set("body_measure", "done")
+//            //updateSkipButton(false)
+//
+//        }
+//    }
+
     private fun getSummary(): ArrayList<SummaryAdapter.Item> {
+        arguments?.getInt("data_from")
 //        val list = ArrayList<SummaryAdapter.Item>()
 //        val b = Calculate.getValue("user_bmi", "0.00")
 //        val w = Calculate.getValue("user_weight", "0.00")
@@ -117,7 +143,7 @@ class SummaryFragment : BodyBaseFragment() {
         var hr = 0
         var timeInHours = 0
 
-        val member = Prefs(context).member
+        val member = Prefs.get(activity).member
         val male = member?.gender.equals("male", true) ?: false
 
 
@@ -161,7 +187,14 @@ class SummaryFragment : BodyBaseFragment() {
         val bodyMass = getBodyMass(weight, height, male)
 
 
-        val bodyFat = getBodyFatPercentage(Calculate.kgToPounds(weight), Calculate.cmToInch(waist), Calculate.cmToInch(wrist), Calculate.cmToInch(hip), Calculate.cmToInch(forearm), male)
+        val bodyFat = getBodyFatPercentage(
+            Calculate.kgToPounds(weight),
+            Calculate.cmToInch(waist),
+            Calculate.cmToInch(wrist),
+            Calculate.cmToInch(hip),
+            Calculate.cmToInch(forearm),
+            male
+        )
 
 
         val waistHipRatio = waist.div(hip.toDouble())
@@ -183,7 +216,22 @@ class SummaryFragment : BodyBaseFragment() {
 
         val physicalActivity = data.getActivityScale()
         val energy = bmr.times(physicalActivity)
-
+        saveData(
+            member?.id()!!,
+            member?.accessToken!!,
+            data,
+            round(bmr),
+            round(ibw),
+            round(bsa),
+            round(bodyWater),
+            round(energy),
+            round(fatFree),
+            round(bodyFat.times(100)),
+            round(bodyMass),
+            round(waistHeightRatio),
+            round(waistHipRatio),
+            round(weightLoss)
+        )
         list.add(
             SummaryAdapter.Item(
                 1, 0, R.drawable.ic_body_summary_bmi, 0xFF5DCEED.toInt(), "BMI", bmi, ""
@@ -191,7 +239,7 @@ class SummaryFragment : BodyBaseFragment() {
         )
         list.add(
             SummaryAdapter.Item(
-                1, 0, R.drawable.ic_body_summary_bmr, 0xFF8BC53F.toInt(), "BMR", bmr, ""
+                1, 0, R.drawable.ic_body_summary_bmr, 0xFF8BC53F.toInt(), "BMR", bmr, "\ncal"
             )
         )
         list.add(
@@ -235,7 +283,13 @@ class SummaryFragment : BodyBaseFragment() {
 
         list.add(
             SummaryAdapter.Item(
-                1, 0, R.drawable.ic_body_summary_fat, 0xFFD99700.toInt(), "Body Fat", bodyFat.times(100), "%"
+                1,
+                0,
+                R.drawable.ic_body_summary_fat,
+                0xFFD99700.toInt(),
+                "Body Fat",
+                bodyFat.times(100),
+                "%"
             )
         )
         list.add(
@@ -284,7 +338,13 @@ class SummaryFragment : BodyBaseFragment() {
         )
         list.add(
             SummaryAdapter.Item(
-                1, 0, R.drawable.ic_body_summary_energy, 0xFF333333.toInt(), "Energy", energy
+                1,
+                0,
+                R.drawable.ic_body_summary_energy,
+                0xFF333333.toInt(),
+                "Energy",
+                energy,
+                "\ncal"
             )
         )
 
@@ -415,5 +475,319 @@ class SummaryFragment : BodyBaseFragment() {
         } catch (e: Exception) {
             0.0;
         }
+    }
+
+    fun getDouble(str: Double?): Double {
+        return str ?: 0.0
+    }
+
+    private fun saveData(
+        memberId: String, token: String, data: Calculate.MeasureData,
+        bmr: Double, ibw: Double, bsa: Double, bodyWater: Double,
+        energy: Double, ffmi: Double, bodyFat: Double, leanBodyMass: Double,
+        wHeightRatio: Double, wHipRatio: Double, weightLoss: Double
+    ) {
+
+        getDialog()?.show()
+        //val data = Calculate.getMeasureData();
+        // Math.round()
+        val post = PostBiometric.Data(
+            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, data.chest,
+            data.elbow, energy, ffmi, data.forearm, data.height, "cm",
+            data.highHips, data.hips, data.waist, data.wrist, data.weight,
+            wHeightRatio, wHipRatio, weightLoss, "cm", ibw,
+            leanBodyMass, "${data.activityType}", "${data.goalType}", "${data.shapeType}", memberId
+        )
+
+        API.request.getApi().saveMemberBiometrics(PostBiometric(post, token))
+            .enqueue(object : retrofit2.Callback<ResponseData> {
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    Toasty.snackbar(view, R.string.unable_to_connect)
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>, response: Response<ResponseData>
+                ) {
+                    // getDialog()?.dismiss()
+                    try {
+                        val body = response?.body()
+                        log("saveData response $body")
+                        if (body != null && body.isSuccess()) {
+                            val msg = body.data?.message
+                            msg?.let {
+                                Toasty.snackbar(view, msg)
+                            }
+                        } else if (body != null && body.isError()) {
+                            val msg = body.errors?.get(0)?.message
+                            msg?.let {
+                                Toasty.snackbar(view, msg)
+                            }
+
+                        } else {
+                            Toasty.snackbar(view, R.string.unable_to_connect)
+                        }
+                    } catch (e: Exception) {
+                        MiboEvent.log(e)
+                    }
+
+                    getDialog()?.dismiss()
+
+                }
+
+            })
+
+        //getBioMetric(memberId, token)
+    }
+
+    fun round(value: Double): Double {
+        return try {
+            BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+        } catch (e: java.lang.Exception) {
+            value
+        }
+    }
+
+    private fun getBioMetric() {
+        val member = Prefs.get(activity).member
+        Prefs.get(context)["user_gender"] = "${member?.gender}"
+        val memberId = member?.id() ?: ""
+        val token = member?.accessToken ?: ""
+        getDialog()?.show()
+        API.request.getApi().getMemberBiometrics(MemberPost(memberId, token, "GetMemberBiometrics"))
+            .enqueue(object : retrofit2.Callback<Biometric> {
+                override fun onFailure(call: Call<Biometric>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    Toasty.snackbar(view, R.string.unable_to_connect)
+                }
+
+                override fun onResponse(
+                    call: Call<Biometric>, response: Response<Biometric>
+                ) {
+                    getDialog()?.dismiss()
+                    try {
+                        val body = response?.body()
+                        log("getBioMetric response $body")
+                        if (body != null && body.isSuccess()) {
+                            val list = body.data
+                            list.let {
+                                Prefs.get(requireContext()).setJson("user_biometric", it)
+                                parseBiometric(it)
+                            }
+
+                        } else if (body != null && body.isError()) {
+
+                            val msg = body.errors?.get(0)?.message
+                            Toasty.snackbar(view, msg)
+                            if (msg?.toLowerCase()?.contains("session expire") == true) {
+                                navigate(life.mibo.android.ui.main.Navigator.LOGOUT, null)
+                                return
+                            }
+                            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+                            return
+
+                        } else {
+                            Toasty.snackbar(view, R.string.unable_to_connect)
+                        }
+                    } catch (e: Exception) {
+                        MiboEvent.log(e)
+                    }
+
+
+                    getDialog()?.dismiss()
+
+                }
+
+            })
+    }
+
+    fun parseBiometric(bio: List<Biometric.Data?>?) {
+        if (bio != null) {
+
+            val list = ArrayList<SummaryAdapter.Item>()
+            val data = bio[bio.size - 1]
+            if (data == null) {
+                Toasty.snackbar(view, R.string.error_occurred)
+                navigate(life.mibo.android.ui.main.Navigator.CLEAR_HOME, null)
+                return
+            }
+
+            //Prefs.get(context)["user_age"] = "$data"
+            //Prefs.get(context)["user_gender"] = "${data?.gender}"
+            Prefs.get(context)["user_weight"] = "${data.weight} KG"
+            Prefs.get(context)["user_height"] = "${data.height} CM"
+
+            try {
+                Prefs.get(context)["user_date"] = "${data.createdAt?.date?.split(" ")?.get(0)}"
+            } catch (e: Exception) {
+                Prefs.get(context)["user_date"] = "${data.createdAt?.date}"
+            }
+
+            //weight?.text = "${pref["user_weight"]}"
+            // height?.text = "${pref["user_height"]}"
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_bmi,
+                    0xFF5DCEED.toInt(),
+                    "BMI",
+                    getDouble(data.bMI),
+                    ""
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_bmr,
+                    0xFF8BC53F.toInt(),
+                    "BMR",
+                    getDouble(data.bMR),
+                    "\ncal"
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_ibw,
+                    0xFF29A3DA.toInt(),
+                    "IBW",
+                    getDouble(data.iBW),
+                    "kg"
+                )
+            )
+
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_bsa,
+                    ContextCompat.getColor(requireContext(), R.color.bsa_color),
+                    "BSA",
+                    getDouble(data.bSA),
+                    getString(R.string.meter_square)
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1, 0,
+                    R.drawable.ic_body_summary_wl,
+                    0xFF42C3A4.toInt(),
+                    "Weight Loss",
+                    getDouble(data.weightLoss),
+                    "kg"
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_mass,
+                    0xFFECB581.toInt(),
+                    "Body Mass",
+                    getDouble(data.leanBodyMass),
+                    "kg"
+                )
+            )
+
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_fat,
+                    0xFFD99700.toInt(),
+                    "Body Fat",
+                    getDouble(data.bodyFat),
+                    "%"
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_wh_ratio,
+                    0xFFFF1D25.toInt(),
+                    "Waist Hip Ratio",
+                    getDouble(data.waistHipRatio)
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_height_ratio,
+                    0xFF09B189.toInt(),
+                    "Waist Height Ratio",
+                    getDouble(data.waistHeightRatio)
+                )
+            )
+
+
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_water,
+                    0xFF0071B4.toInt(),
+                    "Body Water",
+                    getDouble(data.bodyWater),
+                    "kg"
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_fat_free,
+                    0xFFFFB174.toInt(),
+                    "Fat Free (FFMI)",
+                    getDouble(data.fatFreeWeight),
+                    "\n" + getString(R.string.ffmi_unit)
+                )
+            )
+            list.add(
+                SummaryAdapter.Item(
+                    1,
+                    0,
+                    R.drawable.ic_body_summary_energy,
+                    0xFF333333.toInt(),
+                    "Energy",
+                    getDouble(data.energy),
+                    "\ncal"
+                )
+            )
+
+            adapter =
+                SummaryAdapter(
+                    list, object : ItemClickListener<SummaryAdapter.Item> {
+                        override fun onItemClicked(
+                            item: SummaryAdapter.Item?, position: Int
+                        ) {
+                            SummaryDetailsDialog(
+                                item,
+                                null
+                            ).show(
+                                childFragmentManager,
+                                "SummaryDetailsDialog"
+                            )
+                            // adapter?.select(item)
+                            // selected = position
+                            //showPicker(item)
+                        }
+
+                    })
+            recyclerView?.layoutManager = GridLayoutManager(requireContext(), 3)
+            recyclerView?.layoutAnimation =
+                AnimationUtils.loadLayoutAnimation(
+                    requireContext(),
+                    R.anim.layout_animation_fall_down
+                );
+            //recyclerView?.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            recyclerView?.adapter = adapter
+
+        }
+
     }
 }

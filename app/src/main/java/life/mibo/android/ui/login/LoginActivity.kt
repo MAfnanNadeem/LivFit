@@ -1,15 +1,18 @@
 package life.mibo.android.ui.login
 
-import android.net.Uri
+import android.content.Intent
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView.OnEditorActionListener
 import kotlinx.android.synthetic.main.activity_login.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.database.Database
+import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
+import life.mibo.android.utils.Toasty
 
 
 class LoginActivity : BaseActivity() {
@@ -42,13 +45,20 @@ class LoginActivity : BaseActivity() {
 
         et_password?.setOnKeyListener { v, keyCode, event ->
             //showToast("setOnKeyListener $keyCode")
+            log("et_password EditorInfo.IME_ACTION_DONE $keyCode $event")
             if (keyCode == EditorInfo.IME_ACTION_DONE) {
                 login()
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
-
+        et_password?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                login()
+                return@OnEditorActionListener true
+            }
+            false
+        })
         iv_pwd_visible?.setOnClickListener {
             if (isPwd) {
                 iv_pwd_visible?.setImageResource(R.drawable.ic_visibility_off)
@@ -79,29 +89,55 @@ class LoginActivity : BaseActivity() {
 //        }
         //Database.getInstance(this).clearAllTables()
         // debug()
+        controller.autoLogin()
         if (DEBUG) {
             btn_login?.setOnLongClickListener {
                //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")
-               controller.onLogin("sumeetgehi@gmail.com", "123")
+                controller.onLogin("sumeetgehi@gmail.com", "123")
+                //controller.onLogin("alisher@mibo.life", "123456")
                 return@setOnLongClickListener true
             }
         }
 
         if (Prefs.getTemp(this).get("body_measure")?.toLowerCase() == "skip") {
             Prefs.getTemp(this).set("body_measure", "")
+        }
+
+        socialHelper = SocialHelper(SocialHelper.Listener { type, response, error ->
+            log("SocialHelper $type :: $response -- $error")
+            if (error) {
+                try {
+                    val msg = response?.getString("message") ?: getString(R.string.auth_error)
+                    Toasty.snackbar(btn_register, msg)
+                } catch (e: Exception) {
+                    Toasty.snackbar(btn_register, getString(R.string.auth_error))
+                }
+            } else {
+                controller?.onSocialLogin(type, response)
+            }
+        })
+
+        btn_facebook?.setOnClickListener {
+            socialHelper?.facebookLogin(this)
+        }
+        btn_google?.setOnClickListener {
+            socialHelper?.googleLogin(this)
 
         }
+        btn_twitter?.setOnClickListener {
+            // socialHelper?.withTwitter(this)
+
+        }
+
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
        // videoBg()
     }
 
-    private fun videoBg() {
-        val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.login_video)
-        videoView.setVideoURI(uri)
-        videoView.start()
-        videoView?.setOnPreparedListener {
-            it.isLooping = true
-        }
+
+    var socialHelper: SocialHelper? = null
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        socialHelper?.onActivityResult(requestCode, resultCode, data)
 
     }
 
@@ -134,17 +170,16 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun onPause() {
-        videoView?.pause()
+        socialHelper?.onPause(this)
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        videoView?.start()
+        socialHelper?.onResume(this)
     }
 
     override fun onStop() {
-        videoView?.stopPlayback()
         super.onStop()
     }
 

@@ -4,7 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@drawable/login_container_transparent"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="@dimen/grid_3x">
@@ -14,12 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/enter_verification_code"
-        android:textColor="@color/white"
+        android:textColor="@color/textColorApp"
         android:textSize="@dimen/text_size_medium" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:layout_marginTop="@dimen/grid_4x"
         android:src="@drawable/ic_register_otp_sent" />
 
@@ -28,14 +27,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
         android:text="@string/enter_your_otp"
-        android:textColor="@color/white"
+        android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_medium" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/we_have_sent_otp"
-        android:textColor="@color/white"
+        android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_small" />
 
     <life.mibo.views.OtpEditText
@@ -44,18 +43,21 @@
         android:layout_height="wrap_content"
         android:clickable="false"
         android:cursorVisible="false"
+        android:text="12"
         android:digits="0123456789"
         android:inputType="number"
+        android:layout_marginTop="@dimen/grid_2x"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textAlignment="center"
         android:maxLength="4"
-        android:padding="8dp"
         android:textSize="30sp"
+        app:oev_mask_character="****"
         app:oev_box_style="rounded_box"
         app:oev_length="4"
         app:oev_text_color="@color/textColor"
         app:oev_primary_color="@color/colorPrimary"
-        app:oev_secondary_color="@color/colorAccent" />
+        app:oev_secondary_color="@color/textColorApp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -68,8 +70,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/grid_1x"
-            android:text="Resend OTP"
-            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="@string/resend_otp"
+            android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_small" />
 
 <!--        <Chronometer-->
@@ -84,10 +87,10 @@
         android:id="@+id/btn_otp_confirmed"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/login_button_green"
+        android:layout_marginTop="@dimen/grid_3x"
+        android:background="@drawable/login_button_primary"
         android:ems="13"
-        android:text="VERIFY"
+        android:text="@string/verify"
         android:textColor="@color/white" />
 
 

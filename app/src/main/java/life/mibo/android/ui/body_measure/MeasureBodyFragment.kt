@@ -66,6 +66,12 @@ class MeasureBodyFragment : BodyBaseFragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateNextButton(false)
+        updateSkipButton(false)
+    }
+
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         log("setUserVisibleHint $isVisibleToUser")
         super.setUserVisibleHint(isVisibleToUser)
@@ -155,13 +161,16 @@ class MeasureBodyFragment : BodyBaseFragment() {
                             if (item.unit.toLowerCase().contains("cm")) {
                                 Calculate.getMeasureData()
                                     .addMeasurement(item.id, getInt(item.value))
-                                item.value = String.format("%.2f", Calculate.cmToInch(item.value))
-                                item.unit = "inches"
+                                // item.value = String.format("%.2f", Calculate.cmToInch(item.value))
+                                // item.unit = "inches"
 
                             } else {
                                 Calculate.getMeasureData()
                                     .addMeasurement(item.id, Calculate.inchToCm(item.value).toInt())
                             }
+
+                            item.value = item.value
+                            item.unit = item.unit
 
                             adapter?.update(item)
                         }

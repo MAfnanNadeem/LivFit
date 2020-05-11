@@ -30,7 +30,7 @@ abstract class BaseFragment : Fragment() {
 
     fun getDialog(): MyDialog? {
         if (mDialog == null)
-            mDialog = MyDialog.get(this@BaseFragment.activity!!)
+            mDialog = MyDialog.get(this@BaseFragment.requireContext())
         return mDialog
     }
 

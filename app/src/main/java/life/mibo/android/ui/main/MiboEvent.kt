@@ -9,6 +9,7 @@ package life.mibo.android.ui.main
 
 import android.content.Context
 import android.os.Bundle
+import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
@@ -109,4 +110,11 @@ object MiboEvent {
         return MiboEvent
     }
 
+    fun fbLog(context: Context, event: String) {
+        try {
+            AppEventsLogger.newLogger(context).logEvent(event)
+        } catch (e: Exception) {
+            log(e)
+        }
+    }
 }

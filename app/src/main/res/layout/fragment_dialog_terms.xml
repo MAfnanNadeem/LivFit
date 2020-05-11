@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/grid_2x"
-    android:background="@drawable/bg_pwd_dialog"
+    android:background="@drawable/bg_terms_dialog"
     android:gravity="center_horizontal"
     android:padding="4dp"
     android:minHeight="300dp"

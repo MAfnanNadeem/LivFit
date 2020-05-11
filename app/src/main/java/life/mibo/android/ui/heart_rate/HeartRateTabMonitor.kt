@@ -105,7 +105,7 @@ class HeartRateTabMonitor : BaseFragment() {
             CommunicationManager.getInstance().stopHrMonitor("")
             Single.fromCallable {
                 log("fromCallable $isMonitoring")
-            }.delay(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+            }.delay(1000, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess {
                     isMonitoring = false
                     log("doOnSuccess $isMonitoring")
@@ -134,7 +134,7 @@ class HeartRateTabMonitor : BaseFragment() {
                 val avg = total.div(hrList.size)
                 Toasty.info(
                     requireContext(),
-                    "Peak $peak Average $avg",
+                    "Peak $peak  Average $avg",
                     Toasty.LENGTH_LONG
                 ).show()
                 hr_value?.text = String.format("%.2f", avg)

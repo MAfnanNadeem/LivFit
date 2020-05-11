@@ -62,7 +62,9 @@ class QuestionFragment : BodyBaseFragment() {
                 ) {
                     adapter?.select(item)
                     selected = position
-                    updateNextButton(true)
+                    if (type_ == 2)
+                        updateNextButton(true, "Finish")
+                    else updateNextButton(true)
                     Calculate.getMeasureData().question(type_, item?.id ?: 1)
                     // Calculate.addValue("Ques_Type$type_", "$selected")
 
@@ -82,17 +84,23 @@ class QuestionFragment : BodyBaseFragment() {
     override fun onResume() {
         super.onResume()
         // updateNextButton(false)
+        // if (type_ == 2)
+        //    updateNextButton(true, "Finish")
+        //else
+        updateNextButton(false)
+        updateSkipButton(true)
+        setupAdapters()
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        log("setUserVisibleHint $isVisibleToUser")
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            updateNextButton(false)
-            updateSkipButton(true)
-            setupAdapters()
-        }
-    }
+//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+//        log("setUserVisibleHint $isVisibleToUser")
+//        super.setUserVisibleHint(isVisibleToUser)
+//        if (isVisibleToUser) {
+//            updateNextButton(false)
+//            updateSkipButton(true)
+//            setupAdapters()
+//        }
+//    }
 
 
     private fun getQues(type: Int): ArrayList<QuestionsAdapter.Item> {

@@ -14,6 +14,8 @@
     <color name="grey_ddd">#bbb</color>
     <color name="textColor">#313131</color>
     <color name="textColor2">#606060</color>
+    <color name="textColorApp">#58468C</color>
+    <color name="button_color_app">#FF8A73</color>
     <color name="textColor_weight">#F7FF03</color>
 
     <!--toast-->
@@ -49,8 +51,7 @@
 
 
     <color name="bsa_color">#FFFF7D0F</color>
-
-
+    <color name="background_color_app">#F3F4F8</color>
 
 
 </resources>

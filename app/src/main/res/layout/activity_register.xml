@@ -2,29 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/frame_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="center"
-        android:src="@drawable/bg_gradient" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.78"
-        android:scaleType="centerCrop"
-        android:src="@drawable/login_bg_gradient" />
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app">
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ViewAnimator
             android:id="@+id/viewAnimator"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inAnimation="@anim/enter_from_right"
             android:outAnimation="@anim/exit_to_left">

@@ -16,13 +16,18 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import life.mibo.android.core.security.EncryptedPrefs;
 import life.mibo.android.models.login.Member;
 import life.mibo.hardware.core.Logger;
 
@@ -58,6 +63,10 @@ public class Prefs {
 
     public static Prefs getTemp(Context context) {
         return new Prefs(context, "miboPrefs");
+    }
+
+    public static EncryptedPrefs getEncrypted(Context context) {
+        return new EncryptedPrefs(context);
     }
 
 
@@ -189,7 +198,7 @@ public class Prefs {
 
     }
 
-    public <T> void settJson(String key, T o) {
+    public <T> void setJson(String key, T o) {
         try {
             String json = new Gson().toJson(o);
             getEditor().putString(key, json).apply();
@@ -209,7 +218,21 @@ public class Prefs {
         } catch (Exception e) {
             return null;
         }
+    }
 
+    public <T> List<T> getJsonList(String key, Class<T> cls) {
+        List<T> list = new ArrayList<T>();
+        try {
+            String jsonString = get(key);
+            Gson gson = new Gson();
+            JsonArray arry = JsonParser.parseString(jsonString).getAsJsonArray();
+            for (JsonElement jsonElement : arry) {
+                list.add(gson.fromJson(jsonElement, cls));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public void setMember(Member member) {

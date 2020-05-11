@@ -28,7 +28,6 @@ import com.google.android.gms.auth.api.phone.SmsRetrieverClient
 import com.google.android.gms.common.api.GoogleApiClient
 import com.rilixtech.widget.countrycodepicker.Country
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker
-import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
@@ -48,6 +47,7 @@ import life.mibo.android.ui.main.MainActivity
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -95,16 +95,26 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     override fun onRegisterClicked(
-        firstName: String?, lastName: String?, email: String?,
-        password: String?, cPassword: String?, city: String?, country: String?,
-        dob: String?, checkBox: Boolean, phoneNumber: String?
+        firstName: String?,
+        lastName: String?,
+        email: String?,
+        password: String?,
+        cPassword: String?,
+        city: String?,
+        country: String?,
+        dob: String?,
+        checkBox: Boolean,
+        phoneNumber: String?,
+        socialType: String,
+        socialKey: String,
+        socialPhoto: String
     ) {
         //context.log("onRegisterClicked $firstName, $lastName, $email, $password, $cPassword, $city, $dob, $gender, $phoneNumber")
         //updateNumber(1)
         validate(
             firstName, lastName, email,
             password, cPassword, city,
-            country, dob, checkBox, phoneNumber
+            country, dob, checkBox, phoneNumber, socialType, socialKey, socialPhoto
         )
     }
 
@@ -247,7 +257,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         country: String?,
         dob: String?,
         checkBox: Boolean,
-        phoneNumber: String?
+        phoneNumber: String?,
+        socialType: String,
+        socialKey: String,
+        socialPhoto: String
     ) {
         if (firstName.isNullOrEmpty()) {
             error(getString(R.string.enter_fname))
@@ -315,7 +328,13 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
             val data = Data(
                 firstName, lastName, cPassword, email, gender,
-                city, country, dob, ccp!!.selectedCountryCodeWithPlus, phoneNumber
+                city,
+                country,
+                dob,
+                ccp!!.selectedCountryCodeWithPlus,
+                phoneNumber,
+                socialType,
+                socialKey
             )
             register(RegisterMember(data))
 
@@ -346,6 +365,14 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             "${registerData.data?.firstName} - ${registerData.data?.lastName}",
             "${registerData.data?.email}"
         )
+        if (testDebug) {
+            error("Test Mode Registered")
+            userId = "1236"
+            sendOtp(registerData.data!!.phone)
+            isOtp = true
+            isBack = false
+            return
+        }
         context.getDialog()?.show()
         API.request.getApi().register(registerData).enqueue(object : Callback<RegisterResponse> {
 
@@ -616,7 +643,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         // Toasty.success(context, "Successfully registered").show()
         //TODO
         if (isOtpVerified) {
-            context.startActivity(Intent(context, MainActivity::class.java))
+            //context.startActivity(Intent(context, MainActivity::class.java))
+            val intent = Intent(context, MainActivity::class.java)
+            intent.putExtra("from_user_int", 7)
+            context.startActivity(intent)
             context.finish()
         }
     }

@@ -393,7 +393,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             //SessionManager.getInstance().userSession = UserSession.from(device)
             CommunicationManager.getInstance().connectDevice(device)
             try {
-                Prefs.get(this@DeviceScanFragment.context).settJson(device?.uid, device)
+                Prefs.get(this@DeviceScanFragment.context).setJson(device?.uid, device)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }

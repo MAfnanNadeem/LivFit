@@ -14,14 +14,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
@@ -30,6 +29,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ShareCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -39,11 +39,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -64,6 +63,7 @@ import life.mibo.android.ui.main.Navigator.Companion.CONNECT
 import life.mibo.android.ui.main.Navigator.Companion.DISCONNECT
 import life.mibo.android.ui.main.Navigator.Companion.HOME
 import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
+import life.mibo.android.ui.main.Navigator.Companion.LOGOUT
 import life.mibo.android.ui.main.Navigator.Companion.RXL_COURSE_CREATE
 import life.mibo.android.ui.main.Navigator.Companion.RXL_COURSE_SELECT
 import life.mibo.android.ui.main.Navigator.Companion.RXL_DETAILS
@@ -83,7 +83,6 @@ import life.mibo.android.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.android.ui.rxl.impl.CreateCourseAdapter
 import life.mibo.android.utils.Constants
 import life.mibo.android.utils.Toasty
-import life.mibo.android.utils.Utils
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
@@ -155,6 +154,11 @@ class MainActivity : BaseActivity(), Navigator {
             log("OnCreate savedInstanceState end")
         }
 
+        val i = intent?.getIntExtra("from_user_int", 5) ?: 1
+        if (i != 7) {
+            finish()
+        }
+
     }
 
 
@@ -191,9 +195,17 @@ class MainActivity : BaseActivity(), Navigator {
         navigation!!.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_email)?.text =
             Prefs.get(this@MainActivity).get("user_email")
         navigation?.setCheckedItem(R.id.nav_home)
+
+        if (member.isMember())
+            navigation!!.getHeaderView(0)
+                .findViewById<View?>(R.id.drawer_user_trainer)?.visibility =
+                View.INVISIBLE
+        else navigation!!.getHeaderView(0)
+            .findViewById<View?>(R.id.drawer_user_trainer)?.visibility = View.VISIBLE
+
         loadImage(
             navigation!!.getHeaderView(0).findViewById<CircleImageView?>(R.id.drawer_user_image),
-            R.drawable.ic_user_test
+            R.drawable.ic_user_test, member.profileImg
         )
 
         //navigation.s
@@ -203,27 +215,37 @@ class MainActivity : BaseActivity(), Navigator {
 //        }
     }
 
-    private fun loadImage(iv: ImageView?, defaultImage: Int) {
-        Maybe.fromCallable {
-            log("loadImage fromCallable")
-            var bitmap: Bitmap? = null
-            val img = Prefs.get(this@MainActivity).member?.imageThumbnail
-            log("loadImage size: ${img?.length}")
-            bitmap = if (!img.isNullOrEmpty())
-                Utils.base64ToBitmap(img)
-            else
-                BitmapFactory.decodeResource(resources, defaultImage)
-            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
-            bitmap
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-            log("loadImage doOnSuccess $it")
-            if (it != null)
-                iv?.setImageBitmap(it)
-            else
-                iv?.setImageResource(defaultImage)
-        }.doOnError {
-
-        }.subscribe()
+    private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
+        if (url == null) {
+            if (iv != null)
+                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+                    .into(iv)
+            return
+        }
+        url?.let {
+            if (iv != null)
+                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+        }
+//        Maybe.fromCallable {
+//            log("loadImage fromCallable")
+//            var bitmap: Bitmap? = null
+//            val img = Prefs.get(this@MainActivity).member?.imageThumbnail
+//            log("loadImage size: ${img?.length}")
+//            bitmap = if (!img.isNullOrEmpty())
+//                Utils.base64ToBitmap(img)
+//            else
+//                BitmapFactory.decodeResource(resources, defaultImage)
+//            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
+//            bitmap
+//        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+//            log("loadImage doOnSuccess $it")
+//            if (it != null)
+//                iv?.setImageBitmap(it)
+//            else
+//                iv?.setImageResource(defaultImage)
+//        }.doOnError {
+//
+//        }.subscribe()
     }
 
     private fun setDrawerIcon(drawer: DrawerLayout) {
@@ -1003,12 +1025,40 @@ class MainActivity : BaseActivity(), Navigator {
                 popup(R.id.navigation_select_program)
                 //updateBar(true)
             }
+            LOGOUT -> {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
+                return
+            }
             Navigator.BODY_MEASURE -> {
+                popup(R.id.navigation_home)
                 var bundle: Bundle? = null
                 if (data is Bundle)
                     bundle = data
                 navigate(0, R.id.navigation_measurement, bundle)
                 //updateBar(true)
+            }
+
+            Navigator.BODY_MEASURE_SUMMARY -> {
+                popup(R.id.navigation_home)
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_bio_summary, bundle)
+                //updateBar(true)
+            }
+            Navigator.PIC_UPLOADED -> {
+                try {
+                    loadImage(
+                        navigation!!.getHeaderView(0)
+                            .findViewById<CircleImageView?>(R.id.drawer_user_image),
+                        R.drawable.ic_user_test, data as String
+                    )
+                    //loadImage()
+                } catch (e: java.lang.Exception) {
+
+                }
+                return
             }
             Navigator.POST -> {
                 postObservable(data)
@@ -1092,14 +1142,15 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             R.id.nav_test3 -> {
-                //SessionManager.getInstance().userSession.createDummy()
+                lastId = -1
+                SessionManager.getInstance().userSession.createDummy()
                 //startScanning(false)
                 //updateMenu()
                 // test
-               // navigate(0, R.id.navigation_rxl_home)
+                navigate(0, R.id.navigation_rxl_home)
                 //navigate(0, R.id.navigation_select_suit)
                 // navigate(0, R.id.navigation_bmi)
-                navigate(0, R.id.navigation_measurement)
+                // navigate(0, R.id.navigation_measurement)
 
             }
             R.id.navigation_add_product -> {
@@ -1114,14 +1165,33 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_rxl_test)
 
             }
+            R.id.nav_measurement -> {
+                navigate(0, R.id.navigation_bio_summary)
+
+            }
+            R.id.nav_share -> {
+                lastId = -1
+                try {
+                    ShareCompat.IntentBuilder.from(this)
+                        .setType("text/plain")
+                        .setChooserTitle(getString(R.string.share_with_friends))
+                        .setText("${getString(R.string.share_text)}${this.packageName}")
+                        .startChooser();
+                } catch (e: Exception) {
+
+                }
+            }
             R.id.nav_policy -> {
+                lastId = -1
                 navigate(
                     0,
                     R.id.navigation_webview,
                     WebViewFragment.bundle("http://test.mibo.life/privacy-policy-mobile/")
                 )
+                title = "Privacy Policy"
             }
             R.id.nav_faq -> {
+                lastId = -1
                 navigate(
                     0,
                     R.id.navigation_webview,
@@ -1229,7 +1299,14 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_schedule)
             }
 
-            HomeItem.Type.PROGRAMS -> {
+            HomeItem.Type.MEASURE -> {
+                //  navigateFragment(R.id.navigation_program)
+                //navigate(0, R.id.navigation_measurement )
+                navigate(0, R.id.navigation_bio_summary)
+
+            }
+
+            HomeItem.Type.MEASURE_NEW -> {
                 //  navigateFragment(R.id.navigation_program)
                 navigate(0, R.id.navigation_measurement)
 
@@ -1252,6 +1329,11 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.PROFILE -> {
                 //  if (DEBUG)
                 navigate(0, R.id.navigation_profile)
+                // drawerItemClicked(R.id.navigation_rxl_test)
+            }
+            HomeItem.Type.PROFILE_UPLOAD -> {
+                //  if (DEBUG)
+                navigate(0, R.id.navigation_profile_upload)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
 

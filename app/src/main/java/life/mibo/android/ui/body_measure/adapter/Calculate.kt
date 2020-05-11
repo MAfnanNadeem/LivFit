@@ -251,6 +251,7 @@ object Calculate {
         var elbow = 0.0
         var forearm = 0.0
 
+        var shapeType = ""
         var goalType = 0
         var activityType = 0
 

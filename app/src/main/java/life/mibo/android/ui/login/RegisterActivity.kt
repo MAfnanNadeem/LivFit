@@ -24,9 +24,19 @@ class RegisterActivity : BaseActivity() {
     //SECRET ekHtNKxLLF1yPeqWROHTw1CuCfPHHWUM
     interface Listener {
         fun onRegisterClicked(
-            firstName: String?, lastName: String?, email: String?, password: String?,
-            cPassword: String?, city: String?, country: String?, dob: String?,
-            checkBox: Boolean, phoneNumber: String?
+            firstName: String?,
+            lastName: String?,
+            email: String?,
+            password: String?,
+            cPassword: String?,
+            city: String?,
+            country: String?,
+            dob: String?,
+            checkBox: Boolean,
+            phoneNumber: String?,
+            socialType: String,
+            socialKey: String,
+            socialPhoto: String
         )
         fun onSendOtpClicked(number: String?)
         fun onResendOtpClicked(number: String?)
@@ -115,7 +125,39 @@ class RegisterActivity : BaseActivity() {
                 checkbox_terms?.isChecked = false
             }
         }
+
+        val social: Bundle? = intent?.getBundleExtra("social_data")
+        if (social != null) {
+            val code = intent?.getIntExtra("social_data_code", 100) ?: 100
+            if (code == 100) {
+                socialType = "facebook"
+                socialPhoto = social.getString("profile", "")
+                socialKey = social.getString("id", "")
+                et_first_name?.setText(social.getString("first_name", ""))
+                et_last_name?.setText(social.getString("last_name", ""))
+                et_email?.setText(social.getString("email", ""))
+
+            } else if (code == 200) {
+                socialType = "google"
+                socialPhoto = social.getString("photoUrl", "")
+                socialKey = social.getString("id", "")
+                val name = social.getString("displayName", "").split(" ")
+                if (name.size > 0)
+                    et_first_name?.setText(name[0])
+                if (name.size > 1)
+                    et_last_name?.setText(name[1])
+                et_email?.setText(social.getString("email", ""))
+
+            }
+            //Toasty.info(this, socialType).show()
+        }
+
+
     }
+
+    var socialType = "";
+    var socialPhoto = "";
+    var socialKey = "";
 
     var isDialog = false
     fun termsDialog(terms: String) {
@@ -265,7 +307,7 @@ class RegisterActivity : BaseActivity() {
             tv_country.text?.toString(),
             tv_dob.text?.toString(),
             checkbox_terms.isChecked,
-            et_phone_number.text?.toString()
+            et_phone_number.text?.toString(), socialType, socialKey, socialPhoto
         )
 
     }

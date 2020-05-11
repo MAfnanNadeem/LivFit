@@ -24,7 +24,6 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
 import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.ui.body_measure.adapter.Calculate
-import life.mibo.android.utils.Toasty
 import kotlin.math.abs
 
 class BodyTypeFragment : BodyBaseFragment() {
@@ -98,6 +97,13 @@ class BodyTypeFragment : BodyBaseFragment() {
         tv_continue?.visibility = View.GONE
     }
 
+    override fun onResume() {
+        super.onResume()
+        setup()
+        updateNextButton(true)
+        updateSkipButton(true)
+    }
+
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         log("setUserVisibleHint $isVisibleToUser")
         super.setUserVisibleHint(isVisibleToUser)
@@ -151,7 +157,8 @@ class BodyTypeFragment : BodyBaseFragment() {
         else
             title_text?.setText(R.string.choose_your_body_type)
 
-        Prefs.get(context).settJson("shape_types", types)
+        Prefs.get(context).setJson("shape_types", types)
+        //viewPager?.registerOnPageChangeCallback()
     }
 
     @Synchronized
@@ -203,6 +210,7 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
+                        Calculate.getMeasureData().shapeType = "X Type"
                     }
                     2 -> {
                         if (!isXAdded) {
@@ -211,6 +219,7 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
+                        Calculate.getMeasureData().shapeType = "X Type"
                     }
                     3 -> {
                         if (!isXAdded) {
@@ -219,26 +228,31 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
+                        Calculate.getMeasureData().shapeType = "X Type"
                     }
                     4 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_O)
                         )
+                        Calculate.getMeasureData().shapeType = "O Type"
                     }
                     5 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_A)
                         )
+                        Calculate.getMeasureData().shapeType = "A Type"
                     }
                     6 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_V)
                         )
+                        Calculate.getMeasureData().shapeType = "V Type"
                     }
                     7 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_I)
                         )
+                        Calculate.getMeasureData().shapeType = "I Type"
                     }
                 }
             }

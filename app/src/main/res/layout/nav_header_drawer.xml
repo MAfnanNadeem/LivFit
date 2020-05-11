@@ -35,4 +35,14 @@
         tools:text="sumeet.kumar@mibo.life"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/drawer_user_trainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/independent_professional"
+        android:textColor="@color/button_color_app"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
 </LinearLayout>

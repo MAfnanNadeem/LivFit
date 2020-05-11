@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/login_container_transparent"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="@dimen/grid_3x">
@@ -13,12 +12,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/otp_verification"
-        android:textColor="@color/white"
+        android:textColor="@color/textColorApp"
         android:textSize="@dimen/text_size_medium" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:layout_marginTop="@dimen/grid_4x"
         android:src="@drawable/ic_register_otp" />
 
@@ -27,19 +26,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
         android:text="@string/enter_your_mobile_number"
-        android:textColor="@color/white"
+        android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_medium" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/otp_hint"
-        android:textColor="@color/white"
+        android:textColor="@color/textColor2"
         android:textSize="@dimen/text_size_small" />
 
     <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ccp_otp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
         android:padding="8dp"
@@ -54,6 +53,7 @@
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_number"
         style="@style/login_edittext"
+        android:layout_width="wrap_content"
         android:hint="@string/phone_number_hint" />
 
 
@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/login_button_green"
+        android:background="@drawable/login_button_primary"
         android:ems="13"
         android:text="@string/send_otp"
         android:textColor="@color/white" />

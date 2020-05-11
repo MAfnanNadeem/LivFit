@@ -52,6 +52,7 @@
     <string name="stop_session">Stop Session?</string>
     <string name="stop_session_message">Are you sure to want stop current session?</string>
     <string name="stop_session_message_rxl">Are you sure to want stop current session?</string>
+    <string name="share_text">Hey! Download MI.BO. LIVFIT a virtual wellbeing assistant from Google Play Store \n http://play.google.com/store/apps/details?id=</string>
     <string name="dialog_continue">Continue</string>
     <string name="stop_anyway">Stop Anyway</string>
     <string name="stop">Stop</string>
@@ -70,7 +71,7 @@
     <string name="cycle">Round</string>
     <string name="players">Players</string>
     <string name="three_pods_required">Please connect at least 3 Reaction Lights</string>
-    <string name="forgot_pwd">Forgot Password? </string>
+    <string name="forgot_pwd"><u>Forgot Password?</u></string>
     <string name="click_here"> <u>Click Here</u> </string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="numbers_only">0123456789</string>
@@ -111,9 +112,14 @@
     <!-- Page Titles -->
     <string name="booster_page_title">Myo Boost</string>
     <string name="add_product">Add Product</string>
+    <string name="rxl">RXL</string>
     <string name="programs">Programs</string>
     <string name="calories_title">Calories</string>
     <string name="schedule_title">Schedule Session</string>
+    <string name="schedule">Schedule</string>
+    <string name="measurement">Measurement</string>
+    <string name="myobooster_6ch">6CH Booster</string>
+    <string name="myobooster_10ch">10CH Booster</string>
     <string name="calendar_title">Calendar</string>
     <string name="scan_product_title">Scan the Product</string>
     <string name="heart_rate">Heart Rate</string>
@@ -240,6 +246,8 @@
     <string name="what_is_goal">What is Goal ?</string>
     <string name="what_is_physical">Select Your Physical Activity</string>
     <string name="meter_square">m²</string>
+    <string name="kg_unit">Kg</string>
+    <string name="bmp_unit">BPM</string>
     <string name="feet_square">ft²</string>
     <string name="ffmi_unit">kg/m²</string>
     <string name="summary_format">"<b>%.2f</b> <small>%s</small>"</string>
@@ -306,5 +314,38 @@
     <string name="scan_with_camera">Scan with Camera</string>
     <string name="purchase">Purchase</string>
     <string name="heart_beats_per_minute">HEART BEATS PER MINUTE</string>
+    <string name="share_with_friends">Share with friends</string>
+    <string name="good_to_see_you">It\'s good to see you again</string>
+    <string name="login">LOGIN</string>
+    <string name="sign_in">Sign  In</string>
+    <string name="create_new_account">Create  New  Account</string>
+
+    <!--  SOCIAL  -->
+    <string name="facebook_app_id">281412099702866</string>
+    <string name="fb_login_protocol_scheme">fb281412099702866</string>
+    <string name="google_app_id_key">ABC</string>
+    <string name="twitter_app_id">ABC</string>
+    <string name="twitter_app_secret">ABC</string>
+    <string name="instagram_app_id">ABC</string>
+    <string name="facebook_logout_error">Facebook logout failed</string>
+    <string name="facebook_request_cancel">Facebook request cancel</string>
+    <string name="facebook_login_error">Facebook login failed</string>
+    <string name="context_error">mContext should be an instanceof Activity.</string>
+    <string name="google_login_success">Google account login successfully</string>
+    <string name="google_logout_success">Google account logout successfully</string>
+    <string name="general_error">Something went wrong</string>
+    <string name="auth_error">Authentication Error</string>
+    <string name="linkedin_request_cancel">LinkedIn request cancel</string>
+    <string name="create_your_profile">CREATE YOUR PROFILE</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="verify">VERIFY</string>
+    <string name="upload">Upload</string>
+    <!-- SOCIAL END -->
+    <string name="communicate">Communicate</string>
+    <string name="independent_professional">Independent Professional</string>
+    <string name="remember_password">Remember Password?</string>
+    <string name="remember">Remember</string>
+    <string name="not_now">Not Now</string>
+
 
 </resources>

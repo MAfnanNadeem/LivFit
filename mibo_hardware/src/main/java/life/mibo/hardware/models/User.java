@@ -566,14 +566,20 @@ public class User implements Serializable, BaseModel{
         this.mainLevel = mainLevel;
     }
 
-    public void incrementMainLevelUser() {
-        if (getMainLevel() < 100)
-            setMainLevel(getMainLevel() + 1);
+    public boolean incrementMainLevelUser() {
+        if (mainLevel < 100) {
+            setMainLevel(mainLevel + 1);
+            return true;
+        }
+        return false;
     }
 
-    public void decrementMainLevelUser() {
-        if (getMainLevel() > 0)
-            setMainLevel(getMainLevel() - 1);
+    public boolean decrementMainLevelUser() {
+        if (mainLevel > 0) {
+            setMainLevel(mainLevel - 1);
+            return true;
+        }
+        return false;
     }
 
     public int getMainLevelUserPlusOne() {

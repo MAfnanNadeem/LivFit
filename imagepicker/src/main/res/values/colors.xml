@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Created by Sumeet Kumar on 4/11/20 11:59 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/11/20 11:59 AM
+  ~  Mibo Hexa - Mibo Hexa
+  -->
+
+<resources>
+    <color name="colorPrimary">#09B189</color>
+    <color name="colorPrimaryDark">#09B189</color>
+    <color name="colorAccent">#03DAC5</color>
+</resources>

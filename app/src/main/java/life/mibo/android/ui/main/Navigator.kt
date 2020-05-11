@@ -26,7 +26,10 @@ interface Navigator {
         const val SELECT_MUSCLES = 119;
         const val SELECT_SUITS= 120;
         const val BODY_MEASURE= 121;
+        const val BODY_MEASURE_SUMMARY = 122;
         const val POST = 201;
+        const val LOGOUT = 202;
+        const val PIC_UPLOADED = 203;
         const val DRAWER_LOCK = 301;
         const val DRAWER_UNLOCK = 302;
 

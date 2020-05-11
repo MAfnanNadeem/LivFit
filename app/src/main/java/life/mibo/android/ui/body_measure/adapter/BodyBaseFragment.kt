@@ -11,7 +11,17 @@ import life.mibo.android.ui.body_measure.MeasurementFragment
 
 open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
 
+    override fun onStart() {
+        log("onStart")
+        super.onStart()
+    }
+
+    override fun onStop() {
+        log("onStop")
+        super.onStop()
+    }
     override fun onResume() {
+        log("onResume")
         super.onResume()
         if (isVisible)
             resumed()

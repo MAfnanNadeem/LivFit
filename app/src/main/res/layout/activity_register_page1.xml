@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:background="@drawable/login_container_transparent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="@dimen/grid_3x">
+    android:orientation="vertical">
 
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/bg_shape_curve_purple"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/create_your_profile"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CREATE YOUR PROFILE"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_medium" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatEditText
+
+        <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_first_name"
         style="@style/login_edittext"
         android:imeOptions="actionNext"
@@ -105,6 +118,7 @@
             android:ems="11"
             app:ccp_clickable="true"
             app:ccp_defaultCode="971"
+            app:ccp_textColor="@color/textColor"
             app:ccp_dialogTextColor="@color/white"
             app:ccp_hideNameCode="true"
             app:ccp_showFullName="false" />
@@ -129,17 +143,17 @@
         android:layout_height="wrap_content"
         android:buttonTint="@color/colorPrimary"
         android:text="@string/accept_terms_of_agreement"
-        android:textColor="@color/white" />
+        android:textColor="@color/textColor2" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/login_button_green"
+        android:background="@drawable/login_button_primary"
         android:ems="13"
         android:text="@string/register"
         android:textColor="@color/white" />
 
-
+    </LinearLayout>
 </LinearLayout>

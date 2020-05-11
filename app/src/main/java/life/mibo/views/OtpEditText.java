@@ -207,7 +207,10 @@ public class OtpEditText extends AppCompatEditText implements TextWatcher {
 
         int startX = getPaddingLeft();
         int bottom = getHeight() - getPaddingBottom();
+        float height = getHeight();
         int top = getPaddingTop();
+        if(height == 0)
+            height = mLineSpacing;
 
         //Text Width
         Editable text = getText();
@@ -228,7 +231,7 @@ public class OtpEditText extends AppCompatEditText implements TextWatcher {
                     break;
                 case ROUNDED_BOX:
                     try {
-                        canvas.drawRoundRect(startX, top, startX + mCharSize, bottom, 8, 8, paint);
+                       // canvas.drawRoundRect(startX, top, startX + mCharSize, bottom, 8, 8, paint);
                         canvas.drawRoundRect(startX, top, startX + mCharSize, bottom, 8, 8, strokePaint);
                     } catch (NoSuchMethodError err) {
                         canvas.drawRect(startX, top, startX + mCharSize, bottom, paint);

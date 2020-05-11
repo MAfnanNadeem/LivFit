@@ -5,6 +5,8 @@ import life.mibo.android.core.gson.GsonConverterFactory
 import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.biometric.Biometric
+import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.circuits.CircuitResponse
 import life.mibo.android.models.circuits.SearchCircuit
@@ -13,10 +15,8 @@ import life.mibo.android.models.create_session.BookSessionPost
 import life.mibo.android.models.create_session.SaveSessionPost
 import life.mibo.android.models.login.LoginResponse
 import life.mibo.android.models.login.LoginUser
-import life.mibo.android.models.member.Avatar
-import life.mibo.android.models.member.ChangePassword
-import life.mibo.android.models.member.ChangePasswordResponse
-import life.mibo.android.models.member.MemberAvatar
+import life.mibo.android.models.login.SocialLoginUser
+import life.mibo.android.models.member.*
 import life.mibo.android.models.muscle.GetSuitPost
 import life.mibo.android.models.muscle.GetSuits
 import life.mibo.android.models.muscle.MuscleCollection
@@ -43,9 +43,8 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.http.Body
+import retrofit2.http.*
 import retrofit2.http.Headers
-import retrofit2.http.POST
 
 
 class API {
@@ -108,7 +107,8 @@ class API {
 
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
-        const val baseUrl = "http://test.mibo.world/api/consumer/"
+        //const val baseUrl = "http://test.mibo.world/api/consumer/"
+        const val baseUrl = "https://test.mibolivfit.club/api/consumer/"
     }
 
     fun getApi(): ApiService {
@@ -135,6 +135,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("loginUser")
         fun login(@Body login: LoginUser): Call<LoginResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("socialLoginUser")
+        fun socialLoginUser(@Body login: SocialLoginUser): Call<LoginResponse>
 
 //        @Headers("Accept: application/json", "Content-Type: application/json")
 //        @POST("loginMember")
@@ -218,8 +222,22 @@ class API {
         fun deleteRXLProgram(@Body data: DeleteRXLProgram): Call<ResponseData>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
-        @POST("memberAvatar")
+        @POST("saveMemberAvatar")
         fun uploadAvatar(@Body data: MemberAvatar): Call<ResponseData>
+
+        @Multipart
+        @Headers("Accept: application/json", "Content-Type: multipart/form-data")
+        @POST("saveMemberAvatar")
+        fun uploadAvatar(
+            @Part file: MultipartBody.Part,
+            @Part("token") token: RequestBody?,
+            @Part("RequestType") request: RequestBody,
+            @Part("MemberID") memberId: RequestBody?
+        ): Call<ResponseData>
+
+        @Multipart
+        @POST("saveMemberAvatar")
+        fun uploadAvatar(@PartMap params: HashMap<String, RequestBody?>): Call<SaveMemberAvatar>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getRXLExerciseProgram")
@@ -252,5 +270,13 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("changePassword")
         fun changePassword(@Body data: ChangePassword): Call<ChangePasswordResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveMemberBiometrics")
+        fun saveMemberBiometrics(@Body data: PostBiometric): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberBiometrics")
+        fun getMemberBiometrics(@Body data: MemberPost): Call<Biometric>
     }
 }

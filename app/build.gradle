@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 3
-        versionName "0.1.01"
+        versionCode 5
+        versionName "0.1.02"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -118,9 +118,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
     //Google Firebase
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta04'
-    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0'
+    implementation 'com.google.firebase:firebase-analytics:17.4.0'
     implementation "androidx.security:security-crypto:1.0.0-rc01"
+
+    implementation 'com.twitter.sdk.android:twitter-core:3.1.1'
+    implementation 'com.facebook.android:facebook-login:5.0.0'
+    //implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
+    //implementation 'com.facebook.android:facebook-login:[5,6)'
 
     //implementation 'com.google.firebase:firebase-analytics:17.2.2'
     //implementation 'com.google.firebase:firebase-core:17.2.2'

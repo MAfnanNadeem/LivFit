@@ -1,0 +1,20 @@
+<!--
+  ~  Created by Sumeet Kumar on 4/11/20 11:59 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/11/20 11:59 AM
+  ~  Mibo Hexa - Mibo Hexa
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="life.mibo.imagepicker">
+
+<!--    <application-->
+<!--        android:allowBackup="true"-->
+<!--        android:icon="@mipmap/ic_launcher"-->
+<!--        android:label="@string/app_name"-->
+<!--        android:roundIcon="@mipmap/ic_launcher_round"-->
+<!--        android:supportsRtl="true"-->
+<!--        android:theme="@style/AppTheme" >-->
+<!--        <activity android:name=".ui.activity.BaseActivity" />-->
+<!--    </application>-->
+</manifest>

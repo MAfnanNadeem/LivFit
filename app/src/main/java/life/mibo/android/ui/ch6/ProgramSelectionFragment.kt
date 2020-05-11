@@ -122,7 +122,7 @@ class ProgramSelectionFragment : BaseFragment() {
                 override fun onNext(t: Program) {
                     log("Observable onNext $t")
                     SessionManager.getInstance().userSession.program = t.create()
-                    Prefs.get(context).settJson("user_program", t)
+                    Prefs.get(context).setJson("user_program", t)
                 }
 
                 override fun onError(e: Throwable) {

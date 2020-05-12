@@ -7,4 +7,5 @@ package life.mibo.android.ui.home
 interface HomeObserver {
     fun onDataReceived(list: ArrayList<HomeItem>)
     fun onItemClicked(item: HomeItem?)
+    fun onNotify(type: Int, data: Any?)
 }

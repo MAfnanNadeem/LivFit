@@ -62,6 +62,21 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
         list.addAll(newList)
     }
 
+    fun updateWeight(weight: String) {
+        var notify = false
+        for (l in list) {
+            for (i in l) {
+                if (i.title.contains("Weight")) {
+                    i.headerText = weight
+                    notify = true
+                    break
+                }
+            }
+        }
+        if (notify)
+            notifyDataSetChanged()
+    }
+
     class HomeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var item1: DashboardItem? = itemView.findViewById(R.id.item1)
         var item2: DashboardItem? = itemView.findViewById(R.id.item2)

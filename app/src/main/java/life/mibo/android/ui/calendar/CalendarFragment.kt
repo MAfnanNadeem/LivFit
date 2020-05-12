@@ -51,11 +51,11 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         recyclerView = view.findViewById(R.id.recyclerView)
         //controller.setRecycler(recyclerView!!)
         val weeks = controller.daysOfWeek()
-        weeksLayout.children.forEachIndexed { index, view ->
+        weeksLayout2.children.forEachIndexed { index, view ->
             (view as TextView).apply {
                 text = weeks[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                     .toUpperCase(Locale.ENGLISH)
-                setTextColor(Color.WHITE)
+                //setTextColor(Color.WHITE)
             }
         }
         controller.setUpCalendar(calendarView, weeks)

@@ -185,12 +185,17 @@
     <fragment
         android:id="@+id/navigation_profile_upload"
         android:name="life.mibo.android.ui.body_measure.ProfilePicFragment"
-        android:label="Basic Info"
+        android:label="@string/title_profile_page"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
         android:id="@+id/navigation_bio_summary"
         android:name="life.mibo.android.ui.body_measure.SummaryFragment"
         android:label="Biometric Summary"
+        tools:layout="@layout/fragment_body_profile" />
+    <fragment
+        android:id="@+id/navigation_search_trainer"
+        android:name="life.mibo.android.ui.trainer.SearchTrainerFragment"
+        android:label="Search I.P"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
         android:id="@+id/navigation_webview"

@@ -1,0 +1,10 @@
+<!--
+  ~  Created by Sumeet Kumar on 4/11/20 11:37 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/11/20 11:37 AM
+  ~  Mibo Hexa - app
+  -->
+
+<resources>
+    <string name="app_name">ImagePicker</string>
+</resources>

@@ -160,6 +160,19 @@
         <!--            app:layout_constraintTop_toTopOf="@id/tv_forget" />-->
 
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_login_with"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/log_in_with"
+            android:textColor="@color/textColor2"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_forget" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btn_facebook"
             android:layout_width="wrap_content"
@@ -170,7 +183,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btn_google"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_forget" />
+            app:layout_constraintTop_toBottomOf="@id/tv_login_with" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_google"
@@ -182,7 +195,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btn_twitter"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btn_facebook"
-            app:layout_constraintTop_toBottomOf="@id/tv_forget" />
+            app:layout_constraintTop_toBottomOf="@id/tv_login_with" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_twitter"
@@ -195,7 +208,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btn_google"
-            app:layout_constraintTop_toBottomOf="@id/tv_forget" />
+            app:layout_constraintTop_toBottomOf="@id/tv_login_with" />
 
 
         <androidx.appcompat.widget.AppCompatButton
@@ -212,15 +225,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_facebook" />
 
-<!--        <com.facebook.login.widget.LoginButton-->
-<!--            android:id="@+id/login_button"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center_horizontal"-->
-<!--            android:layout_marginTop="@dimen/grid_1x"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/btn_register" />-->
+        <!--        <com.facebook.login.widget.LoginButton-->
+        <!--            android:id="@+id/login_button"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="center_horizontal"-->
+        <!--            android:layout_marginTop="@dimen/grid_1x"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/btn_register" />-->
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_forget2"

@@ -3,6 +3,8 @@ package life.mibo.android.ui.home
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +15,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.gms.location.LocationServices
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +24,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
+import life.mibo.android.core.YahooWeather
 import life.mibo.android.events.NotifyEvent
 import life.mibo.android.models.login.Member
 import life.mibo.android.ui.base.BaseFragment
@@ -28,6 +33,7 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
+import life.mibo.android.ui.main.RememberMeDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.SessionManager
@@ -80,7 +86,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //                R.drawable.ic_person_black_24dp
 //            )
 //        )
-        controller.getDashboard()
+        controller.getDashboard(!member!!.isMember())
         navigate(HOME_VIEW, true)
         val format = SimpleDateFormat("EEE, dd MMM, yyyy")
         //controller.setRecycler(recyclerView!!)
@@ -89,11 +95,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         iv_user_pic?.setOnClickListener {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
         }
-        loadImage(iv_user_pic, R.drawable.ic_user_test)
+        loadImage(iv_user_pic, R.drawable.ic_user_test, member?.profileImg)
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
         checkIntro()
+        weather()
     }
 
     fun checkBody() {
@@ -101,17 +108,45 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     private fun checkIntro() {
-        val done = Prefs.getTemp(context).get("body_measure")?.toLowerCase()
-        if (done == "done" || done == "skip") {
+
+        try {
+            val pwd = Prefs.get(context).get("skip_pwd_")
+            val prefs = Prefs.getEncrypted(context)
+            val isLogin = prefs.get("login_enable", "false", true)
+            if (!java.lang.Boolean.parseBoolean(isLogin) && !java.lang.Boolean.parseBoolean(pwd)) {
+                RememberMeDialog().show(childFragmentManager, "RememberMeDialog")
+                return
+            }
+        } catch (e: java.lang.Exception) {
+
+        }
+
+        val skip = Prefs.get(context).get("profile_skipped", false)
+        if (skip)
+            return
+        val url = Prefs.get(this.context).member?.profileImg
+        if (url.isNullOrEmpty() || !url.startsWith("http")) {
+            Single.just("test").delay(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                .doOnError {
+
+                }.doOnSuccess {
+                    //navigate(Navigator.BODY_MEASURE, null)
+                    onItemClicked(HomeItem(HomeItem.Type.PROFILE_UPLOAD))
+                }.subscribe()
             return
         }
-        Single.just("test").delay(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
-            .doOnError {
 
-            }.doOnSuccess {
-                //navigate(Navigator.BODY_MEASURE, null)
-                onItemClicked(HomeItem(HomeItem.Type.PROGRAMS))
-            }.subscribe()
+//        val done = Prefs.getTemp(context).get("body_measure")?.toLowerCase()
+//        if (done == "done" || done == "skip") {
+//            return
+//        }
+//        Single.just("test").delay(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+//            .doOnError {
+//
+//            }.doOnSuccess {
+//                //navigate(Navigator.BODY_MEASURE, null)
+//                onItemClicked(HomeItem(HomeItem.Type.PROGRAMS))
+//            }.subscribe()
     }
 
     private fun videoBg() {
@@ -129,6 +164,29 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
 
+    fun weather(){
+        log("weather fusedLocationClient--------------")
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                log("weather fusedLocationClient: $location")
+               // YahooWeather.load(location?.latitude, location?.longitude)
+
+            }
+    }
+
+    private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
+        if (url == null) {
+            if (iv != null)
+                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+                    .into(iv)
+            return
+        }
+        url?.let {
+            if (iv != null)
+                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+        }
+    }
     private fun loadImage(iv: ImageView, defaultImage: Int) {
         Maybe.fromCallable {
             log("loadImage fromCallable")
@@ -254,6 +312,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //        }
     }
 
+    override fun onNotify(type: Int, data: Any?) {
+
+    }
+
     val data = ArrayList<Array<HomeItem>>()
     var adapter: HomeAdapter? = null
 
@@ -281,20 +343,59 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //                odd = true
 //            }
 //        }
-        if (list.size > 6) {
+
+        val size = list.size
+        if (size > 1)
             data.add(arrayOf(list[0], list[1]))
-            data.add(arrayOf(list[2], list[3], list[4]))
-            data.add(arrayOf(list[5], list[6]))
-            data.add(arrayOf(list[7], list[8]))
-            val metrics = resources.displayMetrics
-            setRecyclerView(metrics!!.widthPixels.div(3))
+        when {
+            size > 4 -> data.add(arrayOf(list[2], list[3], list[4]))
+            size > 3 -> data.add(arrayOf(list[2], list[3]))
+            size > 2 -> data.add(arrayOf(list[2]))
         }
+        when {
+            size > 6 -> data.add(arrayOf(list[5], list[6]))
+            size > 5 -> data.add(arrayOf(list[5]))
+        }
+        when {
+            size > 9 -> data.add(arrayOf(list[7], list[8], list[9]))
+            size > 8 -> data.add(arrayOf(list[7], list[8]))
+            size > 7 -> data.add(arrayOf(list[7]))
+        }
+        //data.add(arrayOf(list[5], list[6]))
+        //data.add(arrayOf(list[7], list[8]))
+        val metrics = resources.displayMetrics
+        setRecyclerView(metrics!!.widthPixels.div(3))
+//        if (size > 6) {
+//
+//        }
+//
+//        if (size > 6) {
+//            data.add(arrayOf(list[0], list[1]))
+//            data.add(arrayOf(list[2], list[3], list[4]))
+//            data.add(arrayOf(list[5], list[6]))
+//            data.add(arrayOf(list[7], list[8]))
+//            val metrics = resources.displayMetrics
+//            setRecyclerView(metrics!!.widthPixels.div(3))
+//        } else if (size > 3) {
+//            data.add(arrayOf(list[0], list[1]))
+//            if (size > 4)
+//                data.add(arrayOf(list[2], list[3], list[4]))
+//            else if (size > 3)
+//                data.add(arrayOf(list[2], list[3]))
+//            val metrics = resources.displayMetrics
+//            setRecyclerView(metrics!!.widthPixels.div(3))
+//        }
     }
 
     private fun setRecyclerView(width: Int) {
         log("setRecyclerView $width")
         if (width == 0) {
-            Toasty.info(context!!, "Oops device width is zero (0)", Toasty.LENGTH_SHORT, false)
+            Toasty.info(
+                requireContext(),
+                "Oops device width is zero (0)",
+                Toasty.LENGTH_SHORT,
+                false
+            )
                 .show()
         }
         adapter = HomeAdapter(data, width)
@@ -367,8 +468,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onPostEvent(event: NotifyEvent) {
         if (event.id == Navigator.HOME) {
-            view!!.forceLayout()
-            view!!.requestLayout()
+            requireView().forceLayout()
+            requireView().requestLayout()
             parent_constraint.invalidate()
             log("onPostEvent $event")
             EventBus.getDefault().removeStickyEvent(event)

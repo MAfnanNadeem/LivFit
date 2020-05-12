@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_gradient">
+    android:background="@color/background_color_app">
 
     <life.mibo.views.hexa.HexagonMaskView
         android:id="@+id/iv_user_pic"
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
-            android:textColor="@color/white"
+            android:textColor="@color/textColorApp"
             android:textSize="24sp"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -50,88 +50,99 @@
             tools:text="Jan" />
 
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:id="@+id/weeksLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
+            android:padding="@dimen/grid_1x"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_month"
-            tools:ignore="HardcodedText">
+            app:layout_constraintTop_toBottomOf="@+id/tv_month">
 
-            <TextView
-                android:id="@+id/legendText1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/weeksLayout2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center"
-                android:text="S"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_month"
+                tools:ignore="HardcodedText">
 
-            <TextView
-                android:id="@+id/legendText2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="M"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="S"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/legendText3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="T"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="M"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/legendText4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="W"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="T"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/legendText5"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="T"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="W"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/legendText6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="F"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="T"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/legendText7"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="S"
-                android:textColor="@color/light_gray"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/legendText6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="F"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/legendText7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="S"
+                    android:textColor="@color/textColor2"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
 
         <com.kizitonwose.calendarview.CalendarView

@@ -9,14 +9,22 @@ package life.mibo.android.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.media.RingtoneManager
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -29,6 +37,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.NotificationCompat
 import androidx.core.app.ShareCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -40,17 +49,23 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main_cordinator.*
 import life.mibo.android.R
+import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.database.Database
 import life.mibo.android.events.EventBusEvent
 import life.mibo.android.models.ScanComplete
+import life.mibo.android.models.base.FirebaseTokenPost
+import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.BaseFragment
@@ -88,6 +103,7 @@ import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.constants.Config.*
 import life.mibo.hardware.core.DataParser
+import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
@@ -95,6 +111,9 @@ import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
 import life.mibo.views.CircleImageView
 import org.greenrobot.eventbus.EventBus
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.net.InetAddress
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -116,10 +135,11 @@ class MainActivity : BaseActivity(), Navigator {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_cordinator)
 
         if (savedInstanceState == null) {
             val toolbar: Toolbar? = findViewById(R.id.toolbar)
+            toolbar?.navigationIcon?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.MULTIPLY);
             setSupportActionBar(toolbar)
             drawerLayout = findViewById(R.id.drawer_layout)
             navigation = findViewById(R.id.nav_view)
@@ -138,7 +158,7 @@ class MainActivity : BaseActivity(), Navigator {
             setDrawerIcon(drawerLayout)
 
             setNavigationView()
-
+            setBottomView()
 //        drawer.setupWithNavController(navController)
 
             //getScanned()
@@ -146,6 +166,7 @@ class MainActivity : BaseActivity(), Navigator {
             checkPermissions()
             //startManager()
             commHandler.register()
+
 
             //setBottomBar()
 
@@ -188,6 +209,7 @@ class MainActivity : BaseActivity(), Navigator {
         }
 
         val member = Prefs.get(this).member ?: return
+        member_ = member
         //drawer_user_email?.text = member.imageThumbnail
         navigation!!.getHeaderView(0).findViewById<TextView?>(R.id.drawer_user_name)?.text =
             "${member.firstName} ${member.lastName}"
@@ -213,6 +235,36 @@ class MainActivity : BaseActivity(), Navigator {
 //            navigation.menu.clear()
 //            navigation.inflateMenu(R.menu.activity_drawer_drawer_release)
 //        }
+    }
+
+    private var member_: Member? = null
+    private fun getMember(): Member? {
+        if (member_ == null)
+            member_ = Prefs.get(this).member
+        return member_
+    }
+
+    fun setBottomView() {
+        ib_item_1?.setOnClickListener {
+
+        }
+        ib_item_2?.setOnClickListener {
+
+        }
+        ib_item_3?.setOnClickListener {
+
+        }
+        ib_item_4?.setOnClickListener {
+            //navigate(navigation_search_trainer)
+            navigate(
+                0, R.id.navigation_search_trainer
+            )
+        }
+        tv_item_fab?.setOnClickListener {
+            if (childPlusClicked()) {
+
+            }
+        }
     }
 
     private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
@@ -328,6 +380,7 @@ class MainActivity : BaseActivity(), Navigator {
         if (::drawerToggle.isInitialized)
             drawerToggle.syncState()
         log("PostCreate")
+        saveFirebaseToken(Prefs.get(this).member)
         // Single.timer(1, TimeUnit.SECONDS)
 //        Single.just(R.id.nav_home).delay(1, TimeUnit.SECONDS)
 //            .observeOn(AndroidSchedulers.mainThread()).subscribe { a ->
@@ -1026,8 +1079,7 @@ class MainActivity : BaseActivity(), Navigator {
                 //updateBar(true)
             }
             LOGOUT -> {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
+                logout()
                 return
             }
             Navigator.BODY_MEASURE -> {
@@ -1169,6 +1221,24 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_bio_summary)
 
             }
+            R.id.nav_messages -> {
+                comingSoon()
+                return
+            }
+            R.id.nav_groups -> {
+                comingSoon()
+                return
+            }
+            R.id.nav_notifications -> {
+                comingSoon()
+                return
+            }
+
+            R.id.nav_settings -> {
+                comingSoon()
+                return
+            }
+
             R.id.nav_share -> {
                 lastId = -1
                 try {
@@ -1217,14 +1287,25 @@ class MainActivity : BaseActivity(), Navigator {
                         R.string.logout
                     ) { dialog, which ->
                         dialog.dismiss()
-                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                        finish()
+                        logout()
                     }.show()
             }
             else -> {
                 //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
             }
         }
+    }
+
+    fun logout() {
+        val prefs = Prefs.getEncrypted(this)
+        prefs.set("login_enable", "false", true)
+        Prefs.get(this).set("skip_pwd_", "false")
+        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+        finish()
+    }
+
+    fun comingSoon() {
+        RememberMeDialog(200).show(supportFragmentManager, "RememberMeDialog")
     }
 
     private fun bottomBarClicked(position: Int) {
@@ -1250,14 +1331,18 @@ class MainActivity : BaseActivity(), Navigator {
         lastId = -1
         when (type) {
             HomeItem.Type.HEART -> {
-                navigate(
-                    R.id.action_navigation_home_to_navigation_heart_rate,
-                    R.id.navigation_heart_rate, bundle
-                )
+//                navigate(
+//                    R.id.action_navigation_home_to_navigation_heart_rate,
+//                    R.id.navigation_heart_rate, bundle
+//                )
+                comingSoon()
+                return
                 //navigateFragment(R.id.navigation_heart_rate)
             }
             HomeItem.Type.WEIGHT -> {
-                navigate(R.id.action_navigation_home_to_navigation_weight, 0)
+                comingSoon()
+                return
+               // navigate(R.id.action_navigation_home_to_navigation_weight, 0)
                 // navigateFragment(R.id.navigation_weight)
             }
             HomeItem.Type.ADD -> {
@@ -1275,8 +1360,10 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_calendar)
             }
             HomeItem.Type.CALORIES -> {
-                navigate(R.id.action_navigation_home_to_navigation_calories, 0)
+                //navigate(R.id.action_navigation_home_to_navigation_calories, 0)
                 //navigateFragment(R.id.navigation_calories)
+                comingSoon()
+                return
             }
 
             HomeItem.Type.BOOSTER_SCAN -> {
@@ -1331,12 +1418,20 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_profile)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
+
             HomeItem.Type.PROFILE_UPLOAD -> {
                 //  if (DEBUG)
                 navigate(0, R.id.navigation_profile_upload)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
-
+            HomeItem.Type.STEPS -> {
+                comingSoon()
+                return
+            }
+            HomeItem.Type.WEATHER -> {
+                //comingSoon()
+                return
+            }
             else -> {
                 Toasty.warning(this, "ItemClicked - $type").show()
             }
@@ -1383,6 +1478,51 @@ class MainActivity : BaseActivity(), Navigator {
         } catch (e: java.lang.Exception) {
             navigate(0, fragmentId)
         }
+    }
+
+    fun saveFirebaseToken(member: Member?) {
+        if (member == null)
+            return
+
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                Logger.e("$task")
+                if (!task.isSuccessful) {
+                    Logger.e("saveFirebaseToken failed")
+                    return@OnCompleteListener
+                }
+
+                // Get new Instance ID token
+                val token = task.result?.token
+                Logger.e("saveFirebaseToken token $token")
+                if (token != null)
+                    API.request.getApi().saveFirebaseToken(
+                        FirebaseTokenPost(
+                            member.id(),
+                            member.accessToken ?: "",
+                            token
+                        )
+                    ).enqueue(object : Callback<ResponseData> {
+                        override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                            Logger.e("$t")
+                        }
+
+                        override fun onResponse(
+                            call: Call<ResponseData>,
+                            response: Response<ResponseData>
+                        ) {
+                            Logger.e("${response.body()}")
+                            try {
+                                testMessage("Welcome Back "+getMember()?.firstName)
+                            } catch (e: Exception) {
+
+                            }
+                        }
+
+                    })
+            })
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -1444,6 +1584,18 @@ class MainActivity : BaseActivity(), Navigator {
             )
         if (base is BaseFragment) {
             return base.onBackPressed()
+        }
+
+        return true
+    }
+
+    private fun childPlusClicked(): Boolean {
+        val base =
+            supportFragmentManager?.primaryNavigationFragment?.childFragmentManager?.fragments?.get(
+                0
+            )
+        if (base is BaseFragment) {
+            return base.onPlusClicked()
         }
 
         return true
@@ -1544,5 +1696,36 @@ class MainActivity : BaseActivity(), Navigator {
         } catch (e: java.lang.Exception) {
 
         }
+    }
+
+
+    fun testMessage(message: String?) {
+        val intent: Intent? = Intent(this, MainActivity::class.java)
+        val pendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val channelId: String = "test_channel"
+        val defaultSoundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setContentIntent(pendingIntent)
+        val notificationManager: NotificationManager? =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel: NotificationChannel = NotificationChannel(
+                channelId,
+                "Testing Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager?.createNotificationChannel(channel)
+        }
+        notificationManager?.notify(101, notificationBuilder.build())
     }
 }

@@ -38,10 +38,18 @@ data class Member(
     @SerializedName("province")
     var province: Any?,
     @SerializedName("token_type")
-    var tokenType: String?
+    var tokenType: String?,
+    @SerializedName("profileImg")
+    var profileImg: String?,
+    @SerializedName("type")
+    var type: String?
 ): BaseModel
 {
     fun id() : String{
         return ""+id
+    }
+
+    fun isMember(): Boolean {
+        return "$type".equals("member", false)
     }
 }

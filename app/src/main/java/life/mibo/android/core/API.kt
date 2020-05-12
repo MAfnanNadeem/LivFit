@@ -2,6 +2,7 @@ package life.mibo.android.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import life.mibo.android.core.gson.GsonConverterFactory
+import life.mibo.android.models.base.FirebaseTokenPost
 import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.base.ResponseData
@@ -278,5 +279,9 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getMemberBiometrics")
         fun getMemberBiometrics(@Body data: MemberPost): Call<Biometric>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveFirebaseToken")
+        fun saveFirebaseToken(@Body data: FirebaseTokenPost): Call<ResponseData>
     }
 }

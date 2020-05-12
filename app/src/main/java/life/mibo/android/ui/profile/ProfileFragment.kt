@@ -36,8 +36,7 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
-import life.mibo.android.models.base.ResponseData
-import life.mibo.android.models.member.Avatar
+import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.utils.Toasty
@@ -49,6 +48,10 @@ import life.mibo.imagepicker.imageloader.ImageLoaderType
 import life.mibo.imagepicker.rxbus.RxBusResultDisposable
 import life.mibo.imagepicker.rxbus.event.ImageRadioResultEvent
 import life.mibo.imagepicker.ui.base.IRadioImageCheckedListener
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -106,17 +109,23 @@ class ProfileFragment : BaseFragment() {
         tv_city?.text = member.city
         tv_number?.text = member.contact
         tv_country?.text = member.country
-        setUserImage()
+        setUserImage(member?.profileImg)
 
         tv_change_pwd?.setOnClickListener {
+            log("ChangePassword")
             ChangePasswordDialog(requireContext()).show()
+        }
+
+        userImage?.setOnClickListener {
+            log("Profile image click")
+            openPicker()
         }
     }
 
-    private fun setUserImage() {
+    private fun setUserImage(profileImg: String?) {
 
         //userImage?.setImageResource(R.drawable.ic_user_test)
-        loadImage(userImage, R.drawable.ic_user_test)
+        loadImage(userImage, R.drawable.ic_user_test, profileImg)
         constraintLayout1?.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
@@ -124,9 +133,6 @@ class ProfileFragment : BaseFragment() {
             )
         )
         //setGradient(constraintLayout1, userImage.drawable)
-        userImage?.setOnClickListener {
-            openPicker()
-        }
     }
 
     private fun openPickerOld() {
@@ -151,8 +157,10 @@ class ProfileFragment : BaseFragment() {
 
     private fun openPicker() {
         PermissionHelper.requestPermission(this@ProfileFragment, permissions) {
+            log("requestPermission")
             openPicker2()
         }
+        log("openPicker")
     }
 
     private fun openPicker2() {
@@ -172,35 +180,7 @@ class ProfileFragment : BaseFragment() {
 
                 override fun cropAfter(file: File?) {
                     Logger.e("openPicker RxGalleryFinalApi cropAfter $file")
-                    file?.let {
-                        Glide.with(this@ProfileFragment).load(it).override(300)
-                            .listener(object : RequestListener<Drawable> {
-                                override fun onLoadFailed(
-                                    e: GlideException?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    Logger.e("openPicker onLoadFailed glide ")
-                                    return true
-                                }
-
-                                override fun onResourceReady(
-                                    resource: Drawable?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    dataSource: DataSource?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    Logger.e("openPicker onResourceReady glide ")
-                                    saveAndUpload(resource)
-
-                                    return true
-                                }
-
-                            }).into(userImage)
-                        Logger.e("openPicker RxGalleryFinalApi glide loading")
-                    }
+                    uploadPicApi("", file)
                 }
             })
     }
@@ -211,7 +191,8 @@ class ProfileFragment : BaseFragment() {
                 val bmp = drawableToBitmap(it)
                 //log("Base64 " + bmp?.byteCount)
                 // log("Base64 " + Utils.bitmapToBase64(bmp))
-                uploadPicApi(Utils.bitmapToBase64(bmp))
+                //uploadPicApi(Utils.bitmapToBase64(bmp))
+                //uploadPicApi("", file)
                 activity?.runOnUiThread {
                     userImage?.setImageDrawable(it)
                 }
@@ -222,31 +203,44 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-    private fun uploadPicApi(base64: String?) {
-        if (base64 == null || base64.length < 100)
+//    private fun uploadPicApi(base64: String?) {
+//        if (base64 == null || base64.length < 100)
+//            return
+//        val member = Prefs.get(context).member ?: return
+//        API.request.getApi()
+//            .memberAvatar(Avatar(Avatar.Data(base64, member.id()), member.accessToken))
+//            .enqueue(object : Callback<ResponseData> {
+//                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+//                    Toasty.error(requireContext(), R.string.unable_to_connect).show()
+//                }
+//
+//                override fun onResponse(
+//                    call: Call<ResponseData>,
+//                    response: Response<ResponseData>
+//                ) {
+//                    val data = response?.body()?.data
+//                    log("onResponse data $data")
+//                    data?.message?.let {
+//                        log("onResponse message $it")
+//                        Toasty.snackbar(view, it).show()
+//                    }
+//                    log("onResponse end....")
+//                }
+//
+//            })
+//    }
+
+    private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
+        if (url == null) {
+            if (iv != null)
+                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+                    .into(iv)
             return
-        val member = Prefs.get(context).member ?: return
-        API.request.getApi()
-            .memberAvatar(Avatar(Avatar.Data(base64, member.id()), member.accessToken))
-            .enqueue(object : Callback<ResponseData> {
-                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
-                    Toasty.error(requireContext(), R.string.unable_to_connect).show()
-                }
-
-                override fun onResponse(
-                    call: Call<ResponseData>,
-                    response: Response<ResponseData>
-                ) {
-                    val data = response?.body()?.data
-                    log("onResponse data $data")
-                    data?.message?.let {
-                        log("onResponse message $it")
-                        Toasty.snackbar(view, it).show()
-                    }
-                    log("onResponse end....")
-                }
-
-            })
+        }
+        url?.let {
+            if (iv != null)
+                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+        }
     }
 
     private fun loadImage(iv: ImageView, defaultImage: Int) {
@@ -358,5 +352,101 @@ class ProfileFragment : BaseFragment() {
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         return bitmap
+    }
+
+    private fun uploadPicApi(base64: String, file: File?) {
+        log("uploadPicApi $file")
+        log("bitmapToBase64 uploadPicApi ${base64.length} : ${base64?.length?.div(1024)}")
+        if (file == null) {
+            Toasty.snackbar(view, "Invalid image path")
+            return
+        }
+        getDialog()?.show()
+//        val filePart: MultipartBody.Part = MultipartBody.Part.createFormData(
+//            "file",
+//            file.name,
+//            RequestBody.create(MediaType.parse("image/*"), file)
+//        )
+        val member = Prefs.get(context).member ?: return
+
+        val map: HashMap<String, RequestBody?> = HashMap()
+
+        map.put("token", toRequestBody(member.accessToken))
+        map.put("RequestType", toRequestBody("SaveMemberAvatar"))
+        map.put("MemberID", toRequestBody(member.id()))
+        val fileBody: RequestBody = file.asRequestBody("image/*".toMediaType())
+        //val fileBody: RequestBody = RequestBody.create("image/png".toMediaType()), file)
+        map.put("Avatar\"; filename=\".png\"", fileBody)
+
+        //.uploadAvatar(filePart, member.accessToken, "SaveMemberAvatar", member.id())
+        API.request.getApi().uploadAvatar(map)
+            .enqueue(object : Callback<SaveMemberAvatar> {
+                override fun onFailure(call: Call<SaveMemberAvatar>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    Toasty.error(requireContext(), R.string.unable_to_connect).show()
+                }
+
+                override fun onResponse(
+                    call: Call<SaveMemberAvatar>,
+                    response: Response<SaveMemberAvatar>
+                ) {
+                    getDialog()?.dismiss()
+
+
+                    val data = response?.body()
+                    if (data != null && data?.isSuccess()) {
+                        val memberr = Prefs.get(context).member
+                        memberr?.profileImg = data?.data?.profile
+                        Prefs.get(context).member = memberr
+                        showPicture(file)
+                        navigate(
+                            life.mibo.android.ui.main.Navigator.PIC_UPLOADED,
+                            data?.data?.profile
+                        )
+                    }
+                    log("onResponse data $data")
+                    data?.data?.message?.let {
+                        log("onResponse message $it")
+                        Toasty.snackbar(view, it).show()
+                    }
+                    log("onResponse end....")
+                }
+
+            })
+    }
+
+    fun toRequestBody(value: String?): RequestBody? {
+        return value?.toRequestBody("text/plain".toMediaType())
+    }
+
+    fun showPicture(file: File?) {
+        file?.let {
+            Glide.with(this@ProfileFragment).load(it).override(300)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Logger.e("openPicker onLoadFailed glide ")
+                        return true
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Logger.e("openPicker onResourceReady glide ")
+                        userImage?.setImageDrawable(resource)
+                        return true
+                    }
+
+                }).into(userImage)
+            Logger.e("openPicker RxGalleryFinalApi glide loading")
+        }
     }
 }

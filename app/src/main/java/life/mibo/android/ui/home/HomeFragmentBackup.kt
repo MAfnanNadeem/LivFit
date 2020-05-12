@@ -145,6 +145,10 @@ class HomeFragmentBackup : BaseFragment(), HomeObserver {
 //        }
     }
 
+    override fun onNotify(type: Int, data: Any?) {
+
+    }
+
 
     override fun onStop() {
         super.onStop()

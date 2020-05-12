@@ -116,14 +116,17 @@
     <string name="programs">Programs</string>
     <string name="calories_title">Calories</string>
     <string name="schedule_title">Schedule Session</string>
+    <string name="steps">Steps</string>
     <string name="schedule">Schedule</string>
     <string name="measurement">Measurement</string>
+    <string name="my_body">My Body</string>
     <string name="myobooster_6ch">6CH Booster</string>
     <string name="myobooster_10ch">10CH Booster</string>
     <string name="calendar_title">Calendar</string>
     <string name="scan_product_title">Scan the Product</string>
     <string name="heart_rate">Heart Rate</string>
     <string name="weight">Weight</string>
+    <string name="weather">Weather</string>
     <string name="select_channels">Select Channels</string>
     <string name="select_suit">Select Suit</string>
     <string name="select_program">Select Program</string>
@@ -346,6 +349,17 @@
     <string name="remember_password">Remember Password?</string>
     <string name="remember">Remember</string>
     <string name="not_now">Not Now</string>
+    <string name="rem_pwd_hint">Don\'t worry! we will save your password in secure settings \n Next time you don\'t need to enter the password</string>
+    <string name="title_profile_page">Upload Profile Photo</string>
+    <string name="log_in_with">Log In with</string>
+    <string name="search">Search</string>
+    <string name="messages">Messages</string>
+    <string name="groups">Groups</string>
+    <string name="notifications">Notifications</string>
+    <string name="my_account">My Account</string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="professional_name">Professional Name</string>
+    <string name="name_profession"><small> Name/Profession</small> </string>
 
 
 </resources>

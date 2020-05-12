@@ -112,12 +112,15 @@ class SummaryDetailsDialog(
 
         try {
 
-            tvDate?.text = "${pref["user_date"]}"
-            // tvDate?.text = SimpleDateFormat.getDateInstance().format(Date())
-            tvName?.text = pref.member?.firstName + " " + pref.member?.lastName
+            //"${pref["user_date"]}"
+            //tvDate?.text = "${pref["user_date"]}"
             loadImage(profilePic, pref?.member?.profileImg, R.drawable.ic_user_test)
+            tvName?.text = pref.member?.firstName + " " + pref.member?.lastName
+            tvDate?.text = SimpleDateFormat.getDateInstance()
+                .format(SimpleDateFormat("yyyy-MM-dd").parse(pref["user_date"]))
         } catch (e: java.lang.Exception) {
             MiboEvent.log(e)
+            tvDate?.text = "${pref["user_date"]}"
         }
 
         data?.title?.let {
@@ -387,7 +390,7 @@ class SummaryDetailsDialog(
 
                 set1 = BarDataSet(list, data?.title)
                 set1.setDrawIcons(false)
-                set1.setColor(data!!.imageColor, 150)
+                set1.setColor(data!!.imageColor, 200)
                 val dataSets = ArrayList<IBarDataSet>()
                 dataSets.add(set1)
                 val data = BarData(dataSets)

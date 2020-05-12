@@ -60,6 +60,10 @@ abstract class BaseFragment : Fragment() {
         return true
     }
 
+    open fun onPlusClicked(): Boolean {
+        return true
+    }
+
     open fun onNavBackPressed(): Boolean {
         return true
     }

@@ -195,6 +195,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             prefs.set("user_email", user, true)
             prefs.set("user_password", password, true)
             prefs.set("user_social", social, true)
+            prefs.set("login_enable", "true", true)
             // if (bundle != null)
             //     prefs.set("user_social", bundle.toString(), true)
         } catch (e: Exception) {

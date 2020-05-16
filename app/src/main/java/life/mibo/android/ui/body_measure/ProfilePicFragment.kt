@@ -89,6 +89,7 @@ class ProfilePicFragment : BodyBaseFragment() {
 //            }
 //        })
 
+        Prefs.get(context).set("profile_skipped", true)
     }
 
 

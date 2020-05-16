@@ -38,7 +38,7 @@ public class AndroidLikeButton extends FrameLayout implements View.OnClickListen
     private AndroidDotView androidDotView;
 
     /* isChecked is used for making decision that which imageview is set on imageview
-     * animator set is used to run all animation as a set
+     * animator set is used to run all animation as DialogListener set
      * */
     private boolean isChecked;
     private AnimatorSet animatorSet;
@@ -342,7 +342,7 @@ public class AndroidLikeButton extends FrameLayout implements View.OnClickListen
 
     private Bitmap getDrawableToBitmap(Drawable drawable) {
 
-        //return if drawable is null that means it doen't have a bitmap
+        //return if drawable is null that means it doen't have DialogListener bitmap
         if (drawable == null) {
             return null;
         }

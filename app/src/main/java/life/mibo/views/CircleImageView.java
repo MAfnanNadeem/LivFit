@@ -29,6 +29,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -85,6 +86,7 @@ public class CircleImageView extends androidx.appcompat.widget.AppCompatImageVie
         init();
     }
 
+    boolean isCircle = true;
     public CircleImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -99,6 +101,11 @@ public class CircleImageView extends androidx.appcompat.widget.AppCompatImageVie
         mBorderOverlay = a.getBoolean(R.styleable.CircleImageView_civ_border_overlay, DEFAULT_BORDER_OVERLAY);
         mCircleBackgroundColor = a.getColor(R.styleable.CircleImageView_civ_circle_background_color, DEFAULT_CIRCLE_BACKGROUND_COLOR);
 
+        if (a.hasValue(R.styleable.CircleImageView_civ_type)) {
+            int type = a.getInt(R.styleable.CircleImageView_civ_type, 0);
+            if (type == 1)
+                isCircle = false;
+        }
         a.recycle();
 
         init();

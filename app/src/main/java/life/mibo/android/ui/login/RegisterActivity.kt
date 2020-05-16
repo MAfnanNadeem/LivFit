@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_register_page1.*
 import kotlinx.android.synthetic.main.activity_register_page2.*
 import kotlinx.android.synthetic.main.activity_register_page3.*
 import life.mibo.android.R
+import life.mibo.android.core.Prefs
 import life.mibo.android.receiver.SMSBroadcastReceiver
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
@@ -38,6 +39,7 @@ class RegisterActivity : BaseActivity() {
             socialKey: String,
             socialPhoto: String
         )
+
         fun onSendOtpClicked(number: String?)
         fun onResendOtpClicked(number: String?)
         fun onVerifyOtpClicked(code: String?)
@@ -46,6 +48,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private lateinit var controller: RegisterController
+
     //private lateinit var twilio: TwilioVerification
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +71,7 @@ class RegisterActivity : BaseActivity() {
         }
         btn_otp_confirmed?.setOnClickListener {
             if (et_otp?.text.isNullOrEmpty()) {
-               // error(getString(R.string.enter_otp))
+                // error(getString(R.string.enter_otp))
                 Toasty.error(this, getString(R.string.enter_otp)).show()
                 return@setOnClickListener
             }
@@ -112,10 +115,10 @@ class RegisterActivity : BaseActivity() {
                 return@setOnCheckedChangeListener
             }
             if (isChecked) {
-               // termsDialog(getString(R.string.terms_of_agreement))
-                TermsDialog(this, object : ItemClickListener<Int>{
+                // termsDialog(getString(R.string.terms_of_agreement))
+                TermsDialog(this, object : ItemClickListener<Int> {
                     override fun onItemClicked(item: Int?, position: Int) {
-                        if(position == 2){
+                        if (position == 2) {
                             isDialog = true
                             checkbox_terms?.isChecked = true
                         }
@@ -126,8 +129,15 @@ class RegisterActivity : BaseActivity() {
             }
         }
 
+        val update = intent?.getBooleanExtra("is_update_profile", false) ?: false
+        if (update) {
+            updateProfile()
+            return
+        }
+
         val social: Bundle? = intent?.getBundleExtra("social_data")
         if (social != null) {
+
             val code = intent?.getIntExtra("social_data_code", 100) ?: 100
             if (code == 100) {
                 socialType = "facebook"
@@ -151,8 +161,52 @@ class RegisterActivity : BaseActivity() {
             }
             //Toasty.info(this, socialType).show()
         }
+    }
 
+    private var isUpdateProfile = false
+    private var updateMemberId = ""
 
+    fun updateProfile() {
+        val member = Prefs.get(this@RegisterActivity).member
+        isUpdateProfile = true
+        tv_register_info?.setText(R.string.update_your_profile)
+        updateMemberId = member?.id() ?: ""
+        val fName = member?.firstName ?: ""
+        val lName = member?.lastName ?: ""
+        val email = intent?.getStringExtra("member_email") ?: ""
+        //val pwd = intent?.getStringExtra("member_pwd") ?: ""
+
+        if (fName.isNotEmpty()) {
+            et_first_name?.setText(fName)
+            //et_first_name?.isEnabled = false
+        }
+        if (lName.isNotEmpty()) {
+            et_last_name?.setText(lName)
+            //et_last_name?.isEnabled = false
+        }
+        if (email.isNotEmpty()) {
+            et_email?.setText(email)
+            et_email?.isEnabled = false
+        }
+//        if (pwd.isNotEmpty()) {
+//            et_password?.setText(fName)
+//            et_confirm_password?.setText(fName)
+//            // et_first_name?.isEnabled = false
+//        }
+
+        member?.city?.let {
+            if (it.isNotEmpty()) {
+                et_city?.setText(it)
+            }
+        }
+
+        member?.gender?.let {
+            if (it.isNotEmpty()) {
+                if (it.equals("male", true) || it.equals("female", true)) {
+                    controller.updateGender(it)
+                }
+            }
+        }
     }
 
     var socialType = "";
@@ -297,6 +351,21 @@ class RegisterActivity : BaseActivity() {
             return
         }
 
+        if (isUpdateProfile && updateMemberId.isNotEmpty()) {
+            controller.validateInvitedMember(
+                et_first_name.text?.toString(),
+                et_last_name.text?.toString(),
+                et_email.text?.toString(),
+                et_password.text?.toString(),
+                et_confirm_password.text?.toString(),
+                et_city.text?.toString(),
+                tv_country.text?.toString(),
+                tv_dob.text?.toString(),
+                checkbox_terms.isChecked,
+                et_phone_number.text?.toString(), socialType, socialKey, updateMemberId
+            )
+            return
+        }
         controller.onRegisterClicked(
             et_first_name.text?.toString(),
             et_last_name.text?.toString(),

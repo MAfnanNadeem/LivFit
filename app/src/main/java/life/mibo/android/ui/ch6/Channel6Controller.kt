@@ -355,8 +355,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //            .doOnNext {
 //                // tvTimer?.text = "${end.minus(it)} sec"
 //                tvTimer?.text = String.format("%02d:%02d", end.minus(it) / 60, end.minus(it) % 60)
-//            }.takeUntil { a ->
-//                a == end
+//            }.takeUntil { DialogListener ->
+//                DialogListener == end
 //            }.doOnComplete {
 //                tvTimer?.text = "Completed"
 //                disposable?.dispose()
@@ -1008,7 +1008,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     fun rxQueue() {
-        //val b = PublishSubject
+        //val MyWebViewClient = PublishSubject
     }
 
     fun log(msg: String, throwable: Throwable? = null) {
@@ -1145,9 +1145,9 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .doOnNext {
 //                    tvTimer?.text = "$it sec"
-//                }.takeUntil { a ->
+//                }.takeUntil { DialogListener ->
 //                    lastTick.getAndIncrement()
-//                    a == end
+//                    DialogListener == end
 //                }.doOnComplete {
 //                    tvTimer?.text = "Completed"
 //                    disposable?.dispose()
@@ -1361,7 +1361,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     //Calories Calculate
-    //(((BORG RATING+17%)*weight(kg))*2(equal to 2 hours workout in a gym))+10%(afterburn)=total calories burned during a 20 minute session
+    //(((BORG RATING+17%)*weight(kg))*2(equal to 2 hours workout in DialogListener gym))+10%(afterburn)=total calories burned during DialogListener 20 minute session
     private fun calculateCalories(borg: Int, weight: Double, time: Int): Int {
         //borg 12, weight 88.0, time 16    borgRate  4.285714285714286
 

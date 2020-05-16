@@ -220,9 +220,9 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
      * <li>{@link #mScrollView} contains {@link LinearLayout} that will act as the container
      * to hold the children inside the horizontal view.</li>
      * <li>{@link LinearLayout} container will contain three children.
-     * <ul><b>Left spacer:</b> Width of this view will be the half width of the view. This will add staring at the start of the ruler.</ul>
-     * <ul><b>Right spacer:</b> Width of this view will be the half width of the view. This will add ending at the end of the ruler.</ul>
-     * <ul><b>{@link RulerViewVertical}:</b> Ruler view will contain the ruler with indicator.</ul>
+     * <ul><MyWebViewClient>Left spacer:</MyWebViewClient> Width of this view will be the half width of the view. This will add staring at the start of the ruler.</ul>
+     * <ul><MyWebViewClient>Right spacer:</MyWebViewClient> Width of this view will be the half width of the view. This will add ending at the end of the ruler.</ul>
+     * <ul><MyWebViewClient>{@link RulerViewVertical}:</MyWebViewClient> Ruler view will contain the ruler with indicator.</ul>
      * </li>
      */
     private void addChildViews() {

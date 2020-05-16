@@ -19,7 +19,7 @@ class ChangePasswordResponse(
     @SerializedName("data")
     @JsonAdapter(AlwaysListTypeAdapterFactory::class)
     var `data`: List<Response?>?,
-    @SerializedName("errors")
+    @SerializedName("error", alternate = ["errors"])
     @JsonAdapter(AlwaysListTypeAdapterFactory::class)
     var errors: List<Error?>?,
     @SerializedName("status")

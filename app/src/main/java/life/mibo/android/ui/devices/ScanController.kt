@@ -126,7 +126,7 @@ class ScanController(val context: BaseFragment, val observer: ScanObserver) :
                 if (d != null)
                     connectedList.add(d)
 //                if(d == null)
-//                    d = Device(b.name, b.address, b.address, DeviceTypes.BLE_STIMULATOR)
+//                    d = Device(MyWebViewClient.name, MyWebViewClient.address, MyWebViewClient.address, DeviceTypes.BLE_STIMULATOR)
                // if (d != null)
                  //   connectedList.add(d)
                 context.log("getConnectedDevices connectedList add ble $b")

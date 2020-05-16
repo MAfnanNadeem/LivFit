@@ -32,6 +32,7 @@ interface Navigator {
         const val PIC_UPLOADED = 203;
         const val DRAWER_LOCK = 301;
         const val DRAWER_UNLOCK = 302;
+        const val FAB_UPDATE = 303;
 
         //var SELECT_REFLEX = 106;
     }

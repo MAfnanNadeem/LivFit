@@ -174,7 +174,7 @@ class ViewDragHelper {
 
     public void captureChildView(View childView, int activePointerId) {
         if (childView.getParent() != mParentView) {
-            throw new IllegalArgumentException("captureChildView: parameter must be a descendant "
+            throw new IllegalArgumentException("captureChildView: parameter must be DialogListener descendant "
                     + "of the ViewDragHelper's tracked parent view (" + mParentView + ")");
         }
 
@@ -226,7 +226,7 @@ class ViewDragHelper {
         boolean continueSliding = forceSettleCapturedViewAt(finalLeft, finalTop, 0, 0);
         if (!continueSliding && mDragState == STATE_IDLE && mCapturedView != null) {
             // If we're in an IDLE state to begin with and aren't moving anywhere, we
-            // end up having a non-null capturedView with an IDLE dragState
+            // end up having DialogListener non-null capturedView with an IDLE dragState
             mCapturedView = null;
         }
 
@@ -235,7 +235,7 @@ class ViewDragHelper {
 
     public boolean settleCapturedViewAt(int finalLeft, int finalTop) {
         if (!mReleaseInProgress) {
-            throw new IllegalStateException("Cannot settleCapturedViewAt outside of a call to "
+            throw new IllegalStateException("Cannot settleCapturedViewAt outside of DialogListener call to "
                     + "Callback#onViewReleased");
         }
 
@@ -329,7 +329,7 @@ class ViewDragHelper {
 
     public void flingCapturedView(int minLeft, int minTop, int maxLeft, int maxTop) {
         if (!mReleaseInProgress) {
-            throw new IllegalStateException("Cannot flingCapturedView outside of a call to "
+            throw new IllegalStateException("Cannot flingCapturedView outside of DialogListener call to "
                     + "Callback#onViewReleased");
         }
 
@@ -379,7 +379,7 @@ class ViewDragHelper {
         mReleaseInProgress = false;
 
         if (mDragState == STATE_DRAGGING) {
-            // onViewReleased didn't call a method that would have changed this. Go idle.
+            // onViewReleased didn't call DialogListener method that would have changed this. Go idle.
             setDragState(STATE_IDLE);
         }
     }
@@ -522,7 +522,7 @@ class ViewDragHelper {
         final int actionIndex = MotionEventCompat.getActionIndex(ev);
 
         if (action == MotionEvent.ACTION_DOWN) {
-            // Reset things for a new event stream, just in case we didn't get
+            // Reset things for DialogListener new event stream, just in case we didn't get
             // the whole previous stream.
             cancel();
         }
@@ -541,7 +541,7 @@ class ViewDragHelper {
 
                 final View toCapture = findTopChildUnder((int) x, (int) y);
 
-                // Catch a settling view if possible.
+                // Catch DialogListener settling view if possible.
                 if (toCapture == mCapturedView && mDragState == STATE_SETTLING) {
                     tryCaptureViewForDrag(toCapture, pointerId);
                 }
@@ -560,14 +560,14 @@ class ViewDragHelper {
 
                 saveInitialMotion(x, y, pointerId);
 
-                // A ViewDragHelper can only manipulate one view at a time.
+                // A ViewDragHelper can only manipulate one view at DialogListener time.
                 if (mDragState == STATE_IDLE) {
                     final int edgesTouched = mInitialEdgesTouched[pointerId];
                     if ((edgesTouched & mTrackingEdges) != 0) {
                         mCallback.onEdgeTouched(edgesTouched & mTrackingEdges, pointerId);
                     }
                 } else if (mDragState == STATE_SETTLING) {
-                    // Catch a settling view if possible.
+                    // Catch DialogListener settling view if possible.
                     final View toCapture = findTopChildUnder((int) x, (int) y);
                     if (toCapture == mCapturedView) {
                         tryCaptureViewForDrag(toCapture, pointerId);
@@ -579,7 +579,7 @@ class ViewDragHelper {
             case MotionEvent.ACTION_MOVE: {
                 if (mInitialMotionX == null || mInitialMotionY == null) break;
 
-                // First to cross a touch slop over a draggable view wins. Also report edge drags.
+                // First to cross DialogListener touch slop over DialogListener draggable view wins. Also report edge drags.
                 final int pointerCount = ev.getPointerCount();
                 for (int i = 0; i < pointerCount; i++) {
                     final int pointerId = ev.getPointerId(i);
@@ -599,7 +599,7 @@ class ViewDragHelper {
                         // getView[Horizontal|Vertical]DragRange methods to know
                         // if you can move at all along an axis, then see if it
                         // would clamp to the same value. If you can't move at
-                        // all in every dimension with a nonzero range, bail.
+                        // all in every dimension with DialogListener nonzero range, bail.
                         final int oldLeft = toCapture.getLeft();
                         final int targetLeft = oldLeft + (int) dx;
                         final int newLeft = mCallback.clampViewPositionHorizontal(toCapture,
@@ -652,7 +652,7 @@ class ViewDragHelper {
         final int actionIndex = MotionEventCompat.getActionIndex(ev);
 
         if (action == MotionEvent.ACTION_DOWN) {
-            // Reset things for a new event stream, just in case we didn't get
+            // Reset things for DialogListener new event stream, just in case we didn't get
             // the whole previous stream.
             cancel();
         }
@@ -672,7 +672,7 @@ class ViewDragHelper {
                 saveInitialMotion(x, y, pointerId);
 
                 // Since the parent is already directly processing this touch event,
-                // there is no reason to delay for a slop before dragging.
+                // there is no reason to delay for DialogListener slop before dragging.
                 // Start immediately if possible.
                 tryCaptureViewForDrag(toCapture, pointerId);
 
@@ -690,9 +690,9 @@ class ViewDragHelper {
 
                 saveInitialMotion(x, y, pointerId);
 
-                // A ViewDragHelper can only manipulate one view at a time.
+                // A ViewDragHelper can only manipulate one view at DialogListener time.
                 if (mDragState == STATE_IDLE) {
-                    // If we're idle we can do anything! Treat it like a normal down event.
+                    // If we're idle we can do anything! Treat it like DialogListener normal down event.
 
                     final View toCapture = findTopChildUnder((int) x, (int) y);
                     tryCaptureViewForDrag(toCapture, pointerId);
@@ -702,9 +702,9 @@ class ViewDragHelper {
                         mCallback.onEdgeTouched(edgesTouched & mTrackingEdges, pointerId);
                     }
                 } else if (isCapturedViewUnder((int) x, (int) y)) {
-                    // We're still tracking a captured view. If the same view is under this
+                    // We're still tracking DialogListener captured view. If the same view is under this
                     // point, we'll swap to controlling it with this pointer instead.
-                    // (This will still work if we're "catching" a settling view.)
+                    // (This will still work if we're "catching" DialogListener settling view.)
 
                     tryCaptureViewForDrag(mCapturedView, pointerId);
                 }
@@ -726,7 +726,7 @@ class ViewDragHelper {
 
                     saveLastMotion(ev);
                 } else {
-                    // Check to see if any pointer is now over a draggable view.
+                    // Check to see if any pointer is now over DialogListener draggable view.
                     final int pointerCount = ev.getPointerCount();
                     for (int i = 0; i < pointerCount; i++) {
                         final int pointerId = ev.getPointerId(i);

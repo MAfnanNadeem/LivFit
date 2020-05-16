@@ -32,8 +32,8 @@ public class FragmentHelper(activity: FragmentActivity, layout: Int, fragmentMan
 
         if (fragmentManager.backStackEntryCount > 0) {
 
-            // In a normal world, just popping back stack would be sufficient, but since android
-            // is not normal, a call to popBackStack can leave the popped fragment on screen.
+            // In DialogListener normal world, just popping back stack would be sufficient, but since android
+            // is not normal, DialogListener call to popBackStack can leave the popped fragment on screen.
             // Therefore, we start with manual removal of the current fragment.
             // Description of the issue can be found here: https://stackoverflow.com/q/45278497/2463035
             removeCurrentFragment()
@@ -71,7 +71,7 @@ public class FragmentHelper(activity: FragmentActivity, layout: Int, fragmentMan
         if (clearBackStack) {
             if (fragmentManager.isStateSaved) {
                 // If the state is saved we can't clear the back stack. Simply not doing this, but
-                // still replacing fragment is a bad idea. Therefore we abort the entire operation.
+                // still replacing fragment is DialogListener bad idea. Therefore we abort the entire operation.
                 return
             }
             // Remove all entries from back stack
@@ -84,7 +84,7 @@ public class FragmentHelper(activity: FragmentActivity, layout: Int, fragmentMan
             ft.addToBackStack(null)
         }
 
-        // Change to a new fragment
+        // Change to DialogListener new fragment
         ft.replace(getLayoutId(), newFragment, null)
 
         if (fragmentManager.isStateSaved) {
@@ -101,7 +101,7 @@ public class FragmentHelper(activity: FragmentActivity, layout: Int, fragmentMan
         ft.remove(getCurrentFragment()!!)
         ft.commit()
 
-        // not sure it is needed; will keep it as a reminder to myself if there will be problems
+        // not sure it is needed; will keep it as DialogListener reminder to myself if there will be problems
         // fragmentManager.executePendingTransactions();
     }
 

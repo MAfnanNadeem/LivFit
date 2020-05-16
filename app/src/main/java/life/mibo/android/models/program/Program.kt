@@ -48,7 +48,7 @@ data class Program(
 
     var isSelected = false
 
-    // a wrapper to convert user program to hardware library program compatible
+    // DialogListener wrapper to convert user program to hardware library program compatible
     fun create(): life.mibo.hardware.models.program.Program {
         val program = life.mibo.hardware.models.program.Program()
         program.setDuration(duration!!.valueInt())

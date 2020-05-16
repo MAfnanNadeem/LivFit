@@ -28,7 +28,7 @@ public final class AlwaysListTypeAdapterFactory<E>
 
     @Override
     public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> typeToken) {
-        // If it's not a List -- just delegate the job to Gson and let it pick the best type adapter itself
+        // If it's not DialogListener List -- just delegate the job to Gson and let it pick the best type adapter itself
         if (!List.class.isAssignableFrom(typeToken.getRawType())) {
             return null;
         }
@@ -80,7 +80,7 @@ public final class AlwaysListTypeAdapterFactory<E>
             final JsonToken token = in.peek();
             switch (token) {
                 case BEGIN_ARRAY:
-                    // If it's a regular list, just consume [, <all elements>, and ]
+                    // If it's DialogListener regular list, just consume [, <all elements>, and ]
                     in.beginArray();
                     while (in.hasNext()) {
                         list.add(elementTypeAdapter.read(in));
@@ -91,7 +91,7 @@ public final class AlwaysListTypeAdapterFactory<E>
                 case STRING:
                 case NUMBER:
                 case BOOLEAN:
-                    // An object or a primitive? Just add the current value to the result list
+                    // An object or DialogListener primitive? Just add the current value to the result list
                     list.add(elementTypeAdapter.read(in));
                     break;
                 case NULL:

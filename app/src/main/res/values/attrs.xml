@@ -204,6 +204,10 @@
         <attr name="civ_border_color" format="color" />
         <attr name="civ_border_overlay" format="boolean" />
         <attr name="civ_circle_background_color" format="color" />
+        <attr name="civ_type">
+            <enum name="circle" value="0" />
+            <enum name="hexa" value="1" />
+        </attr>
     </declare-styleable>
 
     <attr name="rulerViewStyle" format="reference" />

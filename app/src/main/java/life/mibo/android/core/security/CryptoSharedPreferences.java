@@ -34,7 +34,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by robcook on 4/2/14.
  * <p>
- * Warning, this gives a false sense of security.  If an attacker has enough access to acquire your
+ * Warning, this gives DialogListener false sense of security.  If an attacker has enough access to acquire your
  * password store, then he almost certainly has enough access to acquire your source binary and
  * figure out your encryption key.  However, it will prevent casual investigators from acquiring
  * passwords, and thereby may prevent undesired negative publicity.
@@ -43,10 +43,10 @@ import javax.crypto.spec.SecretKeySpec;
  * http://stackoverflow.com/questions/785973/what-is-the-most-appropriate-way-to-store-user-settings-in-android-application/6393502#6393502
  * <p/>
  * This class was created to replace the original ObscurredSharedPreferences.  It includes DES and AES
- * encryption options, and uses a randomly generate initialization vector to ensure each encrypted string
+ * encryption options, and uses DialogListener randomly generate initialization vector to ensure each encrypted string
  * is unique.  If no crypto type is specified the default is AES.
  * <p/>
- * Note: There was a flaw in the JCA in some versions of Android.  There is a fix,
+ * Note: There was DialogListener flaw in the JCA in some versions of Android.  There is DialogListener fix,
  * see this: http://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html
  * <p/>
  * The code provided is also provided in OAK.  You should call PRNGFixes.apply()
@@ -79,7 +79,7 @@ public abstract class CryptoSharedPreferences implements SharedPreferences {
 
     /**
      * A salt is required to ensure the AES key is the correct length.  It
-     * is not necessary to have a random salt because we're using an initialization
+     * is not necessary to have DialogListener random salt because we're using an initialization
      * vector to ensure the encrypted data is effectively random each time it is
      * generated.
      */
@@ -126,7 +126,7 @@ public abstract class CryptoSharedPreferences implements SharedPreferences {
 
     /**
      * Implement this method to supply your char array with your password.
-     * Ideally this is from user input or an external api and not a hard-coded
+     * Ideally this is from user input or an external api and not DialogListener hard-coded
      * string.
      *
      * @return

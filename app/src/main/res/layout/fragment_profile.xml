@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.3" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/constraintLayout1"
@@ -34,7 +34,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/colorAccent">
+        android:background="@drawable/bg_gradient2">
+<!--        <ImageView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"/>-->
 
         <!--        <com.github.siyamed.shapeimageview.CircularImageView-->
         <!--            android:id="@+id/userImage"-->
@@ -53,13 +56,12 @@
 
         <life.mibo.views.CircleImageView
             android:id="@+id/userImage"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
             app:civ_border_color="@color/grey"
             app:civ_border_width="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_user_test" />
@@ -68,12 +70,13 @@
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
+            android:layout_margin="@dimen/grid_1x"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/userImage"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="@string/sumeet" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -89,6 +92,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingBottom="@dimen/grid_2x"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -298,6 +302,8 @@
                     android:background="@drawable/profile_edittext"
                     android:padding="@dimen/grid_2x"
                     android:text="@string/change_password"
+                    android:drawableEnd="@drawable/ic_arrow_forward_24dp"
+                    android:drawableTint="@color/textColor2"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintEnd_toEndOf="@id/cardview"

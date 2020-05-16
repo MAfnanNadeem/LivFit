@@ -55,7 +55,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     private var isLogin = false;
 
-    // SocialHelper 200 :: {"id":"100833147217416230443","displayName":"Sumit Raj","email":"raj8xm@gmail.com","photoUrl":"https:\/\/lh3.googleusercontent.com\/a-\/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg","familyName":"Raj","givenName":"Sumit"}
+    // SocialHelper 200 :: {"id":"100833147217416230443","displayName":"Sumit Raj","email":"raj8xm@gmail.com","photoUrl":"https:\/\/lh3.googleusercontent.com\/DialogListener-\/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg","familyName":"Raj","givenName":"Sumit"}
     //SocialHelper 100 :: {"id":"3174109019295426","first_name":"Sumeet","last_name":"Gehi","email":"sumeetgehi@gmail.com"} -- false
     fun onSocialLogin(code: Int, bundle: Bundle) {
         val email = bundle.getString("email")
@@ -163,6 +163,18 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 val data = response.body()
                 if (data != null) {
                     if (data.status.equals("success", true)) {
+                        if (data.data?.firstLogin == 1) {
+                            Prefs.get(this@LoginController.context).member = data.data
+                            Prefs.get(this@LoginController.context).set("user_email", user)
+                            val intent = Intent(context, RegisterActivity::class.java)
+                            intent.putExtra("is_update_profile", true)
+                            intent.putExtra("member_email", user)
+                            intent.putExtra("member_pwd", password)
+                            intent.putExtra("member_id", data.data?.id ?: 0)
+                            //intent.putExtra("member_profile", data)
+                            context.startActivity(intent)
+                            return
+                        }
                         save(user, password, "1", null)
                         Observable.just("").observeOn(Schedulers.newThread()).doOnComplete {
                             Database.getInstance(context).memberDao()

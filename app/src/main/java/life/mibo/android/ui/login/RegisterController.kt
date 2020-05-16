@@ -437,11 +437,189 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
     }
 
+    fun validateInvitedMember(
+        firstName: String?,
+        lastName: String?,
+        email: String?,
+        password: String?,
+        cPassword: String?,
+        city: String?,
+        country: String?,
+        dob: String?,
+        checkBox: Boolean,
+        phoneNumber: String?,
+        socialType: String,
+        socialKey: String,
+        memberId: String
+    ) {
+        if (firstName.isNullOrEmpty()) {
+            error(getString(R.string.enter_fname))
+            return
+        }
+
+        if (lastName.isNullOrEmpty()) {
+            error(getString(R.string.enter_lname))
+            return
+        }
+        if (email.isNullOrEmpty()) {
+            error(getString(R.string.enter_email))
+            return
+        }
+        if (password.isNullOrEmpty()) {
+            error(getString(R.string.enter_password))
+            return
+        }
+        if (cPassword.isNullOrEmpty()) {
+            error(getString(R.string.enter_confirm_password))
+            return
+        }
+        if (!isGender) {
+            error(getString(R.string.select_gender))
+            return
+        }
+        if (!isDob) {
+            error(getString(R.string.enter_dob))
+            return
+        }
+        if (city.isNullOrEmpty()) {
+            error(getString(R.string.enter_city))
+            return
+        }
+
+        if (!isCountry) {
+            error(getString(R.string.select_your_country))
+            return
+        }
+        if (phoneNumber.isNullOrEmpty()) {
+            error(getString(R.string.enter_number))
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toasty.warning(context, getString(R.string.email_not_valid)).show()
+            return
+        }
+
+        if (!checkBox) {
+            error(getString(R.string.accept_term_conditions))
+            return
+        }
+
+        if ((password.trim() == cPassword.trim())) {
+            if (!isValidPassword(password)) {
+                MessageDialog.info(
+                    context,
+                    context.getString(R.string.pwd_requirement),
+                    getString(R.string.password_requirement)
+                )
+                //Toasty.warning(context, getString(R.string.password_requirement), Toast.LENGTH_LONG, false).show()
+                return
+            }
+
+            val data = Data(
+                firstName, lastName, cPassword, email, gender,
+                city,
+                country,
+                dob,
+                ccp!!.selectedCountryCodeWithPlus,
+                phoneNumber,
+                socialType,
+                socialKey
+            )
+            data.memberID = memberId
+            context.log("registerInvitedMember memberId $memberId")
+            context.log("registerInvitedMember $data")
+            registerInvitedMember(RegisterMember(data, "RegisterInvitedMember"), memberId)
+
+            //Toasty.success(context, "Successfully registered").show()
+            //viewAnimator.showNext()
+            //updateNumber()
+            //startActivity(Intent(context, MainActivity::class.java))
+            return
+        } else {
+            Logger.e("Password not matched $password == $cPassword")
+            error(getString(R.string.confirm_password_not_matched))
+        }
+    }
+
+    private fun registerInvitedMember(registerData: RegisterMember, memberId: String) {
+        MiboEvent.registerEvent(
+            "${registerData.data?.firstName} - ${registerData.data?.lastName}",
+            "${registerData.data?.email}"
+        )
+
+        //return
+
+        context.getDialog()?.show()
+        API.request.getApi().registerInvitedMember(registerData)
+            .enqueue(object : Callback<RegisterResponse> {
+
+                override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                    context.getDialog()?.dismiss()
+                    Toasty.error(context, R.string.unable_to_connect).show()
+                    t.printStackTrace()
+                    Logger.e("RegisterActivity : register API ", t)
+
+                }
+
+                override fun onResponse(
+                    call: Call<RegisterResponse>,
+                    response: Response<RegisterResponse>
+                ) {
+                    val data = response.body()
+                    if (data == null) {
+                        context.getDialog()?.dismiss()
+                        error(getString(R.string.error_occurred))
+                        return
+                    }
+                    when {
+                        data.status?.toLowerCase() == "success" -> {
+                            memberData = registerData
+                            userId = memberId
+                            //success(R.string.regestered)
+                            //updateNumber(1)
+                            sendOtp(registerData.data!!.phone)
+                            isOtp = true
+                            //Prefs.get(this@RegisterController.context).member = Member(data)
+                            Prefs.get(this@RegisterController.context)
+                                .set("user_idd", data.data?.userId)
+                            Prefs.get(this@RegisterController.context)
+                                .set("user_email", registerData.data?.email)
+                            MiboEvent.registerSuccess("${data.data?.userId}")
+                            isBack = false
+                            return
+                        }
+
+
+                        data.status == "error" -> {
+                            //val er = data.errors;
+                            //var msg = data?.status
+                            //val e = data.errors
+                            //log("RegisterGuestMember $e")
+                            // log("RegisterGuestMember ${e.toString()}")
+                            //val el = JsonParser.parseString(data.errors.toString())
+                            // val rr: Error? = Gson().fromJson(el, Error::class.java)
+                            // log("RegisterGuestMember rr ${rr.toString()}")
+                            error("${data.errors?.get(0)?.message}")
+                            MiboEvent.registerError("${data.data?.userId}", "$data")
+                        }
+                        else -> Toasty.warning(
+                            context,
+                            "Register: " + response.body()
+                        ).show()
+                    }
+                    context.getDialog()?.dismiss()
+                }
+
+            })
+
+    }
+
     private fun isValidPassword(s: String): Boolean {
         //val PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
         val pattern =
-            Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$&+=])(?=\\S+\$).{4,}$")
-        //val pattern2 = Pattern.compile("[a-zA-Z0-9!@#$]{8,24}")
+            Pattern.compile("^(?=.*[0-9])(?=.*[DialogListener-z])(?=.*[A-Z])(?=.*[@#\$&+=])(?=\\S+\$).{4,}$")
+        //val pattern2 = Pattern.compile("[DialogListener-zA-Z0-9!@#$]{8,24}")
 
         return pattern.matcher(s).matches()
     }
@@ -664,9 +842,9 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     fun showGender() {
-        val animals = arrayOf("Male", "Female")
+        val genders = arrayOf("Male", "Female")
         AlertDialog.Builder(context).setTitle("Select Gender")
-            .setItems(animals) { _, which ->
+            .setItems(genders) { _, which ->
                 if (which == 0)
                     gender = "Male"
                 else if (which == 1)
@@ -675,6 +853,12 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 //gender?.text = gender
                 isGender = true
             }.create().show()
+    }
+
+    fun updateGender(g: String) {
+        gender = g
+        observer.onGenderSelect(gender)
+        isGender = true
     }
 
     fun showDobPicker() {

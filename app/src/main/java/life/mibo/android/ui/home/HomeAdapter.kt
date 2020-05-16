@@ -66,8 +66,25 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
         var notify = false
         for (l in list) {
             for (i in l) {
-                if (i.title.contains("Weight")) {
+                if (i.title.toLowerCase().contains("weight")) {
                     i.headerText = weight
+                    notify = true
+                    break
+                }
+            }
+        }
+        if (notify)
+            notifyDataSetChanged()
+    }
+
+    fun updateWeather(weight: String?) {
+        if (weight == null)
+            return
+        var notify = false
+        for (l in list) {
+            for (i in l) {
+                if (i.type == HomeItem.Type.WEATHER) {
+                    i.headerText = weight + 0x00B0.toChar()
                     notify = true
                     break
                 }

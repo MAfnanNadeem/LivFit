@@ -27,6 +27,7 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.body_measure.adapter.SummaryAdapter
 import life.mibo.android.ui.main.MiboEvent
+import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Response
@@ -69,6 +70,7 @@ class SummaryFragment : BaseFragment() {
 
     override fun onPlusClicked(): Boolean {
         navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+       // showMeasureDialog()
         return false
     }
 
@@ -99,13 +101,7 @@ class SummaryFragment : BaseFragment() {
         recyclerView?.adapter = adapter
     }
 
-    override fun onResume() {
-        super.onResume()
-        getBioMetric()
-        //setAdapters()
-        //updateNextButton(true, "Finish")
-        //Prefs.getTemp(context).set("body_measure", "done")
-    }
+
 
 //    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
 //        log("setUserVisibleHint $isVisibleToUser")
@@ -122,10 +118,10 @@ class SummaryFragment : BaseFragment() {
     private fun getSummary(): ArrayList<SummaryAdapter.Item> {
         arguments?.getInt("data_from")
 //        val list = ArrayList<SummaryAdapter.Item>()
-//        val b = Calculate.getValue("user_bmi", "0.00")
+//        val MyWebViewClient = Calculate.getValue("user_bmi", "0.00")
 //        val w = Calculate.getValue("user_weight", "0.00")
 //        val h = Calculate.getValue("user_height", "0.00")
-//        val a = Calculate.getValue("user_age", "0.00")
+//        val DialogListener = Calculate.getValue("user_age", "0.00")
 //
 //        val ch = Calculate.getValue("value_1", "0")
 //        val wst = Calculate.getValue("value_2", "0")
@@ -507,7 +503,7 @@ class SummaryFragment : BaseFragment() {
             .enqueue(object : retrofit2.Callback<ResponseData> {
                 override fun onFailure(call: Call<ResponseData>, t: Throwable) {
                     getDialog()?.dismiss()
-                    Toasty.snackbar(view, R.string.unable_to_connect)
+                    Toasty.info(requireContext(), R.string.unable_to_connect).show()
                 }
 
                 override fun onResponse(
@@ -520,16 +516,16 @@ class SummaryFragment : BaseFragment() {
                         if (body != null && body.isSuccess()) {
                             val msg = body.data?.message
                             msg?.let {
-                                Toasty.snackbar(view, msg)
+                                Toasty.info(requireContext(), msg).show()
                             }
                         } else if (body != null && body.isError()) {
                             val msg = body.errors?.get(0)?.message
                             msg?.let {
-                                Toasty.snackbar(view, msg)
+                                Toasty.info(requireContext(), msg).show()
                             }
 
                         } else {
-                            Toasty.snackbar(view, R.string.unable_to_connect)
+                            Toasty.info(requireContext(), R.string.unable_to_connect).show()
                         }
                     } catch (e: Exception) {
                         MiboEvent.log(e)
@@ -562,7 +558,7 @@ class SummaryFragment : BaseFragment() {
             .enqueue(object : retrofit2.Callback<Biometric> {
                 override fun onFailure(call: Call<Biometric>, t: Throwable) {
                     getDialog()?.dismiss()
-                    Toasty.snackbar(view, R.string.unable_to_connect)
+                    Toasty.info(requireContext(), R.string.unable_to_connect).show()
                 }
 
                 override fun onResponse(
@@ -582,16 +578,19 @@ class SummaryFragment : BaseFragment() {
                         } else if (body != null && body.isError()) {
 
                             val msg = body.errors?.get(0)?.message
-                            Toasty.snackbar(view, msg)
+                            if (msg != null)
+                                Toasty.info(requireContext(), msg).show()
                             if (msg?.toLowerCase()?.contains("session expire") == true) {
                                 navigate(life.mibo.android.ui.main.Navigator.LOGOUT, null)
                                 return
                             }
+                            isFromDialog = true
+                            //showMeasureDialog()
                             navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
                             return
 
                         } else {
-                            Toasty.snackbar(view, R.string.unable_to_connect)
+                            Toasty.info(requireContext(), R.string.unable_to_connect).show()
                         }
                     } catch (e: Exception) {
                         MiboEvent.log(e)
@@ -611,7 +610,7 @@ class SummaryFragment : BaseFragment() {
             val list = ArrayList<SummaryAdapter.Item>()
             val data = bio[bio.size - 1]
             if (data == null) {
-                Toasty.snackbar(view, R.string.error_occurred)
+                Toasty.info(requireContext(), R.string.error_occurred).show()
                 navigate(life.mibo.android.ui.main.Navigator.CLEAR_HOME, null)
                 return
             }
@@ -792,6 +791,34 @@ class SummaryFragment : BaseFragment() {
             recyclerView?.adapter = adapter
 
         }
+    }
 
+    var isFromDialog = false
+    fun showMeasureDialog() {
+        // val dialog = MeasurementFragmentDialog()
+        MeasurementFragmentDialog(object : ItemClickListener<Any?> {
+            override fun onItemClicked(item: Any?, position: Int) {
+                //navigate(position, item)
+                getBioMetric()
+            }
+
+        }).show(childFragmentManager, "MeasurementFragmentDialog")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getBioMetric()
+        navigate(Navigator.FAB_UPDATE, 101)
+        //setAdapters()
+        //updateNextButton(true, "Finish")
+        //Prefs.getTemp(context).set("body_measure", "done")
+    }
+
+    override fun onStop() {
+        //val MyWebViewClient = Bundle()
+        //MyWebViewClient.putBoolean("fab_visible", false)
+        //MyWebViewClient.putInt("fab_type", false)
+        navigate(Navigator.FAB_UPDATE, 100)
+        super.onStop()
     }
 }

@@ -92,7 +92,7 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
     ): Boolean {
 
         this.frontLayout = child as? ViewGroup
-            ?: throw IllegalArgumentException("BackLayout must extend a ViewGroup")
+            ?: throw IllegalArgumentException("BackLayout must extend DialogListener ViewGroup")
 
         when (dependency.id) {
             toolbarId -> toolbar = dependency as? Toolbar
@@ -105,7 +105,7 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
                 // TODO (next release): remove this conditional
                 if (toolbarId == null && toolbar == null) {
                     toolbar = findToolbar(backLayout!!)
-                        ?: throw IllegalArgumentException("AppBarLayout mast contain a Toolbar!")
+                        ?: throw IllegalArgumentException("AppBarLayout mast contain DialogListener Toolbar!")
                 }
             }
         }
@@ -140,7 +140,7 @@ class BackdropBehavior : CoordinatorLayout.Behavior<View> {
 
     /**
      * Attach back layout to Backdrop.
-     * BackDropLayout must contain a [Toolbar]
+     * BackDropLayout must contain DialogListener [Toolbar]
      */
     fun attachBackLayout(@IdRes appBarLayoutId: Int) {
         this.backLayoutId = appBarLayoutId

@@ -137,7 +137,7 @@ public class PlayButton extends AppCompatImageButton {
 
         final boolean handled = super.performClick();
         if (!handled) {
-            // View only makes a sound effect if the onClickListener was
+            // View only makes DialogListener sound effect if the onClickListener was
             // called, so we'll need to make one here instead.
             playSoundEffect(SoundEffectConstants.CLICK);
         }

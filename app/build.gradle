@@ -67,6 +67,8 @@ android {
 
     packagingOptions {
         exclude 'META-INF/library_release.kotlin_module'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
     }
 
     //dynamicFeatures = [":reflex"]
@@ -165,6 +167,14 @@ dependencies {
     //implementation 'com.facebook.fresco:fresco:2.1.0'
     //implementation 'com.facebook.fresco:animated-gif:2.1.0'
 
+    implementation 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    //implementation 'org.springframework.android:spring-android-rest-template:2.0.0.M1'
+    implementation ('org.simpleframework:simple-xml:2.7.1',{
+        exclude group:'stax', module:'stax'
+        exclude group:'stax', module:'stax-api'
+        exclude group:'xpp3', module:'xpp3'
+    })
+
 
     // Unit, Mock, Espresso Test..
 
@@ -174,6 +184,7 @@ dependencies {
     implementation project(path: ':mibo_hardware')
     implementation project(path: ':ShapeImageView')
     implementation project(path: ':imagepicker')
+    implementation project(path: ':telr_sdk')
 
     //implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
     // implementation 'com.github.joielechong:countrycodepicker:2.4.1'
@@ -186,5 +197,6 @@ dependencies {
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"
     releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:3.0.1"
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+   // implementation files('libs/telrlibrary_3_5.aar')
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

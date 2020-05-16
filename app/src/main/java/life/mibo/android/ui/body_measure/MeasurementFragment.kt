@@ -30,6 +30,7 @@ import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
+import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Response
@@ -266,10 +267,10 @@ class MeasurementFragment : BaseFragment() {
     private fun saveBiometric() {
         //arguments?.getInt("data_from")
 //        val list = ArrayList<SummaryAdapter.Item>()
-//        val b = Calculate.getValue("user_bmi", "0.00")
+//        val MyWebViewClient = Calculate.getValue("user_bmi", "0.00")
 //        val w = Calculate.getValue("user_weight", "0.00")
 //        val h = Calculate.getValue("user_height", "0.00")
-//        val a = Calculate.getValue("user_age", "0.00")
+//        val DialogListener = Calculate.getValue("user_age", "0.00")
 //
 //        val ch = Calculate.getValue("value_1", "0")
 //        val wst = Calculate.getValue("value_2", "0")
@@ -402,9 +403,16 @@ class MeasurementFragment : BaseFragment() {
         height: Double
     ): Double {
         ////BMR (kcal / day)
-        if (male)
-            return 0.000579479.times(weight.times(0.38)) * height.times(1.08)
-        return 0.000975482.times(weight.times(0.46)) * height.times(1.24)
+        if (male) {
+            val w = weight.pow(0.38)
+            val h = height.pow(1.24)
+            return 0.000579479.times(w) * h
+        } else {
+            val w = weight.pow(0.46)
+            val h = height.pow(1.08)
+            return 0.000975482.times(w) * h
+        }
+//       / return 0.000975482.times(weight.pow(0.46)) * height.pow(1.24)
     }
 
     private fun getCaloriesBurntHR(
@@ -553,6 +561,8 @@ class MeasurementFragment : BaseFragment() {
                                 Toasty.snackbar(view, msg)
                             }
 
+                            checkSession(body)
+
                         } else {
                             Toasty.snackbar(view, R.string.unable_to_connect)
                         }
@@ -579,6 +589,15 @@ class MeasurementFragment : BaseFragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        //navigate(Navigator.FAB_UPDATE, 200)
+        log("BSA "+getBSA(true, 60.0, 171.0))
+        //setAdapters()
+        //updateNextButton(true, "Finish")
+        //Prefs.getTemp(context).set("body_measure", "done")
+    }
+
     override fun onStart() {
         super.onStart()
         val a = activity
@@ -590,6 +609,7 @@ class MeasurementFragment : BaseFragment() {
         val a = activity
         if(a is AppCompatActivity)
             a.supportActionBar?.show()
+        //navigate(Navigator.FAB_UPDATE, 300)
         super.onStop()
     }
 }

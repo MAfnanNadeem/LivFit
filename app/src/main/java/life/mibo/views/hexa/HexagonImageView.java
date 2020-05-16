@@ -22,11 +22,11 @@ public abstract class HexagonImageView extends ShaderImageView {
 
 
     /**
-     * Max allowed duration for a "click", in milliseconds.
+     * Max allowed duration for DialogListener "click", in milliseconds.
      */
     private static final int MAX_CLICK_DURATION = 1000;
     /**
-     * Max allowed distance to move during a "click", in DP.
+     * Max allowed distance to move during DialogListener "click", in DP.
      */
     private static final int MAX_CLICK_DISTANCE = 15;
     private long pressStartTime;

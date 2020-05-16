@@ -29,6 +29,7 @@ import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.regex.Pattern
 
 class ChangePasswordDialog(c: Context) : AlertDialog(c) {
 
@@ -78,7 +79,11 @@ class ChangePasswordDialog(c: Context) : AlertDialog(c) {
             }
 
             if (newPwd?.text?.toString().equals(confirmPwd?.text?.toString())) {
-                changePasswordApi(currentPwd?.text?.toString(), confirmPwd?.text?.toString())
+                if (isValidPassword(newPwd!!.text.toString()))
+                    changePasswordApi(currentPwd?.text?.toString(), confirmPwd?.text?.toString())
+                else {
+                    updateHint(R.string.pwd_req_not_match)
+                }
             } else {
                 updateHint(R.string.pwd_not_match)
             }
@@ -151,5 +156,14 @@ class ChangePasswordDialog(c: Context) : AlertDialog(c) {
                 }
 
             })
+    }
+
+    private fun isValidPassword(s: String): Boolean {
+        //val PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{4,}$";
+        val pattern =
+            Pattern.compile("^(?=.*[0-9])(?=.*[DialogListener-z])(?=.*[A-Z])(?=.*[@#\$&+=])(?=\\S+\$).{4,}$")
+        //val pattern2 = Pattern.compile("[DialogListener-zA-Z0-9!@#$]{8,24}")
+
+        return pattern.matcher(s).matches()
     }
 }

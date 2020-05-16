@@ -38,22 +38,22 @@ internal fun parseGradientDrawable(drawable: Drawable): GradientDrawable =
                         parseGradientDrawable(innerDrawable)
                     }
                 }
-                    ?: throw RuntimeException("Error reading background... Use a shape or a color in xml!")
+                    ?: throw RuntimeException("Error reading background... Use DialogListener shape or DialogListener color in xml!")
             } else {
-                throw RuntimeException("Error reading background... Use a shape or a color in xml!")
+                throw RuntimeException("Error reading background... Use DialogListener shape or DialogListener color in xml!")
             }
         }
         is StateListDrawable -> {
             if (drawable.current is GradientDrawable) {
                 drawable.current as GradientDrawable
             } else {
-                throw RuntimeException("Error reading background... Use a shape or a color in xml!")
+                throw RuntimeException("Error reading background... Use DialogListener shape or DialogListener color in xml!")
             }
         }
         is LayerDrawable -> {
             parseGradientDrawable(drawable.getDrawable(0))
         }
-        else -> throw RuntimeException("Error reading background... Use a shape or a color in xml!")
+        else -> throw RuntimeException("Error reading background... Use DialogListener shape or DialogListener color in xml!")
     }
 
 internal fun Context.addLifecycleObserver(observer: LifecycleObserver) {

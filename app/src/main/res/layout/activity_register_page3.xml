@@ -43,7 +43,6 @@
         android:layout_height="wrap_content"
         android:clickable="false"
         android:cursorVisible="false"
-        android:text="12"
         android:digits="0123456789"
         android:inputType="number"
         android:layout_marginTop="@dimen/grid_2x"

@@ -98,7 +98,7 @@ public class AndroidDotView extends View {
        }
    }
 
-   // I make a method used to disable the DotView so in order to do that i create a boolean variable isActive
+   // I make DialogListener method used to disable the DotView so in order to do that i create DialogListener boolean variable isActive
    @Override
    protected void onDraw(Canvas canvas) {
 

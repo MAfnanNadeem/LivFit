@@ -2,10 +2,7 @@ package life.mibo.android.core
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import life.mibo.android.core.gson.GsonConverterFactory
-import life.mibo.android.models.base.FirebaseTokenPost
-import life.mibo.android.models.base.MemberPost
-import life.mibo.android.models.base.PostData
-import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.base.*
 import life.mibo.android.models.biometric.Biometric
 import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.models.calories.Calories
@@ -31,6 +28,7 @@ import life.mibo.android.models.send_otp.SendOTP
 import life.mibo.android.models.send_otp.SendOtpResponse
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
+import life.mibo.android.models.trainer.*
 import life.mibo.android.models.user_details.UserDetails
 import life.mibo.android.models.user_details.UserDetailsPost
 import life.mibo.android.models.verify_otp.VerifyOTP
@@ -102,6 +100,7 @@ class API {
         i.level = HttpLoggingInterceptor.Level.BODY
         return i
     }
+
     companion object {
         val request: API by lazy { API() }
         fun get() = lazy { API() }
@@ -132,6 +131,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("registerUser")
         fun register(@Body data: RegisterMember): Call<RegisterResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("registerInvitedMember")
+        fun registerInvitedMember(@Body data: RegisterMember): Call<RegisterResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("loginUser")
@@ -283,5 +286,18 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("saveFirebaseToken")
         fun saveFirebaseToken(@Body data: FirebaseTokenPost): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchIndependentProfessionals")
+        fun searchProfessionals(@Body data: SearchTrainers): Call<IndependentProfessionals>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("servicesByProfessionals")
+        fun getProfessionalDetails(@Body data: UserID): Call<ProfessionalDetails>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("sendInviteRequestToTrainer")
+        fun inviteProfessional(@Body data: InviteProfessional): Call<TrainerInviteResponse>
+
     }
 }

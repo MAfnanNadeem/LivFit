@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -171,6 +170,17 @@ class HomeFragment : BaseFragment(), HomeObserver {
             .addOnSuccessListener { location : Location? ->
                 log("weather fusedLocationClient: $location")
                // YahooWeather.load(location?.latitude, location?.longitude)
+                YahooWeather.OpenApiWeather(
+                    context,
+                    location?.latitude,
+                    location?.longitude,
+                    object : ItemClickListener<String> {
+                        override fun onItemClicked(item: String?, position: Int) {
+                            log("onItemClicked $item")
+                            //adapter?.updateWeather(item)
+                        }
+
+                    })
 
             }
     }

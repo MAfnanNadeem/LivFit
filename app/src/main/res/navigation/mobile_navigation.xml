@@ -195,7 +195,12 @@
     <fragment
         android:id="@+id/navigation_search_trainer"
         android:name="life.mibo.android.ui.trainer.SearchTrainerFragment"
-        android:label="Search I.P"
+        android:label="@string/search_professionals"
+        tools:layout="@layout/fragment_body_profile" />
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="life.mibo.android.ui.settings.SettingsFragment"
+        android:label="Settings"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
         android:id="@+id/navigation_webview"

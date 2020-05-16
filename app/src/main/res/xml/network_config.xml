@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">mibo.world</domain>
         <domain includeSubdomains="true">mibo.life</domain>
+        <domain includeSubdomains="true">api.openweathermap.org</domain>
     </domain-config>
 </network-security-config>

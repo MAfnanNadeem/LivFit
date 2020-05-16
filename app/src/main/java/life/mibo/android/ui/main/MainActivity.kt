@@ -19,7 +19,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.media.RingtoneManager
 import android.net.Uri
 import android.net.wifi.WifiManager
@@ -52,6 +51,7 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -67,10 +67,8 @@ import life.mibo.android.models.base.FirebaseTokenPost
 import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
-import life.mibo.android.ui.base.BaseActivity
-import life.mibo.android.ui.base.BaseFragment
-import life.mibo.android.ui.base.PermissionHelper
-import life.mibo.android.ui.base.WebViewFragment
+import life.mibo.android.ui.base.*
+import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.Navigator.Companion.CLEAR_HOME
@@ -93,6 +91,8 @@ import life.mibo.android.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.android.ui.main.Navigator.Companion.SELECT_SUITS
 import life.mibo.android.ui.main.Navigator.Companion.SESSION
 import life.mibo.android.ui.main.Navigator.Companion.SESSION_POP
+import life.mibo.android.ui.payments.PaymentActivity
+import life.mibo.android.ui.payments.Payments
 import life.mibo.android.ui.rxl.adapter.ReflexModel
 import life.mibo.android.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.android.ui.rxl.impl.CreateCourseAdapter
@@ -139,7 +139,7 @@ class MainActivity : BaseActivity(), Navigator {
 
         if (savedInstanceState == null) {
             val toolbar: Toolbar? = findViewById(R.id.toolbar)
-            toolbar?.navigationIcon?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.MULTIPLY);
+            //toolbar?.navigationIcon?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.MULTIPLY);
             setSupportActionBar(toolbar)
             drawerLayout = findViewById(R.id.drawer_layout)
             navigation = findViewById(R.id.nav_view)
@@ -147,6 +147,7 @@ class MainActivity : BaseActivity(), Navigator {
 
 
             navController = findNavController(R.id.nav_host_fragment)
+
 //        appBarConfiguration = AppBarConfiguration(
 //            setOf(
 //                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
@@ -246,13 +247,14 @@ class MainActivity : BaseActivity(), Navigator {
 
     fun setBottomView() {
         ib_item_1?.setOnClickListener {
-
+            navigate(HomeItem.Type.PROFILE, null)
         }
         ib_item_2?.setOnClickListener {
-
+            navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+            //drawerItemClicked(R.id.navigation_bio_summary)
         }
         ib_item_3?.setOnClickListener {
-
+            //drawerItemClicked(R.id.navigation_account)
         }
         ib_item_4?.setOnClickListener {
             //navigate(navigation_search_trainer)
@@ -262,7 +264,39 @@ class MainActivity : BaseActivity(), Navigator {
         }
         tv_item_fab?.setOnClickListener {
             if (childPlusClicked()) {
+                //popup(R.id.navigation_home)
+                //navigation?.setCheckedItem(R.id.nav_home)
+                //isHome = true
+            }
+        }
+    }
 
+    fun updateFabIcon(type: Int, bundle: Bundle) {
+        val icon = bundle.getInt("fab_icon", 0)
+        val visible = bundle.getBoolean("fab_visible", true)
+        if (visible) {
+            tv_item_fab?.visibility = View.VISIBLE
+            if (icon != 0)
+                tv_item_fab?.setImageResource(icon)
+
+        } else {
+            tv_item_fab?.visibility = View.GONE
+        }
+    }
+
+    fun updateFabIcon(type: Int) {
+        if (type != 0) {
+            when (type) {
+                100 -> tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
+                101 -> tv_item_fab?.setImageResource(R.drawable.ic_add_black_24dp)
+                200 -> {
+                    tv_item_fab?.visibility = View.GONE
+                    bottom_bar?.visibility = View.GONE
+                }
+                0, 300 -> {
+                    tv_item_fab?.visibility = View.VISIBLE
+                    bottom_bar?.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -313,7 +347,7 @@ class MainActivity : BaseActivity(), Navigator {
 //        drawerToggle = ActionBarDrawerToggle(this, toolbar, drawer, null, R.string.app_name, R.string.app_name){
 //        }
         drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
-        drawerToggle.drawerArrowDrawable?.color = Color.WHITE
+        drawerToggle.drawerArrowDrawable?.color = Color.DKGRAY
         drawerToggle.setToolbarNavigationClickListener {
             log("setToolbarNavigationClickListener")
             if (!drawer.isDrawerOpen(GravityCompat.START))
@@ -383,9 +417,9 @@ class MainActivity : BaseActivity(), Navigator {
         saveFirebaseToken(Prefs.get(this).member)
         // Single.timer(1, TimeUnit.SECONDS)
 //        Single.just(R.id.nav_home).delay(1, TimeUnit.SECONDS)
-//            .observeOn(AndroidSchedulers.mainThread()).subscribe { a ->
-//                //EventBus.getDefault().postSticky(NotifyEvent(a, null))
-//                //navigateFragment(a)
+//            .observeOn(AndroidSchedulers.mainThread()).subscribe { DialogListener ->
+//                //EventBus.getDefault().postSticky(NotifyEvent(DialogListener, null))
+//                //navigateFragment(DialogListener)
 //            }
     }
 
@@ -1084,15 +1118,17 @@ class MainActivity : BaseActivity(), Navigator {
             }
             Navigator.BODY_MEASURE -> {
                 popup(R.id.navigation_home)
-                var bundle: Bundle? = null
-                if (data is Bundle)
-                    bundle = data
-                navigate(0, R.id.navigation_measurement, bundle)
+                // var bundle: Bundle? = null
+                // if (data is Bundle)
+                //   bundle = data
+                showMeasureDialog()
+
+                //navigate(0, R.id.navigation_measurement, bundle)
                 //updateBar(true)
             }
 
             Navigator.BODY_MEASURE_SUMMARY -> {
-                popup(R.id.navigation_home)
+                //popup(R.id.navigation_home)
                 var bundle: Bundle? = null
                 if (data is Bundle)
                     bundle = data
@@ -1123,10 +1159,29 @@ class MainActivity : BaseActivity(), Navigator {
                 drawerLockMode(false)
             }
 
+            Navigator.FAB_UPDATE -> {
+                if (data is Int)
+                    updateFabIcon(data)
+                else if (data is Bundle)
+                    updateFabIcon(0, data)
+
+            }
+
             else -> {
                 drawerItemClicked(type)
             }
         }
+    }
+
+    var isFromDialog = false
+    fun showMeasureDialog() {
+        // val dialog = MeasurementFragmentDialog()
+        MeasurementFragmentDialog(object : ItemClickListener<Any?> {
+            override fun onItemClicked(item: Any?, position: Int) {
+                navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+            }
+
+        }).show(supportFragmentManager, "MeasurementFragmentDialog")
     }
 
     private fun postObservable(data: Any?) {
@@ -1180,7 +1235,7 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(HomeItem.Type.BOOSTER_SCAN)
             }
             R.id.navigation_calendar -> {
-                navigate(HomeItem.Type.SCHEDULE)
+                navigate(HomeItem.Type.CALENDAR)
             }
             R.id.nav_scan -> {
                 //startScanning(false)
@@ -1195,11 +1250,14 @@ class MainActivity : BaseActivity(), Navigator {
 
             R.id.nav_test3 -> {
                 lastId = -1
-                SessionManager.getInstance().userSession.createDummy()
+                // SessionManager.getInstance().userSession.createDummy()
+                startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+                //Payments.testPayment(this@MainActivity)
                 //startScanning(false)
                 //updateMenu()
                 // test
-                navigate(0, R.id.navigation_rxl_home)
+                //navigate(0, R.id.navigation_rxl_home)
+
                 //navigate(0, R.id.navigation_select_suit)
                 // navigate(0, R.id.navigation_bmi)
                 // navigate(0, R.id.navigation_measurement)
@@ -1217,10 +1275,10 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_rxl_test)
 
             }
-            R.id.nav_measurement -> {
-                navigate(0, R.id.navigation_bio_summary)
-
-            }
+//            R.id.nav_measurement -> {
+//                navigate(0, R.id.navigation_bio_summary)
+//
+//            }
             R.id.nav_messages -> {
                 comingSoon()
                 return
@@ -1235,8 +1293,12 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             R.id.nav_settings -> {
-                comingSoon()
-                return
+                navigate(
+                    0,
+                    R.id.navigation_settings
+                )
+                // comingSoon()
+                // return
             }
 
             R.id.nav_share -> {
@@ -1480,9 +1542,10 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-    fun saveFirebaseToken(member: Member?) {
+    private fun saveFirebaseToken(member: Member?) {
         if (member == null)
             return
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true;
 
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
@@ -1522,6 +1585,26 @@ class MainActivity : BaseActivity(), Navigator {
                     })
             })
 
+        FirebaseMessaging.getInstance().subscribeToTopic("mibo_user")
+            .addOnCompleteListener { task ->
+                log("subscribeToTopic $task")
+                // var msg = getString(R.string.msg_subscribed)
+                if (!task.isSuccessful) {
+                    //  msg = getString(R.string.msg_subscribe_failed)
+                }
+                // Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            }
+
+        val type = getMember()?.type
+        FirebaseMessaging.getInstance().subscribeToTopic("$type")
+            .addOnCompleteListener { task ->
+                log("subscribeToTopic $task")
+                // var msg = getString(R.string.msg_subscribed)
+                if (!task.isSuccessful) {
+                    //  msg = getString(R.string.msg_subscribe_failed)
+                }
+                // Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            }
 
     }
 

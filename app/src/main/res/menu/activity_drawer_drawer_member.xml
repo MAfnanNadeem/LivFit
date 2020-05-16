@@ -18,10 +18,10 @@
             android:id="@id/navigation_calendar"
             android:icon="@drawable/ic_dashboard_calendar"
             android:title="@string/calendar_title" />
-        <item
-            android:id="@+id/nav_measurement"
-            android:icon="@drawable/ic_qr_24dp"
-            android:title="@string/measurement" />
+        <!--        <item-->
+        <!--            android:id="@+id/nav_measurement"-->
+        <!--            android:icon="@drawable/ic_qr_24dp"-->
+        <!--            android:title="@string/measurement" />-->
         <item
             android:id="@+id/nav_messages"
             android:icon="@drawable/ic_message_black_24dp"
@@ -38,6 +38,10 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings_black"
             android:title="@string/action_settings" />
+        <item
+            android:id="@+id/nav_test3"
+            android:icon="@drawable/ic_settings_black"
+            android:title="TEST" />
 
 
     </group>

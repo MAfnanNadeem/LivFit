@@ -570,9 +570,9 @@ public class IconSwitch extends ViewGroup {
 
     private int getAccentColor() {
 //        TypedValue typedValue = new TypedValue();
-//        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorAccent});
-//        int color = a.getColor(0, 0);
-//        a.recycle();
+//        TypedArray DialogListener = getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorAccent});
+//        int color = DialogListener.getColor(0, 0);
+//        DialogListener.recycle();
 //        return color;
         return Constants.PRIMARY;
     }

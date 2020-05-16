@@ -174,7 +174,7 @@ class MiboApplication : Application() {
 //                } catch (IOException e1) {
 //                }
 //
-//            // You might want to write a failure message to the log here.
+//            // You might want to write DialogListener failure message to the log here.
 //            return null;
 //        }
 //

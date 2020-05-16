@@ -327,7 +327,7 @@ public class AdvancedWebView extends WebView {
 	/**
 	 * Removes one of the HTTP headers that have previously been added via `addHttpHeader()`
 	 *
-	 * If you want to unset a pre-defined header, set it to an empty string with `addHttpHeader()` instead
+	 * If you want to unset DialogListener pre-defined header, set it to an empty string with `addHttpHeader()` instead
 	 *
 	 * The `WebView` implementation may in some cases overwrite headers that you set or unset
 	 *
@@ -500,7 +500,7 @@ public class AdvancedWebView extends WebView {
 			@Override
 			public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
 				if (!isPermittedUrl(url)) {
-					// if a listener is available
+					// if DialogListener listener is available
 					if (mListener != null) {
 						// inform the listener about the request
 						mListener.onExternalPageRequest(url);
@@ -510,7 +510,7 @@ public class AdvancedWebView extends WebView {
 					return true;
 				}
 
-				// if there is a user-specified handler available
+				// if there is DialogListener user-specified handler available
 				if (mCustomWebViewClient != null) {
 					// if the user-specified handler asks to override the request
 					if (mCustomWebViewClient.shouldOverrideUrlLoading(view, url)) {
@@ -1104,7 +1104,7 @@ public class AdvancedWebView extends WebView {
 	}
 
 	public boolean isPermittedUrl(final String url) {
-		// if the permitted hostnames have not been restricted to a specific set
+		// if the permitted hostnames have not been restricted to DialogListener specific set
 		if (mPermittedHostnames.size() == 0) {
 			// all hostnames are allowed
 			return true;
@@ -1120,7 +1120,7 @@ public class AdvancedWebView extends WebView {
 			return false;
 		}
 
-		// if the host contains invalid characters (e.g. a backslash)
+		// if the host contains invalid characters (e.g. DialogListener backslash)
 		if (!actualHost.matches("^[a-zA-Z0-9._!~*')(;:&=+$,%\\[\\]-]*$")) {
 			// prevent mismatches between interpretations by `Uri` and `WebView`, e.g. for `http://evil.example.com\.good.example.com/`
 			return false;
@@ -1129,7 +1129,7 @@ public class AdvancedWebView extends WebView {
 		// get the user information from the authority part of the URL that is to be checked
 		final String actualUserInformation = parsedUrl.getUserInfo();
 
-		// if the user information contains invalid characters (e.g. a backslash)
+		// if the user information contains invalid characters (e.g. DialogListener backslash)
 		if (actualUserInformation != null && !actualUserInformation.matches("^[a-zA-Z0-9._!~*')(;:&=+$,%-]*$")) {
 			// prevent mismatches between interpretations by `Uri` and `WebView`, e.g. for `http://evil.example.com\@good.example.com/`
 			return false;
@@ -1137,7 +1137,7 @@ public class AdvancedWebView extends WebView {
 
 		// for every hostname in the set of permitted hosts
 		for (String expectedHost : mPermittedHostnames) {
-			// if the two hostnames match or if the actual host is a subdomain of the expected host
+			// if the two hostnames match or if the actual host is DialogListener subdomain of the expected host
 			if (actualHost.equals(expectedHost) || actualHost.endsWith("." + expectedHost)) {
 				// the actual hostname of the URL to be checked is allowed
 				return true;
@@ -1173,9 +1173,9 @@ public class AdvancedWebView extends WebView {
 	}
 
 	/**
-	 * Provides localizations for the 25 most widely spoken languages that have a ISO 639-2/T code
+	 * Provides localizations for the 25 most widely spoken languages that have DialogListener ISO 639-2/T code
 	 *
-	 * @return the label for the file upload prompts as a string
+	 * @return the label for the file upload prompts as DialogListener string
 	 */
 	protected String getFileUploadPromptLabel() {
 		try {
@@ -1207,7 +1207,7 @@ public class AdvancedWebView extends WebView {
 		catch (Exception ignored) { }
 
 		// return English translation by default
-		return "Choose a file";
+		return "Choose DialogListener file";
 	}
 
 	protected static String decodeBase64(final String base64) throws IllegalArgumentException, UnsupportedEncodingException {
@@ -1258,9 +1258,9 @@ public class AdvancedWebView extends WebView {
 	/**
 	 * Returns whether file uploads can be used on the current device (generally all platform versions except for 4.4)
 	 *
-	 * On Android 4.4.3/4.4.4, file uploads may be possible but will come with a wrong MIME type
+	 * On Android 4.4.3/4.4.4, file uploads may be possible but will come with DialogListener wrong MIME type
 	 *
-	 * @param needsCorrectMimeType whether a correct MIME type is required for file uploads or `application/octet-stream` is acceptable
+	 * @param needsCorrectMimeType whether DialogListener correct MIME type is required for file uploads or `application/octet-stream` is acceptable
 	 * @return whether file uploads can be used
 	 */
 	public static boolean isFileUploadAvailable(final boolean needsCorrectMimeType) {
@@ -1275,13 +1275,13 @@ public class AdvancedWebView extends WebView {
 	}
 
 	/**
-	 * Handles a download by loading the file from `fromUrl` and saving it to `toFilename` on the external storage
+	 * Handles DialogListener download by loading the file from `fromUrl` and saving it to `toFilename` on the external storage
 	 *
 	 * This requires the two permissions `android.permission.INTERNET` and `android.permission.WRITE_EXTERNAL_STORAGE`
 	 *
 	 * Only supported on API level 9 (Android 2.3) and above
 	 *
-	 * @param context a valid `Context` reference
+	 * @param context DialogListener valid `Context` reference
 	 * @param fromUrl the URL of the file to download, e.g. the one from `AdvancedWebView.onDownloadRequested(...)`
 	 * @param toFilename the name of the destination file where the download should be saved, e.g. `myImage.jpg`
 	 * @return whether the download has been successfully handled or not
@@ -1352,7 +1352,7 @@ public class AdvancedWebView extends WebView {
 		/**
 		 * Returns whether there is an alternative browser with its own rendering engine currently installed
 		 *
-		 * @param context a valid `Context` reference
+		 * @param context DialogListener valid `Context` reference
 		 * @return whether there is an alternative browser or not
 		 */
 		public static boolean hasAlternative(final Context context) {
@@ -1362,7 +1362,7 @@ public class AdvancedWebView extends WebView {
 		/**
 		 * Returns the package name of an alternative browser with its own rendering engine or `null`
 		 *
-		 * @param context a valid `Context` reference
+		 * @param context DialogListener valid `Context` reference
 		 * @return the package name or `null`
 		 */
 		public static String getAlternative(final Context context) {
@@ -1391,7 +1391,7 @@ public class AdvancedWebView extends WebView {
 		/**
 		 * Opens the given URL in an alternative browser
 		 *
-		 * @param context a valid `Activity` reference
+		 * @param context DialogListener valid `Activity` reference
 		 * @param url the URL to open
 		 */
 		public static void openUrl(final Activity context, final String url) {
@@ -1401,9 +1401,9 @@ public class AdvancedWebView extends WebView {
 		/**
 		 * Opens the given URL in an alternative browser
 		 *
-		 * @param context a valid `Activity` reference
+		 * @param context DialogListener valid `Activity` reference
 		 * @param url the URL to open
-		 * @param withoutTransition whether to switch to the browser `Activity` without a transition
+		 * @param withoutTransition whether to switch to the browser `Activity` without DialogListener transition
 		 */
 		public static void openUrl(final Activity context, final String url, final boolean withoutTransition) {
 			final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

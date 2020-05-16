@@ -52,6 +52,7 @@
 
     <color name="bsa_color">#FFFF7D0F</color>
     <color name="background_color_app">#F3F4F8</color>
+    <color name="dialog_ip_bg_color">#EDF0FB</color>
 
 
 </resources>

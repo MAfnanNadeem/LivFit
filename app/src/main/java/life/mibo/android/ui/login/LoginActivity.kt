@@ -13,6 +13,7 @@ import life.mibo.android.database.Database
 import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 
 
 class LoginActivity : BaseActivity() {
@@ -89,7 +90,11 @@ class LoginActivity : BaseActivity() {
 //        }
         //Database.getInstance(this).clearAllTables()
         // debug()
-        controller.autoLogin()
+        if (Utils.isConnected(this)) {
+            controller.autoLogin()
+        } else {
+            Toasty.snackbar(btn_register, R.string.unable_to_connect)
+        }
         if (DEBUG) {
             btn_login?.setOnLongClickListener {
                //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")

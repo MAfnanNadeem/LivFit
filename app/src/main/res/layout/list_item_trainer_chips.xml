@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/16/20 2:14 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/13/20 3:24 PM
+  ~  Mibo Hexa - app
+  -->
+
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chipText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    app:chipBackgroundColor="@color/white"
+    app:chipIconVisible="false"
+    app:chipSurfaceColor="@color/textColorApp"
+    app:chipCornerRadius="@dimen/grid_1x"
+    android:text="@string/city_hint"
+    app:checkedIconVisible="false"
+    app:closeIconVisible="false" />

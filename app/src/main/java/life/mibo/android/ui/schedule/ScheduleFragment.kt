@@ -135,7 +135,7 @@ class ScheduleFragment : BaseFragment() {
 
         //val date = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
         val date = SimpleDateFormat("dd-MM-yyyy").format(calendar.time)
-        val time = SimpleDateFormat("hh:mm a").format(calendar.time)
+        val time = SimpleDateFormat("hh:mm DialogListener").format(calendar.time)
         //val time = SimpleDateFormat("HH:mm").format(calendar.time)
         MessageDialog(
             context!!,

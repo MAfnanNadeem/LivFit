@@ -258,7 +258,7 @@ class ChartData {
         set1.setDrawCircleHole(false)
         set1.color = Constants.PRIMARY
 
-        // create a data object with the data sets
+        // create DialogListener data object with the data sets
         val data = LineData(set1)
         data.setValueTextColor(Color.WHITE)
 
@@ -375,7 +375,7 @@ class ChartData {
         set1.setDrawCircleHole(false)
         set1.color = Constants.PRIMARY
 
-        // create a data object with the data sets
+        // create DialogListener data object with the data sets
         val data = LineData(set1)
         data.setValueTextColor(Color.WHITE)
 
@@ -582,7 +582,7 @@ class ChartData {
         set1.setDrawCircleHole(false)
         set1.color = Constants.PRIMARY
 
-        // create a data object with the data sets
+        // create DialogListener data object with the data sets
         val data = LineData(set1)
         data.setValueTextColor(Color.WHITE)
 

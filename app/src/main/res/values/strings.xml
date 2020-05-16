@@ -107,6 +107,7 @@
     <string name="number_verified">Your mobile number is verified!</string>
     <string name="logout_message">Are You Sure You Want to Log Out</string>
     <string name="no_data_found">No Data Found</string>
+    <string name="user_has_no_service">This user has not added any services yet</string>
     <string name="no_heart_rate_data">No Heart Rate Data Available</string>
     <string name="session_expired">Session Expired Please log in again.</string>
     <!-- Page Titles -->
@@ -230,6 +231,7 @@
     <string name="calories">Calories</string>
     <string name="all_images">All Images</string>
     <string name="password_req"><![CDATA[Password must be 8 character in length, must contain 1 Upper & Lower case, 1 number and 1 special character]]></string>
+    <string name="pwd_req_not_match">Password requirement not matched</string>
     <string name="pwd_not_match">Confirm password not matched</string>
     <string name="skip">Skip</string>
     <string name="upload_profile_photo">Take a minute to upload profile photo.</string>
@@ -340,6 +342,8 @@
     <string name="auth_error">Authentication Error</string>
     <string name="linkedin_request_cancel">LinkedIn request cancel</string>
     <string name="create_your_profile">CREATE YOUR PROFILE</string>
+    <string name="update_your_profile2">PLEASE UPDATE YOUR PROFILE</string>
+    <string name="update_your_profile">UPDATE YOUR PROFILE</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="verify">VERIFY</string>
     <string name="upload">Upload</string>
@@ -360,6 +364,14 @@
     <string name="coming_soon">Coming Soon</string>
     <string name="professional_name">Professional Name</string>
     <string name="name_profession"><small> Name/Profession</small> </string>
+    <string name="no_professionals">No Professionals found</string>
+    <string name="search_services">Services</string>
+    <string name="search_professionals">Search Professionals</string>
+    <string name="invite_me">Invite Me</string>
+    <string name="no_service_found">No Service Found.</string>
+    <string name="services">Services</string>
+    <string name="specializations">Specializations</string>
+    <string name="certifications">Certifications</string>
 
 
 </resources>

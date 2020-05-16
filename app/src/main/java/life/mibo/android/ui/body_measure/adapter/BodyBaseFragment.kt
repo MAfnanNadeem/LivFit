@@ -8,6 +8,7 @@
 package life.mibo.android.ui.body_measure.adapter
 
 import life.mibo.android.ui.body_measure.MeasurementFragment
+import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 
 open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
 
@@ -20,6 +21,7 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
         log("onStop")
         super.onStop()
     }
+
     override fun onResume() {
         log("onResume")
         super.onResume()
@@ -40,39 +42,65 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
     }
 
     fun updateNextButton(enable: Boolean, title: String = "Continue") {
-        log("BodyBaseFragment updateNextButton")
-        val frg = parentFragment
-        if (frg is MeasurementFragment) {
-            frg.updateNext(enable, title)
-            return
-        }
-        val frg2 = parentFragmentManager?.fragments
-        if (frg2 != null && frg2.size > 0) {
-            for (frg3 in frg2) {
-                if (frg3 is MeasurementFragment) {
-                    frg3.updateNext(enable, title)
-                    return
+        try {
+            log("BodyBaseFragment updateNextButton ")
+            val frg = parentFragment
+            log("BodyBaseFragment updateNextButton $frg")
+            if (frg is MeasurementFragmentDialog) {
+                log("BodyBaseFragment MeasurementFragmentDialog updateNext")
+                frg.updateNext(enable, title)
+                return
+            }
+            if (frg is MeasurementFragment) {
+                frg.updateNext(enable, title)
+                return
+            }
+
+
+            val frg2 = parentFragmentManager?.fragments
+            log("BodyBaseFragment updateNextButton list $frg2")
+            if (frg2 != null && frg2.size > 0) {
+                for (frg3 in frg2) {
+                    log("BodyBaseFragment updateNextButton2 $frg3")
+                    if (frg3 is MeasurementFragment) {
+                        frg3.updateNext(enable, title)
+                        return
+                    }
                 }
             }
+        } catch (e: Exception) {
+
         }
+
     }
 
     fun updateSkipButton(enable: Boolean) {
-        log("BodyBaseFragment updateSkipButton")
-        val frg = parentFragment
-        if (frg is MeasurementFragment) {
-            frg.updateSkip(enable)
-            return
-        }
-        val frg2 = parentFragmentManager?.fragments
-        if (frg2 != null && frg2.size > 0) {
-            for (frg3 in frg2) {
-                if (frg3 is MeasurementFragment) {
-                    frg3.updateSkip(enable)
-                    return
+        try {
+            log("BodyBaseFragment updateSkipButton")
+            val frg = parentFragment
+            if (frg is MeasurementFragmentDialog) {
+                frg.updateSkip(enable)
+                return
+            }
+
+            if (frg is MeasurementFragment) {
+                frg.updateSkip(enable)
+                return
+            }
+
+            val frg2 = parentFragmentManager?.fragments
+            if (frg2 != null && frg2.size > 0) {
+                for (frg3 in frg2) {
+                    if (frg3 is MeasurementFragment) {
+                        frg3.updateSkip(enable)
+                        return
+                    }
                 }
             }
+        } catch (e: java.lang.Exception) {
+
         }
+
     }
 
     var test = true

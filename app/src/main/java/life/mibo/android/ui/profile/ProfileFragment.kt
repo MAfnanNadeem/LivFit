@@ -126,12 +126,12 @@ class ProfileFragment : BaseFragment() {
 
         //userImage?.setImageResource(R.drawable.ic_user_test)
         loadImage(userImage, R.drawable.ic_user_test, profileImg)
-        constraintLayout1?.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.colorAccent
-            )
-        )
+//        constraintLayout1?.setBackgroundColor(
+//            ContextCompat.getColor(
+//                requireContext(),
+//                R.color.colorAccent
+//            )
+//        )
         //setGradient(constraintLayout1, userImage.drawable)
     }
 

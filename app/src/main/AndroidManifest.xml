@@ -37,17 +37,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:allowBackup">
-        <activity
-            android:name="life.mibo.android.ui.rxl.QuickPlayDetailsActivity"
-            android:keepScreenOn="true"
-            android:label="@string/title_activity_quick_play_details"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+        tools:replace="android:allowBackup, android:icon, android:label, android:theme, android:name">
 
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
 
         <activity
             android:name="life.mibo.android.ui.login.LoginActivity"
@@ -60,7 +51,31 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="life.mibo.android.ui.rxl.QuickPlayDetailsActivity"
+            android:keepScreenOn="true"
+            android:label="@string/title_activity_quick_play_details"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
             android:name="life.mibo.android.ui.login.RegisterActivity"
+            android:theme="@style/AppTheme.FullScreen" />
+
+        <activity
+            android:name="life.mibo.android.ui.payments.PaymentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name="life.mibo.android.ui.payments.FailedPaymentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name="life.mibo.android.ui.payments.SuccessPaymentActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name="life.mibo.android.ui.main.MainActivity"
@@ -86,6 +101,11 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".ui.TestActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.telr.mobile.sdk.activity.WebviewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
@@ -142,7 +162,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="mibo_channel" />
         <!-- SOCIAL END -->
 
 

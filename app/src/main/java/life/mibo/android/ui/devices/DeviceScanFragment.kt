@@ -231,7 +231,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 //                        ContextCompat.getColor(
 //                            context!!,
 //                            R.color.color_button_yellow
-//                        ), b
+//                        ), MyWebViewClient
 //                    )
                     if (b != null)
                         button_connect_all.doneLoadingAnimation(0xFFFFA000.toInt(), b)

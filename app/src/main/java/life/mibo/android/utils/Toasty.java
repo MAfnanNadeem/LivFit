@@ -153,7 +153,7 @@ public class Toasty {
 
     @CheckResult
     public static Toast info(@NonNull Context context, @StringRes int message) {
-        return info(context, context.getString(message), Toast.LENGTH_SHORT, true);
+        return info(context, context.getString(message), Toast.LENGTH_SHORT, false);
     }
 
     @CheckResult

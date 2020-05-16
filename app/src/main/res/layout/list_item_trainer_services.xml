@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/13/20 3:09 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/13/20 3:09 PM
+  ~  Mibo Hexa - app
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    android:background="@drawable/profile_edittext"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:padding="@dimen/grid_2x"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        tools:text="Text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_service_session"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:lines="1"
+        android:paddingBottom="@dimen/grid_1x"
+        android:textColor="@color/textColor"
+        tools:text="Text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_service_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:lines="1"
+        android:paddingBottom="@dimen/grid_2x"
+        android:textColor="@color/textColor"
+        tools:text="Text" />
+</LinearLayout>

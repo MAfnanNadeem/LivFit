@@ -42,7 +42,9 @@ data class Member(
     @SerializedName("profileImg")
     var profileImg: String?,
     @SerializedName("type")
-    var type: String?
+    var type: String?,
+    @SerializedName("firstLogin")
+    var firstLogin: Int?
 ): BaseModel
 {
     fun id() : String{

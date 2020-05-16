@@ -29,7 +29,8 @@ import life.mibo.views.body.picker.RulerValuePickerListener
 
 class MeasureBodyDialog(
     var data: BodyShapeAdapter.Item,
-    var listner: ItemClickListener<BodyShapeAdapter.Item>
+    var listner: ItemClickListener<BodyShapeAdapter.Item>,
+    var unitType: String = ""
 ) :
     DialogFragment() {
 
@@ -56,17 +57,22 @@ class MeasureBodyDialog(
         isCancelable = false
         var rulerValuePicker: RulerValuePicker? = view?.findViewById(R.id.rulerValuePicker)
 
-        toggleButton?.isChecked = true
-        rulerValuePicker?.setMinMaxValue(
-            Calculate.cmToInch(data.minValue)
-                .toInt(),
-            Calculate.cmToInch(data.maxValue)
-                .toInt()
-        )
-        data.unit = "inches"
-        weight?.text = "${Calculate.cmToInch(
-            data.defValue
-        ).toInt()} ${data.unit}"
+        if (unitType.toLowerCase().contains("cm")) {
+            toggleButton?.isChecked = false
+            rulerValuePicker?.setMinMaxValue(data.minValue, data.maxValue)
+            data.unit = "cm"
+        } else {
+            toggleButton?.isChecked = true
+            rulerValuePicker?.setMinMaxValue(
+                Calculate.cmToInch(data.minValue)
+                    .toInt(),
+                Calculate.cmToInch(data.maxValue)
+                    .toInt()
+            )
+            data.unit = "inches"
+        }
+
+        weight?.text = "${Calculate.cmToInch(data.defValue).toInt()} ${data.unit}"
         //rulerValuePicker?.setMinMaxValue(data.minValue, data.maxValue)
         rulerValuePicker?.selectValue(
             Calculate.cmToInch(

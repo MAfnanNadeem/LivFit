@@ -23,12 +23,15 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.core.toIntOrZero
+import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.base.ResponseStatus
+import life.mibo.android.models.biometric.Biometric
 import life.mibo.android.models.create_session.*
+import life.mibo.android.models.login.Member
 import life.mibo.android.models.muscle.Muscle
-import life.mibo.android.models.session.Report
-import life.mibo.android.models.user_details.UserDetails
-import life.mibo.android.models.user_details.UserDetailsPost
+import life.mibo.android.models.trainer.SaveTrainerSessionReport
+import life.mibo.android.models.trainer.StartTrainerSession
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.ch6.adapter.Channel6Listener
 import life.mibo.android.ui.ch6.adapter.ChannelAdapter
@@ -63,6 +66,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     override fun onBackPressed(): Boolean {
         if (isSessionActive) {
+            if (isTrainer) {
+                sessionCompleteTrainerDialog(1)
+                return false
+            }
             MessageDialog(
                 fragment.requireContext(),
                 fragment.getString(R.string.stop_session),
@@ -95,6 +102,48 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             })
         d.setCancelable(false)
         d.show()
+    }
+
+    private fun sessionCompleteTrainerDialog(type: Int) {
+        log("sessionCompleteTrainerDialog")
+        val cancel: Boolean
+        val title: String?
+        val msg: String?
+        if (type == 1) {
+            cancel = false
+            title = fragment.getString(R.string.stop_session)
+            msg = fragment.getString(R.string.stop_session_message)
+        } else {
+            cancel = true
+            title = SessionManager.getInstance().userSession.program?.name
+            msg = fragment.getString(R.string.session_completed)
+        }
+
+        val calories = calculateCalories(
+            SessionManager.getInstance().userSession.program.borgRating,
+            getWeight().toDouble(),
+            getProgramTime()
+        )
+
+        FeedbackDialog(
+            fragment.requireContext(),
+            object : ItemClickListener<FeedbackDialog.Feedback> {
+                override fun onItemClicked(item: FeedbackDialog.Feedback?, position: Int) {
+                    // Toasty.info(fragment.requireContext(), "clicked $item").show()
+                    if (item != null) {
+                        if (item.id >= 1) {
+                            stopUserSession(userUid)
+                            saveTrainerSessionApi(trainerUserId, item.rating, item.feedback)
+                            isSessionActive = false
+                            cancelTimer()
+                            return
+                        }
+                    }
+                }
+
+            },
+            cancel, title, msg, "" + getProgramTime(), "$calories"
+        ).show()
     }
 
     private fun sessionCompleteDialog2(name: String?, time: String?, calory: String?) {
@@ -200,12 +249,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     private fun checkBattery(device: Device?) {
         device?.let {
             if (it.batteryLevel < 30) {
-                Toasty.error(
-                    this.fragment.requireContext(),
-                    R.string.low_battery,
-                    Toasty.LENGTH_SHORT,
-                    false
-                ).show()
+                Toasty.closeSnackbar(
+                    this.fragment.view,
+                    R.string.low_battery
+                )
 
             }
         }
@@ -301,6 +348,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
 
+    private var isTrainer = false
+    private var trainerSessionId: Int = 0
+    private var trainerUserId: Int = 0
+    private var trainerUserWeight: Int = 0
     // TODO Functions
     // 6ch
     // 1- Lower back  2- Shoulder  3- Upper back   4- Abs  5- Chest 6- Arms
@@ -310,6 +361,33 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         //    list = ArrayList()
         // list.clear()
         val list = ArrayList<Muscle>()
+        if (bundle.getBoolean("is_trainer", false)) {
+            trainerSessionId = bundle.getInt("session_id", 0)
+            trainerUserId = bundle.getInt("userId_id", 0)
+            val weight = bundle.getString("user_weight", "0")
+            try {
+                trainerUserWeight = weight?.toInt() ?: 0
+            } catch (e: java.lang.Exception) {
+                try {
+                    trainerUserWeight = weight.replace("[^0-9]".toRegex(), "").toInt()
+                } catch (e: java.lang.Exception) {
+
+                }
+
+            }
+            isTrainer = true
+            list.addAll(getTrainerList())
+            recycler.layoutManager = GridLayoutManager(fragment.context, 1)
+            adapter = ChannelAdapter(list, false)
+            adapter?.setListener(this)
+            log("setRecycler trainerSessionId $trainerSessionId - trainerUserId $trainerUserId trainerUserWeight $trainerUserWeight")
+            //val manager = GridLayoutManager(this@DeviceScanFragment.activity, 1)
+            //recycler.layoutManager = manager
+            recycler.adapter = adapter
+            return
+        }
+
+
         var serialize = bundle.getSerializable("program_channels")
         if (serialize is Collection<*>) {
             list.addAll(serialize as Collection<Muscle>)
@@ -328,7 +406,33 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         //val manager = GridLayoutManager(this@DeviceScanFragment.activity, 1)
         //recycler.layoutManager = manager
         recycler.adapter = adapter
+    }
 
+    fun getTrainerList(): ArrayList<Muscle> {
+
+//        bindMuscleGroup(muscleGroup1, 1, R.drawable.img_frontlegs);
+//        bindMuscleGroup(muscleGroup2, 2, R.drawable.img_backlegs);
+//        bindMuscleGroup(muscleGroup3, 3, R.drawable.img_glu);
+//        bindMuscleGroup(muscleGroup4, 4, R.drawable.img_lower_back);
+//        bindMuscleGroup(muscleGroup5, 5, R.drawable.img_uper_back);
+//        bindMuscleGroup(muscleGroup6, 6, R.drawable.img_shoulder2);
+//        bindMuscleGroup(muscleGroup7, 7, R.drawable.img_abs);
+//        bindMuscleGroup(muscleGroup8, 8, R.drawable.img_pec);
+//        bindMuscleGroup(muscleGroup9, 9, R.drawable.img_arms);
+//        bindMuscleGroup(muscleGroup10, 10, R.drawable.img_fullbodyback);
+
+        val list = ArrayList<Muscle>()
+        list.add(Muscle(1, "", "", 1, 100, R.drawable.ic_channel_back_neck))
+        list.add(Muscle(2, "", "", 2, 100, R.drawable.ic_channel_glutes))
+        list.add(Muscle(3, "", "", 3, 100, R.drawable.ic_channel_thighs))
+        list.add(Muscle(4, "", "", 4, 100, R.drawable.ic_channel_abdomen))
+        list.add(Muscle(5, "", "", 5, 100, R.drawable.ic_channel_chest))
+        list.add(Muscle(6, "", "", 6, 100, R.drawable.ic_channel_biceps))
+        list.add(Muscle(7, "", "", 7, 100, R.drawable.ic_channel_back_neck))
+        list.add(Muscle(8, "", "", 8, 100, R.drawable.ic_channel_back_neck))
+        list.add(Muscle(9, "", "", 9, 100, R.drawable.ic_channel_back_neck))
+        list.add(Muscle(10, "", "", 10, 100, R.drawable.ic_channel_back_neck))
+        return list
     }
 
     fun checkAndUpdateValues() {
@@ -397,7 +501,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             ).show()
             return
         }
-        startTime = SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Date())
+        startTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
         log("sendPlaySignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
         Observable.timer(0, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
@@ -555,6 +659,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun stopUserSession(uid: String) {
+        log("stopUserSession uid $uid")
         if (SessionManager.getInstance().userSession.booster == null) {
             Toasty.warning(
                 this.fragment.requireActivity(),
@@ -611,7 +716,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             )
         }
 
-        log("onMusclePlusClicked Plus group $id")
+        log("onMusclePlusClicked Plus group $id $govern")
         // updateItem(id)
     }
 
@@ -1164,13 +1269,18 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //        }
 //    }
 
-    // APIs
+    // TODO APIs
     var sessionId = ""
     var isBooked = false
     var isPaused = true
 
     private fun bookSession(programId: Int) {
         val member = Prefs.get(fragment.context).member ?: return
+
+        if (isTrainer) {
+            startTrainerSession(programId, member)
+            return
+        }
 
         fragment.getDialog()?.show()
         SimpleDateFormat.getDateInstance()
@@ -1238,8 +1348,78 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             })
     }
 
+    private fun startTrainerSession(programId: Int, member: Member) {
+
+        fragment.getDialog()?.show()
+        SimpleDateFormat.getDateInstance()
+        val post = StartTrainerSession.Data(member.locationID, trainerSessionId, 1, member.id)
+
+        //StartTrainerSession
+
+        API.request.getTrainerApi()
+            .startTrainerSession(StartTrainerSession(post, member.accessToken!!))
+            .enqueue(object : Callback<ResponseStatus> {
+
+                override fun onFailure(call: Call<ResponseStatus>, t: Throwable) {
+                    fragment.getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseStatus>,
+                    response: Response<ResponseStatus>
+                ) {
+                    fragment.getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+
+                            //sessionId = "${data.data?.sessionID}"
+                            Prefs.get(fragment.context).set("member_sessionId", trainerSessionId)
+                            isSessionActive = true
+                            startMemberSession()
+                            isBooked = true
+
+                        } else if (data.status.equals("error", true)) {
+                            Toasty.error(
+                                fragment.requireContext(),
+                                "${data.errors?.get(0)?.message}"
+                            ).show()
+
+                            MiboEvent.log("bookAndStartConsumerSession :: error $data")
+                            if (data.errors?.get(0)?.code == 401) {
+                                try {
+                                    fragment.startActivity(
+                                        Intent(
+                                            fragment.activity,
+                                            LoginActivity::class.java
+                                        )
+                                    )
+                                    fragment.activity?.finish()
+                                } catch (e: Exception) {
+                                    MiboEvent.log(e)
+                                }
+                            }
+                        }
+                    } else {
+                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+                    }
+                }
+            })
+    }
+
+
 
     private fun saveSessionApi(complete: Int = 1) {
+
+        if (isTrainer) {
+            sessionCompleteTrainerDialog(2)
+            return
+        }
+
         val member = Prefs.get(fragment.context).member ?: return
 
         fragment.getDialog()?.show()
@@ -1291,6 +1471,110 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                                 "" + getProgramTime(),
                                 "$calories"
                             )
+
+                        } else if (data.status.equals("error", true)) {
+                            Toasty.error(
+                                fragment.requireContext(),
+                                "${data.errors?.get(0)?.message}"
+                            ).show()
+                            MiboEvent.log("saveSessionReport :: error $data")
+
+                            if (data.errors?.get(0)?.code == 401) {
+                                try {
+                                    fragment.startActivity(
+                                        Intent(
+                                            fragment.activity,
+                                            LoginActivity::class.java
+                                        )
+                                    )
+                                    fragment.activity?.finish()
+                                } catch (e: Exception) {
+                                    MiboEvent.log(e)
+                                }
+                            }
+                        }
+                    } else {
+                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+                        log("SaveSession : " + response?.errorBody()?.toString())
+                    }
+                }
+            })
+    }
+
+
+    private fun saveTrainerSessionApi(
+        userId: Int,
+        userRating: Int?,
+        feedback: String?
+    ) {
+
+        log("saveTrainerSessionApi $userId : $userRating : $feedback")
+        val trainer = Prefs.get(fragment.context).member ?: return
+        fragment.getDialog()?.show()
+
+        val calories = calculateCalories(
+            SessionManager.getInstance().userSession.program.borgRating,
+            getWeight().toDouble(),
+            getProgramTime()
+        )
+
+        val m = SaveTrainerSessionReport.Member(
+            calories, adapter?.getChannels(),
+            userId, 0, 0, 0,
+            feedback, userRating?.plus(1), listOf(0, 0, 0, 0, 0)
+        );
+
+        val sessionData = SaveTrainerSessionReport.Data(
+            1,
+            getTime().toInt(),
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()),
+            trainer.locationID,
+            Collections.singletonList(m),
+            SessionManager.getInstance().userSession.program?.name,
+            "$trainerSessionId",
+            startTime,
+            trainer.id(),
+            feedback
+        )
+
+        val post = SaveTrainerSessionReport(sessionData, trainer?.accessToken)
+
+        log("saveTrainerSessionApi user > $calories : ${getTime()} - ${getProgramTime()}, $m")
+        log("saveTrainerSessionApi sessionData > $sessionData")
+        log("saveTrainerSessionApi SessionReport > $post")
+
+        API.request.getTrainerApi()
+            .saveTrainerSession(post)
+            .enqueue(object : Callback<ResponseStatus> {
+
+                override fun onFailure(call: Call<ResponseStatus>, t: Throwable) {
+                    fragment.getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                    log("SaveSession Error : " + t?.message)
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseStatus>,
+                    response: Response<ResponseStatus>
+                ) {
+                    fragment.getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+//                            Toasty.success(
+//                                fragment.requireContext(),
+//                                "${data.response?.message}",
+//                                Toasty.LENGTH_SHORT,
+//                                false
+//                            ).show()
+                            // sessionCompleteDialog(data.response?.message)
+                            navigateToHome()
+                            return
+
 
                         } else if (data.status.equals("error", true)) {
                             Toasty.error(
@@ -1397,48 +1681,71 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private var userWeight: Int = 0
+
     private fun getWeight(): Int {
+        if (isTrainer)
+            return trainerUserWeight
         if (userWeight != 0)
             return userWeight;
-        val s: Report? = Prefs.get(fragment.context).getJson(Prefs.SESSION, Report::class.java)
-        if (s?.sessionMemberReports != null) {
-            s.weight?.let {
-                userWeight = it.toIntOrZero()
-                return userWeight
-            }
+        try {
+            val w = Prefs.get(fragment.context)["user_weight"]
+            userWeight = w.replace("[^0-9]".toRegex(), "").toInt()
+            return userWeight;
+        } catch (e: java.lang.Exception) {
+            userWeight = 0
         }
-
-        val member = Prefs.get(fragment.context).member ?: return userWeight
-
-        fragment.getDialog()?.show()
-        val session = UserDetailsPost("${member.id}", member.accessToken)
-        API.request.getApi().userDetails(session).enqueue(object : Callback<UserDetails> {
-            override fun onFailure(call: Call<UserDetails>, t: Throwable) {
-                fragment.getDialog()?.dismiss()
-                t.printStackTrace()
-                Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
-            }
-
-            override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {
-
-                val data = response.body()
-                if (data != null && data.status.equals("success", true)) {
-                    data.data?.medicalHistory?.weight?.let {
-                        userWeight = it.toIntOrZero()
-                        //return userWeight
-                    }
-                } else {
-
-                    val err = data?.errors?.get(0)?.message
-                    if (err.isNullOrEmpty())
-                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
-                    else Toasty.error(fragment.requireContext(), err, Toasty.LENGTH_LONG).show()
-                }
-                fragment.getDialog()?.dismiss()
-            }
-        })
-
+        getBioMetric("$userWeight")
         return userWeight
+    }
+
+    private fun getBioMetric(weight: String?) {
+        if (weight != null && weight.isNotEmpty())
+            return
+        val member = Prefs.get(fragment.context).member
+        val memberId = member?.id() ?: ""
+        val token = member?.accessToken ?: ""
+        API.request.getApi().getMemberBiometrics(MemberPost(memberId, token, "GetMemberBiometrics"))
+            .enqueue(object : retrofit2.Callback<Biometric> {
+                override fun onFailure(call: Call<Biometric>, t: Throwable) {
+
+                }
+
+                override fun onResponse(
+                    call: Call<Biometric>, response: Response<Biometric>
+                ) {
+                    try {
+                        val body = response?.body()
+                        if (body != null && body.isSuccess()) {
+                            val list = body.data
+                            list.let {
+                                parseBiometric(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        MiboEvent.log(e)
+                    }
+
+                }
+
+            })
+    }
+
+    fun parseBiometric(bio: List<Biometric.Data?>?) {
+        if (bio != null) {
+            try {
+                val data = bio[bio.size - 1]
+                if (data?.weight != null) {
+                    userWeight = data.weight!!.toInt()
+                }
+                Prefs.get(fragment.context)["user_weight"] = "${data!!.weight} KG"
+                Prefs.get(fragment.context)["user_height"] = "${data!!.height} CM"
+                Prefs.get(fragment.context)["user_date"] =
+                    "${data.createdAt?.date?.split(" ")?.get(0)}"
+            } catch (e: Exception) {
+                // Prefs.get(fragment.context)["user_date"] = "${data.createdAt?.date}"
+            }
+
+        }
     }
 
     private fun getTime(): Long {

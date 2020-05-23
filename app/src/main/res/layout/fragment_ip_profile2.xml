@@ -69,6 +69,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="start"
+                        app:autoSizeMaxTextSize="22sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="1sp"
+                        app:autoSizeTextType="uniform"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toTopOf="@id/tv_desg"
@@ -82,25 +86,49 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="start"
+                        android:maxLines="1"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="1sp"
+                        app:autoSizeTextType="uniform"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_name"
-                        tools:text="@string/professional_name" />
+                        app:layout_constraintWidth_percent="0.5"
+                        tools:text="Independent Professional" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_address"
+                        android:id="@+id/tv_city"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="@color/white"
-                        app:layout_constraintBottom_toTopOf="@id/tv_desg"
+                        app:layout_constraintBottom_toTopOf="@id/tv_country"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintWidth_percent="0.5"
                         tools:text="Dubai, UAE" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_country"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:maxLines="1"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="1sp"
+                        app:autoSizeTextType="uniform"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_city"
+                        app:layout_constraintWidth_percent="0.5"
+                        tools:text="United Arab Emirates Emirates" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

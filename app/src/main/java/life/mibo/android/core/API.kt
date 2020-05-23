@@ -26,6 +26,7 @@ import life.mibo.android.models.register.RegisterResponse
 import life.mibo.android.models.rxl.*
 import life.mibo.android.models.send_otp.SendOTP
 import life.mibo.android.models.send_otp.SendOtpResponse
+import life.mibo.android.models.session.RescheduleMemberSession
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
 import life.mibo.android.models.trainer.*
@@ -33,6 +34,8 @@ import life.mibo.android.models.user_details.UserDetails
 import life.mibo.android.models.user_details.UserDetailsPost
 import life.mibo.android.models.verify_otp.VerifyOTP
 import life.mibo.android.models.verify_otp.VerifyOtpResponse
+import life.mibo.android.models.weight.CompareMemberWeight
+import life.mibo.android.models.weight.CompareWeightResponse
 import life.mibo.android.models.weight.WeightAll
 import life.mibo.android.models.weight.WeightAllResponse
 import life.mibo.android.ui.main.MiboApplication
@@ -109,6 +112,7 @@ class API {
         //http://test.mibo.world/api/v1/
         //const val baseUrl = "http://test.mibo.world/api/consumer/"
         const val baseUrl = "https://test.mibolivfit.club/api/consumer/"
+        const val trainerUrl = "https://test.mibolivfit.club/api/v1/"
     }
 
     fun getApi(): ApiService {
@@ -121,6 +125,13 @@ class API {
 //            }
 //        });
         return Retrofit.Builder().baseUrl(baseUrl).client(okhttp!!)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+            .create(ApiService::class.java)
+    }
+
+
+    fun getTrainerApi(): ApiService {
+        return Retrofit.Builder().baseUrl(trainerUrl).client(okhttp!!)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(ApiService::class.java)
     }
@@ -283,6 +294,11 @@ class API {
         @POST("getMemberBiometrics")
         fun getMemberBiometrics(@Body data: MemberPost): Call<Biometric>
 
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("compareMemberWeight")
+        fun compareMemberWeight(@Body data: CompareMemberWeight): Call<CompareWeightResponse>
+
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("saveFirebaseToken")
         fun saveFirebaseToken(@Body data: FirebaseTokenPost): Call<ResponseData>
@@ -298,6 +314,36 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("sendInviteRequestToTrainer")
         fun inviteProfessional(@Body data: InviteProfessional): Call<TrainerInviteResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberCalendar")
+        fun getMemberCalendar(@Body data: MemberCalendarPost): Call<MemberCalendar>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("rescheduleMemberSession")
+        fun rescheduleMemberSession(@Body data: RescheduleMemberSession): Call<ResponseData>
+
+        // TRAINER - INDEPENDENT PROFESSIONAL APIs
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getTrainerCalendarSession")
+        fun getTrainerCalendarSession(@Body data: TrainerCalendarSession): Call<TrainerCalendarResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("startSession")
+        fun startTrainerSession(@Body data: StartTrainerSession): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveSessionReport")
+        fun saveTrainerSession(@Body data: SaveTrainerSessionReport): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("memberAttendance")
+        fun trainerMemberAttendance(@Body data: TrainerCalendarSession): Call<TrainerCalendarResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchPrograms")
+        fun trainerSearchPrograms(@Body data: ProgramPost): Call<SearchPrograms>
+
 
     }
 }

@@ -8,12 +8,14 @@
 package life.mibo.android.core.security
 
 import android.content.Context
+import android.util.Base64
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import java.util.*
 
 class EncryptedPrefs(var context: Context) {
     //  String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
-    private val PREFS_NAME = "prefs_name"
+    private val PREFS_NAME = "livfit_mibo_club"
     private val ENCRYPTED_PREFS_NAME = "livfit_mibo_world"
 
     private val sharedPrefs by lazy {
@@ -35,7 +37,7 @@ class EncryptedPrefs(var context: Context) {
     }
 
     fun set(key: String, value: String?, encrypted: Boolean = false) {
-        val prefs = if (encrypted) encryptedSharedPrefs else sharedPrefs
+        val prefs = if (encrypted) sharedPrefs else sharedPrefs
         with(prefs.edit()) {
             putString(key, value)
             commit()
@@ -43,7 +45,9 @@ class EncryptedPrefs(var context: Context) {
     }
 
     fun get(key: String, defValue: String? = null, encrypted: Boolean = false): String? {
-        val prefs = if (encrypted) encryptedSharedPrefs else sharedPrefs
+        val prefs = if (encrypted) sharedPrefs else sharedPrefs
         return prefs.getString(key, defValue)
     }
+
+    //fun encode(text: String) = Base64.encodeToString()
 }

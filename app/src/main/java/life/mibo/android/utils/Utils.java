@@ -11,7 +11,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Base64;
 import android.view.View;
 import android.view.animation.Animation;
@@ -25,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+
+import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -176,6 +180,38 @@ public class Utils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        if (context == null) return false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager != null) {
+
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        return true;
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        return true;
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                        return true;
+                    }
+                }
+            } else {
+
+                try {
+                    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                    if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                        return true;
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+        return false;
     }
 
     public static int getWifiSignalLevel(int rssi, int level) {
@@ -466,5 +502,18 @@ public class Utils {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (sp * fontScale + 0.5f);
     }
+
+    public static void loadImage(ImageView imageView, String url, boolean genderMale) {
+        if (imageView == null)
+            return;
+        if (url != null && url.length() > 0) {
+            Glide.with(imageView).load(url).fitCenter().error(R.drawable.ic_user_test).into(imageView);
+        } else {
+            if (genderMale)
+                imageView.setImageResource(R.drawable.ic_user_test);
+            else imageView.setImageResource(R.drawable.ic_user_test);
+        }
+    }
+
 
 }

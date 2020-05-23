@@ -10,10 +10,14 @@ package life.mibo.android.ui.calendar
 
 import com.kizitonwose.calendarview.model.CalendarMonth
 import life.mibo.android.models.calories.CaloriesData
+import life.mibo.android.models.member.MemberCalendar
+import life.mibo.android.models.trainer.TrainerCalendarResponse
 import life.mibo.android.ui.home.HomeItem
 
 interface CalendarObserver {
     fun onDataReceived(list: ArrayList<CaloriesData>)
+    fun onCalendar(list: List<MemberCalendar.Data?>?)
+    fun onTrainerCalendar(data: TrainerCalendarResponse.Data?)
     fun onItemClicked(item: HomeItem?)
     fun onMonthChanged(calender: CalendarMonth)
 }

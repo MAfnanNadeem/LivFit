@@ -63,7 +63,7 @@ public class SuccessPaymentActivity extends BaseActivity {
                                            X = CVV not checked
                                            E = Error, unable to check CVV */
             status.getAuth().getTranref(); //The payment gateway transaction reference allocated to this request.
-            Log.d("hany", status.getAuth().getTranref());
+            Logger.e("hany", status.getAuth().getTranref());
             status.getAuth().getCardfirst6(); // The first 6 digits of the card number used in the transaction, only for version 2 is submitted in Tran -> Version
 
             //setTransactionDetails(status.getAuth().getTranref(), status.getAuth().getCardlast4());

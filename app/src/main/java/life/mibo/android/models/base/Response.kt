@@ -11,6 +11,6 @@ package life.mibo.android.models.base
 import com.google.gson.annotations.SerializedName
 
 data class Response(
-    @SerializedName("message")
+    @SerializedName("message", alternate = arrayOf("Message"))
     var message: String?
 )

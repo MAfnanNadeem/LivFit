@@ -28,9 +28,9 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import life.mibo.hardware.core.Logger;
 import life.mibo.android.R;
 import life.mibo.android.utils.Utils;
+import life.mibo.hardware.core.Logger;
 
 
 public class DashboardItem extends FrameLayout {
@@ -146,7 +146,27 @@ public class DashboardItem extends FrameLayout {
         //addViews(icon, title, header);
     }
 
+    TextView textViewTitle;
+    TextView textViewHeader;
+
+    public boolean updateHeader(String header) {
+        if (textViewHeader != null) {
+            textViewHeader.setText(header);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateTitle(String header) {
+        if (textViewTitle != null) {
+            textViewTitle.setText(header);
+            return true;
+        }
+        return false;
+    }
+
     public void addViews(int imageId, int iconId, String header, String title) {
+
         //Logger.e("DashboardItem addViews image="+imageId+" icon="+iconId+" header="+header+" text="+title);
         ConstraintSet set = new ConstraintSet();
         LinearLayout layout = new LinearLayout(this.getContext());
@@ -167,26 +187,28 @@ public class DashboardItem extends FrameLayout {
 
 
         if (!Utils.isEmpty(header)) {
-            TextView tv2 = new TextView(getContext());
-            tv2.setText(header);
-            tv2.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            tv2.setId(View.generateViewId());
-            tv2.setTextColor(Color.WHITE);
-            tv2.setTypeface(null, Typeface.BOLD);
+            textViewHeader = new TextView(getContext());
+            textViewHeader.setText(header);
+            textViewHeader.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            textViewHeader.setId(View.generateViewId());
+            textViewHeader.setTextColor(Color.WHITE);
+            textViewHeader.setSingleLine();
+            textViewHeader.setTypeface(null, Typeface.BOLD);
             //tv2.setPadding(0,getDp(8),0,0);
-            tv2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            layout.addView(tv2);
+            textViewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            layout.addView(textViewHeader);
         }
 
         if (!Utils.isEmpty(title)) {
-            TextView tv1 = new TextView(getContext());
-            tv1.setText(title);
-            tv1.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            tv1.setId(View.generateViewId());
-            tv1.setPadding(0, getDp(8), 0, 0);
-            tv1.setTextColor(Color.WHITE);
-            tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            layout.addView(tv1);
+            textViewTitle = new TextView(getContext());
+            textViewTitle.setText(title);
+            textViewTitle.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            textViewTitle.setId(View.generateViewId());
+            textViewTitle.setPadding(0, getDp(8), 0, 0);
+            textViewTitle.setSingleLine();
+            textViewTitle.setTextColor(Color.WHITE);
+            textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            layout.addView(textViewTitle);
         }
 
 //        if (imageId != 0) {
@@ -229,6 +251,7 @@ public class DashboardItem extends FrameLayout {
         layout.setId(View.generateViewId());
         layout.setHorizontalGravity(Gravity.CENTER);
 
+        ///constraintLayout.removeAllViews();
         constraintLayout.addView(layout);
         set.clone(constraintLayout);
         set.connect(layout.getId(), ConstraintSet.TOP, imageView.getId(), ConstraintSet.TOP, 0);
@@ -251,6 +274,20 @@ public class DashboardItem extends FrameLayout {
 
         //headerView.setVisibility(GONE);
        // textView.setVisibility(GONE);
+    }
+
+    public void updateText(String text) {
+        for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+            View view = constraintLayout.getChildAt(i);
+            if (view instanceof LinearLayout) {
+                for (int j = 0; j < constraintLayout.getChildCount(); j++) {
+                    View v2 = constraintLayout.getChildAt(j);
+                    if (v2 instanceof TextView) {
+                        ((TextView) v2).setText(text);
+                    }
+                }
+            }
+        }
     }
 
     private float scale = 0f;

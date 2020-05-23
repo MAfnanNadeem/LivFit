@@ -79,6 +79,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         //iv_dashboard_1.setGradient(intArrayOf(Color.LTGRAY, Color.GRAY, Color.DKGRAY))
         val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
+        isMember = member?.isMember() ?: true
 //        iv_user_pic.setImageDrawable(
 //            ContextCompat.getDrawable(
 //                this@HomeFragment.context!!,
@@ -98,12 +99,39 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
+        setBottomView()
         checkIntro()
         weather()
+        if (!isMember)
+            tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
     }
 
     fun checkBody() {
 
+    }
+
+    private var isMember = false
+    fun setBottomView() {
+        ib_item_1?.setOnClickListener {
+            navigateTo(HomeItem(HomeItem.Type.PROFILE))
+        }
+        ib_item_2?.setOnClickListener {
+            navigateTo(HomeItem(HomeItem.Type.MEASURE))
+            // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+            //drawerItemClicked(R.id.navigation_bio_summary)
+        }
+        ib_item_3?.setOnClickListener {
+            navigateTo(HomeItem(HomeItem.Type.MY_ACCOUNT))
+            //drawerItemClicked(R.id.navigation_account)
+        }
+        ib_item_4?.setOnClickListener {
+            navigateTo(HomeItem(HomeItem.Type.SERVICES))
+            //navigate(navigation_search_trainer)
+        }
+        tv_item_fab?.setOnClickListener {
+            if (isMember)
+                navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
+        }
     }
 
     private fun checkIntro() {
@@ -177,7 +205,9 @@ class HomeFragment : BaseFragment(), HomeObserver {
                     object : ItemClickListener<String> {
                         override fun onItemClicked(item: String?, position: Int) {
                             log("onItemClicked $item")
-                            //adapter?.updateWeather(item)
+                            activity?.runOnUiThread {
+                                adapter?.updateWeather(item)
+                            }
                         }
 
                     })
@@ -297,9 +327,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         updateData(list)
     }
 
+    fun navigateTo(item: HomeItem?) {
+        navigate(Navigator.HOME, item)
+    }
 
     override fun onItemClicked(item: HomeItem?) {
-        navigate(Navigator.HOME, item)
+        navigateTo(item)
 //        when (item?.type) {
 //            HomeItem.Type.HEART -> {
 //
@@ -513,7 +546,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         isStoped = true
         super.onStop()
         //controller.onStop()
-        navigate(HOME_VIEW, false)
+        //navigate(HOME_VIEW, false)
         EventBus.getDefault().unregister(this)
     }
 

@@ -232,7 +232,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 return true
             }
         } catch (e: Exception) {
-
+            MiboEvent.log(e)
         }
         return false
     }

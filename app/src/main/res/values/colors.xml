@@ -10,12 +10,16 @@
     <color name="white_eee">#eee</color>
     <color name="transparent">#00000000</color>
     <color name="grey">#aaa</color>
+    <color name="grey_888">#888</color>
     <color name="light_blink_grey">#aaaaaa</color>
     <color name="grey_ddd">#bbb</color>
     <color name="textColor">#313131</color>
     <color name="textColor2">#606060</color>
     <color name="textColorApp">#58468C</color>
+    <color name="textColorAppDisable">#9958468C</color>
+    <color name="textColorApp2">#FF8A73</color>
     <color name="button_color_app">#FF8A73</color>
+    <color name="button_color_app_disable">#9FFF7373</color>
     <color name="textColor_weight">#F7FF03</color>
 
     <!--toast-->

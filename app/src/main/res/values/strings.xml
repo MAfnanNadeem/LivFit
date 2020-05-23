@@ -46,7 +46,7 @@
     <string name="available_devices">Available Devices</string>
     <string name="logged_succes">Successfully logged</string>
     <string name="enter_username">Please enter Email Id</string>
-    <string name="no_device_connected">No Device Connected</string>
+    <string name="no_device_connected">Device Not Connected</string>
     <string name="low_battery">Low Battery! Device may be turned off during session</string>
     <string name="session_completed">Session Completed!</string>
     <string name="stop_session">Stop Session?</string>
@@ -372,6 +372,31 @@
     <string name="services">Services</string>
     <string name="specializations">Specializations</string>
     <string name="certifications">Certifications</string>
+    <string name="settings">Settings</string>
+    <string name="search_products">Search Products</string>
+    <string name="book">Book</string>
+    <string name="reschedule">Reschedule</string>
+    <string name="font_sans_serif_black">sans-serif-black</string>
+    <string name="font_sans_serif_medium">sans-serif-medium</string>
+    <string name="font_roboto">sans-serif-black</string>
+    <string name="font_sans_serif">sans-serif</string>
+    <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
+    <string name="schedules">Schedules</string>
+    <string name="checkout">Checkout</string>
+    <string name="full_name"><small>Full Name</small></string>
+    <string name="customer_feedback">Customer Feedback</string>
+    <string name="your_feedback">Your Feedback</string>
+    <string name="enter_your_feedback">Enter Your Feedback</string>
+    <string name="save">Save</string>
+
+
+    <string-array name="names">
+        <item>Terrible</item>
+        <item>Bad</item>
+        <item>Average</item>
+        <item>Good</item>
+        <item>Great</item>
+    </string-array>
 
 
 </resources>

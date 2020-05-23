@@ -18,9 +18,13 @@ import life.mibo.android.models.session.SessionReport
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     HomeFragment.Listener {
@@ -71,17 +75,22 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
     fun getDashboard(trainer: Boolean = false) {
         if (isDashboard) {
-            var w = ""
+            var weight = ""
+            var weather = "0 "
             try {
-                w = Prefs.get(fragment.context)["user_weight"]
+                weight = Prefs.get(fragment.context)["user_weight"]
+                val date = SimpleDateFormat("yymmddhh").format(Date())
+                weather = Prefs.getTemp(fragment.context)["weather_$date"]
             } catch (e: java.lang.Exception) {
 
             }
+            if (Utils.isEmpty(weather))
+                weather = "0 "
             if (trainer) {
-                getTrainerMenu(w)
+                getTrainerMenu(weight, weather)
             } else {
-                getBioMetric(w)
-                getMemberMenu(w)
+                getBioMetric(weight)
+                getMemberMenu(weight, weather)
             }
             return
         }
@@ -289,7 +298,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     }
 
 
-    fun getMemberMenu(weight: String) {
+    fun getMemberMenu(weight: String, weather: String) {
         val list = ArrayList<HomeItem>()
 
 
@@ -362,7 +371,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "",
-                "0 " + 0x00B0.toChar(),
+                weather + " " + 0x00B0.toChar(),
                 HomeItem.Type.WEATHER,
                 R.drawable.ic_dashboard_weather,
                 R.drawable.dashboard_item_bg_3
@@ -396,13 +405,102 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         observer.onDataReceived(list)
     }
 
-    private fun getTrainerMenu(weight: String) {
+    fun getMemberMenu(
+        weight: String,
+        calories: String,
+        hr: String,
+        steps: String,
+        weather: String
+    ) {
+        val list = ArrayList<HomeItem>()
+
+
+        list.add(
+            HomeItem(
+                "",
+                weight,
+                HomeItem.Type.WEIGHT,
+                R.drawable.ic_dashboard_weight,
+                R.drawable.dashboard_item_bg_10
+            )
+        )
+        list.add(
+            HomeItem(
+                "$hr " + fragment.getString(R.string.bmp_unit), "",
+                HomeItem.Type.HEART,
+                R.drawable.ic_rxl_heart_unselect,
+                R.drawable.dashboard_item_bg_5
+            )
+        )
+
+        list.add(
+            HomeItem(
+                fragment.getString(R.string.calendar_title),
+                "",
+                HomeItem.Type.CALENDAR,
+                R.drawable.ic_dashboard_calendar,
+                R.drawable.dashboard_item_bg_2
+            )
+        )
+        list.add(
+            HomeItem(
+                fragment.getString(R.string.steps),
+                steps,
+                HomeItem.Type.STEPS,
+                R.drawable.ic_dashboard_steps,
+                R.drawable.dashboard_item_bg_11
+            )
+        )
+        list.add(
+            HomeItem(
+                fragment.getString(R.string.calories),
+                calories,
+                HomeItem.Type.CALORIES,
+                R.drawable.ic_body_summary_bsa,
+                R.drawable.dashboard_item_bg_1
+            )
+        )
+//        list.add(
+//            HomeItem(
+//                fragment.getString(R.string.schedule),
+//                "",
+//                HomeItem.Type.SCHEDULE,
+//                R.drawable.ic_dashboard_schedule,
+//                R.drawable.dashboard_item_bg_1
+//            )
+//        )
+
+
+        list.add(
+            HomeItem(
+                fragment.getString(R.string.my_body),
+                "",
+                HomeItem.Type.MEASURE,
+                R.drawable.ic_dashboard_my_body,
+                R.drawable.dashboard_item_bg_9
+            )
+        )
+
+        list.add(
+            HomeItem(
+                "",
+                "$weather " + 0x00B0.toChar(),
+                HomeItem.Type.WEATHER,
+                R.drawable.ic_dashboard_weather,
+                R.drawable.dashboard_item_bg_3
+            )
+        )
+        isMember = true
+        observer.onDataReceived(list)
+    }
+
+    private fun getTrainerMenu(weight: String, weather: String) {
         val list = ArrayList<HomeItem>()
         list.add(
             HomeItem(
                 "My Services", "",
                 HomeItem.Type.WEIGHT,
-                0,
+                R.drawable.ic_nfc_black_24dp,
                 R.drawable.dashboard_item_bg_4
             )
         )
@@ -412,7 +510,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 "My Account",
                 "",
                 HomeItem.Type.MY_ACCOUNT,
-                R.drawable.ic_nfc_black_24dp,
+                R.drawable.ic_account_box_24dp,
                 R.drawable.dashboard_item_bg_9
             )
         )
@@ -451,7 +549,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         list.add(
             HomeItem(
-                fragment.getString(R.string.myobooster_6ch),
+                fragment.getString(R.string.myobooster_10ch),
                 "",
                 HomeItem.Type.BOOSTER_SCAN,
                 R.drawable.ic_dashboard_booster,
@@ -462,7 +560,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "",
-                "0 " + 0x00B0.toChar(),
+                weather + " " + 0x00B0.toChar(),
                 HomeItem.Type.WEATHER,
                 R.drawable.ic_dashboard_weather,
                 R.drawable.dashboard_item_bg_3

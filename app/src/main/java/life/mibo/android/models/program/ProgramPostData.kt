@@ -12,5 +12,6 @@ import com.google.gson.annotations.SerializedName
 data class ProgramPostData(
     @SerializedName("PageSize") var pageSize: String = "50",
     @SerializedName("PageNo") var pageNo: String = "1",
-    @SerializedName("Search") var search: String = ""
+    @SerializedName("Search") var search: String = "",
+    @SerializedName("TrainerId") var trainerId: String = ""
 )

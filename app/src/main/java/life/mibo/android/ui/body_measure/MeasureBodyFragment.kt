@@ -151,6 +151,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
         return list
     }
 
+    var lastUnit = ""
     fun showPicker(data: BodyShapeAdapter.Item?) {
         data?.let {
             MeasureBodyDialog(
@@ -159,12 +160,14 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     override fun onItemClicked(item: BodyShapeAdapter.Item?, position: Int) {
                         if (item != null) {
                             if (item.unit.toLowerCase().contains("cm")) {
+                                lastUnit = "cm"
                                 Calculate.getMeasureData()
                                     .addMeasurement(item.id, getInt(item.value))
                                 // item.value = String.format("%.2f", Calculate.cmToInch(item.value))
                                 // item.unit = "inches"
 
                             } else {
+                                lastUnit = "inches"
                                 Calculate.getMeasureData()
                                     .addMeasurement(item.id, Calculate.inchToCm(item.value).toInt())
                             }
@@ -179,7 +182,8 @@ class MeasureBodyFragment : BodyBaseFragment() {
                         calculateType()
                     }
 
-                }).show(childFragmentManager, "BodyShapeDialog")
+                }, lastUnit
+            ).show(childFragmentManager, "BodyShapeDialog")
         }
     }
 

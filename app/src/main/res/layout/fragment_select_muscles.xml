@@ -136,7 +136,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_1x"
-        android:background="@drawable/button_shape_rounded"
+        android:background="@drawable/button_shape_primary"
         android:text="@string/dialog_continue"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"

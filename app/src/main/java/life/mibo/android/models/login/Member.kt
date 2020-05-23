@@ -44,7 +44,9 @@ data class Member(
     @SerializedName("type")
     var type: String?,
     @SerializedName("firstLogin")
-    var firstLogin: Int?
+    var firstLogin: Int?,
+    @SerializedName("LocationID")
+    var locationID: String?
 ): BaseModel
 {
     fun id() : String{

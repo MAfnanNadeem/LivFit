@@ -6,22 +6,13 @@
   E8E7F5
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--    <VideoView-->
-    <!--        android:id="@+id/videoView"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_alignParentStart="true"-->
-    <!--        android:layout_alignParentTop="true"-->
-    <!--        android:visibility="gone"-->
-    <!--        android:layout_alignParentEnd="true"-->
-    <!--        android:layout_alignParentBottom="true" />-->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -29,6 +20,7 @@
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="56dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -64,11 +56,13 @@
                 app:layout_constraintTop_toBottomOf="@id/textView2">
 
 
-                <life.mibo.views.CircleImageView
+                <life.mibo.views.HexagonImageView
                     android:id="@+id/iv_user_pic"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
                     android:layout_marginStart="@dimen/grid_2x"
+                    app:civ_type="hexa"
+                    android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -88,17 +82,17 @@
                 <TextView
                     android:id="@+id/tv_user_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/grid_2x"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_large"
                     android:gravity="center"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textColor="@color/textColor"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_user_pic"
                     app:layout_constraintStart_toEndOf="@+id/iv_user_pic"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/iv_user_pic"
                     tools:text="Name" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -115,4 +109,131 @@
     </androidx.core.widget.NestedScrollView>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/grid_1x">
+
+            <ImageButton
+                android:id="@+id/ib_item_1"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_bottom_profile"
+                android:tint="@color/textColor2"
+                app:layout_constraintBottom_toTopOf="@id/tv_item_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <TextView
+                android:id="@+id/tv_item_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/profile"
+                android:textColor="@color/textColor"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/ib_item_1"
+                app:layout_constraintStart_toStartOf="@id/ib_item_1"
+                app:layout_constraintTop_toBottomOf="@id/ib_item_1" />
+
+            <ImageButton
+                android:id="@+id/ib_item_2"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_bottom_bio"
+                android:tint="@color/textColor2"
+                app:layout_constraintBottom_toTopOf="@id/tv_item_2"
+                app:layout_constraintStart_toEndOf="@+id/ib_item_1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <TextView
+                android:id="@+id/tv_item_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/measurement"
+                android:textColor="@color/textColor"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/ib_item_2"
+                app:layout_constraintStart_toStartOf="@id/ib_item_2"
+                app:layout_constraintTop_toBottomOf="@id/ib_item_2" />
+
+            <ImageButton
+                android:id="@+id/ib_item_3"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_nfc_black_24dp"
+                android:tint="@color/textColor2"
+                app:layout_constraintBottom_toTopOf="@id/tv_item_3"
+                app:layout_constraintEnd_toStartOf="@+id/ib_item_4"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <TextView
+                android:id="@+id/tv_item_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/my_account"
+                android:textColor="@color/textColor"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/ib_item_3"
+                app:layout_constraintStart_toStartOf="@id/ib_item_3"
+                app:layout_constraintTop_toBottomOf="@id/ib_item_3" />
+
+
+            <ImageButton
+                android:id="@+id/ib_item_4"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_search_black_24dp"
+                android:tint="@color/textColor2"
+                app:layout_constraintBottom_toTopOf="@id/tv_item_4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <TextView
+                android:id="@+id/tv_item_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/search_services"
+                android:textColor="@color/textColor"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/ib_item_4"
+                app:layout_constraintStart_toStartOf="@id/ib_item_4"
+                app:layout_constraintTop_toBottomOf="@id/ib_item_4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/tv_item_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_shopping_cart_black_24dp"
+        android:tint="@color/white"
+        app:layout_anchor="@id/bottom_bar" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

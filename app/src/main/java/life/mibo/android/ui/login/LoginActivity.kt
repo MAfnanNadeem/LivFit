@@ -91,7 +91,7 @@ class LoginActivity : BaseActivity() {
         //Database.getInstance(this).clearAllTables()
         // debug()
         if (Utils.isConnected(this)) {
-            controller.autoLogin()
+             controller.autoLogin()
         } else {
             Toasty.snackbar(btn_register, R.string.unable_to_connect)
         }

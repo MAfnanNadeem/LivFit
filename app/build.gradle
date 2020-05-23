@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 5
-        versionName "0.1.02"
+        versionCode 6
+        versionName "0.1.06"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -47,7 +47,9 @@ android {
         debug {
             //applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
+           // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+            //signingConfig signingConfigs.config
            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
@@ -144,8 +146,9 @@ dependencies {
     //implementation 'com.twilio:verification:1.0.9'
     //implementation 'com.twilio:verification:+'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'com.github.kizitonwose:CalendarView:0.3.1'
+    implementation 'com.github.kizitonwose:CalendarView:0.3.4'
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    //implementation 'com.github.sujithkanna:smileyrating:2.0.0'
     // bug in library, directly imported
     //implementation 'com.ramotion.fluidslider:fluid-slider:0.3.1'
 

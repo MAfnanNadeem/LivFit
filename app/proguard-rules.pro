@@ -41,6 +41,7 @@
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class com.android.vending.licensing.ILicensingService
+-keep class androidx.** { *; }
 
 # For using GSON @Expose annotation
 -keepattributes *Annotation*

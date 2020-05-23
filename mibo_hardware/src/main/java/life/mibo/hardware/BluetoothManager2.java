@@ -762,7 +762,7 @@ public class BluetoothManager2 {
                 } else {
                     readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
                     notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
-                            BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString(), true);
+                            BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString(), false);
                 }
                 //gatt.requestMtu()
                 //indicateBleFast(bleDevice, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),

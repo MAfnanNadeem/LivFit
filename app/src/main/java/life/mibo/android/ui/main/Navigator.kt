@@ -27,6 +27,9 @@ interface Navigator {
         const val SELECT_SUITS= 120;
         const val BODY_MEASURE= 121;
         const val BODY_MEASURE_SUMMARY = 122;
+        const val RESCHEDULE = 123;
+        const val SCHEDULE = 124;
+        const val SELECT_TRAINER_SESSION = 125;
         const val POST = 201;
         const val LOGOUT = 202;
         const val PIC_UPLOADED = 203;

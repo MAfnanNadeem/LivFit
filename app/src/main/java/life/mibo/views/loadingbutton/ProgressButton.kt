@@ -120,7 +120,7 @@ internal fun ProgressButton.init(attrs: AttributeSet? = null, defStyleAttr: Int 
     }
 
     val tempDrawable = typedArrayBg?.getDrawable(0)
-        ?: ContextCompat.getDrawable(getContext(), R.drawable.button_shape_rounded)!!.let {
+        ?: ContextCompat.getDrawable(getContext(), R.drawable.button_shape_primary)!!.let {
             when (it) {
                 is ColorDrawable -> GradientDrawable().apply { setColor(it.color) }
                 else -> it

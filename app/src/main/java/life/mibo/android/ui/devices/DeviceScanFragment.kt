@@ -37,6 +37,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.ScanComplete
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
+import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.devices.adapter.ScanDeviceAdapter
 import life.mibo.android.ui.heart_rate.HeartRateFragment
@@ -44,6 +45,7 @@ import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.ui.trainer.TrainerCalendarDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.CommunicationManager
@@ -156,6 +158,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         button_next?.text = getString(R.string.next)
 
         button_connect_all?.setOnClickListener {
+            //testCal()
             if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED) {
                 connectAllDevices(isRxl)
             }
@@ -202,8 +205,15 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                             return
                         }
                         if (i.isBooster) {
-                            SessionManager.getInstance().userSession.booster = i
-                            navigate(Navigator.SELECT_SUITS, null)
+                            if (member?.isMember()) {
+                                SessionManager.getInstance().userSession.booster = i
+                                navigate(Navigator.SELECT_SUITS, null)
+                            } else {
+                                TrainerCalendarDialog(CalendarListener).show(
+                                    childFragmentManager,
+                                    "TrainerCalendarDialog"
+                                )
+                            }
                             return
                         }
                     }
@@ -215,6 +225,37 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             //else
         }
     }
+
+    fun testCal() {
+        TrainerCalendarDialog(CalendarListener).show(childFragmentManager, "TrainerCalendarDialog")
+//        FeedbackDialog(requireContext(), object : ItemClickListener<FeedbackDialog.Feedback> {
+//            override fun onItemClicked(item: FeedbackDialog.Feedback?, position: Int) {
+//                Toasty.info(requireContext(), "clicked $item").show()
+//            }
+//
+//        }).show()
+    }
+
+    private var CalendarListener =
+        object : ItemClickListener<TrainerCalendarDialog.TrainerSession> {
+
+            override fun onItemClicked(
+                session: TrainerCalendarDialog.TrainerSession?,
+                position: Int
+            ) {
+                if (session != null) {
+                    val bundle = Bundle()
+                    bundle.putBoolean("is_trainer", true)
+                    bundle.putInt("session_id", session.sessionId)
+                    bundle.putInt("userId_id", session.memberId)
+                    bundle.putString("user_weight", session.weight)
+                    bundle.putString("member_image", session.profile)
+                    bundle.putString("member_name", session.member)
+                    navigate(Navigator.SELECT_PROGRAM, bundle)
+                } else Toasty.snackbar(view, R.string.error_occurred)
+            }
+
+        }
 
     var isConnectTrigger = false
 
@@ -246,7 +287,10 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                         else
                             button_connect_all?.text = getString(R.string.connect)
                         button_connect_all?.background =
-                            ContextCompat.getDrawable(context!!, R.drawable.button_shape_rounded)
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.button_shape_primary
+                            )
                         //else tv_connect_all?.visibility = View.GONE
                     }
 
@@ -292,7 +336,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         val wifi = !isWifi
         val txt = if (wifi) getString(R.string.wifi) else getString(R.string.bluetooth)
         MessageDialog.show(
-            this.activity!!,
+            this.requireActivity(),
             getString(R.string.scan) + " $txt",
             getString(R.string.scan_again) + " $txt",
             getString(R.string.scan),
@@ -717,7 +761,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             }
         } else {
             MessageDialog.info(
-                context!!,
+                requireContext(),
                 "Location Required",
                 "Please enable location to scan BLE devices", "enable"
             ) {

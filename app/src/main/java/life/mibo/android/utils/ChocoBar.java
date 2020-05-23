@@ -440,7 +440,7 @@ public class ChocoBar {
 
         private Snackbar make() {
             if (view == null)
-                throw new IllegalStateException("ChocoBar Error: You must set an Activity or a View before making a snack");
+                throw new IllegalStateException("ChocoBar Error: You must set an Activity or DialogListener View before making DialogListener snack");
 
             if (textResId != 0)
                 text = view.getResources().getText(textResId);

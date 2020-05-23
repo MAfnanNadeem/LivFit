@@ -515,6 +515,7 @@ class MeasurementFragment : BaseFragment() {
         }
     }
 
+    //var bodyShapePage = 0
     private fun saveData(
         memberId: String, token: String, data: Calculate.MeasureData,
         bmr: Double, ibw: Double, bsa: Double, bodyWater: Double,
@@ -524,13 +525,16 @@ class MeasurementFragment : BaseFragment() {
 
         getDialog()?.show()
         //val data = Calculate.getMeasureData();
+        var shape = data.shapeType
+        if(shape.isEmpty())
+            shape = Calculate.getShapeType(Calculate.bodyShapePage)
         // Math.round()
         val post = PostBiometric.Data(
             data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, data.chest,
             data.elbow, energy, ffmi, data.forearm, data.height, "cm",
             data.highHips, data.hips, data.waist, data.wrist, data.weight,
-            wHeightRatio, wHipRatio, weightLoss, "cm", ibw,
-            leanBodyMass, "${data.activityType}", "${data.goalType}", "${data.shapeType}", memberId
+            wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
+            leanBodyMass, "${data.activityType}", "${data.goalType}", "$shape", memberId
         )
 
         API.request.getApi().saveMemberBiometrics(PostBiometric(post, token))

@@ -49,7 +49,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_plus" />
 
-    <com.github.siyamed.shapeimageview.HexagonImageView
+    <life.mibo.views.HexagonImageView
         android:id="@+id/hexagonImageView"
         android:layout_width="wrap_content"
         android:layout_height="96dp"
@@ -58,8 +58,8 @@
         app:layout_constraintEnd_toStartOf="@+id/iv_plus"
         app:layout_constraintStart_toEndOf="@+id/iv_play"
         app:layout_constraintTop_toTopOf="parent"
-        app:siBorderColor="@color/colorAccent"
-        app:siBorderWidth="4dp" />
+        app:siBorderColor="@color/grey_ddd"
+        app:siBorderWidth="1dp" />
 
 
     <androidx.constraintlayout.widget.Guideline

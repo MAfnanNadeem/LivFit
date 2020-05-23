@@ -61,6 +61,9 @@ class MeasureBodyDialog(
             toggleButton?.isChecked = false
             rulerValuePicker?.setMinMaxValue(data.minValue, data.maxValue)
             data.unit = "cm"
+            weight?.text = "${data.defValue} ${data.unit}"
+            rulerValuePicker?.selectValue(data.defValue)
+
         } else {
             toggleButton?.isChecked = true
             rulerValuePicker?.setMinMaxValue(
@@ -70,14 +73,14 @@ class MeasureBodyDialog(
                     .toInt()
             )
             data.unit = "inches"
+            weight?.text = "${Calculate.cmToInch(data.defValue).toInt()} ${data.unit}"
+
+            rulerValuePicker?.selectValue(Calculate.cmToInch(data.defValue).toInt())
         }
 
-        weight?.text = "${Calculate.cmToInch(data.defValue).toInt()} ${data.unit}"
+
         //rulerValuePicker?.setMinMaxValue(data.minValue, data.maxValue)
-        rulerValuePicker?.selectValue(
-            Calculate.cmToInch(
-                data.defValue
-            ).toInt())
+
         rulerValuePicker?.setValuePickerListener(object : RulerValuePickerListener {
             override fun onValueChange(feetValue: String?) {
 

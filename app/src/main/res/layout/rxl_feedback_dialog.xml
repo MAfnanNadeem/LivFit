@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/21/20 11:41 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 3/10/20 11:54 AM
+  ~  Mibo Hexa - app 
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/bg_feedback_dialog"
+        android:maxHeight="300dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_completed"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_margin="@dimen/grid_1x"
+            android:src="@drawable/mibo_livfit_logo"
+            android:tint="@color/textColor" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_program"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="Program Name"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            android:text="Are you sure want to finish this session?" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/bg_rxl_list_item"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/grid_1x">
+
+                <ImageView
+                    android:id="@+id/iv_image1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_1x"
+                    android:src="@drawable/rxl_score_pods_time" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_name1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="@string/total_time"
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/hexa_image1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:src="@drawable/rxl_score_time" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_value1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/hexa_image1"
+                android:layout_alignEnd="@id/hexa_image1"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/grid_1x"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:fontFamily="@string/font_sans_serif_black"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                tools:text="100" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginEnd="@dimen/grid_2x">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/bg_rxl_list_item"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/grid_1x">
+
+                <ImageView
+                    android:id="@+id/iv_image2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_1x"
+                    android:src="@drawable/ic_booster_energy" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_name2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="@string/calories_burnt"
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/hexa_image2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:src="@drawable/rxl_score_hits" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_value2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/hexa_image2"
+                android:layout_alignEnd="@id/hexa_image2"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/grid_1x"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:fontFamily="@string/font_sans_serif_black"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                tools:text="100" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:fontFamily="@string/font_sans_serif_medium"
+            android:text="@string/customer_feedback"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+
+        <life.mibo.views.rating.SmileRating
+            android:id="@+id/smile_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:showLine="false"
+            app:isIndicator="false"
+            app:textNonSelectionColor="@color/grey_ddd"
+            app:textSelectionColor="@color/textColorApp" />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:fontFamily="@string/font_sans_serif_medium"
+            android:text="@string/your_feedback"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginEnd="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_2x"
+            android:background="@drawable/profile_edittext"
+            android:hint="@string/enter_your_feedback"
+            android:lines="3"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/grey" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/grid_2x"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="@dimen/grid_1x"
+                android:layout_height="wrap_content"
+                android:background="@drawable/login_button_primary"
+                android:text="@string/cancel"
+                android:textColor="@color/white" />
+
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_1x"
+                android:background="@drawable/login_button_accent"
+                android:text="@string/save"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

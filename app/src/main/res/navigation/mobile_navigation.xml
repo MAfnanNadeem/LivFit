@@ -198,9 +198,25 @@
         android:label="@string/search_professionals"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
+        android:id="@+id/navigation_catolog"
+        android:name="life.mibo.android.ui.catalog.CatalogFragment"
+        android:label="@string/search_products"
+        tools:layout="@layout/fragment_body_profile" />
+    <fragment
         android:id="@+id/navigation_settings"
         android:name="life.mibo.android.ui.settings.SettingsFragment"
-        android:label="Settings"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_body_profile" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="life.mibo.android.ui.trainer.NotificationsFragment"
+        android:label="@string/notifications"
+        tools:layout="@layout/fragment_body_profile" />
+    <fragment
+        android:id="@+id/navigation_reschedule"
+        android:name="life.mibo.android.ui.calendar.RescheduleFragment"
+        android:label="@string/reschedule"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
         android:id="@+id/navigation_webview"

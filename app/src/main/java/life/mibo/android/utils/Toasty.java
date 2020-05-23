@@ -62,6 +62,20 @@ public class Toasty {
     }
 
     @CheckResult
+    public static Snackbar closeSnackbar(View view, @StringRes int message) {
+        Snackbar finalBar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
+        finalBar.setAction(R.string.close, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (finalBar != null)
+                    finalBar.dismiss();
+            }
+        });
+        finalBar.show();
+        return finalBar;
+    }
+
+    @CheckResult
     public static Toast normal(@NonNull Context context, @StringRes int message) {
         return normal(context, context.getString(message), Toast.LENGTH_SHORT, null, false);
     }

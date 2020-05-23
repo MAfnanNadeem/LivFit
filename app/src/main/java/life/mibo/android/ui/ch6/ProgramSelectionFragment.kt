@@ -7,6 +7,8 @@
 
 package life.mibo.android.ui.ch6
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,15 +21,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_select_program.*
-import life.mibo.hardware.SessionManager
-import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.database.Database
 import life.mibo.android.events.EventBusEvent
+import life.mibo.android.models.login.Member
 import life.mibo.android.models.program.Program
 import life.mibo.android.models.program.ProgramPost
+import life.mibo.android.models.program.ProgramPostData
 import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
@@ -35,6 +37,8 @@ import life.mibo.android.ui.ch6.adapter.ProgramAdapter
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.select_program.ProgramDialog
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.SessionManager
+import life.mibo.hardware.events.ChangeColorEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -59,17 +63,25 @@ class ProgramSelectionFragment : BaseFragment() {
         return i.inflate(R.layout.fragment_select_program, c, false)
     }
 
+    var isTrainer = false
+    var sessionId: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
        // log("onViewCreated $arguments")
         if (arguments != null)
-            stateBundle = arguments!!
+            stateBundle = requireArguments()
+
+        isTrainer = stateBundle.getBoolean("is_trainer", false)
+        sessionId = stateBundle.getInt("session_id", 0)
+
+
+
         button_next?.setOnClickListener {
           onNextClicked()
         }
         button_next?.isEnabled = false
-        loadPrograms()
+        loadPrograms(isTrainer)
         programAdapter = ProgramAdapter(programs, object : ItemClickListener<Program> {
             override fun onItemClicked(item: Program?, position: Int) {
                 item?.name?.let {
@@ -93,9 +105,14 @@ class ProgramSelectionFragment : BaseFragment() {
 //        }
 
 
-//        select_color?.setOnClickListener {
-//            colorDialog?.showColors()
-//        }
+        if (isTrainer) {
+            trainerView?.visibility = View.VISIBLE
+            select_color?.setOnClickListener {
+                colorDialog?.showColors()
+            }
+            updateDefColor()
+        }
+
         button_next.isEnabled = false
         //life.mibo.hardware.core.Logger.e("Program Select ", stateBundle)
 
@@ -104,7 +121,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
     private fun onNextClicked(){
         if (program == null) {
-            Toasty.info(context!!, "Please select program").show()
+            Toasty.info(requireContext(), "Please select program").show()
             return
         }
         Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(
@@ -141,14 +158,55 @@ class ProgramSelectionFragment : BaseFragment() {
             log("loadProgramObservables ${list?.size}")
         }.subscribe()
     }
-    private fun loadPrograms() {
+
+    private fun loadPrograms(isTrainer: Boolean = false) {
         // loadProgramObservables()
         val member =
             Prefs.get(context).member ?: return
+        if (isTrainer) {
+            loadTrainerPrograms(member)
+            return
+        }
+
 
         getDialog()?.show()
         val post = ProgramPost(auth = member.accessToken!!)
         API.request.getApi().searchPrograms2(post).enqueue(object :
+            Callback<SearchPrograms> {
+            override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
+                getDialog()?.dismiss()
+                t.printStackTrace()
+                Toasty.error(context!!, getString(R.string.unable_to_connect)).show()
+            }
+
+            override fun onResponse(
+                call: Call<SearchPrograms>,
+                response: Response<SearchPrograms>
+            ) {
+                getDialog()?.dismiss()
+
+                val data = response.body()
+                if (data != null) {
+                    if (data.status.equals("success", true)) {
+                        parse(data.data?.programs)
+                    } else if (data.status.equals("error", true)) {
+                        Toasty.error(context!!, "${data.errors?.get(0)?.message}").show()
+                    }
+                } else {
+                    Toasty.error(context!!, R.string.error_occurred).show()
+                }
+            }
+        })
+    }
+
+    private fun loadTrainerPrograms(member: Member) {
+        // loadProgramObservables()
+
+
+        getDialog()?.show()
+        val data = ProgramPostData(trainerId = member.id())
+        val post = ProgramPost(item = data, auth = member.accessToken!!)
+        API.request.getTrainerApi().trainerSearchPrograms(post).enqueue(object :
             Callback<SearchPrograms> {
             override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
                 getDialog()?.dismiss()
@@ -227,17 +285,20 @@ class ProgramSelectionFragment : BaseFragment() {
 //        }, ProgramDialog.PROGRAMS)
 
         colorDialog =
-            ProgramDialog(context!!, ArrayList(), object : ItemClickListener<Program> {
+            ProgramDialog(requireContext(), ArrayList(), object : ItemClickListener<Program> {
 
                 override fun onItemClicked(item: Program?, position: Int) {
                     //Toasty.info(context!!, "$position").show()
 
                     item?.id?.let {
-                        circleImage?.visibility = View.VISIBLE
-                        circleImage?.circleColor = it
+                        // circleImage?.visibility = View.VISIBLE
+                        //select_color?.setBackgroundColor(it)
+                        changeColor(it)
                         val d = SessionManager.getInstance().userSession.booster
-                        d.colorPalet = it
-                        EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                        if (d != null) {
+                            d.colorPalet = it
+                            EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                        }
                         stateBundle.putInt("program_color", it)
                     }
                 }
@@ -246,6 +307,25 @@ class ProgramSelectionFragment : BaseFragment() {
 
        // Database.getInstance(context!!).insert(programs)
 
+    }
+
+    fun updateDefColor() {
+        Single.just("").doOnSuccess {
+            val d = SessionManager.getInstance().userSession.booster
+            if (d != null) {
+                d.colorPalet = Color.RED
+                EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+            }
+        }.subscribe()
+    }
+
+    fun changeColor(color: Int) {
+        val drawable = select_color.background
+        if (drawable is GradientDrawable) {
+            drawable.setColor(color)
+        } else {
+            select_color.setBackgroundColor(color)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -278,8 +358,7 @@ class ProgramSelectionFragment : BaseFragment() {
             val name: String? = data.getString("program_name", null)
             val color: Int = data.getInt("program_color", 0)
             if (color != 0) {
-                circleImage?.visibility = View.VISIBLE
-                circleImage?.circleColor = color
+                changeColor(color)
                 //val d = SessionManager.getInstance().userSession.booster
                 //d.colorPalet = color
                 //EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))

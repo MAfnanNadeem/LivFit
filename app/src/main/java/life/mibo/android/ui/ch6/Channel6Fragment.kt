@@ -8,11 +8,12 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_channel6.*
-import life.mibo.hardware.events.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.utils.Utils
+import life.mibo.hardware.events.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,6 +50,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
     }
 
     var test = true
+    var isTrainer = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         log("onViewCreated")
@@ -56,6 +58,8 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         if (arguments != null)
             stateBundle = requireArguments()
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
+        life.mibo.hardware.core.Logger.e("Channel6Fragment : stateBundle ", stateBundle)
+        isTrainer = stateBundle.getBoolean("is_trainer", false)
         controller.onViewCreated(view, stateBundle)
 
         iv_plus?.setOnClickListener {
@@ -91,10 +95,15 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         //Utils.loadImage(hexagonImageView, "", R.drawable.ic_person_black_24dp)
         // life.mibo.hardware.core.Logger.e("Session Start ", stateBundle)
 
+
         val name: String? = stateBundle.getString("program_name", null);
         name?.let {
             activity?.title = it
         }
+
+        if (isTrainer)
+            Utils.loadImage(hexagonImageView, stateBundle.getString("member_image", ""), true)
+        else Utils.loadImage(hexagonImageView, Prefs.get(context).member?.profileImg, true)
     }
 
 

@@ -61,11 +61,11 @@ class SummaryFragment : BaseFragment() {
 
         isMale = arguments?.getBoolean("profile_gender", false) ?: false
 
-//        val fab = view?.findViewById<View?>(R.id.fab_add)
-//        fab?.setOnClickListener {
-//            //Toasty.snackbar(it, "clicked")
-//            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
-//        }
+        val fab = view?.findViewById<View?>(R.id.fab_add)
+        fab?.setOnClickListener {
+            //Toasty.snackbar(it, "clicked")
+            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+        }
     }
 
     override fun onPlusClicked(): Boolean {

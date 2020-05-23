@@ -92,7 +92,6 @@ import life.mibo.android.ui.main.Navigator.Companion.SELECT_SUITS
 import life.mibo.android.ui.main.Navigator.Companion.SESSION
 import life.mibo.android.ui.main.Navigator.Companion.SESSION_POP
 import life.mibo.android.ui.payments.PaymentActivity
-import life.mibo.android.ui.payments.Payments
 import life.mibo.android.ui.rxl.adapter.ReflexModel
 import life.mibo.android.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.android.ui.rxl.impl.CreateCourseAdapter
@@ -159,7 +158,7 @@ class MainActivity : BaseActivity(), Navigator {
             setDrawerIcon(drawerLayout)
 
             setNavigationView()
-            setBottomView()
+            //setBottomView()
 //        drawer.setupWithNavController(navController)
 
             //getScanned()
@@ -245,60 +244,60 @@ class MainActivity : BaseActivity(), Navigator {
         return member_
     }
 
-    fun setBottomView() {
-        ib_item_1?.setOnClickListener {
-            navigate(HomeItem.Type.PROFILE, null)
-        }
-        ib_item_2?.setOnClickListener {
-            navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
-            //drawerItemClicked(R.id.navigation_bio_summary)
-        }
-        ib_item_3?.setOnClickListener {
-            //drawerItemClicked(R.id.navigation_account)
-        }
-        ib_item_4?.setOnClickListener {
-            //navigate(navigation_search_trainer)
-            navigate(
-                0, R.id.navigation_search_trainer
-            )
-        }
-        tv_item_fab?.setOnClickListener {
-            if (childPlusClicked()) {
-                //popup(R.id.navigation_home)
-                //navigation?.setCheckedItem(R.id.nav_home)
-                //isHome = true
-            }
-        }
-    }
+//    fun setBottomView() {
+//        ib_item_1?.setOnClickListener {
+//            navigate(HomeItem.Type.PROFILE, null)
+//        }
+//        ib_item_2?.setOnClickListener {
+//            navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+//            //drawerItemClicked(R.id.navigation_bio_summary)
+//        }
+//        ib_item_3?.setOnClickListener {
+//            //drawerItemClicked(R.id.navigation_account)
+//        }
+//        ib_item_4?.setOnClickListener {
+//            //navigate(navigation_search_trainer)
+//            navigate(
+//                0, R.id.navigation_search_trainer
+//            )
+//        }
+//        tv_item_fab?.setOnClickListener {
+//            if (childPlusClicked()) {
+//                //popup(R.id.navigation_home)
+//                //navigation?.setCheckedItem(R.id.nav_home)
+//                //isHome = true
+//            }
+//        }
+//    }
 
     fun updateFabIcon(type: Int, bundle: Bundle) {
-        val icon = bundle.getInt("fab_icon", 0)
-        val visible = bundle.getBoolean("fab_visible", true)
-        if (visible) {
-            tv_item_fab?.visibility = View.VISIBLE
-            if (icon != 0)
-                tv_item_fab?.setImageResource(icon)
-
-        } else {
-            tv_item_fab?.visibility = View.GONE
-        }
+//        val icon = bundle.getInt("fab_icon", 0)
+//        val visible = bundle.getBoolean("fab_visible", true)
+//        if (visible) {
+//            tv_item_fab?.visibility = View.VISIBLE
+//            if (icon != 0)
+//                tv_item_fab?.setImageResource(icon)
+//
+//        } else {
+//            tv_item_fab?.visibility = View.GONE
+//        }
     }
 
     fun updateFabIcon(type: Int) {
-        if (type != 0) {
-            when (type) {
-                100 -> tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
-                101 -> tv_item_fab?.setImageResource(R.drawable.ic_add_black_24dp)
-                200 -> {
-                    tv_item_fab?.visibility = View.GONE
-                    bottom_bar?.visibility = View.GONE
-                }
-                0, 300 -> {
-                    tv_item_fab?.visibility = View.VISIBLE
-                    bottom_bar?.visibility = View.VISIBLE
-                }
-            }
-        }
+//        if (type != 0) {
+//            when (type) {
+//                100 -> tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
+//                101 -> tv_item_fab?.setImageResource(R.drawable.ic_add_black_24dp)
+//                200 -> {
+//                    tv_item_fab?.visibility = View.GONE
+//                    bottom_bar?.visibility = View.GONE
+//                }
+//                0, 300 -> {
+//                    tv_item_fab?.visibility = View.VISIBLE
+//                    bottom_bar?.visibility = View.VISIBLE
+//                }
+//            }
+//        }
     }
 
     private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
@@ -348,35 +347,24 @@ class MainActivity : BaseActivity(), Navigator {
 //        }
         drawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
         drawerToggle.drawerArrowDrawable?.color = Color.DKGRAY
-        drawerToggle.setToolbarNavigationClickListener {
-            log("setToolbarNavigationClickListener")
-            if (!drawer.isDrawerOpen(GravityCompat.START))
-                drawer.openDrawer(GravityCompat.START)
-        }
-        drawer.addDrawerListener(drawerToggle);
-        drawerToggle.isDrawerIndicatorEnabled = true;
-        drawerToggle.syncState();
+
+
         //drawerToggle.isDrawerIndicatorEnabled = true
         //setupActionBarWithNavController(navController, drawer)
 //        NavigationUI.setupActionBarWithNavController(
 //            this, navController, AppBarConfiguration(navController.graph, drawerLayout)
 //        )
-        toolbar!!.setupWithNavController(navController, drawer)
+
         //too.setupWithNavController(navController, config)
         drawer.post {
             drawerToggle.syncState()
         }
 
-//        drawerToggle.setToolbarNavigationClickListener {
-//            log("setToolbarNavigationClickListener")
-//        }
-//        toolbar?.setOnMenuItemClickListener {
-//            log("setOnMenuItemClickListener")
-//            true
-//        }
+
         toolbar.setNavigationOnClickListener {
             log("setNavigationOnClickListener")
             if (childBackPressed()) {
+                log("setNavigationOnClickListener")
                 NavigationUI.navigateUp(
                     navController,
                     AppBarConfiguration(navController.graph, drawerLayout)
@@ -384,7 +372,15 @@ class MainActivity : BaseActivity(), Navigator {
                 // navController.navigateUp()
             }
         }
-
+        drawerToggle.setToolbarNavigationClickListener {
+            log("setToolbarNavigationClickListener")
+            if (!drawer.isDrawerOpen(GravityCompat.START))
+                drawer.openDrawer(GravityCompat.START)
+        }
+        drawer.addDrawerListener(drawerToggle);
+        drawerToggle.isDrawerIndicatorEnabled = true;
+        toolbar!!.setupWithNavController(navController, drawer)
+        drawerToggle.syncState();
 
 //        toolbar?.setNavigationOnClickListener {
 //            log("setNavigationOnClickListener")
@@ -652,6 +648,7 @@ class MainActivity : BaseActivity(), Navigator {
             EventBus.getDefault().postSticky(DeviceStatusEvent(device))
         }
     }
+
     //[77, 66, 82, 88, 76, 0, -64, 2, 26, -116, -43, -65]
     private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseCommands $code : data " + command.contentToString())
@@ -971,6 +968,10 @@ class MainActivity : BaseActivity(), Navigator {
 
     // TODO Navigation
     override fun navigateTo(type: Int, data: Any?) {
+        if (data is HomeItem) {
+            navigate(data.type)
+            return
+        }
         if (data is HomeItem.Type) {
             navigate(data)
             return
@@ -1118,12 +1119,12 @@ class MainActivity : BaseActivity(), Navigator {
             }
             Navigator.BODY_MEASURE -> {
                 popup(R.id.navigation_home)
-                // var bundle: Bundle? = null
-                // if (data is Bundle)
-                //   bundle = data
-                showMeasureDialog()
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                //showMeasureDialog()
 
-                //navigate(0, R.id.navigation_measurement, bundle)
+                navigate(0, R.id.navigation_measurement, bundle)
                 //updateBar(true)
             }
 
@@ -1165,6 +1166,22 @@ class MainActivity : BaseActivity(), Navigator {
                 else if (data is Bundle)
                     updateFabIcon(0, data)
 
+            }
+
+            Navigator.RESCHEDULE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_reschedule, bundle)
+            }
+            Navigator.SCHEDULE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(
+                    R.id.action_navigation_home_to_schedule,
+                    R.id.navigation_schedule, bundle
+                )
             }
 
             else -> {
@@ -1250,8 +1267,14 @@ class MainActivity : BaseActivity(), Navigator {
 
             R.id.nav_test3 -> {
                 lastId = -1
+                val bundle = Bundle()
+                bundle.putBoolean("is_rxl", true)
+                navigate(
+                    R.id.action_navigation_home_to_navigation_scan,
+                    R.id.navigation_devices, bundle
+                )
                 // SessionManager.getInstance().userSession.createDummy()
-                startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
                 //Payments.testPayment(this@MainActivity)
                 //startScanning(false)
                 //updateMenu()
@@ -1288,7 +1311,10 @@ class MainActivity : BaseActivity(), Navigator {
                 return
             }
             R.id.nav_notifications -> {
-                comingSoon()
+                navigate(
+                    0,
+                    R.id.navigation_notifications
+                )
                 return
             }
 
@@ -1404,7 +1430,7 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.WEIGHT -> {
                 comingSoon()
                 return
-               // navigate(R.id.action_navigation_home_to_navigation_weight, 0)
+                // navigate(R.id.action_navigation_home_to_navigation_weight, 0)
                 // navigateFragment(R.id.navigation_weight)
             }
             HomeItem.Type.ADD -> {
@@ -1494,6 +1520,18 @@ class MainActivity : BaseActivity(), Navigator {
                 //comingSoon()
                 return
             }
+            HomeItem.Type.SERVICES -> {
+                navigate(0, R.id.navigation_search_trainer)
+                return
+            }
+            HomeItem.Type.CENTER_BUTTON -> {
+                navigate(0, R.id.navigation_catolog)
+                return
+            }
+            HomeItem.Type.MY_ACCOUNT -> {
+                comingSoon()
+                return
+            }
             else -> {
                 Toasty.warning(this, "ItemClicked - $type").show()
             }
@@ -1576,7 +1614,8 @@ class MainActivity : BaseActivity(), Navigator {
                         ) {
                             Logger.e("${response.body()}")
                             try {
-                                testMessage("Welcome Back "+getMember()?.firstName)
+                                if (MiboApplication.DEBUG)
+                                    testMessage("Welcome Back " + getMember()?.firstName)
                             } catch (e: Exception) {
 
                             }

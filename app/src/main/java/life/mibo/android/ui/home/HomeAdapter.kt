@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.android.R
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.hardware.core.Logger
 import life.mibo.views.DashboardItem
 import java.util.*
 
@@ -78,13 +79,17 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
     }
 
     fun updateWeather(weight: String?) {
+        Logger.e("updateWeather $weight ${weight?.length}")
         if (weight == null)
             return
         var notify = false
         for (l in list) {
             for (i in l) {
                 if (i.type == HomeItem.Type.WEATHER) {
-                    i.headerText = weight + 0x00B0.toChar()
+                    Logger.e("updateWeather HomeItem.Type.WEATHER found $weight")
+                    //i.title = weight.trim() + 0x00B0.toChar()
+                    i.headerText = weight.trim() + 0x00B0.toChar()
+                    i.updateHeader = true
                     notify = true
                     break
                 }
@@ -92,6 +97,7 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
         }
         if (notify)
             notifyDataSetChanged()
+        Logger.e("updateWeather notify $notify")
     }
 
     class HomeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -126,39 +132,71 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
             item1!!.layoutParams = params
             item2!!.layoutParams = params
             item3!!.layoutParams = params
-
+            var id = 0
             if (odd) {
                item2?.visibility = View.GONE
 
-                if (items.size > 0) {
-                    item1?.addViews(
-                        items[0].imageRes, items[0].iconRes, items[0].headerText, items[0].title
-                    )
+
+
+                if (items.isNotEmpty()) {
+                    id = 0
+                    if (items[id].updateHeader) {
+                        item1?.updateHeader(items[id].headerText)
+                        items[id].updateHeader = false
+                    } else {
+                        item1?.addViews(
+                            items[id].imageRes, items[id].iconRes, items[id].headerText, items[id].title
+                        )
+                    }
                     item1?.visibility = View.VISIBLE
                 }
                 if (items.size > 1) {
-                    item3?.addViews(
-                        items[1].imageRes, items[1].iconRes, items[1].headerText, items[1].title
-                    )
+                    id = 1
+                    if (items[id].updateHeader) {
+                        item3?.updateHeader(items[id].headerText)
+                        items[id].updateHeader = false
+                    } else {
+                        item3?.addViews(
+                            items[id].imageRes, items[id].iconRes, items[id].headerText, items[id].title
+                        )
+                    }
                     item3?.visibility = View.VISIBLE
                 }
             } else {
-                if (items.size > 0) {
-                    item1?.addViews(
-                        items[0].imageRes, items[0].iconRes, items[0].headerText, items[0].title
-                    )
+                if (items.isNotEmpty()) {
+                    id = 0
+                    if (items[id].updateHeader) {
+                        item1?.updateHeader(items[id].headerText)
+                        items[id].updateHeader = false
+                    } else {
+                        item1?.addViews(
+                            items[id].imageRes, items[id].iconRes, items[id].headerText, items[id].title
+                        )
+                    }
                     item1?.visibility = View.VISIBLE
                 }
                 if (items.size > 1) {
-                    item2?.addViews(
-                        items[1].imageRes, items[1].iconRes, items[1].headerText, items[1].title
-                    )
+                    id = 1
+                    if (items[id].updateHeader) {
+                        item2?.updateHeader(items[id].headerText)
+                        items[id].updateHeader = false
+                    } else {
+                        item2?.addViews(
+                            items[id].imageRes, items[id].iconRes, items[id].headerText, items[id].title
+                        )
+                    }
                     item2?.visibility = View.VISIBLE
                 }
                 if (items.size > 2) {
-                    item3?.addViews(
-                        items[2].imageRes, items[2].iconRes, items[2].headerText, items[2].title
-                    )
+                    id = 2
+                    if (items[id].updateHeader) {
+                        item3?.updateHeader(items[id].headerText)
+                        items[id].updateHeader = false
+                    } else {
+                        item3?.addViews(
+                            items[id].imageRes, items[id].iconRes, items[id].headerText, items[id].title
+                        )
+                    }
                     item3?.visibility = View.VISIBLE
                 }
                 //item2?.visibility = View.VISIBLE
@@ -166,7 +204,7 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
             }
 
             item1?.setOnClickListener {
-                if (items.size > 0)
+                if (items.isNotEmpty())
                     listener?.onItemClicked(items[0], adapterPosition)
             }
             item2?.setOnClickListener {

@@ -33,7 +33,10 @@ class Channel6Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         else item_view?.setBackgroundColor(0xffffffff.toInt())
 
         //image?.setBackgroundResource(item.image)
-        image?.load(item.image)
+        if (item.imageRes != null && item.imageRes != 0)
+            image?.setImageResource(item.imageRes!!)
+        else
+            image?.load(item.image)
         play?.isChecked = item.isPlay
 
         play?.setOnClickListener {

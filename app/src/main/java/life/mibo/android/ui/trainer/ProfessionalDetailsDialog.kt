@@ -66,7 +66,8 @@ class ProfessionalDetailsDialog(var data: Professional) :
             Glide.with(this).load(data.avatar).error(R.drawable.ic_user_test).into(userImage!!)
         tv_name?.text = data.name
         tv_desg?.text = data.designation
-        //tv_address?.text = data
+        tv_city?.text = data.city
+        tv_country?.text = data.country
 
         invite?.setOnClickListener {
             if (isTrainer) {

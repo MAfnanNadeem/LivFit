@@ -16,6 +16,9 @@ class CalendarDayHolder(view: View) : ViewContainer(view) {
 
     // val day = view.findViewById<TextView>(R.id.calendarDayText)
     val day = view.tv_day
+    val parent = view.tv_day_parent
+    val event1 = view.event1
+    val event2 = view.event2
     lateinit var data: CalendarDay
 
 }

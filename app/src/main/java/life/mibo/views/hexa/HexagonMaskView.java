@@ -63,7 +63,7 @@ public class HexagonMaskView extends AppCompatImageView {
         this.hexagonBorderPath = new Path();
 
         this.mBorderPaint = new Paint();
-        this.mBorderPaint.setColor(Color.LTGRAY);
+        this.mBorderPaint.setColor(Color.WHITE);
         this.mBorderPaint.setStrokeCap(Paint.Cap.ROUND);
         this.mBorderPaint.setStrokeWidth(Utils.dpToPixel(2, getContext()));
         this.mBorderPaint.setStyle(Paint.Style.STROKE);

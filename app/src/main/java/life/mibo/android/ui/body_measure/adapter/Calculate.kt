@@ -124,8 +124,8 @@ object Calculate {
 
     //value must be in cm
     fun calculateShape(ch: Int, wt: Int, hp: Int, hhp: Int): ArrayList<Int> {
-        var type = ArrayList<Int>()
-        var message: String = ""
+        val type = ArrayList<Int>()
+        //var message: String = ""
         log("calculateShape $ch : $wt : $hp : $hhp")
         val bustIn =
             cmToInch(ch)
@@ -154,59 +154,99 @@ object Calculate {
 
         // X
         if (bustIn.minus(hipsIn) <= 1 && hipsIn.minus(bustIn) < 3.6 &&
-            (bustIn.minus(waistIn) >= 9 || hipsIn.minus(bustIn) >= 10)
+            bustIn.minus(waistIn) >= 9 || hipsIn.minus(bustIn) >= 10
         ) {
             log(" XType - Hourglass")
             type.add(1)
-            message += "XType Hourglass, "
+            return type
+            //message += "XType Hourglass, "
         }
 
         if (hipsIn.minus(bustIn) >= 3.6 && hipsIn.minus(bustIn) < 10 &&
-            (hipsIn.minus(waistIn) >= 9 || highHipsIn.div(waistIn) < 1.193)
+            hipsIn.minus(waistIn) >= 9 && highHipsIn.div(waistIn) < 1.193
         ) {
             log(" Bottom hourglass")
             type.add(2)
-            message += "Bottom hourglass, "
+            //message += "Bottom hourglass, "
+            return type
         }
 
         if (bustIn.minus(hipsIn) > 1 && bustIn.minus(hipsIn) < 10 && (bustIn.minus(waistIn) >= 9)) {
             log(" Top hourglass")
             type.add(3)
-            message += "Top hourglass, "
+            // message += "Top hourglass, "
+            return type
         }
 
         if (hipsIn.minus(bustIn) > 2 && hipsIn.minus(waistIn) >= 7 && (highHipsIn.div(waistIn) >= 1.193)) {
             log(" OType - Apple...")
             type.add(4)
-            message += "OType Apple, "
+            // message += "OType Apple, "
+            return type
         }
 
         if (hipsIn.minus(bustIn) >= 3.6 && hipsIn.minus(waistIn) < 9) {
             log(" A Type – Triangle / pear...")
             type.add(5)
-            message += "A Type Triangle / pear,  "
+            //  message += "A Type Triangle / pear,  "
+            return type
         }
 
         if (bustIn.minus(hipsIn) >= 3.6 && bustIn.minus(waistIn) < 9) {
             log(" V Type - Inverted triangle...")
             type.add(6)
-            message += "V Type Inverted triangle, "
+            // message += "V Type Inverted triangle, "
+            return type
         }
 
         //        If (hips - bust) < 3.6" AND (bust - hips) < 3.6" AND (bust - waist) < 9" AND (hips - waist) < 10"
         if (hipsIn.minus(bustIn) < 3.6 && bustIn.minus(hipsIn) < 3.6 &&
-            (bustIn.minus(waistIn) < 9 || hipsIn.div(waistIn) < 10)
+            bustIn.minus(waistIn) < 9 && hipsIn.div(waistIn) < 10
         ) {
             log("I Type - Rectangle....")
             type.add(7)
-            message += "I Type Rectangle "
+            // message += "I Type Rectangle "
+            return type
         }
-        addValue(
-            "shape_msg",
-            message
-        )
+//        addValue(
+//            "shape_msg",
+//            message
+//        )
         log("calculateShape finished...........")
         return type
+    }
+
+    var bodyShapePage = 0
+    fun getShapeType(shape: Int): String {
+
+        return when (shape) {
+            1 -> {
+                "X Type Hourglass"
+            }
+            2 -> {
+                "X Type Bottom Hourglass"
+            }
+            3 -> {
+                "X Type Top Hourglass"
+            }
+            4 -> {
+                "O Type - Apple"
+            }
+            5 -> {
+                "A Type - Triangle / pear"
+            }
+            6 -> {
+                "V Type - Inverted triangle"
+            }
+            7 -> {
+                "I Type - Rectangle"
+            }
+            else -> {
+                "Type - Unknown"
+            }
+        }
+
+
     }
 
     fun log(string: String) {

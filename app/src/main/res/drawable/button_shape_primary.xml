@@ -10,14 +10,14 @@
     <item android:state_enabled="true" >
         <shape android:shape="rectangle">
             <corners android:radius="24dp" />
-            <solid android:color="@color/colorPrimary" />
+            <solid android:color="@color/button_color_app" />
         </shape>
     </item>
 
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="24dp" />
-            <solid android:color="@color/eventColorSelected" />
+            <solid android:color="@color/button_color_app_disable" />
         </shape>
     </item>
 </selector>

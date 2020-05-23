@@ -158,6 +158,14 @@ class BodyTypeFragment : BodyBaseFragment() {
             title_text?.setText(R.string.choose_your_body_type)
 
         Prefs.get(context).setJson("shape_types", types)
+
+        viewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                Calculate.bodyShapePage = position.plus(1)
+
+            }
+        })
         //viewPager?.registerOnPageChangeCallback()
     }
 
@@ -210,7 +218,7 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
-                        Calculate.getMeasureData().shapeType = "X Type"
+                        Calculate.getMeasureData().shapeType = "X Type Hourglass"
                     }
                     2 -> {
                         if (!isXAdded) {
@@ -219,7 +227,7 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
-                        Calculate.getMeasureData().shapeType = "X Type"
+                        Calculate.getMeasureData().shapeType = "X Type Bottom Hourglass"
                     }
                     3 -> {
                         if (!isXAdded) {
@@ -228,31 +236,31 @@ class BodyTypeFragment : BodyBaseFragment() {
                             )
                             isXAdded = true
                         }
-                        Calculate.getMeasureData().shapeType = "X Type"
+                        Calculate.getMeasureData().shapeType = "X Type Top Hourglass"
                     }
                     4 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_O)
                         )
-                        Calculate.getMeasureData().shapeType = "O Type"
+                        Calculate.getMeasureData().shapeType = "O Type - Apple"
                     }
                     5 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_A)
                         )
-                        Calculate.getMeasureData().shapeType = "A Type"
+                        Calculate.getMeasureData().shapeType = "A Type - Triangle / pear"
                     }
                     6 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_V)
                         )
-                        Calculate.getMeasureData().shapeType = "V Type"
+                        Calculate.getMeasureData().shapeType = "V Type - Inverted triangle"
                     }
                     7 -> {
                         list.add(
                             BodyTypeImageFragment.create(male, BodyTypeImageFragment.TYPE_I)
                         )
-                        Calculate.getMeasureData().shapeType = "I Type"
+                        Calculate.getMeasureData().shapeType = "I Type - Rectangle"
                     }
                 }
             }

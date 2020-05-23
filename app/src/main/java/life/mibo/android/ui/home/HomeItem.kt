@@ -53,9 +53,11 @@ data class HomeItem(
     var imageRes: Int = 0
     var headerText: String = ""
     var bundle: Bundle? = null
+    var updateHeader = false
+    var updateTitle = false
 
     enum class Type {
-        HEART, WEIGHT, CALORIES, PROFILE, PROFILE_UPLOAD, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER_SCAN, WEATHER, RXL_SCAN, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE, STEPS, RXL_TEST, MEASURE, MY_ACCOUNT, MEASURE_NEW
+        HEART, WEIGHT, CALORIES, PROFILE, SERVICES, PROFILE_UPLOAD, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER_SCAN, WEATHER, RXL_SCAN, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE, STEPS, RXL_TEST, MEASURE, MY_ACCOUNT, MEASURE_NEW, CENTER_BUTTON
     }
 
     fun bind(view: ViewGroup) {

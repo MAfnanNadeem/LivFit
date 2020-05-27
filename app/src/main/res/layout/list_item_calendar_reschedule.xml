@@ -5,108 +5,105 @@
   ~  Mibo Hexa - app
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/grid_1x"
-    android:background="@color/white">
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/grid_1x">
 
-    <TextView
-        android:id="@+id/tv_date"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/button_color_app"
-        android:gravity="center"
-        android:lineSpacingExtra="2.5dp"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="H,1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.2"
-        tools:text="SUN\nMAY 17 \n14:00" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <!--Colored view dividers-->
-    <View
-        android:layout_width="1.3dp"
-        android:layout_height="0dp"
-        android:background="@color/textColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/tv_date"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="0.7dp"
-        android:layout_height="0dp"
-        android:background="@color/textColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_date"
-        app:layout_constraintTop_toTopOf="parent" />
+        <View
+            android:id="@+id/event1"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/grid_1x"
+            android:background="@color/textColorApp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    <LinearLayout
-        android:id="@+id/itemFlightDepartureLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="start"
-        android:orientation="vertical"
-        android:padding="@dimen/grid_2x"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tv_date"
-        app:layout_constraintTop_toTopOf="parent">
+        <!--    <TextView-->
+        <!--        android:id="@+id/tv_date"-->
+        <!--        android:layout_width="0dp"-->
+        <!--        android:layout_height="0dp"-->
+        <!--        android:background="@color/button_color_app"-->
+        <!--        android:gravity="center"-->
+        <!--        android:lineSpacingExtra="2.5dp"-->
+        <!--        android:textAllCaps="true"-->
+        <!--        android:textColor="@color/white"-->
+        <!--        android:textSize="12sp"-->
+        <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--        app:layout_constraintDimensionRatio="H,1:1"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintTop_toTopOf="parent"-->
+        <!--        app:layout_constraintWidth_default="percent"-->
+        <!--        app:layout_constraintWidth_percent="0.2"-->
+        <!--        tools:text="SUN\nMAY 17 \n14:00" />-->
 
-        <TextView
-            android:id="@+id/tv_trainer"
-            android:layout_width="match_parent"
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-black"
-            android:text="Trainer Name"
-            android:textColor="@color/textColor"
-            android:textSize="16sp" />
+            android:layout_marginStart="@dimen/grid_2x"
+            android:gravity="start"
+            android:orientation="vertical"
+            android:padding="@dimen/grid_2x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_edit"
+            app:layout_constraintStart_toEndOf="@id/event1"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_session"
-            android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_trainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                tools:text="Trainer Name" />
+
+            <TextView
+                android:id="@+id/tv_session"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                tools:text="Session Name" />
+
+            <TextView
+                android:id="@+id/tv_start_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                tools:text="Session Name" />
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/iv_edit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:text="Session Name"
-            android:textColor="@color/textColor2"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:layout_gravity="center_vertical|end"
+            android:padding="@dimen/grid_2x"
+            android:src="@drawable/ic_edit_black_24dp"
+            android:tint="@color/textColor2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    <ImageView
-        android:id="@+id/iv_edit"
-        android:padding="@dimen/grid_2x"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:tint="@color/grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_edit_black_24dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="@color/background_color_app"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="@color/background_color_app"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/27/20 3:06 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/27/20 3:05 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/tv_register_info3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:fontFamily="@string/font_sans_serif_medium"
+        android:gravity="center"
+        android:text="@string/enter_your_new_password"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/btn_change_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/tv_pwd_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:background="@drawable/profile_edittext"
+            android:ems="11"
+            android:textColorHint="@color/grey"
+            android:hint="@string/new_password"
+            android:inputType="textPassword"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/tv_pwd_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:textColorHint="@color/grey"
+            android:background="@drawable/profile_edittext"
+            android:ems="11"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:padding="@dimen/grid_1x"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pwd_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:textColor="@color/btn_red"
+            android:textSize="12sp"
+            tools:text="* Password not matched" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pwd_requirement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:gravity="center"
+            android:text="@string/password_req"
+            android:textColor="@color/textColor2"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_change_password"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/login_button_primary"
+        android:ems="13"
+        android:text="@string/change_password"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

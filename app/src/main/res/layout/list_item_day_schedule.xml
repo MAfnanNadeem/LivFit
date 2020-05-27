@@ -12,20 +12,29 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="@color/grey_ddd">
+    android:layout_height="48dp">
 
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_text"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
         android:gravity="center"
+        android:fontFamily="@string/font_sans_serif"
         android:text="12:34"
-        android:textColor="@color/white"
+        android:textColor="@color/textColor"
+        app:layout_constraintWidth_percent="0.25"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/grey_ddd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
@@ -42,14 +51,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="@dimen/grid_1x"
-            android:layout_marginEnd="@dimen/grid_1x"
-            android:background="@drawable/bg_day_schedule"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginEnd="@dimen/grid_2x"
+            android:background="@drawable/bg_day_schedule_primary"
             android:gravity="center"
             android:padding="2dp"
-            android:textColor="@color/textColor"
+            android:textColor="@color/white"
             android:textSize="@dimen/text_size_small"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -58,14 +67,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="@dimen/grid_1x"
-            android:layout_marginEnd="@dimen/grid_1x"
-            android:background="@drawable/bg_day_schedule"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginEnd="@dimen/grid_2x"
+            android:background="@drawable/bg_day_schedule_primary"
             android:gravity="center"
             android:padding="2dp"
-            android:textColor="@color/textColor"
+            android:textColor="@color/white"
             android:textSize="@dimen/text_size_small"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -74,7 +83,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorAccent"
+        android:background="@color/grey_ddd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

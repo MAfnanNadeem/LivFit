@@ -8,45 +8,50 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/textColor">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@+id/tv_day_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="1dp"
-        android:background="@color/grey_ddd">
+        android:layout_margin="1dp">
 
         <TextView
             android:id="@+id/tv_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="4dp"
+            android:fontFamily="@string/font_sans_serif"
+            android:layout_margin="@dimen/grid_1x"
             android:gravity="center"
             android:textColor="@color/grey"
             android:textSize="12sp"
             tools:text="24" />
 
-        <View
-            android:id="@+id/event1"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="5dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="18dp"
-            android:background="@color/textColorApp"
-            android:visibility="gone" />
+            android:orientation="horizontal">
 
-        <View
-            android:id="@+id/event2"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="8dp"
-            android:background="@color/button_color_app"
-            android:visibility="gone" />
+            <View
+                android:id="@+id/event1"
+                android:layout_width="@dimen/grid_1x"
+                android:layout_height="@dimen/grid_1x"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/grid_1x"
+                android:background="@color/textColorApp"
+                android:visibility="visible" />
+
+            <View
+                android:id="@+id/event2"
+                android:layout_width="@dimen/grid_1x"
+                android:layout_height="@dimen/grid_1x"
+                android:layout_gravity="center"
+                android:background="@color/button_color_app"
+                android:visibility="visible" />
+        </LinearLayout>
+
 
     </FrameLayout>
 

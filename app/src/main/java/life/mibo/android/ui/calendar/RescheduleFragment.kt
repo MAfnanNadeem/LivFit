@@ -23,10 +23,6 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.ResponseData
-import life.mibo.android.models.create_session.BookSession
-import life.mibo.android.models.create_session.BookSessionPost
-import life.mibo.android.models.create_session.Data
-import life.mibo.android.models.program.Program
 import life.mibo.android.models.session.RescheduleMemberSession
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
@@ -56,13 +52,17 @@ class RescheduleFragment : BaseFragment() {
         return root
     }
 
+    var trainerName = ""
+    var serverName = ""
     var sessionId: Int = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
-        tv_program?.text = arguments?.getString("trainer_name")
-        tv_service?.text = arguments?.getString("service_name")
+        trainerName = arguments?.getString("trainer_name") ?: ""
+        serverName = arguments?.getString("service_name") ?: ""
+        //tv_program?.text = arguments?.getString("trainer_name")
+        //tv_service?.text = arguments?.getString("service_name")
         sessionId = arguments?.getInt("session_id") ?: 0
 
         iv_date?.setOnClickListener {
@@ -116,12 +116,12 @@ class RescheduleFragment : BaseFragment() {
 
     private fun bookSession() {
         if (!isDateSet) {
-            Toasty.error(requireContext(), "Select Date").show()
+            Toasty.error(requireContext(), getString(R.string.select_date)).show()
             return
         }
 
         if (!isTimeSet) {
-            Toasty.error(requireContext(), "Select Time").show()
+            Toasty.error(requireContext(), getString(R.string.select_time)).show()
             return
         }
 
@@ -155,7 +155,7 @@ class RescheduleFragment : BaseFragment() {
             RescheduleMemberSession.Data(
                 programId,
                 SimpleDateFormat("yyyy-MM-dd").format(date),
-                SimpleDateFormat("hh:mm:ss").format(date)
+                SimpleDateFormat("HH:mm:ss").format(date)
             ), member.accessToken
         )
 
@@ -216,7 +216,7 @@ class RescheduleFragment : BaseFragment() {
                 calendar.set(Calendar.YEAR, year)
                 calendar.set(Calendar.MONTH, monthOfYear)
                 calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                tv_day?.text = SimpleDateFormat("EEEE").format(calendar.time)
+                //tv_day?.text = SimpleDateFormat("EEEE").format(calendar.time)
                 isDateSet = true
                 addEvent()
             },
@@ -295,7 +295,7 @@ class RescheduleFragment : BaseFragment() {
 
         val h = end.get(Calendar.HOUR_OF_DAY)
         //adapter?.addEvent(h, "MI.BO ${program?.name}", type)
-        adapter?.addEvent(h, "${tv_service?.text}", type)
+        adapter?.addEvent(h, "$serverName\n ${end.get(Calendar.HOUR)}:${String.format("%02d", end.get(Calendar.MINUTE))}", type)
         // calendarDayView.setLimitTime(0,23)
         //calendarDayView.setEvents(events)
         // calendarDayView

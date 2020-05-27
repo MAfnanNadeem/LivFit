@@ -11,7 +11,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -101,7 +100,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                     val bundle = Bundle()
                     bundle.putString("trainer_name", it.trainerName)
                     bundle.putString("service_name", it.session)
-                    bundle.putString("service_date", it.date)
+                    bundle.putString("service_date", it.startTime)
                     bundle.putInt("session_id", it.scheduleId ?: 0)
                     navigate(Navigator.RESCHEDULE, bundle)
                 }
@@ -116,7 +115,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.menu_calendar, menu)
+        if (!isMember)
+            inflater?.inflate(R.menu.menu_calendar, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -186,6 +186,11 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         calendar.scrollToMonth(currentMonth)
 
         calendar.dayBinder = object : DayBinder<CalendarDayHolder> {
+            val white = Color.WHITE
+            val dark = Color.DKGRAY
+
+            // val grey = Color.GRAY
+            val light = Color.LTGRAY
 
             override fun create(view: View): CalendarDayHolder {
                 return CalendarDayHolder(view)
@@ -193,46 +198,31 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
             override fun bind(container: CalendarDayHolder, day: CalendarDay) {
                 container.day.text = day.date.dayOfMonth.toString()
+                container.event1.visibility = View.INVISIBLE
+                container.event2.visibility = View.INVISIBLE
                 if (day.owner == DayOwner.THIS_MONTH) {
-                    container.day.setTextColor(Color.WHITE)
+                    container.day.setTextColor(dark)
                     if (day.date == today) {
-                        container.day.setTextColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.button_color_app
-                            )
-                        )
-                        container.parent.setBackgroundColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.textColorApp
-                            )
-                        )
+                        container.day.setTextColor(white)
+                        container.parent.setBackgroundResource(R.drawable.bg_calendar_today)
                     } else {
-                        //holder.day.background = null
                         if (day.date == selectedDate) {
-                            container.parent.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.grey_888
-                                )
-                            )
+                            container.parent.setBackgroundResource(R.drawable.bg_calendar_selected)
                         } else {
-                            container.parent.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.grey_ddd
-                                )
-                            )
+                            container.parent.setBackgroundColor(Color.TRANSPARENT)
                         }
                     }
-                    container.event2.visibility = View.INVISIBLE
+
+                    var count = 0
                     for (d in dates) {
                         try {
                             val date = d.startDateTime?.split(" ")?.get(0) ?: ""
                             // val date = formatter.parse(d.startDateTime)
                             if (LocalDate.parse(date) == day.date) {
-                                container.event2.visibility = View.VISIBLE
+                                if (count == 0)
+                                    container.event1.visibility = View.VISIBLE
+                                else container.event2.visibility = View.VISIBLE
+                                count++
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -246,7 +236,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                         onCalendarDateClicked(day)
                     }
                 } else {
-                    container.day.setTextColor(Color.GRAY)
+                    container.day.setTextColor(light)
+                    //container.day.setTextColor(Color.TRANSPARENT)
                 }
             }
         }
@@ -262,6 +253,9 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         selectedDate = item?.date
         calendarView?.notifyCalendarChanged()
         val list = ArrayList<Schedule>()
+        var count = 0
+        var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
+        var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
         for (session in scheduleDates) {
             try {
                 val date = session.startDateTime?.split(" ")?.get(0) ?: ""
@@ -271,11 +265,13 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                         Schedule(
                             session.sessionID,
                             session.startDateTime,
+                            session.endDateTime,
                             session.trainerFullName,
                             session.serviceName,
-                            0, session.completed == 1
+                            if (count == 0) color1 else color2, session.completed == 1
                         )
                     )
+                    count++
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -340,52 +336,43 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
         calendar.dayBinder = object : DayBinder<CalendarDayHolder> {
 
+            val white = Color.WHITE
+            val dark = Color.DKGRAY
+
+            // val grey = Color.GRAY
+            val light = Color.LTGRAY
+
             override fun create(view: View): CalendarDayHolder {
                 return CalendarDayHolder(view)
             }
 
             override fun bind(container: CalendarDayHolder, day: CalendarDay) {
                 container.day.text = day.date.dayOfMonth.toString()
+                container.event1.visibility = View.INVISIBLE
+                container.event2.visibility = View.INVISIBLE
                 if (day.owner == DayOwner.THIS_MONTH) {
-                    container.day.setTextColor(Color.WHITE)
+                    container.day.setTextColor(dark)
                     if (day.date == today) {
-                        container.day.setTextColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.button_color_app
-                            )
-                        )
-                        container.parent.setBackgroundColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.textColorApp
-                            )
-                        )
+                        container.day.setTextColor(white)
+                        container.parent.setBackgroundResource(R.drawable.bg_calendar_today)
                     } else {
-                        //holder.day.background = null
                         if (day.date == selectedDate) {
-                            container.parent.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.grey_888
-                                )
-                            )
+                            container.parent.setBackgroundResource(R.drawable.bg_calendar_selected)
                         } else {
-                            container.parent.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.grey_ddd
-                                )
-                            )
+                            container.parent.setBackgroundColor(Color.TRANSPARENT)
                         }
                     }
-                    container.event2.visibility = View.INVISIBLE
+
+                    var count = 0
                     for (d in list) {
                         try {
                             val date = d.startDatetime?.split(" ")?.get(0) ?: ""
                             // val date = formatter.parse(d.startDateTime)
                             if (LocalDate.parse(date) == day.date) {
-                                container.event2.visibility = View.VISIBLE
+                                if (count == 0)
+                                    container.event1.visibility = View.VISIBLE
+                                else container.event2.visibility = View.VISIBLE
+                                count++
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -399,7 +386,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                         onTrainerCalendarDateClicked(day)
                     }
                 } else {
-                    container.day.setTextColor(Color.GRAY)
+                    container.day.setTextColor(light)
                 }
             }
         }
@@ -417,6 +404,9 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         selectedDate = item?.date
         calendarView?.notifyCalendarChanged()
         val list = ArrayList<Schedule>()
+        var count = 0
+        var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
+        var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
         for (session in sessionDates) {
             try {
                 val date = session.startDatetime?.split(" ")?.get(0) ?: ""
@@ -428,17 +418,18 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                             Schedule(
                                 session.sessionId,
                                 session.startDatetime,
+                                session.endDatetime,
                                 String(crypt.decrypt(mmember?.firstName)) + " " + String(
                                     crypt.decrypt(
                                         mmember?.lastName
                                     )
                                 ),
                                 session.notes,
-                                0, session.completed == 1
+                                if (count == 0) color1 else color2, session.completed == 1
                             )
                         )
                     }
-
+                    count++
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -454,10 +445,11 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     data class Schedule(
         val scheduleId: Int?,
-        val date: String?,
+        val startTime: String?,
+        val endTime: String?,
         val trainerName: String?,
         val session: String?,
-        @ColorRes val color: Int,
+        val color: Int,
         var isCompleted: Boolean = false,
         var imageUrl: String = ""
     ) {
@@ -471,7 +463,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
 
         //private val formatter = SimpleDateFormat("EEE'\n'dd MMM'\n'HH:mm")
-        private val formatter = DateTimeFormatter.ofPattern("EEE'\n'dd MMM'\n'HH:mm")
+        //private val formatter = DateTimeFormatter.ofPattern("EEE'\n'dd MMM'\n'HH:mm")
+        private val formatter2 = DateTimeFormatter.ofPattern("HH:mm")
         private val parser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
         override fun onCreateViewHolder(
@@ -505,10 +498,19 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
             RecyclerView.ViewHolder(containerView), LayoutContainer {
 
             fun bind(schedule: Schedule) {
-                containerView.tv_date.text =
-                    formatter.format(LocalDateTime.parse(schedule.date, parser))
+                containerView.tv_start_time.text =
+                    formatter2.format(
+                        LocalDateTime.parse(
+                            schedule.startTime,
+                            parser
+                        )
+                    ) + " - " + formatter2.format(LocalDateTime.parse(schedule.endTime, parser))
                 containerView.tv_trainer.text = schedule.trainerName
                 containerView.tv_session.text = schedule.session
+                containerView.event1.setBackgroundColor(schedule.color)
+                if (schedule.isCompleted)
+                    containerView.iv_edit?.visibility = View.INVISIBLE
+                else containerView.iv_edit?.visibility = View.VISIBLE
 //                /if(sess)
                 containerView.iv_edit?.setOnClickListener {
                     if (!schedule.isCompleted)
@@ -524,7 +526,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     override fun onMonthChanged(calender: CalendarMonth) {
         //super.onMonthChanged(calender)
-        tv_month?.text = monthFormatter.format(calender?.yearMonth).toUpperCase() + " ("+ calender?.year +")"
+        tv_month?.text =
+            monthFormatter.format(calender?.yearMonth).toUpperCase() + " (" + calender?.year + ")"
     }
 
 

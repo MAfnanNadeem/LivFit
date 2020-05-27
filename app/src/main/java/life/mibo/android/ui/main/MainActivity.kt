@@ -91,7 +91,6 @@ import life.mibo.android.ui.main.Navigator.Companion.SELECT_PROGRAM
 import life.mibo.android.ui.main.Navigator.Companion.SELECT_SUITS
 import life.mibo.android.ui.main.Navigator.Companion.SESSION
 import life.mibo.android.ui.main.Navigator.Companion.SESSION_POP
-import life.mibo.android.ui.payments.PaymentActivity
 import life.mibo.android.ui.rxl.adapter.ReflexModel
 import life.mibo.android.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.android.ui.rxl.impl.CreateCourseAdapter
@@ -1428,9 +1427,9 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_heart_rate)
             }
             HomeItem.Type.WEIGHT -> {
-                comingSoon()
-                return
-                // navigate(R.id.action_navigation_home_to_navigation_weight, 0)
+                //comingSoon()
+                //return
+                navigate(0, R.id.navigation_weight_compare)
                 // navigateFragment(R.id.navigation_weight)
             }
             HomeItem.Type.ADD -> {

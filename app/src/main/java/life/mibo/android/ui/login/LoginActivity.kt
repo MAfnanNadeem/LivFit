@@ -42,6 +42,11 @@ class LoginActivity : BaseActivity() {
             controller.onRegister()
         }
 
+        tv_forget?.setOnClickListener {
+            val intent = Intent(this@LoginActivity, ForgetPasswordActivity::class.java)
+            startActivity(intent)
+        }
+
         clear()
 
         et_password?.setOnKeyListener { v, keyCode, event ->

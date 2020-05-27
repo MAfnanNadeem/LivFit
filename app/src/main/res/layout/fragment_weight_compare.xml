@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/28/20 11:46 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/27/20 11:47 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_2x"
+                android:gravity="center"
+                android:text="@string/my_bmi_title"
+                android:visibility="gone"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayoutInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_2x"
+                android:background="@drawable/bg_body_measure_summary_details2"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/grid_2x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_title">
+
+
+                <life.mibo.views.CircleImageView
+                    android:id="@+id/imageViewProfile"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_user_test" />
+
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/imageViewProfile"
+                    tools:text="@string/sumeet" />
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    app:cardCornerRadius="@dimen/grid_1x"
+                    app:layout_constraintTop_toBottomOf="@id/tv_name">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/grid_1x">
+
+                        <TextView
+                            android:id="@+id/tv_gender"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/textColor"
+                            android:textSize="@dimen/text_size_small"
+                            tools:text="Male" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/grey_ddd" />
+
+                        <TextView
+                            android:id="@+id/tv_weight"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/textColor"
+                            android:textSize="@dimen/text_size_small"
+                            tools:text="68.8 KG" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/grey_ddd" />
+
+                        <TextView
+                            android:id="@+id/tv_height"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/textColor"
+                            android:textSize="@dimen/text_size_small"
+                            tools:text="168 CM" />
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+            <!--                android:id="@+id/constraintLayout"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_margin="@dimen/grid_2x"-->
+            <!--                android:gravity="center"-->
+            <!--                android:minHeight="200dp"-->
+            <!--                android:orientation="vertical"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@id/constraintLayoutInfo"-->
+            <!--                tools:background="@drawable/bg_body_measure_summary_details">-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_value_text"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_margin="@dimen/grid_1x"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:paddingTop="2dp"-->
+            <!--                    android:textColor="@color/white"-->
+            <!--                    android:textSize="@dimen/text_size_large"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent"-->
+            <!--                    tools:text="@string/bmi_title" />-->
+
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_value"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:gravity="end|center_vertical"-->
+            <!--                    android:lines="1"-->
+            <!--                    android:autoSizeMaxTextSize="56sp"-->
+            <!--                    android:autoSizeMinTextSize="20sp"-->
+            <!--                    android:autoSizeStepGranularity="10px"-->
+            <!--                    android:autoSizeTextType="uniform"-->
+            <!--                    android:textSize="56sp"-->
+            <!--                    android:textColor="@color/white"-->
+            <!--                    android:textStyle="bold"-->
+            <!--                    app:layout_constraintBottom_toTopOf="@id/view1"-->
+            <!--                    app:layout_constraintEnd_toStartOf="@id/tv_value_unit"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    tools:text="8765.324" />-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_value_unit"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:paddingStart="2dp"-->
+            <!--                    android:lines="2"-->
+            <!--                    android:gravity="center_vertical"-->
+            <!--                    android:textColor="@color/white_eee"-->
+            <!--                    android:textSize="@dimen/text_size_medium"-->
+            <!--                    android:textStyle="bold"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="@id/tv_value"-->
+            <!--                    app:layout_constraintEnd_toStartOf="@+id/image_circle"-->
+            <!--                    app:layout_constraintTop_toTopOf="@id/tv_value"-->
+            <!--                    app:layout_constraintWidth_percent="0.15"-->
+            <!--                    tools:text="@string/feet_square" />-->
+
+            <!--                <ImageView-->
+            <!--                    android:id="@+id/image_circle"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="0dp"-->
+            <!--                    android:layout_marginBottom="@dimen/grid_1x"-->
+            <!--                    android:scaleType="fitCenter"-->
+            <!--                    app:layout_constraintBottom_toTopOf="@id/view1"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintHeight_percent="0.4"-->
+            <!--                    app:layout_constraintWidth_percent="0.35"-->
+            <!--                    tools:src="@drawable/ic_body_summary_bmi" />-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_date"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginBottom="@dimen/grid_1x"-->
+            <!--                    android:paddingEnd="@dimen/grid_2x"-->
+            <!--                    android:textColor="@color/white"-->
+            <!--                    android:textSize="@dimen/text_size_small"-->
+            <!--                    app:layout_constraintBottom_toTopOf="@id/image_circle"-->
+            <!--                    app:layout_constraintEnd_toEndOf="@id/image_circle"-->
+            <!--                    app:layout_constraintTop_toBottomOf="@+id/tv_value_text"-->
+            <!--                    tools:text="Today, 9:29 PM" />-->
+
+            <!--                <View-->
+            <!--                    android:id="@+id/view1"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="2dp"-->
+            <!--                    android:layout_marginStart="@dimen/grid_2x"-->
+            <!--                    android:layout_marginEnd="@dimen/grid_2x"-->
+            <!--                    android:background="@color/textColor"-->
+            <!--                    app:layout_constraintBottom_toTopOf="@id/tv_value_normal"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent" />-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_value_normal"-->
+            <!--                    android:layout_width="0dp"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginStart="@dimen/grid_2x"-->
+            <!--                    android:layout_marginEnd="@dimen/grid_2x"-->
+            <!--                    android:autoSizeMaxTextSize="@dimen/text_size_medium"-->
+            <!--                    android:autoSizeMinTextSize="10sp"-->
+            <!--                    android:autoSizeTextType="uniform"-->
+            <!--                    android:fontFamily="@font/roboto"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:maxLines="2"-->
+            <!--                    android:paddingBottom="4dp"-->
+            <!--                    android:textColor="@color/white"-->
+            <!--                    android:textSize="@dimen/text_size_medium"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    tools:text="@string/energy_normal" />-->
+
+
+            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/grid_2x"
+                android:background="@drawable/bg_body_measure_summary_details2"
+                android:minHeight="250dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayoutInfo">
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

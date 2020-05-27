@@ -175,7 +175,12 @@
     <fragment
         android:id="@+id/navigation_measurement"
         android:name="life.mibo.android.ui.body_measure.MeasurementFragment"
-        android:label="Basic Info"
+        android:label="@string/basic_info"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_weight_compare"
+        android:name="life.mibo.android.ui.weight.WeightCompareFragment"
+        android:label="@string/weight_compare"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/navigation_bmi"

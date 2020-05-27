@@ -79,6 +79,7 @@
     <string name="terms_of_agreement">Terms of Agreement</string>
     <string name="enter_your_otp">Enter your OTP</string>
     <string name="we_have_sent_otp">We have sent an OTP on your number </string>
+    <string name="we_have_sent_otp_email">We have sent an OTP on your registered number and email address</string>
     <string name="enter_otp">Please enter the OTP</string>
     <string name="scanning">Scanning</string>
     <string name="scan">Scan</string>
@@ -388,6 +389,14 @@
     <string name="your_feedback">Your Feedback</string>
     <string name="enter_your_feedback">Enter Your Feedback</string>
     <string name="save">Save</string>
+    <string name="basic_info">Basic Info</string>
+    <string name="weight_compare">Weight Compare</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="enter_your_new_password">Enter your new password</string>
+    <string name="email_address_phone_number"><small>Email Address / Phone Number</small></string>
+    <string name="password_updated">Password Updated</string>
 
 
     <string-array name="names">

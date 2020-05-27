@@ -64,6 +64,9 @@
         <activity
             android:name="life.mibo.android.ui.login.RegisterActivity"
             android:theme="@style/AppTheme.FullScreen" />
+        <activity
+            android:name="life.mibo.android.ui.login.ForgetPasswordActivity"
+            android:theme="@style/AppTheme.FullScreen" />
 
         <activity
             android:name="life.mibo.android.ui.payments.PaymentActivity"

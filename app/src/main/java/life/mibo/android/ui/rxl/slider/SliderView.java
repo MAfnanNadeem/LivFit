@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 
 import life.mibo.android.R;
@@ -49,9 +50,9 @@ public class SliderView extends LinearLayout{
         viewPager.setAdapter(sliderAdapter);
     }
 
-    public void setUrls(ArrayList<String> URLs){
-        this.URLs=URLs;
-        sliderAdapter.setUrls(URLs);
+    public void setUrls(List<String> URLs) {
+        this.URLs = new ArrayList<>(URLs);
+        sliderAdapter.setUrls(this.URLs);
         viewPager.setAdapter(sliderAdapter);
         type =1;
     }

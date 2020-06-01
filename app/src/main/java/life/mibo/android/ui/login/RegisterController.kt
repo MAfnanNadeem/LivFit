@@ -791,7 +791,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                     if (data != null) {
 
                         if (data.status.equals("success", true)) {
-                            Toasty.success(context, R.string.regestered).show()
+                            Toasty.success(context, R.string.registered).show()
                             Prefs.get(this@RegisterController.context).member = data.data
                             Prefs.get(this@RegisterController.context).set("user_email", email)
                             MiboEvent.loginSuccess(

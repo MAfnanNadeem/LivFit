@@ -8,11 +8,11 @@
 package life.mibo.android.ui.trainer
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -46,6 +46,7 @@ class SearchTrainerFragment : BaseFragment() {
         //setupAdapter()
         recyclerView?.layoutManager = GridLayoutManager(context, 1)
         getProfessionals()
+        setHasOptionsMenu(true)
     }
 
 
@@ -84,17 +85,22 @@ class SearchTrainerFragment : BaseFragment() {
             })
     }
 
-    val ipList = ArrayList<Professional>()
+    private val ipList = ArrayList<Professional>()
+    private val backupList = ArrayList<Professional>()
+    private var adapters: SearchAdapters? = null
     private fun parseData(professionals: List<Professional?>?) {
         if (professionals != null) {
             ipList.clear()
+            backupList.clear()
             for (p in professionals) {
-                if (p != null)
+                if (p != null) {
                     ipList.add(p)
+                    backupList.add(p)
+                }
             }
 
 
-            val adapters = SearchAdapters(1, ipList, object : ItemClickListener<Professional> {
+            adapters = SearchAdapters(1, ipList, object : ItemClickListener<Professional> {
                 override fun onItemClicked(item: Professional?, position: Int) {
                     item?.let {
                         ProfessionalDetailsDialog(item).show(
@@ -166,6 +172,21 @@ class SearchTrainerFragment : BaseFragment() {
 
         }
 
+        fun filter(backup: ArrayList<Professional>, text: String?) {
+            list.clear()
+            if (text.isNullOrEmpty()) {
+                for (i in backup)
+                    list.add(i)
+            } else {
+                val q = text.toLowerCase()
+                for (item in backup) {
+                    if (item.match(q)) {
+                        list.add(item)
+                    }
+                }
+            }
+            notifyDataSetChanged()
+        }
     }
 
     //data class SearchItem(val id: Int, var name: String = "Trainer")
@@ -185,5 +206,44 @@ class SearchTrainerFragment : BaseFragment() {
             }
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.menu_search, menu)
+        try {
+            val item = menu.findItem(R.id.action_search)
+            val searchView: SearchView? =
+                SearchView((activity as AppCompatActivity?)?.supportActionBar?.themedContext)
+            // MenuItemCompat.setShowAsAction(item, //MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | //MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            //  MenuItemCompat.setActionView(item, searchView);
+            // These lines are deprecated in API 26 use instead
+            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            item.actionView = searchView
+            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    adapters?.filter(backupList, newText)
+                    return true
+                }
+            })
+            searchView?.setOnClickListener {
+                log("search clicked")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_search) {
+            //updateGrid()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

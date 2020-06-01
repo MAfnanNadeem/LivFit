@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/30/20 3:54 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/26/20 12:13 PM
+  ~  Mibo Hexa - app
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@drawable/ic_edit_black_24dp"
+        android:iconTint="@color/textColor"
+        android:orderInCategory="100"
+        android:title="@string/edit_profile"
+        app:iconTint="@color/textColor"
+        app:showAsAction="always" />
+
+</menu>

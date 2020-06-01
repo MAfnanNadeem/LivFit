@@ -57,7 +57,7 @@
         android:layout_margin="@dimen/grid_2x"
         android:background="@drawable/profile_edittext"
         android:ems="7"
-        android:hint="@string/email_address_phone_number"
+        android:hint="@string/email_hint"
         android:imeOptions="actionSend"
         android:textColorHint="@color/grey"
         android:textColor="@color/textColor"

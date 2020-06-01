@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_title">
 
 
-                <life.mibo.views.CircleImageView
+                <life.mibo.views.HexagonImageView
                     android:id="@+id/imageViewProfile"
                     android:layout_width="96dp"
                     android:layout_height="96dp"

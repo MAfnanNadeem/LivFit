@@ -20,7 +20,7 @@ class CompareWeightResponse(data: List<Data?>?) :
         @SerializedName("MemberID")
         var memberID: Int?,
         @SerializedName("Weight")
-        var weight: Int?,
+        var weight: Double?,
         @SerializedName("Weight Unit")
         var weightUnit: String?
     )

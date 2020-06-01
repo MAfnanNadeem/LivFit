@@ -204,7 +204,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
     private fun save(user: String, password: String, social: String, bundle: Bundle? = null) {
         try {
             val prefs = Prefs.getEncrypted(context)
-            prefs.create()
+            //prefs.create()
+            prefs.initCipher()
             prefs.set("user_email", user, true)
             prefs.set("user_password", password, true)
             prefs.set("user_social", social, true)
@@ -219,7 +220,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
     fun autoLogin(): Boolean {
         try {
             val prefs = Prefs.getEncrypted(context)
-            prefs.create()
+            //prefs.create()
+            prefs.initCipher()
             val isLogin = prefs.get("login_enable", "false", true)
             val user = prefs.get("user_email", "", true)
             val pwd = prefs.get("user_password", "", true)

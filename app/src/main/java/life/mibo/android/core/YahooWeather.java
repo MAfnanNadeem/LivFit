@@ -68,8 +68,11 @@ public class YahooWeather {
 
     }
 
+    // TODO change to
 
     public static void OpenApiWeather(Context context, Double lat, Double lon, ItemClickListener<String> listener) {
+        if (lat == null || lon == null)
+            return;
 
         try {
             String date = new SimpleDateFormat("yymmddhh").format(new Date());

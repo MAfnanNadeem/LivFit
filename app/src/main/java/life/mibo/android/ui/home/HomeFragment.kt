@@ -32,7 +32,6 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
-import life.mibo.android.ui.main.RememberMeDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.SessionManager
@@ -101,7 +100,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         SessionManager.getInstance().userSession.isRxl = false;
         setBottomView()
         checkIntro()
-        weather()
+        getDashboardApis()
         if (!isMember)
             tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
     }
@@ -136,20 +135,22 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private fun checkIntro() {
 
-        try {
-            val pwd = Prefs.get(context).get("skip_pwd_")
-            val prefs = Prefs.getEncrypted(context)
-            val isLogin = prefs.get("login_enable", "false", true)
-            if (!java.lang.Boolean.parseBoolean(isLogin) && !java.lang.Boolean.parseBoolean(pwd)) {
-                RememberMeDialog().show(childFragmentManager, "RememberMeDialog")
-                return
-            }
-        } catch (e: java.lang.Exception) {
+//        try {
+//            val pwd = Prefs.get(context).get("skip_pwd_")
+//            val prefs = Prefs.getEncrypted(context)
+//            val isLogin = prefs.get("login_enable", "false", true)
+//            if (!java.lang.Boolean.parseBoolean(isLogin) && !java.lang.Boolean.parseBoolean(pwd)) {
+//                RememberMeDialog().show(childFragmentManager, "RememberMeDialog")
+//                return
+//            }
+//        } catch (e: java.lang.Exception) {
+//
+//        }
 
-        }
-
-        val skip = Prefs.get(context).get("profile_skipped", false)
-        if (skip)
+        val prefs = Prefs.getEncrypted(context)
+        prefs?.initCipher()
+        val skip = prefs.get("profile_skipped", "false", true)
+        if (java.lang.Boolean.parseBoolean(skip))
             return
         val url = Prefs.get(this.context).member?.profileImg
         if (url.isNullOrEmpty() || !url.startsWith("http")) {
@@ -162,6 +163,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
                 }.subscribe()
             return
         }
+//        val m = android.net.MacAddress()
+//        val w =WifiManager.MA
 
 //        val done = Prefs.getTemp(context).get("body_measure")?.toLowerCase()
 //        if (done == "done" || done == "skip") {
@@ -191,7 +194,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
 
-    fun weather(){
+    fun getDashboardApis() {
+        controller.getCalories()
         log("weather fusedLocationClient--------------")
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         fusedLocationClient.lastLocation
@@ -356,6 +360,14 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     override fun onNotify(type: Int, data: Any?) {
+
+        if (type == 20) {
+            if (data is Int) {
+                activity?.runOnUiThread {
+                    adapter?.updateCalories(data)
+                }
+            }
+        }
 
     }
 

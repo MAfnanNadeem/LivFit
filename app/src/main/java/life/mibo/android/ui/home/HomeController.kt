@@ -11,11 +11,14 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.MemberPost
+import life.mibo.android.models.base.PostData
 import life.mibo.android.models.biometric.Biometric
+import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.session.Report
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
@@ -77,10 +80,12 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         if (isDashboard) {
             var weight = ""
             var weather = "0 "
+            var cal = 0
             try {
                 weight = Prefs.get(fragment.context)["user_weight"]
                 val date = SimpleDateFormat("yymmddhh").format(Date())
                 weather = Prefs.getTemp(fragment.context)["weather_$date"]
+                cal = Prefs.get(this.fragment.context).get("calories_burnt", 0)
             } catch (e: java.lang.Exception) {
 
             }
@@ -90,7 +95,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 getTrainerMenu(weight, weather)
             } else {
                 getBioMetric(weight)
-                getMemberMenu(weight, weather)
+                getMemberMenu(weight, weather, cal)
             }
             return
         }
@@ -298,7 +303,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     }
 
 
-    fun getMemberMenu(weight: String, weather: String) {
+    fun getMemberMenu(weight: String, weather: String, cal: Int) {
         val list = ArrayList<HomeItem>()
 
 
@@ -341,7 +346,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 fragment.getString(R.string.calories),
-                "0",
+                "$cal",
                 HomeItem.Type.CALORIES,
                 R.drawable.ic_body_summary_bsa,
                 R.drawable.dashboard_item_bg_1
@@ -499,7 +504,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         list.add(
             HomeItem(
                 "My Services", "",
-                HomeItem.Type.WEIGHT,
+                HomeItem.Type.MY_SERVICES,
                 R.drawable.ic_nfc_black_24dp,
                 R.drawable.dashboard_item_bg_4
             )
@@ -648,7 +653,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 //        )
 //        list.add(
 //            HomeItem(
-//                "Add Product",
+//                "Add life.mibo.android.models.product.Product",
 //                intArrayOf(Color.parseColor("#C9C8C8"), Color.parseColor("#393939")),
 //                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp
 //            )
@@ -692,7 +697,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         if (bio != null) {
             try {
                 val data = bio[bio.size - 1]
-                Prefs.get(fragment.context)["user_weight"] = "${data!!.weight} KG"
+                Prefs.get(fragment.context)["user_weight"] = "${Calculate.round(data!!.weight)} KG"
                 Prefs.get(fragment.context)["user_height"] = "${data!!.height} CM"
                 Prefs.get(fragment.context)["user_date"] =
                     "${data.createdAt?.date?.split(" ")?.get(0)}"
@@ -701,6 +706,50 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 // Prefs.get(fragment.context)["user_date"] = "${data.createdAt?.date}"
             }
 
+        }
+    }
+
+    fun getCalories() {
+
+        val cal = Prefs.get(this.fragment.context).get("calories_burnt", -1)
+        if (cal >= 0) {
+            observer?.onNotify(21, cal)
+            return
+        }
+
+        val member = Prefs.get(this.fragment.context).member
+            ?: return
+        //fragment.getDialog()?.show()
+        val post = PostData("${member.id}", member.accessToken, "CaloriesBurnt")
+        API.request.getApi().getAllCaloriesBurnt(post).enqueue(object : Callback<Calories> {
+            override fun onFailure(call: Call<Calories>, t: Throwable) {
+                // fragment.getDialog()?.dismiss()
+                t.printStackTrace()
+            }
+
+            override fun onResponse(call: Call<Calories>, response: Response<Calories>) {
+
+                // fragment.getDialog()?.dismiss()
+                val data = response.body()
+                parseCalories(data)
+            }
+        })
+    }
+
+    fun parseCalories(calories: Calories?) {
+        try {
+            var cal = 0
+            if (calories != null) {
+                calories.data?.forEach {
+                    // list.add(it!!)
+                    cal += it?.caloriesBurnt ?: 0
+                }
+            }
+            Prefs.get(this.fragment.context).set("calories_burnt", cal)
+            observer?.onNotify(20, cal)
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
     }
 }

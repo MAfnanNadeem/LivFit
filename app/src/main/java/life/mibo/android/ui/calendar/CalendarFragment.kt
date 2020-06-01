@@ -102,6 +102,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                     bundle.putString("service_name", it.session)
                     bundle.putString("service_date", it.startTime)
                     bundle.putInt("session_id", it.scheduleId ?: 0)
+                    bundle.putInt("trainer_id", it.trainerId ?: 0)
                     navigate(Navigator.RESCHEDULE, bundle)
                 }
             }
@@ -268,7 +269,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                             session.endDateTime,
                             session.trainerFullName,
                             session.serviceName,
-                            if (count == 0) color1 else color2, session.completed == 1
+                            if (count == 0) color1 else color2, session.completed == 1, "", session.trainerID
                         )
                     )
                     count++
@@ -451,7 +452,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         val session: String?,
         val color: Int,
         var isCompleted: Boolean = false,
-        var imageUrl: String = ""
+        var imageUrl: String = "",
+        var trainerId: Int? = 0
     ) {
 
     }
@@ -527,7 +529,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
     override fun onMonthChanged(calender: CalendarMonth) {
         //super.onMonthChanged(calender)
         tv_month?.text =
-            monthFormatter.format(calender?.yearMonth).toUpperCase() + " (" + calender?.year + ")"
+            monthFormatter.format(calender?.yearMonth).toUpperCase() + "  " + calender?.year + ""
     }
 
 

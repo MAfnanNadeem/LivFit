@@ -58,7 +58,7 @@ class WeightCompareFragment() : BaseFragment() {
 
         val pref = Prefs.get(context)
         var gndr = getString(R.string.gender_male)
-        if ("female" == pref["user_gender"]?.toLowerCase())
+        if ("female" == pref?.member?.gender?.toLowerCase())
             gndr = getString(R.string.gender_female)
         var weight = pref["user_weight"]
         var height = pref["user_height"]
@@ -75,7 +75,7 @@ class WeightCompareFragment() : BaseFragment() {
             tv_name?.text = pref.member?.firstName + " " + pref.member?.lastName
         } catch (e: java.lang.Exception) {
             MiboEvent.log(e)
-            tv_name?.text = "${pref["user_date"]}"
+            //tv_name?.text = "${pref["user_date"]}"
         }
 
         val member = pref?.member
@@ -123,6 +123,7 @@ class WeightCompareFragment() : BaseFragment() {
                 }
             })
     }
+
 
     private fun parseChartData(data: CompareWeightResponse) {
         val list = data.data

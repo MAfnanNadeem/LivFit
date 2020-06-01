@@ -205,7 +205,7 @@
     <fragment
         android:id="@+id/navigation_catolog"
         android:name="life.mibo.android.ui.catalog.CatalogFragment"
-        android:label="@string/search_products"
+        android:label="@string/mibo_store"
         tools:layout="@layout/fragment_body_profile" />
     <fragment
         android:id="@+id/navigation_settings"

@@ -1219,7 +1219,7 @@ class RXLManager private constructor() {
             b.append(" + ")
             b.append(events.size)
         }
-        //return String(b)
+        //return String(MyWebViewClient)
         return b.toString()
         // return ""
     }

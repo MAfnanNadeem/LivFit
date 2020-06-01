@@ -89,7 +89,9 @@ class ProfilePicFragment : BodyBaseFragment() {
 //            }
 //        })
 
-        Prefs.get(context).set("profile_skipped", true)
+        val prefs = Prefs.getEncrypted(context)
+        prefs?.initCipher()
+        prefs.set("profile_skipped", "true", true)
     }
 
 

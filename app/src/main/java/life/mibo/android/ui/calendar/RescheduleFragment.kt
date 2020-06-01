@@ -23,6 +23,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.session.RequestRescheduleMemberSession
 import life.mibo.android.models.session.RescheduleMemberSession
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
@@ -55,15 +56,16 @@ class RescheduleFragment : BaseFragment() {
     var trainerName = ""
     var serverName = ""
     var sessionId: Int = 0
+    var trainerId: Int = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         trainerName = arguments?.getString("trainer_name") ?: ""
         serverName = arguments?.getString("service_name") ?: ""
         //tv_program?.text = arguments?.getString("trainer_name")
         //tv_service?.text = arguments?.getString("service_name")
         sessionId = arguments?.getInt("session_id") ?: 0
+        trainerId = arguments?.getInt("trainer_id") ?: 0
 
         iv_date?.setOnClickListener {
             datePickerDialog()
@@ -138,7 +140,8 @@ class RescheduleFragment : BaseFragment() {
             object : MessageDialog.Listener {
                 override fun onClick(button: Int) {
                     if (button == MessageDialog.POSITIVE) {
-                        bookSession(sessionId, calendar.time)
+                        //bookSession(sessionId, calendar.time)
+                        rescheduleSession(sessionId, trainerId,  calendar.time)
                     }
                 }
 
@@ -185,6 +188,63 @@ class RescheduleFragment : BaseFragment() {
                                 false
                             ).show()
                            // var sessionId = "${data.data?.sessionID}"
+
+                        } else if (data.status.equals("error", true)) {
+                            Toasty.error(
+                                requireContext(),
+                                "${data.errors?.get(0)?.message}"
+                            ).show()
+
+                            MiboEvent.log("bookAndStartConsumerSession :: error $data")
+                        }
+                    } else {
+                        Toasty.error(requireContext(), R.string.error_occurred).show()
+                    }
+                }
+            })
+    }
+
+    fun rescheduleSession(programId: Int, trainerId: Int, date: Date) {
+        val member = Prefs.get(context).member ?: return
+
+        getDialog()?.show()
+
+        val post = RequestRescheduleMemberSession(
+            RequestRescheduleMemberSession.Data(
+                member.id(),
+                programId,
+                SimpleDateFormat("yyyy-MM-dd").format(date),
+                SimpleDateFormat("HH:mm:ss").format(date),
+                trainerId
+            ), member.accessToken
+        )
+
+        API.request.getApi().requestRescheduleMemberSession(post)
+            .enqueue(object : Callback<ResponseData> {
+
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(requireContext(), R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    getDialog()?.dismiss()
+
+                    val data = response.body()
+                    if (data != null) {
+                        if (data.status.equals("success", true)) {
+                            Toasty.info(
+                                requireContext(),
+                                "${data.data?.message}",
+                                Toasty.LENGTH_LONG,
+                                false
+                            ).show()
+                            // var sessionId = "${data.data?.sessionID}"
 
                         } else if (data.status.equals("error", true)) {
                             Toasty.error(

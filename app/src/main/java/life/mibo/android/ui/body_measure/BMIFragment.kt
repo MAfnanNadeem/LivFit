@@ -21,6 +21,8 @@ import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.views.body.picker.RulerValuePickerListener
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class BMIFragment : BodyBaseFragment() {
 
@@ -107,9 +109,9 @@ class BMIFragment : BodyBaseFragment() {
             }
 
             override fun onValueChange(value: Int) {
-                selectedWeight = value
+                selectedWeight = value.toDouble()
                 tv_weight?.text = "$value $weightUnit"
-                resizeImage(value, false)
+                resizeImage(selectedWeight, false)
                 // Calculate.addValue("value_weight", selectedWeight)
                 isWeight = true
             }
@@ -129,20 +131,22 @@ class BMIFragment : BodyBaseFragment() {
             override fun onValueChange(feetValue: String?) {
                 log("rulerValuePickerHeight onValueChange $feetValue :: ${rulerValuePickerHeight?.currentValue}")
                 selectedHeight =
-                    Calculate.inchToCm((rulerValuePickerHeight?.currentValue?.plus(24.0))).toInt()
+                    round(Calculate.inchToCm((rulerValuePickerHeight?.currentValue?.plus(24.0))))
                 tv_height?.text = "$feetValue $heightUnit"
                 // Calculate.addValue("value_height", selectedHeight)
                 log("selectedHeight $selectedHeight")
                 resizeImage(selectedHeight, true)
                 isHeight = true
+                log("rulerValuePickerHeight selectedHeight $selectedHeight")
             }
 
             override fun onValueChange(value: Int) {
-                selectedHeight = value
+                selectedHeight = value.toDouble()
                 tv_height?.text = "$value $heightUnit"
-                resizeImage(value, true)
+                resizeImage(selectedHeight, true)
                 //Calculate.addValue("value_height", selectedHeight)
                 isHeight = true
+                log("rulerValuePickerHeight selectedHeight $selectedHeight")
             }
 
             override fun onIntermediateValueChange(feetValue: String?) {
@@ -156,12 +160,19 @@ class BMIFragment : BodyBaseFragment() {
         })
     }
 
+    fun round(value: Double): Double {
+        return try {
+            BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+        } catch (e: java.lang.Exception) {
+            value
+        }
+    }
 
     private var maxHeight = 190.0;
     private var minHeight = 120.0;
     private var maxWeight = 180.0;
     private var minWeight = 30.0;
-    private fun resizeImage(value: Int, height: Boolean = true) {
+    private fun resizeImage(value: Double, height: Boolean = true) {
         if (height) {
 //            log("resizeImage: width ${imageView.width} : height ${imageView.height} :: value $value")
 //            var percent = (value.minus(minHeight)).div((maxHeight.minus(minHeight)))
@@ -241,9 +252,9 @@ class BMIFragment : BodyBaseFragment() {
 
     private fun setUnitSpinner() {
         val list = ArrayList<String>()
-        list.add("CM")
+        list.add(getString(R.string.cm_unit))
         //list.add("Inch")
-        list.add("Feet")
+        list.add(getString(R.string.feet_in_unit))
         val adapter =
             ArrayAdapter<String>(requireContext(), R.layout.list_item_spinner, list)
         spinner_height.adapter = adapter
@@ -377,24 +388,24 @@ class BMIFragment : BodyBaseFragment() {
 
     }
 
-    var selectedHeight = 0
-    var selectedWeight = 0
+    var selectedHeight: Double = 0.0
+    var selectedWeight: Double = 0.0
     var selectedAge = 0
 
     fun getWeight(): Double {
-        log("getWeight weightType $weightType selectedWeight $selectedWeight")
+        //log("getWeight weightType $weightType selectedWeight $selectedWeight")
 //        try {
 //            return tv_weight?.toString()?.replace("[^0-9]".toRegex(), "")?.toDoubleOrNull() ?: 0.0
 //        } catch (e: Exception) {
 //
 //        }
-        if (weightType == 2)
+        if (weightType == 2 || weightUnit == "lbs")
             return selectedWeight.div(2.205)
         return selectedWeight.toDouble()
     }
 
     fun getHeight(): Double {
-        log("getHeight heightType $heightType selectedHeight $selectedHeight")
+        //log("getHeight heightType $heightType selectedHeight $selectedHeight")
 
 //        try {
 //            return tv_height?.toString()?.replace("[^0-9]".toRegex(), "")?.toDoubleOrNull() ?: 0.0
@@ -409,13 +420,17 @@ class BMIFragment : BodyBaseFragment() {
     }
 
     private fun updateBmi() {
+       // log("updateBmi ${getWeight()} ${getHeight()} ")
         val bmi = Calculate.calculateBmi(getWeight(), getHeight())
+        val bmi2 = Calculate.calculateBmi2(getWeight(), getHeight())
+        //log("updateBmi $bmi $bmi2")
+       // log("updateBmi ${round(bmi)} ${round(bmi2)}")
 //        if (!bmi.isInfinite())
 //            tv_text?.text = String.format("BMI %.2f", bmi)
 //        else tv_text?.text = String.format("BMI %.2f", 0.0)
-        Calculate.getMeasureData().bmi = bmi
-        Calculate.getMeasureData().height = selectedHeight?.toDouble()
-        Calculate.getMeasureData().weight = selectedWeight?.toDouble()
+        Calculate.getMeasureData().bmi = round(bmi)
+        Calculate.getMeasureData().height = getHeight()
+        Calculate.getMeasureData().weight = getWeight()
 //        Calculate.addValue("user_bmi", String.format("%.2f", bmi))
 //        Calculate.addValue("user_weight", "$selectedWeight")
 //        Calculate.addValue("user_height", "$selectedHeight")

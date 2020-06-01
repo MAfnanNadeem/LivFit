@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.util.SparseIntArray
 import life.mibo.android.core.toIntOrZero
 import life.mibo.hardware.core.Logger
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 object Calculate {
 
@@ -44,12 +46,29 @@ object Calculate {
     fun calculateBmi(weight: Double?, heightCm: Double?): Double {
         //Logger.e("calculateBmi weight $weight : height $heightCm")
         //val weight: Double? = weight?.toDoubleOrNull()
+        // var bmi: Double = heightCm?.div(100) ?: 1.0
+        // bmi = bmi.times(bmi)
+        //tv_start_bmi.text = String.format("%.2f", weight?.div(bmi!!))
+        // tv_bmi_value.text = String.format("BMI: %.2f", weight?.div(bmi))
+        val heightMeter = heightCm?.div(100) ?: 1.0
+        val bmi = weight?.div(heightMeter)
+        //return weight?.div(bmi) ?: 1.0
+        return bmi?.div(heightMeter) ?: 1.0
+    }
+
+
+    fun calculateBmi2(weight: Double?, heightCm: Double?): Double {
+        //Logger.e("calculateBmi weight $weight : height $heightCm")
+        //val weight: Double? = weight?.toDoubleOrNull()
         var bmi: Double = heightCm?.div(100) ?: 1.0
         bmi = bmi.times(bmi)
         //tv_start_bmi.text = String.format("%.2f", weight?.div(bmi!!))
         // tv_bmi_value.text = String.format("BMI: %.2f", weight?.div(bmi))
+
         return weight?.div(bmi) ?: 1.0
+
     }
+
 
     fun calculateBmiNew(weight: Double?, height: Double?): Double {
         //val weight: Double? = weight?.toDoubleOrNull()
@@ -273,6 +292,16 @@ object Calculate {
 
     fun kgToPounds(weight: Double): Double {
         return weight.times(2.205)
+    }
+
+    fun round(value: Double?): Double {
+        if (value == null)
+            return 0.0
+        return try {
+            BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+        } catch (e: java.lang.Exception) {
+            value
+        }
     }
 
 

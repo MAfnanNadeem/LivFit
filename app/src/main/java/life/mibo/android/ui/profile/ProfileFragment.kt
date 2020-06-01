@@ -17,10 +17,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
@@ -99,16 +98,18 @@ class ProfileFragment : BaseFragment() {
 
         this.setProfile()
 
+        setHasOptionsMenu(true)
     }
 
     private fun setProfile() {
         val member = Prefs.get(context).member ?: return
         tv_name?.text = member.firstName + " " + member.lastName
-        tv_email?.text = Prefs.get(context).get("user_email")
-        tv_dob?.text = member.dob
-        tv_city?.text = member.city
-        tv_number?.text = member.contact
-        tv_country?.text = member.country
+        //tv_email?.text = Prefs.get(context).get("user_email")
+        tv_email?.setText(Prefs.get(context).get("user_email"))
+        tv_dob?.setText(member.dob)
+        tv_city?.setText(member.city)
+        tv_number?.setText(member.contact)
+        tv_country?.setText(member.country)
         setUserImage(member?.profileImg)
 
         tv_change_pwd?.setOnClickListener {
@@ -120,6 +121,8 @@ class ProfileFragment : BaseFragment() {
             log("Profile image click")
             openPicker()
         }
+
+        profileEditable(false)
     }
 
     private fun setUserImage(profileImg: String?) {
@@ -448,5 +451,42 @@ class ProfileFragment : BaseFragment() {
                 }).into(userImage)
             Logger.e("openPicker RxGalleryFinalApi glide loading")
         }
+    }
+
+    var isEditMode = false
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if (isEditMode)
+            inflater.inflate(R.menu.menu_profile_done, menu)
+        else inflater.inflate(R.menu.menu_profile_edit, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_done -> {
+                //profileEditable(false)
+            }
+            R.id.action_edit -> {
+                //profileEditable(true)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun profileEditable(edit: Boolean) {
+
+        isEditMode = edit
+        refreshMenu()
+
+        tv_email?.isEnabled = isEditMode
+        tv_dob?.isEnabled = isEditMode
+        tv_city?.isEnabled = isEditMode
+        tv_number?.isEnabled = isEditMode
+        tv_country?.isEnabled = isEditMode
+    }
+
+    fun refreshMenu() {
+        (activity as AppCompatActivity?)?.supportActionBar?.invalidateOptionsMenu()
     }
 }

@@ -18,7 +18,15 @@ import life.mibo.android.models.member.*
 import life.mibo.android.models.muscle.GetSuitPost
 import life.mibo.android.models.muscle.GetSuits
 import life.mibo.android.models.muscle.MuscleCollection
+import life.mibo.android.models.notification.*
+import life.mibo.android.models.password.CreatePassword
+import life.mibo.android.models.password.ForgetPasswordPost
+import life.mibo.android.models.password.ForgetPasswordVerifyOtp
+import life.mibo.android.models.password.PasswordVerifyOTPResponse
+import life.mibo.android.models.product.Catalog
+import life.mibo.android.models.product.GetMemberServices
 import life.mibo.android.models.product.Products
+import life.mibo.android.models.product.Services
 import life.mibo.android.models.program.ProgramPost
 import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
@@ -26,6 +34,7 @@ import life.mibo.android.models.register.RegisterResponse
 import life.mibo.android.models.rxl.*
 import life.mibo.android.models.send_otp.SendOTP
 import life.mibo.android.models.send_otp.SendOtpResponse
+import life.mibo.android.models.session.RequestRescheduleMemberSession
 import life.mibo.android.models.session.RescheduleMemberSession
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
@@ -113,6 +122,7 @@ class API {
         //const val baseUrl = "http://test.mibo.world/api/consumer/"
         const val baseUrl = "https://test.mibolivfit.club/api/consumer/"
         const val trainerUrl = "https://test.mibolivfit.club/api/v1/"
+        const val chainUrl = "http://chaintest.mibo.world/api/"
     }
 
     fun getApi(): ApiService {
@@ -132,6 +142,12 @@ class API {
 
     fun getTrainerApi(): ApiService {
         return Retrofit.Builder().baseUrl(trainerUrl).client(okhttp!!)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+            .create(ApiService::class.java)
+    }
+
+    fun getChainApi(): ApiService {
+        return Retrofit.Builder().baseUrl(chainUrl).client(okhttp!!)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(ApiService::class.java)
     }
@@ -171,6 +187,18 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("verifyOTP")
         fun verifyOtp(@Body data: VerifyOTP): Call<VerifyOtpResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("forgotPasswordOTP")
+        fun forgotPasswordOTP(@Body data: ForgetPasswordPost): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("forgotPasswordVerifyOTP")
+        fun forgotPasswordVerifyOTP(@Body data: ForgetPasswordVerifyOtp): Call<PasswordVerifyOTPResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("createPassword")
+        fun createPassword(@Body data: CreatePassword): Call<ResponseStatus>
 
         //@Headers("Accept: application/json", "Content-Type: application/json")
         //@POST("verifyOTP")
@@ -322,6 +350,42 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("rescheduleMemberSession")
         fun rescheduleMemberSession(@Body data: RescheduleMemberSession): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("requestRescheduleMemberSession")
+        fun requestRescheduleMemberSession(@Body data: RequestRescheduleMemberSession): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberNotifications")
+        fun getMemberNotifications(@Body data: GetMemberNotifications): Call<MemberNotifications>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getTrainerNotifications")
+        fun getTrainerNotifications(@Body data: GetTrainerNotifications): Call<TrainerNotifications>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("acceptMemberInvite")
+        fun acceptMemberInvite(@Body data: AcceptMemberInvite): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("acceptRescheduleRequest")
+        fun acceptRescheduleRequest(@Body data: AcceptRescheduleRequest): Call<ResponseData>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberServices")
+        fun getMemberServices(@Body data: GetMemberServices): Call<Services>
+
+
+//        @Headers("Accept: application/json", "Content-Type: application/json")
+//        @POST("getAllCaloriesBurnt")
+//        fun getAllCaloriesBurnt(@Body data: RequestRescheduleMemberSession): Call<ResponseData>
+
+
+        // Chain APIs
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @GET("productsLiveFit")
+        fun getChainProducts(): Call<Catalog>
+
 
         // TRAINER - INDEPENDENT PROFESSIONAL APIs
         @Headers("Accept: application/json", "Content-Type: application/json")

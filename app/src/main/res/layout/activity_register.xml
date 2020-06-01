@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     android:background="@color/background_color_app">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/grid_1x"
+        android:scaleType="fitCenter"
+        android:src="@drawable/login_social_bottom"
+        android:visibility="gone" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

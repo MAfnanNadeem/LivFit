@@ -37,7 +37,7 @@ public final class DisposableArray implements Disposable, DisposableContainer {
     }
 
     /**
-     * Creates a CompositeDisposables with the given array of initial elements.
+     * Creates DialogListener CompositeDisposables with the given array of initial elements.
      *
      * @param disposables the array of Disposables to start with
      * @throws NullPointerException if {@code disposables} or any of its array items is null
@@ -52,7 +52,7 @@ public final class DisposableArray implements Disposable, DisposableContainer {
     }
 
     /**
-     * Creates a CompositeDisposables with the given Iterable sequence of initial elements.
+     * Creates DialogListener CompositeDisposables with the given Iterable sequence of initial elements.
      *
      * @param disposables the Iterable sequence of Disposables to start with
      * @throws NullPointerException if {@code disposables} or any of its items is null
@@ -90,7 +90,7 @@ public final class DisposableArray implements Disposable, DisposableContainer {
     }
 
     /**
-     * Adds a disposable to this container or disposes it if the
+     * Adds DialogListener disposable to this container or disposes it if the
      * container has been disposed.
      *
      * @param disposable the disposable to add, not null

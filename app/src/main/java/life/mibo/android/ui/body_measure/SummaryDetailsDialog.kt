@@ -35,7 +35,6 @@ import life.mibo.android.ui.body_measure.adapter.SummaryAdapter
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
-import life.mibo.views.CircleImageView
 import java.text.SimpleDateFormat
 import kotlin.random.Random
 
@@ -70,7 +69,7 @@ class SummaryDetailsDialog(
         var tvDate: TextView? = view?.findViewById(R.id.tv_date)
         var bgView: View? = view?.findViewById(R.id.constraintLayout)
         var image: ImageView? = view?.findViewById(R.id.image_circle)
-        var profilePic: CircleImageView? = view?.findViewById(R.id.imageViewProfile)
+        var profilePic: ImageView? = view?.findViewById(R.id.imageViewProfile)
         var chart: BarChart? = view?.findViewById(R.id.barChart)
         //var tabs: TabLayout? = view?.findViewById(R.id.tabLayout)
 //        if (data?.title?.trim() == "BMI") {
@@ -129,10 +128,8 @@ class SummaryDetailsDialog(
     }
 
     private fun loadImage(iv: ImageView?, url: String?, defaultImage: Int) {
-        url?.let {
-            if (iv != null)
-                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
-        }
+        if (iv != null)
+            Glide.with(this).load(url).error(defaultImage).fallback(defaultImage).into(iv)
 //        Maybe.fromCallable {
 //            var bitmap: Bitmap? = null
 //            bitmap = if (!base64.isNullOrEmpty())

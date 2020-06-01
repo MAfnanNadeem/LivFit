@@ -100,6 +100,27 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
         Logger.e("updateWeather notify $notify")
     }
 
+    fun updateCalories(cal: Int?) {
+        if (cal == null)
+            return
+        var notify = false
+        for (l in list) {
+            for (i in l) {
+                if (i.type == HomeItem.Type.CALORIES) {
+                    Logger.e("updateWeather HomeItem.Type.WEATHER found $cal")
+                    //i.title = weight.trim() + 0x00B0.toChar()
+                    i.headerText = "$cal"
+                    i.updateHeader = true
+                    notify = true
+                    break
+                }
+            }
+        }
+        if (notify)
+            notifyDataSetChanged()
+        Logger.e("updateWeather notify $notify")
+    }
+
     class HomeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var item1: DashboardItem? = itemView.findViewById(R.id.item1)
         var item2: DashboardItem? = itemView.findViewById(R.id.item2)

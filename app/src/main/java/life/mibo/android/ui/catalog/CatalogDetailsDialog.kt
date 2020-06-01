@@ -20,6 +20,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.UserID
+import life.mibo.android.models.product.Product
 import life.mibo.android.models.trainer.ProfessionalDetails
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.payments.PaymentActivity
@@ -29,7 +30,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class CatalogDetailsDialog(var data: CatalogFragment.CartItem?) :
+class CatalogDetailsDialog(var data: Product?) :
     DialogFragment() {
 
     override fun onCreateView(
@@ -45,10 +46,10 @@ class CatalogDetailsDialog(var data: CatalogFragment.CartItem?) :
 
 
 
-        if (data?.type == 2)
+        if (data?.id == 2)
             tv_product_location?.text = "add your address"
         tv_product_quantity_value?.text = "$quantity"
-        tv_product_price_value?.text = "${data?.price}"
+        tv_product_price_value?.text = "${data?.unitPrice}"
 
         btn_plus?.setOnClickListener {
             if (quantity < 10) {
@@ -80,7 +81,7 @@ class CatalogDetailsDialog(var data: CatalogFragment.CartItem?) :
             try {
                 //PaymentActivity.payNow(activity, "200")
                 val i = Intent(context, BuyActivity::class.java)
-                i.putExtra("type_type", data?.type)
+                i.putExtra("type_type", data?.stock)
                 startActivity(i)
                 dismiss()
             } catch (e: java.lang.Exception) {

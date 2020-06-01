@@ -1385,8 +1385,9 @@ class MainActivity : BaseActivity(), Navigator {
 
     fun logout() {
         val prefs = Prefs.getEncrypted(this)
+        prefs.initCipher()
         prefs.set("login_enable", "false", true)
-        Prefs.get(this).set("skip_pwd_", "false")
+        prefs.set("profile_skipped", "false", true)
         startActivity(Intent(this@MainActivity, LoginActivity::class.java))
         finish()
     }
@@ -1447,9 +1448,12 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_calendar)
             }
             HomeItem.Type.CALORIES -> {
-                //navigate(R.id.action_navigation_home_to_navigation_calories, 0)
+                navigate(
+                    R.id.action_navigation_home_to_navigation_calories,
+                    R.id.navigation_calories
+                )
                 //navigateFragment(R.id.navigation_calories)
-                comingSoon()
+                // comingSoon()
                 return
             }
 
@@ -1528,6 +1532,10 @@ class MainActivity : BaseActivity(), Navigator {
                 return
             }
             HomeItem.Type.MY_ACCOUNT -> {
+                comingSoon()
+                return
+            }
+            HomeItem.Type.MY_SERVICES -> {
                 comingSoon()
                 return
             }
@@ -1746,7 +1754,7 @@ class MainActivity : BaseActivity(), Navigator {
                 super.onBackPressed()
                 return
             }
-            Toasty.info(this, "Tap back again to exit", Toast.LENGTH_SHORT, false).show()
+            Toasty.info(this, getString(R.string.tap_back_exit), Toast.LENGTH_SHORT, false).show()
             mBackPressed = System.currentTimeMillis();
             return
         }
@@ -1828,7 +1836,7 @@ class MainActivity : BaseActivity(), Navigator {
         val defaultSoundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.mibo_144)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setAutoCancel(true)

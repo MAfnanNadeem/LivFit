@@ -8,13 +8,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginStart="@dimen/grid_1x"
     android:layout_marginTop="@dimen/grid_1x"
     android:layout_marginEnd="@dimen/grid_1x"
     android:background="@drawable/bg_create_course_item"
     android:gravity="center_horizontal">
 
-    <ImageView
+    <life.mibo.views.HexagonImageView
         android:id="@+id/iv_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
@@ -56,7 +57,6 @@
         app:layout_constraintStart_toEndOf="@+id/iv_image"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-
     <LinearLayout
         android:id="@+id/ll_trainer"
         android:layout_width="match_parent"
@@ -66,6 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_date">
 
+
         <Button
             android:id="@+id/btn_accept"
             android:layout_width="match_parent"
@@ -73,18 +74,37 @@
             android:layout_margin="@dimen/grid_1x"
             android:layout_weight="1"
             android:background="@drawable/login_button_accent"
-            android:text="Accept"
+            tools:text="Accept"
             android:textColor="@color/white" />
 
         <Button
+            android:id="@+id/btn_reject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
             android:layout_weight="1"
             android:background="@drawable/login_button_primary"
-            android:text="Decline"
+            tools:text="Decline"
             android:textColor="@color/white" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_trainer_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_date">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
     </LinearLayout>
 
 
@@ -93,7 +113,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/grid_1x"
-        android:text="2 days ago"
+        android:fontFamily="@string/font_sans_serif"
+        tools:text="2 days ago"
         android:textColor="@color/grey"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"

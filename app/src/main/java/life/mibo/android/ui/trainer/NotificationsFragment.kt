@@ -8,6 +8,7 @@
 package life.mibo.android.ui.trainer
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +19,27 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import life.mibo.android.R
+import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.login.Member
+import life.mibo.android.models.notification.*
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
+import life.mibo.hardware.core.Logger
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NotificationsFragment : BaseFragment() {
+
+    var testMode = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,20 +53,38 @@ class NotificationsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         //setupAdapter()
         recyclerView?.layoutManager = GridLayoutManager(context, 1)
-        fragment_notifications()
+        //fragment_notifications()
+        getNotifications()
 
+
+
+        swipeToRefresh?.setColorSchemeResources(
+            R.color.colorPrimary,
+            R.color.colorAccent,
+            R.color.colorPrimaryDark,
+            R.color.infoColor2,
+            R.color.successColor
+        )
+        swipeToRefresh?.setOnRefreshListener {
+            log("swipeToRefresh?.setOnRefreshListener $isRefreshing")
+            isRefreshing = true
+            getNotifications()
+        }
     }
 
+    var isRefreshing = false
+
     var isGrid = false
-    val ipList = ArrayList<Notify>()
+    private val notifications = ArrayList<Notifications>()
+    private val list = ArrayList<Notify>()
     var searchAdapters: SearchAdapters? = null
 
     private fun fragment_notifications() {
-        ipList.clear()
+        list.clear()
         val member = Prefs.get(this.context).member?.isMember() ?: true
 
         if (member) {
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "MI.BO Team",
@@ -58,7 +92,7 @@ class NotificationsFragment : BaseFragment() {
                 )
             )
 
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "Information",
@@ -67,7 +101,7 @@ class NotificationsFragment : BaseFragment() {
             )
 
             for (p in 1..10) {
-                ipList.add(
+                list.add(
                     Notify(
                         p,
                         "Jose Armando",
@@ -76,7 +110,7 @@ class NotificationsFragment : BaseFragment() {
                 )
             }
         } else {
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "New Order!",
@@ -84,7 +118,7 @@ class NotificationsFragment : BaseFragment() {
                 )
             )
 
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "Mary Johnson",
@@ -95,7 +129,7 @@ class NotificationsFragment : BaseFragment() {
                 )
             )
 
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "Support Team",
@@ -103,7 +137,7 @@ class NotificationsFragment : BaseFragment() {
                 )
             )
 
-            ipList.add(
+            list.add(
                 Notify(
                     0,
                     "Support",
@@ -112,7 +146,7 @@ class NotificationsFragment : BaseFragment() {
             )
 
             for (p in 1..10) {
-                ipList.add(
+                list.add(
                     Notify(
                         p,
                         "Jose Armando",
@@ -124,23 +158,21 @@ class NotificationsFragment : BaseFragment() {
         }
 
 
-
-
-        searchAdapters = SearchAdapters(1, ipList, object : ItemClickListener<Notify> {
-            override fun onItemClicked(item: Notify?, position: Int) {
-
-            }
-
-        })
-        recyclerView?.adapter = searchAdapters;
-        searchAdapters?.notifyDataSetChanged()
+//        searchAdapters = SearchAdapters(1, list, object : ItemClickListener<Notify> {
+//            override fun onItemClicked(item: Notify?, position: Int) {
+//
+//            }
+//
+//        })
+//        recyclerView?.adapter = searchAdapters;
+//        searchAdapters?.notifyDataSetChanged()
     }
 
 
     class SearchAdapters(
         val type: Int = 1,
-        val list: ArrayList<Notify>,
-        val listener: ItemClickListener<Notify>?
+        val list: ArrayList<Notifications>,
+        val listener: ItemClickListener<Notifications>?
     ) : RecyclerView.Adapter<SearchHolder>() {
         var grid = false
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHolder {
@@ -162,6 +194,27 @@ class NotificationsFragment : BaseFragment() {
 
     }
 
+    data class Notifications(
+        var id: Int?,
+        var markAsRead: Int?,
+        var desc: String?,
+        var sentBy: String?,
+        var status: String?,
+        var userId: Int?,
+        var type: String?,
+        var createdAt: String?,
+        var updatedAt: String?,
+        var daysAgo: String?,
+        var isMember: Boolean
+    ) {
+        fun isRead() = markAsRead == 1
+
+        fun isAccepted() =
+            status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "accepted"
+
+        fun isButtonVisible() = status?.toLowerCase() == "pending"
+    }
+
     data class Notify(
         val id: Int,
         var name: String,
@@ -177,30 +230,373 @@ class NotificationsFragment : BaseFragment() {
         val img: ImageView? = itemView.findViewById(R.id.imageView)
         val trainer: View? = itemView.findViewById(R.id.ll_trainer)
         val accept: Button? = itemView.findViewById(R.id.btn_accept)
+        val reject: Button? = itemView.findViewById(R.id.btn_reject)
+        val progress: View? = itemView.findViewById(R.id.ll_trainer_progress)
+        val time: TextView? = itemView.findViewById(R.id.tv_date)
 
-        fun bind(item: Notify, listener: ItemClickListener<Notify>?) {
-            name?.text = item.name
+        fun bind(item: Notifications, listener: ItemClickListener<Notifications>?) {
+            Logger.e("Notifications bind $item")
+            name?.text = item.sentBy
             desc?.text = item.desc
-            when {
-                item.isMember -> {
+            time?.text = item.daysAgo
+            if (item.isMember) {
+                trainer?.visibility = View.GONE
+            } else {
+                Logger.e("Notifications bind ${item.isButtonVisible()}")
+                Logger.e("Notifications bind ${item.type}")
+                Logger.e("Notifications bind ${item.status}")
+                if (item.isButtonVisible()) {
+                    when {
+                        item.type?.toLowerCase() == "invite" -> {
+                            trainer?.visibility = View.VISIBLE
+                            accept?.text = itemView?.context?.getString(R.string.accept)
+                            reject?.text = itemView?.context?.getString(R.string.reject)
+                        }
+                        item.type?.toLowerCase() == "reschedule" -> {
+                            trainer?.visibility = View.VISIBLE
+                            accept?.text = itemView?.context?.getString(R.string.confirm)
+                            reject?.text = itemView?.context?.getString(R.string.decline)
+                        }
+                        else -> {
+                            trainer?.visibility = View.GONE
+                            // accept?.text = itemView?.context?.getString(R.string.confirm)
+                            //reject?.text = itemView?.context?.getString(R.string.decline)
+                            //reject?.text = itemView?.context?.getString(R.string.decline)
+                        }
+                    }
+                } else {
                     trainer?.visibility = View.GONE
-                }
-                item.isAccepted -> {
-                    trainer?.visibility = View.GONE
-                }
-                item.isConfirm -> {
-                    trainer?.visibility = View.VISIBLE
-                    accept?.setText("Confirm")
-                }
-                else -> {
-                    trainer?.visibility = View.VISIBLE
-                    accept?.setText("Accept")
                 }
             }
+
             itemView?.setOnClickListener {
-                listener?.onItemClicked(item, adapterPosition)
+                // listener?.onItemClicked(item, adapterPosition)
+            }
+
+            accept?.setOnClickListener {
+                listener?.onItemClicked(item, 1001)
+                if (item.isMember)
+                    return@setOnClickListener
+                if (item.type?.toLowerCase() == "invite") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptInvite(trainer, progress, item.id, true, member?.accessToken)
+                } else if (item.type?.toLowerCase() == "reschedule") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptRescheduleRequest(trainer, progress, item.id, true, member?.accessToken)
+                }
+            }
+            reject?.setOnClickListener {
+                if (item.isMember)
+                    return@setOnClickListener
+                listener?.onItemClicked(item, 1002)
+                if (item.type?.toLowerCase() == "invite") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptInvite(trainer, progress, item.id, false, member?.accessToken)
+                } else if (item.type?.toLowerCase() == "reschedule") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptRescheduleRequest(trainer, progress, item.id, false, member?.accessToken)
+                }
             }
         }
 
+        private fun acceptInvite(
+            parent: View?,
+            progress: View?,
+            id: Int?,
+            accept: Boolean,
+            token: String?
+        ) {
+            if (id == null || token == null)
+                return
+            var status = if (accept) "Accepted" else "Declined"
+            parent?.visibility = View.INVISIBLE
+            progress?.visibility = View.VISIBLE
+            val data =
+                AcceptMemberInvite(AcceptMemberInvite.Data(id, status), token)
+            API.request.getApi().acceptMemberInvite(data)
+                .enqueue(object : Callback<ResponseData> {
+                    override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                        Toasty.snackbar(parent, R.string.unable_to_connect)
+                        parent?.visibility = View.VISIBLE
+                        progress?.visibility = View.GONE
+                    }
+
+                    override fun onResponse(
+                        call: Call<ResponseData>,
+                        response: Response<ResponseData>
+                    ) {
+                        val body = response.body()
+                        if (body != null && body.isSuccess()) {
+                            progress?.visibility = View.GONE
+                            //parent?.visibility = View.INVISIBLE
+                            Utils.collapse(parent)
+                            val msg = body?.data?.message
+                            Toasty.snackbar(parent, msg ?: "Invite $status")
+                            return
+                        }
+                        try {
+                            progress?.visibility = View.GONE
+                            parent?.visibility = View.VISIBLE
+                            val msg = body?.errors?.get(0)?.message
+                            Toasty.snackbar(parent, msg)
+                        } catch (e: Exception) {
+
+                        }
+                    }
+
+                })
+        }
+
+        private fun acceptRescheduleRequest(
+            parent: View?,
+            progress: View?,
+            id: Int?,
+            confirm: Boolean,
+            token: String?
+        ) {
+            if (id == null || token == null)
+                return
+
+            var status = if (confirm) "Confirmed" else "Declined"
+            parent?.visibility = View.INVISIBLE
+            progress?.visibility = View.VISIBLE
+            val data =
+                AcceptRescheduleRequest(AcceptRescheduleRequest.Data(id, status), token)
+            API.request.getApi().acceptRescheduleRequest(data)
+                .enqueue(object : Callback<ResponseData> {
+                    override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                        Toasty.snackbar(parent, R.string.unable_to_connect)
+                        parent?.visibility = View.VISIBLE
+                        progress?.visibility = View.GONE
+                    }
+
+                    override fun onResponse(
+                        call: Call<ResponseData>,
+                        response: Response<ResponseData>
+                    ) {
+                        val body = response.body()
+                        if (body != null && body.isSuccess()) {
+                            progress?.visibility = View.GONE
+                            //parent?.visibility = View.INVISIBLE
+                            Utils.collapse(parent)
+                            val msg = body?.data?.message
+                            Toasty.snackbar(parent, msg ?: "Reschedule Request $status")
+                            return
+                        }
+                        try {
+                            progress?.visibility = View.GONE
+                            parent?.visibility = View.VISIBLE
+                            val msg = body?.errors?.get(0)?.message
+                            Toasty.snackbar(parent, msg)
+                        } catch (e: Exception) {
+
+                        }
+                    }
+
+                })
+        }
     }
+
+    fun showProgress() {
+        activity?.runOnUiThread {
+            // progressBar?.visibility = View.VISIBLE
+            isRefreshing = true
+            swipeToRefresh?.isRefreshing = isRefreshing
+
+        }
+    }
+
+    fun hideProgress() {
+        activity?.runOnUiThread {
+            //progressBar?.visibility = View.GONE
+            isRefreshing = false
+            swipeToRefresh?.isRefreshing = isRefreshing
+
+        }
+    }
+
+    private fun getNotifications() {
+        val member = Prefs.get(this.context).member
+            ?: return
+
+        if (member.isMember())
+            getMemberNotifications(member)
+        else
+            getTrainerNotifications(member)
+    }
+
+    private fun getMemberNotifications(member: Member) {
+        showProgress()
+        val data =
+            GetMemberNotifications(GetMemberNotifications.Data(member.id), member.accessToken)
+        API.request.getApi().getMemberNotifications(data)
+            .enqueue(object : Callback<MemberNotifications> {
+                override fun onFailure(call: Call<MemberNotifications>, t: Throwable) {
+                    hideProgress()
+                }
+
+                override fun onResponse(
+                    call: Call<MemberNotifications>,
+                    response: Response<MemberNotifications>
+                ) {
+                    hideProgress()
+                    parseNotifications(response?.body()?.data)
+                }
+
+            })
+    }
+
+
+    private fun getTrainerNotifications(member: Member) {
+        showProgress()
+        val data =
+            GetTrainerNotifications(GetTrainerNotifications.Data(member.id), member.accessToken)
+        API.request.getApi().getTrainerNotifications(data)
+            .enqueue(object : Callback<TrainerNotifications> {
+                override fun onFailure(call: Call<TrainerNotifications>, t: Throwable) {
+                    hideProgress()
+                }
+
+                override fun onResponse(
+                    call: Call<TrainerNotifications>,
+                    response: Response<TrainerNotifications>
+                ) {
+                    hideProgress()
+                    parseTrainerNotifications(response?.body()?.data)
+                }
+
+            })
+    }
+
+    private fun acceptInvite(id: Int, accept: Boolean, token: String) {
+        var status = if (accept) "Declined" else "Accepted"
+        showProgress()
+        val data =
+            AcceptMemberInvite(AcceptMemberInvite.Data(id, status), token)
+        API.request.getApi().acceptMemberInvite(data)
+            .enqueue(object : Callback<ResponseData> {
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    hideProgress()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    hideProgress()
+                }
+
+            })
+    }
+
+    private fun acceptRescheduleRequest(id: Int, confirm: Boolean, token: String) {
+        var status = if (confirm) "Declined" else "Confirmed"
+        showProgress()
+        val data =
+            AcceptRescheduleRequest(AcceptRescheduleRequest.Data(id, status), token)
+        API.request.getApi().acceptRescheduleRequest(data)
+            .enqueue(object : Callback<ResponseData> {
+                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                    hideProgress()
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseData>,
+                    response: Response<ResponseData>
+                ) {
+                    hideProgress()
+                }
+
+            })
+    }
+
+    private fun parseNotifications(data: List<MemberNotifications.Data?>?) {
+        if (data != null && data.isNotEmpty()) {
+            tv_empty?.visibility = View.GONE
+            notifications.clear()
+            Collections.sort(data) { o2, o1 -> o1?.createdAt?.compareTo(o2?.createdAt ?: "") ?: -1 }
+
+            for (n in data) {
+                if (n != null)
+                    notifications.add(
+                        Notifications(
+                            n.id,
+                            n.markAsRead,
+                            n.notification,
+                            n.sentBy,
+                            n.status,
+                            n.memberId,
+                            n.type,
+                            n.createdAt,
+                            n.updatedAt,
+                            getDaysAgo(n.createdAt),
+                            true
+                        )
+                    )
+            }
+
+            updateRecyclerView()
+        } else {
+            tv_empty?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun parseTrainerNotifications(data: List<TrainerNotifications.Data?>?) {
+        if (data != null && data.isNotEmpty()) {
+            Collections.sort(data) { o2, o1 -> o1?.createdAt?.compareTo(o2?.createdAt ?: "") ?: -1 }
+
+            tv_empty?.visibility = View.GONE
+            notifications.clear()
+
+            for (n in data) {
+                if (n != null)
+                    notifications.add(
+                        Notifications(
+                            n.id,
+                            n.markAsRead,
+                            n.notification,
+                            n.sentBy,
+                            n.status,
+                            n.trainerId,
+                            n.type,
+                            n.createdAt,
+                            n.updatedAt,
+                            getDaysAgo(n.createdAt),
+                            false
+                        )
+                    )
+            }
+
+            updateRecyclerView()
+        } else {
+            tv_empty?.visibility = View.VISIBLE
+        }
+    }
+
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    fun getDaysAgo(date: String?): String {
+        if (date == null)
+            return ""
+
+        try {
+            return "" + DateUtils.getRelativeTimeSpanString(inputFormat.parse(date).time)
+        } catch (e: java.lang.Exception) {
+
+        }
+        return ""
+
+    }
+
+    fun updateRecyclerView() {
+        searchAdapters =
+            SearchAdapters(1, notifications, object : ItemClickListener<Notifications> {
+                override fun onItemClicked(item: Notifications?, position: Int) {
+
+                }
+
+            })
+        recyclerView?.adapter = searchAdapters;
+        searchAdapters?.notifyDataSetChanged()
+    }
+
 }

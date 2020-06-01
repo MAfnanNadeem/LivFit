@@ -40,7 +40,7 @@
     <string name="scan_devices">Scan Devices</string>
     <string name="unable_to_connect">Unable to connect</string>
     <string name="logout">Logout</string>
-    <string name="regestered">Successfully Registered</string>
+    <string name="registered">Successfully Registered</string>
     <string name="otp_sent">OTP Code sent successfully</string>
     <string name="connected_devices">Connected Devices</string>
     <string name="available_devices">Available Devices</string>
@@ -397,6 +397,29 @@
     <string name="enter_your_new_password">Enter your new password</string>
     <string name="email_address_phone_number"><small>Email Address / Phone Number</small></string>
     <string name="password_updated">Password Updated</string>
+    <string name="save_profile">Save Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="dob">DOB</string>
+    <string name="cm_unit">CM</string>
+    <string name="feet_in_unit">Feet/in</string>
+    <string name="no_notifications_found">No Notifications Found!</string>
+    <string name="confirm">Confirm</string>
+    <string name="decline">Decline</string>
+    <string name="reject">Reject</string>
+    <string name="no_products_found">No Products Found!</string>
+    <string name="no_services_found">No Services Found!</string>
+    <string name="mibo_store">MI.BO. STORE</string>
+    <string name="price">Price:</string>
+    <string name="quantity">Quantity:</string>
+    <string name="secure_transaction">Secure Transaction</string>
+    <string name="out_of_stock">Out of Stock</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="product_review">Product Review</string>
+    <string name="product_information_s">Product Information\'s</string>
+    <string name="product_warranty">Product Warranty</string>
+    <string name="return_policy">Return Policy</string>
+    <string name="tap_back_exit">Tap back again to exit</string>
 
 
     <string-array name="names">

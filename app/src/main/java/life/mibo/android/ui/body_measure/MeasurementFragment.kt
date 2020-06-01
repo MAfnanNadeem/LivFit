@@ -307,7 +307,7 @@ class MeasurementFragment : BaseFragment() {
 
         Prefs.get(context)["user_age"] = "$age"
         Prefs.get(context)["user_gender"] = "${member?.gender}"
-        Prefs.get(context)["user_weight"] = "$weight KG"
+        Prefs.get(context)["user_weight"] = "${round(weight)} KG"
         Prefs.get(context)["user_height"] = "$height CM"
 
         log("getSummary height $height")

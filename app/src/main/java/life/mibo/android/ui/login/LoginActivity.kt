@@ -95,6 +95,7 @@ class LoginActivity : BaseActivity() {
 //        }
         //Database.getInstance(this).clearAllTables()
         // debug()
+
         if (Utils.isConnected(this)) {
              controller.autoLogin()
         } else {
@@ -139,8 +140,24 @@ class LoginActivity : BaseActivity() {
 
         }
 
+        var em = intent?.getStringExtra("user_email") ?: ""
+        if (em.isNotEmpty())
+            et_username?.setText(em)
+
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
        // videoBg()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        try {
+            val em = intent?.getStringExtra("user_email") ?: ""
+            if (em.isNotEmpty())
+                et_username?.setText(em)
+        } catch (e: java.lang.Exception) {
+
+        }
+
     }
 
 

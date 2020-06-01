@@ -263,4 +263,12 @@
         <attr name="textNonSelectionColor" format="color" />
         <attr name="isIndicator" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="AwesomeTextInputLayout">
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="cornerRadius2" format="dimension" />
+        <attr name="animatedTextSize" format="dimension" />
+        <attr name="animationDuration2" format="integer" />
+    </declare-styleable>
 </resources>

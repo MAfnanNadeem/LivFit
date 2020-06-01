@@ -14,16 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-//import com.squareup.picasso.Picasso;
-
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
 import life.mibo.android.R;
+
+//import com.squareup.picasso.Picasso;
 
 public class SliderAdapter extends PagerAdapter {
     private ArrayList<Integer> IMAGES;
@@ -69,6 +70,7 @@ public class SliderAdapter extends PagerAdapter {
         }
         if(type ==1){
             //Picasso.get().load(URLs.get(position)).into(imageView);
+            Glide.with(imageView).load(URLs.get(position)).fitCenter().into(imageView);
         }
 
 
@@ -93,6 +95,7 @@ public class SliderAdapter extends PagerAdapter {
     }
 
     public void setImages(ArrayList<Integer> IMAGES){
+        type = 0;
         this.IMAGES=IMAGES;
     }
 

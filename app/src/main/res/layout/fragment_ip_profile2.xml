@@ -343,7 +343,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
         android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/login_button_primary"
+        android:background="@drawable/button_primary_selector"
         android:text="@string/invite_me"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"

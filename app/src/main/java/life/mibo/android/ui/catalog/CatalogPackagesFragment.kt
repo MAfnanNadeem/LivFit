@@ -1,7 +1,7 @@
 /*
- *  Created by Sumeet Kumar on 6/1/20 10:14 AM
+ *  Created by Sumeet Kumar on 6/1/20 7:01 PM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 6/1/20 10:07 AM
+ *  Last modified 6/1/20 7:01 PM
  *  Mibo Hexa - app
  */
 
@@ -15,20 +15,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_catalog_products.*
 import life.mibo.android.R
 import life.mibo.android.core.API
-import life.mibo.android.models.product.Catalog
-import life.mibo.android.models.product.Product
+import life.mibo.android.core.Prefs
+import life.mibo.android.models.product.GetMemberServices
+import life.mibo.android.models.product.Packages
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class CatalogProductsFragment : BaseFragment() {
+class CatalogPackagesFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,8 +42,8 @@ class CatalogProductsFragment : BaseFragment() {
     var isRefreshing = false
     var isGrid = false
     var productAdapters: ProductAdapters? = null
-    var products = ArrayList<Product>()
-    var backupList = ArrayList<Product>()
+    var products = ArrayList<Packages.Data>()
+    var backupList = ArrayList<Packages.Data>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -126,15 +127,26 @@ class CatalogProductsFragment : BaseFragment() {
 
 
     private fun getProducts() {
+       // Toasty.info(requireContext(), "Loading Packages... ").show()
+        log("getProducts packages ")
+        val member = Prefs.get(context).member ?: return
         showProgress()
-        API.request.getChainApi().getChainProducts().enqueue(object : Callback<Catalog> {
-            override fun onFailure(call: Call<Catalog>, t: Throwable) {
+        API.request.getApi().getMemberPackages(
+            GetMemberServices(
+                GetMemberServices.Data(member.id),
+                member.accessToken, "GetMemberPackages"
+            )
+        ).enqueue(object : Callback<Packages> {
+            override fun onFailure(call: Call<Packages>, t: Throwable) {
                 hideProgress()
+                //Toasty.info(requireContext(), "Loading Packages Failed").show()
+                t.printStackTrace()
             }
 
-            override fun onResponse(call: Call<Catalog>, response: Response<Catalog>) {
+            override fun onResponse(call: Call<Packages>, response: Response<Packages>) {
                 hideProgress()
-                parseProducts(response?.body()?.products)
+                //Toasty.info(requireContext(), "Loading Packages done ").show()
+                parseProducts(response?.body()?.data)
 
             }
 
@@ -142,7 +154,9 @@ class CatalogProductsFragment : BaseFragment() {
 
     }
 
-    private fun parseProducts(data: List<Product?>?) {
+    private fun parseProducts(data: List<Packages.Data?>?) {
+
+        log("parseProducts data ${data?.size}")
         if (data != null && data.isNotEmpty()) {
             tv_empty?.visibility = View.GONE
             products.clear()
@@ -153,26 +167,31 @@ class CatalogProductsFragment : BaseFragment() {
                     backupList.add(i)
                 }
             }
-            productAdapters = ProductAdapters(0, products, object : ItemClickListener<Product> {
+            log("parseProducts products ${products.size}")
+            productAdapters =
+                ProductAdapters(0, products, object : ItemClickListener<Packages.Data> {
 
-                override fun onItemClicked(item: Product?, position: Int) {
-                    if (item != null)
-                        ProductDetailsActivity.launch(requireContext(), item)
-                }
+                    override fun onItemClicked(item: Packages.Data?, position: Int) {
+                        if (item != null)
+                            ProductDetailsActivity.launch(requireContext(), item)
+                    }
 
-            })
+                })
 
             recyclerView?.adapter = productAdapters
+            productAdapters?.notifyDataSetChanged()
 
+            log("parseProducts recycler update")
         } else {
+            tv_empty?.setText(R.string.no_package_found)
             tv_empty?.visibility = View.VISIBLE
         }
     }
 
     class ProductAdapters(
         val type: Int = 1,
-        val list: ArrayList<Product>,
-        val listener: ItemClickListener<Product>?
+        val list: ArrayList<Packages.Data>,
+        val listener: ItemClickListener<Packages.Data>?
     ) : RecyclerView.Adapter<Holder>() {
         var grid = false
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -196,14 +215,15 @@ class CatalogProductsFragment : BaseFragment() {
 
         }
 
-        fun update(ipList: ArrayList<Product>) {
+        fun update(ipList: ArrayList<Packages.Data>) {
             list.clear()
             ipList.shuffle()
             list.addAll(ipList)
             this.notifyDataSetChanged()
+
         }
 
-        fun filter(backup: ArrayList<Product>, text: String?) {
+        fun filter(backup: ArrayList<Packages.Data>, text: String?) {
             list.clear()
             if (text.isNullOrEmpty()) {
                 for (i in backup)
@@ -227,14 +247,14 @@ class CatalogProductsFragment : BaseFragment() {
         val price: TextView? = itemView.findViewById(R.id.tv_price)
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
-        fun bind(item: Product?, listener: ItemClickListener<Product>?) {
+        fun bind(item: Packages.Data?, listener: ItemClickListener<Packages.Data>?) {
             if (item == null)
                 return
-            name?.text = item.productName
-            desc?.text = item.shortForm
-            price?.text = item.unitPrice
-            Glide.with(img!!).load(item.image).fallback(R.drawable.ic_broken_image_black_24dp)
-                .error(R.drawable.ic_broken_image_black_24dp).fitCenter().into(img)
+            name?.text = item.name
+            desc?.text = item.description
+            price?.text = item.currencyType + " " + item.price
+            img?.visibility = View.GONE
+            //Glide.with(img!!).load(item.image).fitCenter().into(img)
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }

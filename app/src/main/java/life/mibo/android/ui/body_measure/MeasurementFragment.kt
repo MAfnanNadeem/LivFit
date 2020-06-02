@@ -30,7 +30,6 @@ import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
-import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Response
@@ -361,6 +360,11 @@ class MeasurementFragment : BaseFragment() {
         //log("Height heightMeter $heightMeter")
         //log("Height sqrt " + heightMeter.pow(2))
         val fatFree = fatFreeMass.div(heightMeter.pow(2))
+        log("bodyFat $bodyFat")
+        log("bodyWater $bodyWater")
+        log("heightMeter $heightMeter")
+        log("fatFreeMass $fatFreeMass")
+        log("fatFree $fatFree")
 
         val physicalActivity = data.getActivityScale()
         val energy = bmr.times(physicalActivity)

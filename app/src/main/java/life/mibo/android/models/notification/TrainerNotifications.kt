@@ -19,8 +19,10 @@ data class TrainerNotifications(
     var status: String?
 ) {
     data class Data(
+        @SerializedName("avatar")
+        var avatar: String?,
         @SerializedName("created_at")
-        var createdAt: String?,
+        var createdAt: DateAt?,
         @SerializedName("id")
         var id: Int?,
         @SerializedName("mark_as_read")
@@ -36,6 +38,6 @@ data class TrainerNotifications(
         @SerializedName("type")
         var type: String?,
         @SerializedName("updated_at")
-        var updatedAt: String?
+        var updatedAt: DateAt?
     )
 }

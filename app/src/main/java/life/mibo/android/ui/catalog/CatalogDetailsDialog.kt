@@ -93,7 +93,7 @@ class CatalogDetailsDialog(var data: Product?) :
 
     fun payNow() {
         try {
-            PaymentActivity.payNow(this@CatalogDetailsDialog.activity, "200")
+            PaymentActivity.payNow(this@CatalogDetailsDialog.activity, "200", "")
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }

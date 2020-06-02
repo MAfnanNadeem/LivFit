@@ -425,7 +425,7 @@ class SummaryDetailsDialog(
         val list: List<Biometric.Data?>? = Prefs.get(requireContext())
             .getJsonList("user_biometric", Biometric.Data::class.java)
         Logger.e("getChartPrefs $title ${list?.size}")
-        Logger.e("getChartPrefs $list")
+        //Logger.e("getChartPrefs $list")
 
         list?.let {
             val entries = ArrayList<BarEntry>()
@@ -503,6 +503,7 @@ class SummaryDetailsDialog(
         val dates = arrayOf(
             "25/4", "26/4", "27/4", "28/4", "29/4", "30/4", "01/05"
         )
+
         val months = arrayOf(
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         )

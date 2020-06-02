@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/2/20 10:51 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/1/20 2:06 PM
+  ~  Mibo Hexa - app
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_notifications"
+        android:icon="@drawable/ic_notifications_active_black_24dp"
+        android:iconTint="@color/textColor"
+        android:title="@string/search"
+        app:iconTint="@color/textColor"
+        app:showAsAction="collapseActionView|ifRoom" />
+
+</menu>

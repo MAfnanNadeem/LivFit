@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 
 import life.mibo.android.R;
+import life.mibo.hardware.core.Logger;
 
 //import com.squareup.picasso.Picasso;
 
@@ -65,12 +66,13 @@ public class SliderAdapter extends PagerAdapter {
         final ImageView imageView = imageLayout
                 .findViewById(R.id.image);
 
-        if(type ==0) {
+        Logger.e("instantiateItem " + type);
+        if (type == 0) {
             imageView.setImageResource(IMAGES.get(position));
         }
-        if(type ==1){
+        if (type == 1) {
             //Picasso.get().load(URLs.get(position)).into(imageView);
-            Glide.with(imageView).load(URLs.get(position)).fitCenter().into(imageView);
+            Glide.with(imageView).load(URLs.get(position)).fitCenter().fallback(R.drawable.ic_broken_image_black_24dp).error(R.drawable.ic_broken_image_black_24dp).into(imageView);
         }
 
 

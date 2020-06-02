@@ -10,11 +10,14 @@ package life.mibo.android.ui.catalog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import kotlinx.android.synthetic.main.fragment_catalog_details.*
 import life.mibo.android.R
+import life.mibo.android.models.product.Packages
 import life.mibo.android.models.product.Product
 import life.mibo.android.models.product.Services
 import life.mibo.android.ui.base.BaseActivity
+import life.mibo.android.ui.body_measure.adapter.Calculate
 
 
 class ProductDetailsActivity : BaseActivity() {
@@ -34,11 +37,19 @@ class ProductDetailsActivity : BaseActivity() {
             i.putExtra("product_data", item)
             context.startActivity(i)
         }
+
+        fun launch(context: Context, item: Packages.Data) {
+            val i = Intent(context, ProductDetailsActivity::class.java)
+            i.putExtra("product_type", 3)
+            i.putExtra("product_data", item)
+            context.startActivity(i)
+        }
     }
 
 
     var product: Product? = null
     var service: Services.Data? = null
+    var packageData: Packages.Data? = null
     var type = 0
     var quantity = 1
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,21 +62,19 @@ class ProductDetailsActivity : BaseActivity() {
             product = intent?.getSerializableExtra("product_data") as Product
         else if (type == 2)
             service = intent?.getSerializableExtra("product_data") as Services.Data?
+        else if (type == 3)
+            packageData = intent?.getSerializableExtra("product_data") as Packages.Data?
 
         // var data: CatalogFragment.CartItem?
-        if (product == null && service == null) {
-            finish()
-            return
-        }
 
         if (product != null) {
             setup(product!!)
-            return
-        }
-
-        if (service != null) {
+        } else if (service != null) {
             setup(service!!)
-            return
+        } else if (packageData != null) {
+            setup(packageData!!)
+        } else {
+            finish()
         }
 
 
@@ -75,10 +84,23 @@ class ProductDetailsActivity : BaseActivity() {
         //if (data?.type == 2)
         tv_product_name?.text = data.productName
         tv_product_desc?.text = data.description
-        tv_product_desc_full?.text = data.longForm
+        //tv_product_desc_full?.text = data.longForm
+        tv_product_long_desc?.text = data.longForm
         tv_product_location?.text = "add your address"
         tv_product_quantity_value?.text = "$quantity"
         tv_product_price_value?.text = "${data?.unitPrice}"
+        tv_product_manf_name?.text = "${data?.manufacturerName}"
+
+        tv_product_session?.visibility = GONE
+        tv_product_session_value?.visibility = GONE
+        tv_product_validity?.visibility = GONE
+        tv_product_validity_value?.visibility = GONE
+
+        when {
+            data.stock ?: 0 > 5 -> tv_product_in_stock?.setText(R.string.in_stock)
+            data.stock ?: 0 == 0 -> tv_product_in_stock?.setText(R.string.out_of_stock)
+            else -> tv_product_in_stock?.text = getString(R.string.stock_left, data.stock)
+        }
 
         btn_plus?.setOnClickListener {
             if (quantity < 10) {
@@ -94,67 +116,188 @@ class ProductDetailsActivity : BaseActivity() {
 
         }
 
-        val list = ArrayList<Int>()
-        // list.add("https://live.staticflickr.com/4561/38054606355_26429c884f_b.jpg")
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        val list = ArrayList<Int>()
+//        // list.add("https://live.staticflickr.com/4561/38054606355_26429c884f_b.jpg")
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
+//        list.add(R.drawable.ic_rxl_pods_icon_200)
 
         //userImage?.setImages(list)
-        userImage?.setUrls(data.subImages)
+        if (data.subImages == null || data.subImages.isNullOrEmpty()) {
+            userImage?.setUrls(arrayListOf(""))
+        } else
+            userImage?.setUrls(data.subImages)
         log("images >> ${data.subImages}")
 
         btn_buy_now?.setOnClickListener {
-            buyClicked()
+            buyClicked(data)
         }
     }
+
+    val GONE = View.GONE
+    val VISIBLE = View.VISIBLE
 
     fun setup(data: Services.Data) {
         //if (data?.type == 2)
+        tv_product_name?.text = data.name
+        tv_product_desc?.text = data.description
+        //tv_product_desc_full?.text = data.longForm
+        tv_product_long_desc?.text = data.description
         tv_product_location?.text = "add your address"
         tv_product_quantity_value?.text = "$quantity"
-        tv_product_price_value?.text = "${data?.currency}"
+        tv_product_price_value?.text = "${data?.currencyType} ${data?.currency}"
+        tv_product_session_value?.text = "${data?.noOfSession}"
+        tv_product_validity_value?.text = "${data?.validity} Months"
+        tv_product_location?.text = "Location ${data?.locationType}"
+        tv_product_manf?.text = "Professional Name"
+        tv_product_manf_name?.text = "${data.createdBy}"
+        // tv_product_review?.setText(R.string.service_review)
 
-        btn_plus?.setOnClickListener {
-            if (quantity < 10) {
-                quantity++
-                tv_product_quantity_value?.text = "$quantity"
-            }
-        }
-        btn_minus?.setOnClickListener {
-            if (quantity > 0) {
-                quantity--
-                tv_product_quantity_value?.text = "$quantity"
-            }
 
-        }
+        tv_product_session?.visibility = VISIBLE
+        tv_product_session_value?.visibility = VISIBLE
+        tv_product_validity?.visibility = VISIBLE
+        tv_product_validity_value?.visibility = VISIBLE
 
-        val list = ArrayList<Int>()
-        // list.add("https://live.staticflickr.com/4561/38054606355_26429c884f_b.jpg")
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
-        list.add(R.drawable.ic_rxl_pods_icon_200)
 
-        userImage?.setImages(list)
+        tv_product_review?.visibility = GONE
+        ratings?.visibility = GONE
+        tv_product_info?.visibility = GONE
+        tv_product_inf2?.visibility = GONE
+        tv_product_inf3?.visibility = GONE
+        tv_product_in_stock?.visibility = GONE
+        tv_product_quantity?.visibility = GONE
+        ll_quantity?.visibility = GONE
+
+        //userImage?.setImages(list)
+        userImage?.visibility = GONE
 
         btn_buy_now?.setOnClickListener {
-            buyClicked()
+            buyClicked(data)
         }
     }
 
-    private fun buyClicked() {
+    fun setup(data: Packages.Data) {
+        //if (data?.type == 2)
+        tv_product_name?.text = data.name
+        tv_product_desc?.text = data.description
+        //tv_product_desc_full?.text = data.longForm
+        tv_product_long_desc?.text = data.description
+        tv_product_location?.text = "add your address"
+        tv_product_quantity_value?.text = "$quantity"
+        tv_product_price_value?.text = "${data?.currencyType} ${data?.price}"
+//        tv_product_session_value?.text = "${data?.noOfSession}"
+//        tv_product_validity_value?.text = "${data?.validity} Months"
+//        tv_product_location?.text = "Location ${data?.locationType}"
+        tv_product_manf?.text = "Created By"
+        tv_product_manf_name?.text = "${data.createdBy}"
+        // tv_product_review?.setText(R.string.service_review)
+
+
+        tv_product_session?.visibility = GONE
+        tv_product_session_value?.visibility = GONE
+        tv_product_validity?.visibility = GONE
+        tv_product_validity_value?.visibility = GONE
+        tv_product_location?.visibility = GONE
+
+
+        tv_product_review?.visibility = GONE
+        ratings?.visibility = GONE
+        tv_product_info?.visibility = GONE
+        tv_product_inf2?.visibility = GONE
+        tv_product_inf3?.visibility = GONE
+        tv_product_in_stock?.visibility = GONE
+        tv_product_quantity?.visibility = GONE
+        ll_quantity?.visibility = GONE
+
+        //userImage?.setImages(list)
+        userImage?.visibility = GONE
+
+        btn_buy_now?.setOnClickListener {
+            buyClicked(data)
+        }
+    }
+
+    private fun buyClicked(type: Int) {
         try {
             //PaymentActivity.payNow(activity, "200")
             val i = Intent(this, BuyActivity::class.java)
-            i.putExtra("type_type", product)
+            i.putExtra("type_type", type)
+            startActivity(i)
+            finish()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    private fun buyClicked(product: Product) {
+        try {
+            //PaymentActivity.payNow(activity, "200")
+            val list = ArrayList<CartItem>()
+            list.add(
+                CartItem(
+                    product.id!!,
+                    product.productName,
+                    Calculate.getDouble(product.unitPrice),
+                    product.currency,
+                    product.image,
+                    1
+                )
+            )
+            val i = Intent(this, BuyActivity::class.java)
+            i.putExtra("type_type", 2)
+            i.putParcelableArrayListExtra("type_list", list)
+            startActivity(i)
+            finish()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun buyClicked(services: Services.Data) {
+        try {
+            val list = ArrayList<CartItem>()
+            list.add(
+                CartItem(
+                    services.id!!,
+                    services.name,
+                    services.currency ?: 0.0,
+                    services.currencyType,
+                    "",
+                    1
+                )
+            )
+            val i = Intent(this, BuyActivity::class.java)
+            i.putExtra("type_type", 1)
+            i.putParcelableArrayListExtra("type_list", list)
+            startActivity(i)
+            finish()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun buyClicked(services: Packages.Data) {
+        try {
+            val list = ArrayList<CartItem>()
+            list.add(
+                CartItem(
+                    services.id!!,
+                    services.name,
+                    services.price ?: 0.0,
+                    services.currencyType,
+                    "",
+                    1
+                )
+            )
+            val i = Intent(this, BuyActivity::class.java)
+            i.putExtra("type_type", 3)
+            i.putParcelableArrayListExtra("type_list", list)
             startActivity(i)
             finish()
         } catch (e: java.lang.Exception) {

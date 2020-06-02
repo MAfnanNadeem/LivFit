@@ -752,7 +752,7 @@ class SummaryFragment : BaseFragment() {
                     1,
                     0,
                     R.drawable.ic_body_summary_energy,
-                    0xFF333333.toInt(),
+                    0xFFA74E2C.toInt(),
                     "Energy",
                     getDouble(data.energy),
                     "\ncal"

@@ -227,6 +227,7 @@
     <string name="confirm_password"><small>Confirm Password</small></string>
     <string name="change_password">Change Password</string>
     <string name="sessions">Sessions</string>
+    <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>
 
     <string name="calories">Calories</string>
@@ -408,18 +409,30 @@
     <string name="reject">Reject</string>
     <string name="no_products_found">No Products Found!</string>
     <string name="no_services_found">No Services Found!</string>
+    <string name="no_package_found">No Package Found!</string>
     <string name="mibo_store">MI.BO. STORE</string>
     <string name="price">Price:</string>
     <string name="quantity">Quantity:</string>
     <string name="secure_transaction">Secure Transaction</string>
     <string name="out_of_stock">Out of Stock</string>
+    <string name="in_stock">In Stock</string>
+    <string name="stock_left">Only %d left in stock</string>
+    <string name="order_soon">order soon</string>
     <string name="buy_now">Buy Now</string>
     <string name="add_to_cart">Add to Cart</string>
     <string name="product_review">Product Review</string>
+    <string name="service_review">Service Review</string>
     <string name="product_information_s">Product Information\'s</string>
     <string name="product_warranty">Product Warranty</string>
     <string name="return_policy">Return Policy</string>
     <string name="tap_back_exit">Tap back again to exit</string>
+    <string name="manufactor_name">Manufactor Name</string>
+    <string name="validity">Validity:</string>
+    <string name="products">Products</string>
+    <string name="packages">Packages</string>
+    <string name="shipping_address">Shipping Address</string>
+    <string name="select_a_shipping_address">Select a Shipping Address</string>
+    <string name="your_cart">Your Cart</string>
 
 
     <string-array name="names">

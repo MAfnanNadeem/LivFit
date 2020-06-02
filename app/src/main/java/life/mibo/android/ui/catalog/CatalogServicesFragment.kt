@@ -131,7 +131,7 @@ class CatalogServicesFragment : BaseFragment() {
         API.request.getApi().getMemberServices(
             GetMemberServices(
                 GetMemberServices.Data(member.id),
-                member.accessToken
+                member.accessToken, "GetMemberServices"
             )
         ).enqueue(object : Callback<Services> {
             override fun onFailure(call: Call<Services>, t: Throwable) {

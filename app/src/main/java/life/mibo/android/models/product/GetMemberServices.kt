@@ -11,8 +11,8 @@ package life.mibo.android.models.product
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BasePost
 
-class GetMemberServices(data: Data?, token: String?) :
-    BasePost<GetMemberServices.Data?>(data, "GetMemberServices", token) {
+class GetMemberServices(data: Data?, token: String?, request : String) :
+    BasePost<GetMemberServices.Data?>(data, request, token) {
     data class Data(
         @SerializedName("MemberID")
         var memberID: Int?

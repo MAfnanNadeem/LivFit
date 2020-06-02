@@ -7,10 +7,10 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/background_color_app">
 
 
@@ -42,11 +42,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_2x"
                     android:fontFamily="@string/font_sans_serif_medium"
-                    tools:text="Product Name"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Product Name" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_product_desc"
@@ -54,11 +54,11 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@string/font_sans_serif"
                     android:lines="2"
-                    tools:text="Product Short Description"
                     android:textColor="@color/textColor2"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_product_name" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_name"
+                    tools:text="Product Short Description" />
 
 
                 <life.mibo.android.ui.rxl.slider.SliderView
@@ -89,11 +89,65 @@
                     android:layout_marginStart="@dimen/grid_2x"
                     android:layout_marginTop="@dimen/grid_2x"
                     android:fontFamily="@string/font_sans_serif_medium"
-                    tools:text="AED 200.80"
                     android:textColor="@color/textColorApp2"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintStart_toEndOf="@id/tv_product_price"
-                    app:layout_constraintTop_toBottomOf="@id/userImage" />
+                    app:layout_constraintTop_toBottomOf="@id/userImage"
+                    tools:text="AED 200.80" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_product_session"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:visibility="gone"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/sessions2"
+                    android:textColor="@color/textColorApp"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_price" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_product_session_value"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_2x"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:textColor="@color/textColorApp2"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toEndOf="@id/tv_product_session"
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_price"
+                    tools:text="AED 200.80" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_product_validity"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/validity"
+                    android:textColor="@color/textColorApp"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_session" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_product_validity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/grid_2x"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:textColor="@color/textColorApp2"
+                    android:visibility="gone"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toEndOf="@id/tv_product_validity"
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_session"
+                    tools:text="AED 200.80" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -106,7 +160,7 @@
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@id/ll_quantity"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_product_price"
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_validity"
                     app:layout_constraintTop_toTopOf="@id/ll_quantity" />
 
 
@@ -117,7 +171,7 @@
                     android:layout_margin="@dimen/grid_2x"
                     android:orientation="horizontal"
                     app:layout_constraintStart_toEndOf="@id/tv_product_quantity"
-                    app:layout_constraintTop_toBottomOf="@id/tv_product_price_value">
+                    app:layout_constraintTop_toBottomOf="@id/tv_product_validity">
 
                     <Button
                         android:id="@+id/btn_minus"
@@ -215,10 +269,11 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/grid_2x"
                     android:layout_marginTop="@dimen/grid_2x"
-                    android:layout_marginBottom="@dimen/grid_1x"
+                    android:layout_marginBottom="@dimen/grid_2x"
                     android:background="@drawable/login_button_primary"
                     android:text="@string/add_to_cart"
                     android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/btn_buy_now"
@@ -244,11 +299,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@string/font_sans_serif"
-                tools:text="@string/lorem_spem"
                 android:textColor="@color/textColor2"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_product_name" />
+                app:layout_constraintTop_toBottomOf="@id/tv_product_name"
+                tools:text="@string/lorem_spem" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_product_review"
@@ -268,6 +323,26 @@
                 android:layout_margin="@dimen/grid_2x"
                 android:rating="4.5" />
 
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_product_manf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:fontFamily="@string/font_sans_serif"
+                android:text="@string/manufactor_name"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_product_manf_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:fontFamily="@string/font_sans_serif"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="@string/manufactor_name" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_product_info"

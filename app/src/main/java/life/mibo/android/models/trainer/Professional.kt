@@ -33,7 +33,9 @@ data class Professional(
     @SerializedName("Country")
     var country: String? = "",
     @SerializedName("City")
-    var city: String? = ""
+    var city: String? = "",
+    @SerializedName("linked")
+    var linked: String? = "0"
 ) {
     fun match(query: String): Boolean {
         if (name?.toLowerCase()?.contains(query) == true)

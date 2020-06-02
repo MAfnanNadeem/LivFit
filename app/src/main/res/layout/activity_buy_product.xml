@@ -4,239 +4,273 @@
   ~  Last modified 5/16/20 6:13 PM
   ~  Mibo Hexa - app
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color_app">
+    android:background="@color/background_color_app"
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/iv_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_1x"
-        android:src="@drawable/mibo_livfit_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/grid_2x"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:text="Select a Shipping Address"
-        android:textColor="@color/textColorApp"
-        android:textSize="@dimen/text_size_large"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card1"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="@dimen/grid_1x"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView">
+        android:layout_height="match_parent">
 
-        <RadioButton
+        <ImageView
+            android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/grid_1x"
-            android:buttonTint="@color/textColorApp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:layout_marginBottom="@dimen/grid_2x"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif_black"
-                android:text="Sumeet Kumar"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="Phone: +971 55 XXX XXXX"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="@dimen/grid_1x"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card1">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/grid_1x"
-            android:buttonTint="@color/textColorApp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:layout_marginBottom="@dimen/grid_2x"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif_black"
-                android:text="Mr XYZ"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="Phone: +971 55 XXX XXXX"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/white"
-
-        app:cardCornerRadius="@dimen/grid_1x"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/grid_1x" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:layout_marginBottom="@dimen/grid_2x"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif_black"
-                android:text="Person Name Here"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="This service/product will be \ndelivered to Gym Location"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/font_sans_serif"
-                android:text="Phone: +971 55 XXX XXXX"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/addNewCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="@dimen/grid_1x"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card2">
+            android:src="@drawable/mibo_livfit_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/your_cart"
+            android:textColor="@color/textColorApp"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_logo" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardRecycler"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_2x"
-            android:fontFamily="@string/font_sans_serif_black"
-            android:text="Add New Address"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium" />
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/grid_1x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView">
 
-    </androidx.cardview.widget.CardView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_width="wrap_content"
+            android:text="@string/shipping_address"
+            android:textColor="@color/textColorApp"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardRecycler" />
 
 
-    <Button
-        android:id="@+id/btn_pay_now"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        android:background="@drawable/login_button_accent"
-        android:text="@string/checkout"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.7"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/grid_2x"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/grid_1x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView2">
 
-        />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/grid_1x"
+                android:buttonTint="@color/textColorApp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif_black"
+                    android:text="Sumeet Kumar"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="Phone: +971 55 XXX XXXX"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/grid_1x"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card1">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/grid_1x"
+                android:buttonTint="@color/textColorApp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif_black"
+                    android:text="Mr XYZ"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="Phone: +971 55 XXX XXXX"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/white"
+
+            app:cardCornerRadius="@dimen/grid_1x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView2">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/grid_1x" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif_black"
+                    android:text="GYM Location Here"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="This service/product will be \n delivered to Gym Location"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="Phone: +971 55 XXX XXXX"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/addNewCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/grid_1x"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_2x"
+                android:fontFamily="@string/font_sans_serif_black"
+                android:text="Add New Address"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btn_pay_now"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/login_button_accent"
+            android:text="@string/checkout"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addNewCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.7" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.core.widget.NestedScrollView>

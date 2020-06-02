@@ -198,7 +198,8 @@ class SearchTrainerFragment : BaseFragment() {
 
         fun bind(item: Professional, listener: ItemClickListener<Professional>?) {
             if (item.avatar != null)
-                Glide.with(itemView).load(item.avatar).error(R.drawable.ic_user_test).into(img!!)
+                Glide.with(itemView).load(item.avatar).error(R.drawable.ic_user_test).fitCenter()
+                    .into(img!!)
             name?.text = item.name
             desc?.text = item.designation
             itemView?.setOnClickListener {

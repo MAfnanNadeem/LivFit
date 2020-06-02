@@ -6,9 +6,7 @@ import android.graphics.Rect
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -101,8 +99,9 @@ class HomeFragment : BaseFragment(), HomeObserver {
         setBottomView()
         checkIntro()
         getDashboardApis()
-        if (!isMember)
-            tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
+        //setHasOptionsMenu(true)
+        // if (!isMember)
+        //    tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
     }
 
     fun checkBody() {
@@ -128,8 +127,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
             //navigate(navigation_search_trainer)
         }
         tv_item_fab?.setOnClickListener {
-            if (isMember)
-                navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
+            // if (isMember)
+            navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
         }
     }
 
@@ -529,6 +528,19 @@ class HomeFragment : BaseFragment(), HomeObserver {
             log("onPostEvent $event")
             EventBus.getDefault().removeStickyEvent(event)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater?.inflate(R.menu.menu_notifications, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item?.itemId == R.id.action_notifications) {
+            navigateTo(HomeItem(HomeItem.Type.NOTIFICATIONS))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     var isStoped = false

@@ -35,15 +35,20 @@ class CatalogFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         //setupAdapter()
 
-        val list = arrayListOf<Fragment>(CatalogProductsFragment(), CatalogServicesFragment())
+        val list = arrayListOf<Fragment>(
+            CatalogProductsFragment(),
+            CatalogServicesFragment(),
+            CatalogPackagesFragment()
+        )
 
         viewPager2.adapter = ViewPagerAdapter(list, this)
 
         TabLayoutMediator(tabLayout, viewPager2,
             TabConfigurationStrategy { tab, position ->
                 when (position) {
-                    0 -> tab.text = "Products"
-                    1 -> tab.text = "Services"
+                    0 -> tab.text = getString(R.string.products)
+                    1 -> tab.text = getString(R.string.services)
+                    2 -> tab.text = getString(R.string.packages)
                     else -> tab.text = "Tab " + (position + 1)
                 }
 

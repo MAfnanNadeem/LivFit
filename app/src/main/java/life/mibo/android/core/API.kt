@@ -23,10 +23,7 @@ import life.mibo.android.models.password.CreatePassword
 import life.mibo.android.models.password.ForgetPasswordPost
 import life.mibo.android.models.password.ForgetPasswordVerifyOtp
 import life.mibo.android.models.password.PasswordVerifyOTPResponse
-import life.mibo.android.models.product.Catalog
-import life.mibo.android.models.product.GetMemberServices
-import life.mibo.android.models.product.Products
-import life.mibo.android.models.product.Services
+import life.mibo.android.models.product.*
 import life.mibo.android.models.program.ProgramPost
 import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
@@ -374,6 +371,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getMemberServices")
         fun getMemberServices(@Body data: GetMemberServices): Call<Services>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberPackages")
+        fun getMemberPackages(@Body data: GetMemberServices): Call<Packages>
 
 
 //        @Headers("Accept: application/json", "Content-Type: application/json")

@@ -34,6 +34,7 @@ import life.mibo.android.models.trainer.TrainerInviteResponse
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,25 +64,32 @@ class ProfessionalDetailsDialog(var data: Professional) :
         //isCancelable = false
 
         if (data.avatar != null)
-            Glide.with(this).load(data.avatar).error(R.drawable.ic_user_test).into(userImage!!)
+            Glide.with(this).load(data.avatar).fitCenter().error(R.drawable.ic_user_test).into(userImage!!)
         tv_name?.text = data.name
         tv_desg?.text = data.designation
         tv_city?.text = data.city
         tv_country?.text = data.country
 
-        invite?.setOnClickListener {
-            if (isTrainer) {
-                inviteIP(data.id)
-            }
-            // dismiss()
-        }
 
         back?.setOnClickListener {
 
             dismiss()
         }
 
+        val member = Prefs.get(context).member
+        if (member!!.isMember()) {
+            invite?.visibility = View.VISIBLE
+            invite?.isEnabled = data.linked != "1"
 
+            invite?.setOnClickListener {
+                inviteIP(data.id)
+                // dismiss()
+            }
+        } else {
+            invite?.visibility = View.INVISIBLE
+        }
+
+        Logger.e("ProfessionalDetails ${data.id} >> $data")
         getDetails(data.id)
     }
 
@@ -130,23 +138,26 @@ class ProfessionalDetailsDialog(var data: Professional) :
                     call: Call<ProfessionalDetails>,
                     response: Response<ProfessionalDetails>
                 ) {
-
+                    Logger.e("ProfessionalDetails getDetails >> onResponse ")
                     try {
                         val data = response?.body();
+                        Logger.e("ProfessionalDetails getDetails >> onResponse success $data")
                         if (data != null && data.isSuccess()) {
                             val list = data.data
                             parseData(list)
                             isTrainer = true
 
                         } else {
+                            Logger.e("ProfessionalDetails getDetails >> onResponse failed ${response.body()}")
+                            parseData(null)
                             val er = data?.errors
                             if (er != null)
                                 er?.get(0)?.message?.let {
                                     Toasty.snackbar(view, it)
                                 }
-                            tv_service_no?.visibility = View.VISIBLE
-                            tv_specialization_no?.visibility = View.VISIBLE
-                            tv_certificate_no?.visibility = View.VISIBLE
+                            //tv_service_no?.visibility = View.VISIBLE
+                            //tv_specialization_no?.visibility = View.VISIBLE
+                            //tv_certificate_no?.visibility = View.VISIBLE
                         }
                     } catch (e: Exception) {
 
@@ -177,18 +188,22 @@ class ProfessionalDetailsDialog(var data: Professional) :
             recyclerView?.adapter?.notifyDataSetChanged()
 
         } else {
-            Toasty.info(requireContext(), getString(R.string.no_service_found)).show()
+            //Toasty.info(requireContext(), getString(R.string.no_service_found)).show()
             tv_service_no?.visibility = View.VISIBLE
 
         }
 
         val spec = data?.specializations
         val certs = data?.certifications
+        Logger.e("parseData  :: $list")
+        Logger.e("parseData ?? $spec")
+        Logger.e("parseData >> $certs")
         if (spec != null && spec.isNotEmpty()) {
 
-            val certList = ArrayList<ServiceItem>()
+            //val certList = ArrayList<ServiceItem>()
             for (c in spec) {
                 if (c?.value == "1") {
+                    Logger.e("parseData  Specializations $c")
                     val chip = Chip(chip_group.context)
                     chip.text = "${c.name}"
                     chip.setChipBackgroundColorResource(R.color.white)
@@ -198,6 +213,7 @@ class ProfessionalDetailsDialog(var data: Professional) :
                 }
                 // certList.add(ServiceItem(1, c?.name, "", ""))
             }
+            //Logger.e("parseData  Specializations $c")
 //            recyclerViewSp?.layoutManager =
 //                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 //            //recyclerViewSp?.layoutManager = ChipsLayoutManager

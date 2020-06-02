@@ -24,7 +24,7 @@ class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
         @SerializedName("created_by")
         var createdBy: String?,
         @SerializedName("currency")
-        var currency: Int?,
+        var currency: Double?,
         @SerializedName("currency_type")
         var currencyType: String?,
         @SerializedName("description")

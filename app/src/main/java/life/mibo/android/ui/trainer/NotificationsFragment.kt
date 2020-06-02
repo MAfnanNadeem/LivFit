@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import life.mibo.android.R
 import life.mibo.android.core.API
@@ -28,7 +29,6 @@ import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
-import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -76,100 +76,100 @@ class NotificationsFragment : BaseFragment() {
 
     var isGrid = false
     private val notifications = ArrayList<Notifications>()
-    private val list = ArrayList<Notify>()
-    var searchAdapters: SearchAdapters? = null
+    //private val list = ArrayList<Notify>()
+    var searchAdapters: NotifyAdapters? = null
 
-    private fun fragment_notifications() {
-        list.clear()
-        val member = Prefs.get(this.context).member?.isMember() ?: true
-
-        if (member) {
-            list.add(
-                Notify(
-                    0,
-                    "MI.BO Team",
-                    "Thank you for your order, our team will call you for confirmation!"
-                )
-            )
-
-            list.add(
-                Notify(
-                    0,
-                    "Information",
-                    "Congrats! your order has been placed successfully"
-                )
-            )
-
-            for (p in 1..10) {
-                list.add(
-                    Notify(
-                        p,
-                        "Jose Armando",
-                        "Your requested has been accepted by professional", member
-                    )
-                )
-            }
-        } else {
-            list.add(
-                Notify(
-                    0,
-                    "New Order!",
-                    "You have new order from Mr Alex", isMember = true, isAccepted = false
-                )
-            )
-
-            list.add(
-                Notify(
-                    0,
-                    "Mary Johnson",
-                    "Session has been rescheduled on 1st June, 2020 at 2:30 PM ",
-                    isMember = false,
-                    isAccepted = false,
-                    isConfirm = true
-                )
-            )
-
-            list.add(
-                Notify(
-                    0,
-                    "Support Team",
-                    "Your Service request has been rejected ", isMember = false, isAccepted = true
-                )
-            )
-
-            list.add(
-                Notify(
-                    0,
-                    "Support",
-                    "You have new service request", isMember = false, isAccepted = true
-                )
-            )
-
-            for (p in 1..10) {
-                list.add(
-                    Notify(
-                        p,
-                        "Jose Armando",
-                        "You have new invitation request", member, false
-                    )
-                )
-            }
-
-        }
-
-
-//        searchAdapters = SearchAdapters(1, list, object : ItemClickListener<Notify> {
-//            override fun onItemClicked(item: Notify?, position: Int) {
+//    private fun fragment_notifications() {
+//        list.clear()
+//        val member = Prefs.get(this.context).member?.isMember() ?: true
 //
+//        if (member) {
+//            list.add(
+//                Notify(
+//                    0,
+//                    "MI.BO Team",
+//                    "Thank you for your order, our team will call you for confirmation!"
+//                )
+//            )
+//
+//            list.add(
+//                Notify(
+//                    0,
+//                    "Information",
+//                    "Congrats! your order has been placed successfully"
+//                )
+//            )
+//
+//            for (p in 1..10) {
+//                list.add(
+//                    Notify(
+//                        p,
+//                        "Jose Armando",
+//                        "Your requested has been accepted by professional", member
+//                    )
+//                )
+//            }
+//        } else {
+//            list.add(
+//                Notify(
+//                    0,
+//                    "New Order!",
+//                    "You have new order from Mr Alex", isMember = true, isAccepted = false
+//                )
+//            )
+//
+//            list.add(
+//                Notify(
+//                    0,
+//                    "Mary Johnson",
+//                    "Session has been rescheduled on 1st June, 2020 at 2:30 PM ",
+//                    isMember = false,
+//                    isAccepted = false,
+//                    isConfirm = true
+//                )
+//            )
+//
+//            list.add(
+//                Notify(
+//                    0,
+//                    "Support Team",
+//                    "Your Service request has been rejected ", isMember = false, isAccepted = true
+//                )
+//            )
+//
+//            list.add(
+//                Notify(
+//                    0,
+//                    "Support",
+//                    "You have new service request", isMember = false, isAccepted = true
+//                )
+//            )
+//
+//            for (p in 1..10) {
+//                list.add(
+//                    Notify(
+//                        p,
+//                        "Jose Armando",
+//                        "You have new invitation request", member, false
+//                    )
+//                )
 //            }
 //
-//        })
-//        recyclerView?.adapter = searchAdapters;
-//        searchAdapters?.notifyDataSetChanged()
-    }
+//        }
+//
+//
+////        searchAdapters = SearchAdapters(1, list, object : ItemClickListener<Notify> {
+////            override fun onItemClicked(item: Notify?, position: Int) {
+////
+////            }
+////
+////        })
+////        recyclerView?.adapter = searchAdapters;
+////        searchAdapters?.notifyDataSetChanged()
+//    }
 
 
-    class SearchAdapters(
+    class NotifyAdapters(
         val type: Int = 1,
         val list: ArrayList<Notifications>,
         val listener: ItemClickListener<Notifications>?
@@ -202,9 +202,10 @@ class NotificationsFragment : BaseFragment() {
         var status: String?,
         var userId: Int?,
         var type: String?,
-        var createdAt: String?,
-        var updatedAt: String?,
+        var createdAt: Any?,
+        var updatedAt: Any?,
         var daysAgo: String?,
+        var image: String?,
         var isMember: Boolean
     ) {
         fun isRead() = markAsRead == 1
@@ -215,19 +216,19 @@ class NotificationsFragment : BaseFragment() {
         fun isButtonVisible() = status?.toLowerCase() == "pending"
     }
 
-    data class Notify(
-        val id: Int,
-        var name: String,
-        var desc: String,
-        var isMember: Boolean = true,
-        var isAccepted: Boolean = true,
-        var isConfirm: Boolean = false
-    )
+//    data class Notify(
+//        val id: Int,
+//        var name: String,
+//        var desc: String,
+//        var isMember: Boolean = true,
+//        var isAccepted: Boolean = true,
+//        var isConfirm: Boolean = false
+//    )
 
     class SearchHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView? = itemView.findViewById(R.id.tv_title)
         val desc: TextView? = itemView.findViewById(R.id.tv_desc)
-        val img: ImageView? = itemView.findViewById(R.id.imageView)
+        val img: ImageView? = itemView.findViewById(R.id.iv_image)
         val trainer: View? = itemView.findViewById(R.id.ll_trainer)
         val accept: Button? = itemView.findViewById(R.id.btn_accept)
         val reject: Button? = itemView.findViewById(R.id.btn_reject)
@@ -235,16 +236,18 @@ class NotificationsFragment : BaseFragment() {
         val time: TextView? = itemView.findViewById(R.id.tv_date)
 
         fun bind(item: Notifications, listener: ItemClickListener<Notifications>?) {
-            Logger.e("Notifications bind $item")
+            //Logger.e("Notifications bind $item")
             name?.text = item.sentBy
             desc?.text = item.desc
             time?.text = item.daysAgo
+            if (item.image != null)
+                Glide.with(itemView).load(item.image).fitCenter().error(R.drawable.ic_user_test).into(img!!)
             if (item.isMember) {
                 trainer?.visibility = View.GONE
             } else {
-                Logger.e("Notifications bind ${item.isButtonVisible()}")
-                Logger.e("Notifications bind ${item.type}")
-                Logger.e("Notifications bind ${item.status}")
+                //Logger.e("Notifications bind ${item.isButtonVisible()}")
+                // Logger.e("Notifications bind ${item.type}")
+                // Logger.e("Notifications bind ${item.status}")
                 if (item.isButtonVisible()) {
                     when {
                         item.type?.toLowerCase() == "invite" -> {
@@ -433,6 +436,7 @@ class NotificationsFragment : BaseFragment() {
             .enqueue(object : Callback<MemberNotifications> {
                 override fun onFailure(call: Call<MemberNotifications>, t: Throwable) {
                     hideProgress()
+                    t.printStackTrace()
                 }
 
                 override fun onResponse(
@@ -455,6 +459,7 @@ class NotificationsFragment : BaseFragment() {
             .enqueue(object : Callback<TrainerNotifications> {
                 override fun onFailure(call: Call<TrainerNotifications>, t: Throwable) {
                     hideProgress()
+                    t.printStackTrace()
                 }
 
                 override fun onResponse(
@@ -514,7 +519,11 @@ class NotificationsFragment : BaseFragment() {
         if (data != null && data.isNotEmpty()) {
             tv_empty?.visibility = View.GONE
             notifications.clear()
-            Collections.sort(data) { o2, o1 -> o1?.createdAt?.compareTo(o2?.createdAt ?: "") ?: -1 }
+            Collections.sort(data) { o2, o1 ->
+                o1?.createdAt?.date?.compareTo(
+                    o2?.createdAt?.date ?: ""
+                ) ?: -1
+            }
 
             for (n in data) {
                 if (n != null)
@@ -529,7 +538,8 @@ class NotificationsFragment : BaseFragment() {
                             n.type,
                             n.createdAt,
                             n.updatedAt,
-                            getDaysAgo(n.createdAt),
+                            getDaysAgo(n.createdAt?.date),
+                            n.avatar,
                             true
                         )
                     )
@@ -543,7 +553,11 @@ class NotificationsFragment : BaseFragment() {
 
     private fun parseTrainerNotifications(data: List<TrainerNotifications.Data?>?) {
         if (data != null && data.isNotEmpty()) {
-            Collections.sort(data) { o2, o1 -> o1?.createdAt?.compareTo(o2?.createdAt ?: "") ?: -1 }
+            Collections.sort(data) { o2, o1 ->
+                o1?.createdAt?.date?.compareTo(
+                    o2?.createdAt?.date ?: ""
+                ) ?: -1
+            }
 
             tv_empty?.visibility = View.GONE
             notifications.clear()
@@ -561,7 +575,8 @@ class NotificationsFragment : BaseFragment() {
                             n.type,
                             n.createdAt,
                             n.updatedAt,
-                            getDaysAgo(n.createdAt),
+                            getDaysAgo(n.createdAt?.date),
+                            n.avatar,
                             false
                         )
                     )
@@ -587,9 +602,9 @@ class NotificationsFragment : BaseFragment() {
 
     }
 
-    fun updateRecyclerView() {
+    private fun updateRecyclerView() {
         searchAdapters =
-            SearchAdapters(1, notifications, object : ItemClickListener<Notifications> {
+            NotifyAdapters(1, notifications, object : ItemClickListener<Notifications> {
                 override fun onItemClicked(item: Notifications?, position: Int) {
 
                 }

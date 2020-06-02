@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/2/20 2:12 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/2/20 2:12 PM
+  ~  Mibo Hexa - app
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false">
+        <shape android:shape="oval">
+            <solid android:color="@color/textColorApp2" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/textColorApp" />
+        </shape>
+    </item>
+</selector>

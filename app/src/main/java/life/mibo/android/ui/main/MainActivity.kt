@@ -1539,6 +1539,10 @@ class MainActivity : BaseActivity(), Navigator {
                 comingSoon()
                 return
             }
+            HomeItem.Type.NOTIFICATIONS -> {
+                navigate(0, R.id.navigation_notifications)
+                return
+            }
             else -> {
                 Toasty.warning(this, "ItemClicked - $type").show()
             }

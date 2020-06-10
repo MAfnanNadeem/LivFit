@@ -212,6 +212,17 @@
         android:name="life.mibo.android.ui.settings.SettingsFragment"
         android:label="@string/settings"
         tools:layout="@layout/fragment_body_profile" />
+    <fragment
+        android:id="@+id/navigation_my_account"
+        android:name="life.mibo.android.ui.settings.MyAccountFragment"
+        android:label="@string/my_account"
+        tools:layout="@layout/fragment_my_account" />
+
+    <fragment
+        android:id="@+id/navigation_orders"
+        android:name="life.mibo.android.ui.catalog.OrdersFragment"
+        android:label="@string/orders"
+        tools:layout="@layout/fragment_my_account" />
 
     <fragment
         android:id="@+id/navigation_notifications"

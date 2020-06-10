@@ -6,6 +6,7 @@ import life.mibo.android.models.base.*
 import life.mibo.android.models.biometric.Biometric
 import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.models.calories.Calories
+import life.mibo.android.models.catalog.*
 import life.mibo.android.models.circuits.CircuitResponse
 import life.mibo.android.models.circuits.SearchCircuit
 import life.mibo.android.models.create_session.BookSession
@@ -23,7 +24,6 @@ import life.mibo.android.models.password.CreatePassword
 import life.mibo.android.models.password.ForgetPasswordPost
 import life.mibo.android.models.password.ForgetPasswordVerifyOtp
 import life.mibo.android.models.password.PasswordVerifyOTPResponse
-import life.mibo.android.models.product.*
 import life.mibo.android.models.program.ProgramPost
 import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
@@ -334,7 +334,7 @@ class API {
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("servicesByProfessionals")
-        fun getProfessionalDetails(@Body data: UserID): Call<ProfessionalDetails>
+        fun getProfessionalDetails(@Body data: GetServicesOfProfessionals): Call<ProfessionalDetails>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("sendInviteRequestToTrainer")
@@ -375,6 +375,29 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getMemberPackages")
         fun getMemberPackages(@Body data: GetMemberServices): Call<Packages>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberShippingAddress")
+        fun getMemberShippingAddress(@Body data: MemberPost): Call<ShipmentAddress>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveMemberShippingAddress")
+        fun saveMemberShippingAddress(@Body data: SaveShippingAddress): Call<ResponseData>
+
+
+        //GetAllInvoices
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getAllInvoice")
+        fun getAllInvoice(@Body data: MemberPost): Call<GetInvoices>
+
+        //GetSingleInvoice
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getInvoice")
+        fun getInvoiceDetails(@Body data: GetInvoiceDetail): Call<InvoiceDetails>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveOrderDetails")
+        fun saveOrderDetails(@Body data: SaveOrderDetails): Call<ResponseStatus>
 
 
 //        @Headers("Accept: application/json", "Content-Type: application/json")

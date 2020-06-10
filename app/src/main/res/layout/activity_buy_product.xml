@@ -4,273 +4,179 @@
   ~  Last modified 5/16/20 6:13 PM
   ~  Mibo Hexa - app
   -->
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color_app"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/grid_1x"
+        android:src="@drawable/mibo_livfit_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_logo"
-            android:layout_width="wrap_content"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/grid_1x"
+        android:fillViewport="false"
+        app:layout_constraintBottom_toTopOf="@id/btn_pay_now"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_logo">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_1x"
-            android:src="@drawable/mibo_livfit_logo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/grid_2x"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:text="@string/your_cart"
-            android:textColor="@color/textColorApp"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_logo" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardRecycler"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="@dimen/grid_1x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/grid_1x" />
-
-        </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/grid_2x"
-            android:layout_marginTop="@dimen/grid_2x"
-            android:layout_width="wrap_content"
-            android:text="@string/shipping_address"
-            android:textColor="@color/textColorApp"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardRecycler" />
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/grid_2x"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="@dimen/grid_1x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView2">
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/grid_1x"
-                android:buttonTint="@color/textColorApp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_2x"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif_black"
-                    android:text="Sumeet Kumar"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="Phone: +971 55 XXX XXXX"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="@dimen/grid_1x"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card1">
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/grid_1x"
-                android:buttonTint="@color/textColorApp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_2x"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif_black"
-                    android:text="Mr XYZ"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="Address: Flat 03, Building 100 \n Jabel Ali \n Downtown Dubai \n UAE"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="Phone: +971 55 XXX XXXX"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/white"
-
-            app:cardCornerRadius="@dimen/grid_1x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView2">
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="@dimen/grid_1x" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginTop="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_2x"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif_black"
-                    android:text="GYM Location Here"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="This service/product will be \n delivered to Gym Location"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@string/font_sans_serif"
-                    android:text="Phone: +971 55 XXX XXXX"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/addNewCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="@dimen/grid_1x"
-            app:layout_constraintEnd_toEndOf="parent"
-
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card2">
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="@string/your_cart"
+                android:textColor="@color/textColorApp"
+                android:textSize="@dimen/text_size_large" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/grid_1x">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/grid_1x" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textViewAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/shipping_address"
+                android:textColor="@color/textColorApp"
+                android:textSize="@dimen/text_size_large" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp" />
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/addNewCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:layout_marginEnd="@dimen/grid_1x"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/grid_1x">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/add_new_address"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/apply_promo_code"
+                android:textColor="@color/textColorApp"
+                android:textSize="@dimen/text_size_large" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardPromo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="@dimen/grid_2x"
-                android:fontFamily="@string/font_sans_serif_black"
-                android:text="Add New Address"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text_size_medium" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/grid_1x">
 
-        </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_pay_now"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_2x"
-            android:background="@drawable/login_button_accent"
-            android:text="@string/checkout"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addNewCard"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintWidth_percent="0.7" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:layout_weight="0.25">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_promo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/grid_2x"
+                            android:fontFamily="@string/font_sans_serif"
+                            android:hint="@string/promo_code"
+                            android:inputType="text"
+                            android:lines="1"
+                            android:textColor="@color/textColor"
+                            android:textColorHint="@color/textColor"
+                            android:textSize="@dimen/text_size_medium" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
-</androidx.core.widget.NestedScrollView>
+                    <ImageView
+                        android:id="@+id/promo_apply"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.75"
+                        android:src="@drawable/check_mark" />
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <Button
+        android:id="@+id/btn_pay_now"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/button_accent_selector"
+        android:text="@string/checkout"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.7" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

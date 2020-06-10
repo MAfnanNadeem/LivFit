@@ -19,8 +19,8 @@ import kotlinx.android.synthetic.main.fragment_catalog_details.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
-import life.mibo.android.models.base.UserID
-import life.mibo.android.models.product.Product
+import life.mibo.android.models.catalog.Product
+import life.mibo.android.models.trainer.GetServicesOfProfessionals
 import life.mibo.android.models.trainer.ProfessionalDetails
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.payments.PaymentActivity
@@ -93,7 +93,7 @@ class CatalogDetailsDialog(var data: Product?) :
 
     fun payNow() {
         try {
-            PaymentActivity.payNow(this@CatalogDetailsDialog.activity, "200", "")
+           // PaymentActivity.payNow(this@CatalogDetailsDialog.activity, "200", "")
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
@@ -129,9 +129,8 @@ class CatalogDetailsDialog(var data: Product?) :
         showProgress()
         API.request.getApi()
             .getProfessionalDetails(
-                UserID(
-                    UserID.Data("$userId"),
-                    "ServicesIndependentProfessionals",
+                GetServicesOfProfessionals(
+                    GetServicesOfProfessionals.Data(Prefs.get(context).member?.id, userId),
                     Prefs.get(context).member?.accessToken
                 )
             )

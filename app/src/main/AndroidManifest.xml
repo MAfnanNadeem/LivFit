@@ -34,11 +34,15 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
+        android:largeHeap="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup, android:icon, android:label, android:theme, android:name">
 
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <activity
             android:name="life.mibo.android.ui.login.LoginActivity"
@@ -51,6 +55,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="life.mibo.android.ui.main.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity
             android:name="life.mibo.android.ui.rxl.QuickPlayDetailsActivity"
             android:keepScreenOn="true"
@@ -58,15 +71,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
 
         <activity
             android:name="life.mibo.android.ui.login.RegisterActivity"
-            android:theme="@style/AppTheme.FullScreen" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Register.FullScreen" />
         <activity
             android:name="life.mibo.android.ui.login.ForgetPasswordActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
 
         <activity
@@ -82,20 +94,23 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
+            android:name="life.mibo.android.ui.catalog.NewAddressActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.FullScreen" />
+        <activity
             android:name="life.mibo.android.ui.catalog.BuyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
+
         <activity
             android:name="life.mibo.android.ui.catalog.ProductDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name="life.mibo.android.ui.main.MainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTop"
+            android:name="life.mibo.android.ui.trainer.ProfessionalDetailsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:theme="@style/Material.FullScreen" />
+
 
         <!--        <service-->
         <!--            android:name="com.onecoder.devicelib.base.control.manage.BluetoothLeService"-->
@@ -111,10 +126,6 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity
-            android:name=".ui.TestActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name="com.telr.mobile.sdk.activity.WebviewActivity"

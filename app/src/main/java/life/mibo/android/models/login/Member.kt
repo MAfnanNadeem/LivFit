@@ -54,6 +54,10 @@ data class Member(
     }
 
     fun isMember(): Boolean {
-        return "$type".equals("member", false)
+        return "$type".equals("member", true)
+    }
+
+    fun isMale(): Boolean {
+        return "$gender".toLowerCase() == "male"
     }
 }

@@ -10,8 +10,8 @@ package life.mibo.android.core.security
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+//import androidx.security.crypto.EncryptedSharedPreferences
+//import androidx.security.crypto.MasterKeys
 import java.nio.charset.Charset
 import java.security.NoSuchAlgorithmException
 import java.security.spec.InvalidKeySpecException
@@ -40,14 +40,14 @@ class EncryptedPrefs(var context: Context) {
 
     }
     fun create() {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        prefs = EncryptedSharedPreferences.create(
-            ENCRYPTED_PREFS_NAME,
-            masterKeyAlias,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+//        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+//        prefs = EncryptedSharedPreferences.create(
+//            ENCRYPTED_PREFS_NAME,
+//            masterKeyAlias,
+//            context,
+//            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+//            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+//        )
     }
 
     @Synchronized
@@ -74,16 +74,16 @@ class EncryptedPrefs(var context: Context) {
 
 
     //    implementation "androidx.security:security-crypto:1.0.0-alpha02"
-    private val encryptedSharedPrefs by lazy {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        EncryptedSharedPreferences.create(
-            ENCRYPTED_PREFS_NAME,
-            masterKeyAlias,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
+//    private val encryptedSharedPrefs by lazy {
+//        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+//        EncryptedSharedPreferences.create(
+//            ENCRYPTED_PREFS_NAME,
+//            masterKeyAlias,
+//            context,
+//            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+//            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+//        )
+//    }
 
     fun set(key: String, value: String?, encrypted: Boolean = false) {
         if (encrypted) {

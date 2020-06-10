@@ -118,6 +118,7 @@ class WeightCompareFragment() : BaseFragment() {
                         if (err.isNullOrEmpty())
                             Toasty.error(requireContext(), R.string.error_occurred).show()
                         else Toasty.error(requireContext(), err, Toasty.LENGTH_LONG).show()
+                        checkSession(data)
                     }
 
                 }

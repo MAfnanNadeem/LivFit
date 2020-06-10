@@ -12,15 +12,15 @@
     android:layout_marginStart="@dimen/grid_1x"
     android:layout_marginTop="@dimen/grid_1x"
     android:layout_marginEnd="@dimen/grid_1x"
-    android:background="@drawable/bg_create_course_item"
+    android:background="@drawable/bg_notification_item"
     android:gravity="center_horizontal">
 
     <life.mibo.views.HexagonImageView
         android:id="@+id/iv_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:padding="@dimen/grid_1x"
-        android:src="@drawable/ic_user_test"
+        android:layout_margin="4dp"
+        android:background="@drawable/ic_user_test"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.4" />
@@ -34,7 +34,8 @@
         android:layout_marginTop="@dimen/grid_1x"
         android:lines="1"
         android:maxLines="1"
-        android:text="Name"
+        android:paddingStart="4dp"
+        tools:text="Name"
         android:textColor="@color/textColor2"
         android:textSize="@dimen/text_size_large"
         android:fontFamily="@string/font_sans_serif_medium"
@@ -48,10 +49,11 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:maxLines="2"
-        android:text="Some has accepted you request!"
+        android:paddingStart="4dp"
         android:textColor="@color/textColor2"
         android:fontFamily="@string/font_sans_serif"
         android:textSize="@dimen/text_size_medium"
+        tools:text="Some has accepted you request!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_image"
@@ -64,7 +66,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_date">
+        app:layout_constraintTop_toBottomOf="@id/iv_image">
 
 
         <Button

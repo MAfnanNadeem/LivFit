@@ -118,6 +118,10 @@ class ScheduleFragment : BaseFragment() {
     }
 
     private fun bookSession() {
+
+        if (Prefs.get(context).member?.isMember() == true)
+            return
+
         if (program == null) {
             Toasty.error(context!!, "Select Program").show()
             return

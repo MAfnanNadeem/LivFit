@@ -24,7 +24,7 @@ class ProfessionalDetails(data: List<Data?>?) :
         @SerializedName("created_by")
         var createdBy: Any?,
         @SerializedName("Price")
-        var currency: Int?,
+        var currency: Double?,
         @SerializedName("Currency")
         var currencyType: Any?,
         @SerializedName("Description")
@@ -71,5 +71,6 @@ class ProfessionalDetails(data: List<Data?>?) :
         var vatCharge: String?
     )
 
-
+    @SerializedName("connected")
+    var connected: Int? = 0
 }

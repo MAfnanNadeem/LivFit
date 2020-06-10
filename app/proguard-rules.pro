@@ -69,6 +69,11 @@
   public *;
 }
 
+-keep class org.springframework.** { *; }
+-keep public class com.telr.mobile.sdk.activty.** { *;}
+-keep public class com.telr.mobile.sdk.entity.** { *;}
+-keep class org.simpleframework.** { *;}
+
 
 
 

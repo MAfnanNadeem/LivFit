@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/4/20 11:00 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/3/20 10:18 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="@dimen/grid_2x"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_customerInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/customer_information_s"
+                    android:textColor="@color/textColorApp"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColorApp2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_customerInfo" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_customerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view1"
+                    tools:text="name" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_customerPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="phone"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_customerName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_customerAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="address"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_customerPhone" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_bookingInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/booking_information_s"
+                    android:textColor="@color/textColorApp"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColorApp2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_bookingInfo" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_bookingName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/booking"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_bookingNumber"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view3" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_bookingNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_bookingName"
+                    tools:text="00000000" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_bookingD"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/date_title"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_bookingDate"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_bookingName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_bookingDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_bookingD"
+                    tools:text="00000000" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_packageInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:text="@string/package_information_s"
+                    android:textColor="@color/textColorApp"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/textColorApp2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_packageInfo" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_packageName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_packageAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view2"
+                    tools:text="service" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_packageAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_tv_convAmount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_packageName"
+                    tools:text="AED 00" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_convName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/convenience_fee"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_convAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_packageName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_convAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_convName"
+                    tools:text="AED 00" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_subName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/sub_total"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_subAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_convName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_subAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_subName"
+                    tools:text="AED 00" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_vatName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/vat_tax_info"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_vatAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_subName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_vatAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_vatName"
+                    tools:text="AED 00" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_totalName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:fontFamily="@string/font_sans_serif"
+                    android:text="@string/total"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_tv_totalAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_vatName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_tv_totalAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_totalName"
+                    tools:text="AED 00" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <Button
+                android:id="@+id/btn_pay_now"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_4x"
+                android:background="@drawable/login_button_accent"
+                android:text="@string/pay_now"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_3x"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

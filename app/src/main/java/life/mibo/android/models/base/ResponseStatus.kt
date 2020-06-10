@@ -21,4 +21,11 @@ class ResponseStatus(response: Any?) : BaseResponse<Any?>(response) {
         }
         return false
     }
+
+    fun isString(): Boolean {
+        if (data is String) {
+            return true
+        }
+        return false
+    }
 }

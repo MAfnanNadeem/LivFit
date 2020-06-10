@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/3/20 10:22 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/2/20 4:02 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:gravity="center_horizontal"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+
+    <RadioButton
+        android:id="@+id/radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/grid_1x"
+        android:buttonTint="@color/textColorApp"
+        android:clickable="false"
+        android:enabled="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:layout_marginBottom="@dimen/grid_2x"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/personName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/font_sans_serif_black"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            tools:text="Sumeet Kumar" />
+
+        <TextView
+            android:id="@+id/personAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/grid_1x"
+            android:fontFamily="@string/font_sans_serif"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            tools:text="Address: Flat 03, Building 100 Jabel Ali Downtown Jafza" />
+
+        <TextView
+            android:id="@+id/personCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/font_sans_serif"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            tools:text="Dubai" />
+
+        <TextView
+            android:id="@+id/personCountry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/font_sans_serif"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            tools:text="UAE" />
+
+        <TextView
+            android:id="@+id/personNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/font_sans_serif"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            tools:text="Phone: +971 55 XXX XXXX" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

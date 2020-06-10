@@ -202,17 +202,18 @@ public class Prefs {
         try {
             String json = new Gson().toJson(o);
             getEditor().putString(key, json).apply();
-            Logger.e("settJson saved " + key);
+            Logger.e("Prefs setJson saved " + key);
 
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.e("settJson error " + e.getMessage());
+            Logger.e("Prefs setJson error " + e.getMessage());
         }
     }
 
     public <T> T getJson(String key, Type t) {
         try {
             String str = get(key);
+            Logger.e("Prefs getJson saved " + str);
             return new Gson().fromJson(str, t);
 
         } catch (Exception e) {
@@ -239,6 +240,7 @@ public class Prefs {
         try {
             String json = new Gson().toJson(member, member.getClass());
             getEditor().putString(USER, json).apply();
+            setMemberId(member.id());
         } catch (Exception e) {
             e.printStackTrace();
         }

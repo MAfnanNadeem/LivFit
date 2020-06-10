@@ -13,10 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.telr.mobile.sdk.activity.WebviewActivity;
+import com.telr.mobile.sdk.entity.response.status.Auth;
 import com.telr.mobile.sdk.entity.response.status.StatusResponse;
 
 import life.mibo.android.R;
+import life.mibo.android.core.Prefs;
 import life.mibo.android.ui.base.BaseActivity;
+import life.mibo.android.ui.main.MiboEvent;
 import life.mibo.android.utils.Toasty;
 import life.mibo.hardware.core.Logger;
 
@@ -34,6 +37,18 @@ public class FailedPaymentActivity extends BaseActivity {
             e.printStackTrace();
             Toasty.error(this, e.getMessage(), Toasty.LENGTH_LONG).show();
         }
+
+        try {
+            findViewById(R.id.btn_close).setOnClickListener(v -> {
+                finish();
+            });
+            Prefs.getTemp(this).remove("cart_item");
+            Prefs.getTemp(this).set("cart_item", "");
+            MiboEvent.INSTANCE.event("PAYMENT_FAILED_ACTIVITY", "", "auth");
+
+        } catch (Exception e) {
+
+        }
     }
 
 
@@ -43,7 +58,24 @@ public class FailedPaymentActivity extends BaseActivity {
 
         if (object instanceof StatusResponse) {
             StatusResponse status = (StatusResponse) object;
-            textView.setText(textView.getText() + " : " + status.getTrace());
+            String msg = textView.getText() + " : " + status.getTrace();
+            log("Failed StatusResponse auth: " + status.auth);
+            log("Failed StatusResponse trace: " + status.trace);
+
+            Auth auth = status.auth;
+            if (auth != null) {
+                log("Failed StatusResponse trace9: " + auth.avs);
+                log("Failed StatusResponse trace8: " + auth.ca_valid);
+                log("Failed StatusResponse trace7: " + auth.cardcode);
+                log("Failed StatusResponse trace6: " + auth.cardfirst6);
+                log("Failed StatusResponse trace5: " + auth.cardlast4);
+                log("Failed StatusResponse trace4: " + auth.code);
+                log("Failed StatusResponse trace3: " + auth.message);
+                log("Failed StatusResponse trace2: " + auth.status);
+                log("Failed StatusResponse trace1: " + auth.tranref);
+                msg += " \n " + auth.message;
+            }
+            textView.setText(msg);
 
             if (status.getAuth() != null) {
                 status.getAuth().getStatus();   // Authorisation status. A indicates an authorised transaction. H also indicates an authorised transaction, but where the transaction has been placed on hold. Any other value indicates that the request could not be processed.

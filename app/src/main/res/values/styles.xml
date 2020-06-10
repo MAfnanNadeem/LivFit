@@ -11,6 +11,7 @@
         <item name="colorControlNormal">@color/textColor</item>
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
         <item name="android:statusBarColor">@android:color/white</item>
+
         <item name="materialCalendarFullscreenTheme">
             @style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen
         </item>
@@ -43,6 +44,23 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="Material.FullScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+<!--        <item name="android:windowLightStatusBar">true</item>-->
+
+    </style>
+    <style name="Register.FullScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/textColorApp</item>
+        <item name="colorPrimaryDark">@color/textColorApp</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/textColorApp</item>
+<!--        <item name="android:windowLightStatusBar">true</item>-->
+
+    </style>
 
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:background">@android:color/transparent</item>
@@ -56,6 +74,14 @@
         <item name="colorControlActivated">@color/grey_ddd</item>
     </style>
 
+    <style name="TextLabelAddress" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:textSize">20sp</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+    </style>
 
     <style name="TextInputLayoutStyle2" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeWidth">0dp</item>

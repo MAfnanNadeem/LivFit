@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 7
-        versionName "0.1.07"
+        versionCode 11
+        versionName "0.1.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -81,7 +81,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //androidX support lib
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.2.2'
@@ -121,15 +121,16 @@ dependencies {
     //implementation 'com.google.android.gms:play-services-identity:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     //Google Firebase
-    implementation 'com.google.firebase:firebase-messaging:20.1.7'
+    implementation 'com.google.firebase:firebase-messaging:20.2.0'
     //implementation 'com.google.firebase:firebase-auth:19.3.1'
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0'
-    implementation 'com.google.firebase:firebase-analytics:17.4.0'
+    implementation 'com.google.firebase:firebase-analytics:17.4.2'
     //implementation "androidx.security:security-crypto:1.0.0-rc02"
-    implementation('androidx.security:security-crypto:1.0.0-rc02', {
-        exclude group: 'com.google.protobuf', module: 'protobuf-lite'
-    })
+//    implementation('androidx.security:security-crypto:1.0.0-rc02', {
+//        exclude group: 'com.google.protobuf', module: 'protobuf-lite'
+//    })
 
     implementation 'com.twitter.sdk.android:twitter-core:3.1.1'
     implementation 'com.facebook.android:facebook-login:5.0.0'
@@ -202,7 +203,7 @@ dependencies {
     implementation 'com.github.ihsanbal:LoggingInterceptor:3.0.0'
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"
     releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:3.0.1"
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
    // implementation files('libs/telrlibrary_3_5.aar')
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

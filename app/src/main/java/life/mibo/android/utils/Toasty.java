@@ -235,7 +235,7 @@ public class Toasty {
 
     @CheckResult
     public static Toast error(@NonNull Context context, @StringRes int message) {
-        return error(context, context.getString(message), Toast.LENGTH_SHORT, true);
+        return error(context, context.getString(message), Toast.LENGTH_SHORT, false);
     }
 
     @CheckResult

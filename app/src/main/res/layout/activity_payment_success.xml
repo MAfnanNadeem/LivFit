@@ -37,9 +37,10 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:src="@drawable/img_forget_pwd_update"
+        android:layout_margin="@dimen/grid_2x"
         app:layout_constraintBottom_toTopOf="@id/btn_close"
-        app:layout_constraintHeight_percent="0.5"
+        android:src="@drawable/ic_img_payment_success"
+        app:layout_constraintHeight_percent="0.6"
         app:layout_constraintTop_toBottomOf="@id/textViewInfo0" />
 
     <Button

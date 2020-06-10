@@ -99,7 +99,7 @@
         android:lines="1"
         android:paddingStart="@dimen/grid_1x"
         android:scaleType="center"
-        android:text="@string/unit"
+        android:text="@string/height"
         android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_small"
         app:layout_constraintStart_toStartOf="@id/spinner_height"

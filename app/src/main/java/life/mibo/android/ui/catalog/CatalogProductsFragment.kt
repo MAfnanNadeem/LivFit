@@ -19,8 +19,8 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_catalog_products.*
 import life.mibo.android.R
 import life.mibo.android.core.API
-import life.mibo.android.models.product.Catalog
-import life.mibo.android.models.product.Product
+import life.mibo.android.models.catalog.Catalog
+import life.mibo.android.models.catalog.Product
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
 import retrofit2.Call
@@ -224,7 +224,7 @@ class CatalogProductsFragment : BaseFragment() {
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView? = itemView.findViewById(R.id.tv_title)
         val desc: TextView? = itemView.findViewById(R.id.tv_info)
-        val price: TextView? = itemView.findViewById(R.id.tv_price)
+        val price: TextView? = itemView.findViewById(R.id.tv_info2)
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
         fun bind(item: Product?, listener: ItemClickListener<Product>?) {
@@ -233,8 +233,8 @@ class CatalogProductsFragment : BaseFragment() {
             name?.text = item.productName
             desc?.text = item.shortForm
             price?.text = item.unitPrice
-            Glide.with(img!!).load(item.image).fallback(R.drawable.ic_broken_image_black_24dp)
-                .error(R.drawable.ic_broken_image_black_24dp).fitCenter().into(img)
+            Glide.with(img!!).load(item.image).fallback(R.drawable.ic_default_product)
+                .error(R.drawable.ic_default_product).fitCenter().into(img)
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }

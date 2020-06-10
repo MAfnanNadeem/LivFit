@@ -5,11 +5,12 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.android.models.product
+package life.mibo.android.models.catalog
 
 
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BaseResponse
+import life.mibo.android.models.biometric.Biometric
 import java.io.Serializable
 
 class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
@@ -20,7 +21,7 @@ class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
         @SerializedName("category")
         var category: String?,
         @SerializedName("created_at")
-        var createdAt: String?,
+        var createdAt: Biometric.CreatedAt?,
         @SerializedName("created_by")
         var createdBy: String?,
         @SerializedName("currency")
@@ -68,7 +69,11 @@ class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
         @SerializedName("validity")
         var validity: Int?,
         @SerializedName("vat_charge")
-        var vatCharge: String?
+        var vatCharge: String?,
+        @SerializedName("location")
+        var location: String?,
+        @SerializedName("vat")
+        var vat: Double?
     ) : Serializable {
 
         fun match(query: String): Boolean {

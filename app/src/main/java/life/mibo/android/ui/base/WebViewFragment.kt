@@ -8,7 +8,6 @@
 package life.mibo.android.ui.base
 
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -91,6 +90,22 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
 
     override fun onPageStarted(url: String?, favicon: Bitmap?) {
         progressBar?.visibility = View.VISIBLE
+    }
+
+    override fun onBackPressed(): Boolean {
+        if (webView.canGoBack()) {
+            webView.goBack()
+            return false
+        }
+        return super.onBackPressed()
+    }
+
+    override fun onNavBackPressed(): Boolean {
+        if (webView.canGoBack()) {
+            webView.goBack()
+            return false
+        }
+        return super.onNavBackPressed()
     }
 
 }

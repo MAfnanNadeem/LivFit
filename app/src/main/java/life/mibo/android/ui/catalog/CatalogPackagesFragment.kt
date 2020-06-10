@@ -19,11 +19,10 @@ import kotlinx.android.synthetic.main.fragment_catalog_products.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
-import life.mibo.android.models.product.GetMemberServices
-import life.mibo.android.models.product.Packages
+import life.mibo.android.models.catalog.GetMemberServices
+import life.mibo.android.models.catalog.Packages
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
-import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -244,7 +243,7 @@ class CatalogPackagesFragment : BaseFragment() {
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView? = itemView.findViewById(R.id.tv_title)
         val desc: TextView? = itemView.findViewById(R.id.tv_info)
-        val price: TextView? = itemView.findViewById(R.id.tv_price)
+        val price: TextView? = itemView.findViewById(R.id.tv_info2)
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
         fun bind(item: Packages.Data?, listener: ItemClickListener<Packages.Data>?) {

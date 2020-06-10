@@ -93,25 +93,22 @@ public class Facebook {
     }
 
     private void getFacebookData(final LoginResult loginResult) {
-        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                Bundle bundle = new Bundle();
-                try {
-                    bundle.putString("raw_data", object.toString());
-                    Iterator iter = object.keys();
-                    while (iter.hasNext()) {
-                        //Object obj = iter.next();
-                        String key = (String) iter.next();
-                        String value = object.getString(key);
-                        bundle.putString(key, value);
-                    }
+        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), (object, response) -> {
+            Bundle bundle = new Bundle();
+            try {
+                bundle.putString("raw_data", object.toString());
+                Iterator iter = object.keys();
+                while (iter.hasNext()) {
+                    //Object obj = iter.next();
+                    String key = (String) iter.next();
+                    String value = object.getString(key);
+                    bundle.putString(key, value);
                 }
-                catch (Exception e){
-
-                }
-                listener.onResponse(SocialHelper.FACEBOOK, bundle, false);
             }
+            catch (Exception e){
+
+            }
+            listener.onResponse(SocialHelper.FACEBOOK, bundle, false);
         });
         //Here we put the requested fields to be returned from the JSONObject
         Bundle parameters = new Bundle();

@@ -85,7 +85,7 @@ class ChangePasswordDialog(c: Context) : AlertDialog(c) {
                     updateHint(R.string.pwd_req_not_match)
                 }
             } else {
-                updateHint(R.string.pwd_not_match)
+                updateHint(R.string.confirm_password_error)
             }
         }
         window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)

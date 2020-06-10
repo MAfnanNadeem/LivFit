@@ -3,24 +3,41 @@ package life.mibo.android.ui.base
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.main.MainActivity
 import life.mibo.android.ui.main.MiboApplication
+import life.mibo.hardware.core.Logger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.NoSubscriberEvent
 import org.greenrobot.eventbus.Subscribe
+import java.lang.Exception
 import java.util.*
 
 
 abstract class BaseActivity : AppCompatActivity() {
     //var DEBUG = MiboApplication.DEBUG
     var DEBUG = MiboApplication.DEBUG
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                window.statusBarColor = Color.WHITE
+            }
+            catch (e: Exception){
+
+            }
+        }
+    }
 
     fun log(msg: String) {
         Logger.e("${this.javaClass} : $msg")

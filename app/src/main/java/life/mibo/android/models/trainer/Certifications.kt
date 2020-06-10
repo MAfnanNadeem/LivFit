@@ -9,6 +9,7 @@ package life.mibo.android.models.trainer
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Certifications(
     @SerializedName("certificate_no")

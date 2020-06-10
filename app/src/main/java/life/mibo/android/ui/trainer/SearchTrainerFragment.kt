@@ -51,7 +51,7 @@ class SearchTrainerFragment : BaseFragment() {
 
 
     private fun getProfessionals() {
-        Prefs.get(context).member
+        //Prefs.get(context).member
 
         getDialog()?.show()
 
@@ -73,6 +73,7 @@ class SearchTrainerFragment : BaseFragment() {
                     if (data != null && data.isSuccess()) {
                         parseData(data.data?.professionals)
                     } else {
+                        checkSession(data)
                         val er = data?.errors
                         if (er != null)
                             er?.get(0)?.message?.let {
@@ -102,11 +103,17 @@ class SearchTrainerFragment : BaseFragment() {
 
             adapters = SearchAdapters(1, ipList, object : ItemClickListener<Professional> {
                 override fun onItemClicked(item: Professional?, position: Int) {
+                    log("onItemClicked item $item")
                     item?.let {
-                        ProfessionalDetailsDialog(item).show(
-                            childFragmentManager,
-                            "ProfessionalDetailsDialog"
+                        ProfessionalDetailsActivity.launch(
+                            requireContext(),
+                            ProfessionalDetailsActivity.create(it),
+                            9
                         )
+//                        ProfessionalDetailsDialog(item).show(
+//                            childFragmentManager,
+//                            "ProfessionalDetailsDialog"
+//                        )
                     }
                 }
 
@@ -194,6 +201,7 @@ class SearchTrainerFragment : BaseFragment() {
     class SearchHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView? = itemView.findViewById(R.id.tv_title)
         val desc: TextView? = itemView.findViewById(R.id.tv_info)
+        val info: TextView? = itemView.findViewById(R.id.tv_info2)
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
         fun bind(item: Professional, listener: ItemClickListener<Professional>?) {
@@ -202,6 +210,7 @@ class SearchTrainerFragment : BaseFragment() {
                     .into(img!!)
             name?.text = item.name
             desc?.text = item.designation
+            info?.text = "${item.city}, ${item.country}"
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }

@@ -80,9 +80,10 @@ abstract class BaseFragment : Fragment() {
     fun <V : BaseResponse<*>> checkSession(data: V?): Boolean {
         try {
             data?.errors?.get(0)?.code?.let { code ->
-                if (code == 401) {
+                val msg = data.errors?.get(0)?.message ?: "Session Expired!"
+                if (code == 401 || msg.toLowerCase().contains("expired")) {
                     context?.let {
-                        Toasty.error(it, data.errors?.get(0)?.message!!).show()
+                        Toasty.error(it, msg).show()
                     }
                     MiboEvent.log("Session Expired - $data")
                     logout()

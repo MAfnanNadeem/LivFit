@@ -153,7 +153,8 @@ class TrainerCalendarDialog(var calendarListener: ItemClickListener<TrainerSessi
 
     private fun onTrainerCalendar(data: TrainerCalendarResponse.Data?) {
         if (data?.sessions != null) {
-            tv_empty?.visibility = View.GONE
+            if (data?.sessions?.size ?: 0 > 0)
+                tv_empty?.visibility = View.GONE
             dayList.clear()
             val crypt = Encrypt()
             val dateTimeParser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

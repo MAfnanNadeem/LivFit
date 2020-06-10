@@ -37,105 +37,155 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_2x"
-            android:fontFamily="@string/font_sans_serif_black"
-            android:text="Add a New Shipping Address"
+            android:fontFamily="@string/font_sans_serif_medium"
+            android:text="@string/add_new_shipping_address"
             android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium" />
 
     </androidx.cardview.widget.CardView>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/addNewCard"
         app:layout_constraintWidth_percent="0.7">
 
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_first_name"
-            style="@style/login_edittext"
-            android:digits="@string/alphabets_only"
-            android:hint="@string/full_name"
-            android:imeOptions="actionNext"
-            android:inputType="textPersonName" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/grid_2x"
+            android:orientation="vertical">
 
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_email"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:hint="@string/email_hint"
-            android:imeOptions="actionNext"
-            android:inputType="textEmailAddress" />
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/profile_edittext"
+                android:digits="@string/alphabets_only"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="@string/first_name_hint"
+                android:imeOptions="actionNext"
+                android:inputType="textPersonName"
+                android:lines="1"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_phone"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:hint="Contact Number"
-            android:imeOptions="actionNext"
-            android:inputType="textEmailAddress" />
-
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_add1"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:ems="11"
-            android:hint="Address 1"
-            android:lines="3"
-            android:inputType="textAutoComplete"
-            android:singleLine="false"
-            android:textSize="@dimen/text_size_medium" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_add2"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:ems="11"
-            android:hint="Address 2"
-            android:lines="2"
-            android:singleLine="false"
-            android:textSize="@dimen/text_size_medium" />
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_city"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:hint="@string/city_hint"
-            android:imeOptions="actionNext"
-            android:inputType="textAutoComplete" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_country"
-            style="@style/login_edittext"
-            android:layout_marginTop="@dimen/grid_1x"
-            android:ems="11"
-            android:inputType="textAutoComplete"
-            android:hint="@string/country_hint"
-            android:textSize="@dimen/text_size_medium" />
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:digits="@string/alphabets_only"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="@string/last_name_hint"
+                android:imeOptions="actionNext"
+                android:inputType="textPersonName"
+                android:lines="1"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
 
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="@string/phone_number_hint"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:lines="1"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
 
-    <Button
-        android:id="@+id/btn_save"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_2x"
-        android:background="@drawable/login_button_accent"
-        android:text="Save Address"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.7"
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_address1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="Address Line 1"
+                android:lines="2"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
 
-        />
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_address2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="Address Line 2"
+                android:lines="2"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
+
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="@string/city_hint"
+                android:imeOptions="actionNext"
+                android:lines="1"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/tv_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/profile_edittext"
+                android:fontFamily="@string/font_sans_serif"
+                android:hint="@string/country_hint"
+                android:imeOptions="actionNext"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/grey" />
+
+            <com.rilixtech.widget.countrycodepicker.CountryCodePicker
+                android:id="@+id/ccp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x"
+                android:clickable="false"
+                app:ccp_textColor="@color/textColor"
+                app:ccp_dialogTextColor="@color/white"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:background="@drawable/login_button_accent"
+                android:text="@string/save_address"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.7" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

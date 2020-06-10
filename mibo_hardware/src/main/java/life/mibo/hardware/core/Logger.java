@@ -32,6 +32,10 @@ public class Logger {
             Log.d(tag, msg);
     }
 
+    public static void ee(String msg) {
+        Log.e(TAG, msg);
+    }
+
     public static void e(String msg) {
         e(TAG, msg);
     }

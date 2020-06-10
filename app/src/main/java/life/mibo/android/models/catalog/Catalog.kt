@@ -5,7 +5,7 @@
  *  Mibo Hexa - app
  */
 
-package life.mibo.android.models.product
+package life.mibo.android.models.catalog
 
 
 import com.google.gson.annotations.SerializedName

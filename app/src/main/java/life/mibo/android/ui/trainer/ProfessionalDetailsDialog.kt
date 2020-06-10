@@ -27,10 +27,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.UserID
-import life.mibo.android.models.trainer.InviteProfessional
-import life.mibo.android.models.trainer.Professional
-import life.mibo.android.models.trainer.ProfessionalDetails
-import life.mibo.android.models.trainer.TrainerInviteResponse
+import life.mibo.android.models.trainer.*
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.utils.Toasty
@@ -121,9 +118,8 @@ class ProfessionalDetailsDialog(var data: Professional) :
         showProgress()
         API.request.getApi()
             .getProfessionalDetails(
-                UserID(
-                    UserID.Data("$userId"),
-                    "ServicesIndependentProfessionals",
+                GetServicesOfProfessionals(
+                    GetServicesOfProfessionals.Data(Prefs.get(context).member?.id, userId),
                     Prefs.get(context).member?.accessToken
                 )
             )

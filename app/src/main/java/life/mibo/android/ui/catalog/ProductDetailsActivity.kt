@@ -13,9 +13,9 @@ import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.fragment_catalog_details.*
 import life.mibo.android.R
-import life.mibo.android.models.product.Packages
-import life.mibo.android.models.product.Product
-import life.mibo.android.models.product.Services
+import life.mibo.android.models.catalog.Packages
+import life.mibo.android.models.catalog.Product
+import life.mibo.android.models.catalog.Services
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.body_measure.adapter.Calculate
 
@@ -26,21 +26,21 @@ class ProductDetailsActivity : BaseActivity() {
     companion object {
         fun launch(context: Context, item: Product) {
             val i = Intent(context, ProductDetailsActivity::class.java)
-            i.putExtra("product_type", 1)
+            i.putExtra("product_type", BuyActivity.TYPE_PRODUCT)
             i.putExtra("product_data", item)
             context.startActivity(i)
         }
 
         fun launch(context: Context, item: Services.Data) {
             val i = Intent(context, ProductDetailsActivity::class.java)
-            i.putExtra("product_type", 2)
+            i.putExtra("product_type", BuyActivity.TYPE_SERVICE)
             i.putExtra("product_data", item)
             context.startActivity(i)
         }
 
         fun launch(context: Context, item: Packages.Data) {
             val i = Intent(context, ProductDetailsActivity::class.java)
-            i.putExtra("product_type", 3)
+            i.putExtra("product_type", BuyActivity.TYPE_PACKAGE)
             i.putExtra("product_data", item)
             context.startActivity(i)
         }
@@ -75,21 +75,24 @@ class ProductDetailsActivity : BaseActivity() {
             setup(packageData!!)
         } else {
             finish()
+            return
         }
 
+        btn_add_cart?.visibility = View.GONE
 
     }
 
+    var isAvailableForSale = true
     fun setup(data: Product) {
         //if (data?.type == 2)
         tv_product_name?.text = data.productName
         tv_product_desc?.text = data.description
         //tv_product_desc_full?.text = data.longForm
         tv_product_long_desc?.text = data.longForm
-        tv_product_location?.text = "add your address"
+        tv_product_location?.text = getString(R.string.on_your_address)
         tv_product_quantity_value?.text = "$quantity"
-        tv_product_price_value?.text = "${data?.unitPrice}"
-        tv_product_manf_name?.text = "${data?.manufacturerName}"
+        tv_product_price_value?.text = data.unitPrice ?: "0.0"
+        tv_product_manf_name?.text = "${data.manufacturerName}"
 
         tv_product_session?.visibility = GONE
         tv_product_session_value?.visibility = GONE
@@ -98,7 +101,10 @@ class ProductDetailsActivity : BaseActivity() {
 
         when {
             data.stock ?: 0 > 5 -> tv_product_in_stock?.setText(R.string.in_stock)
-            data.stock ?: 0 == 0 -> tv_product_in_stock?.setText(R.string.out_of_stock)
+            data.stock ?: 0 == 0 -> {
+                tv_product_in_stock?.setText(R.string.out_of_stock)
+                isAvailableForSale = false
+            }
             else -> tv_product_in_stock?.text = getString(R.string.stock_left, data.stock)
         }
 
@@ -109,7 +115,7 @@ class ProductDetailsActivity : BaseActivity() {
             }
         }
         btn_minus?.setOnClickListener {
-            if (quantity > 0) {
+            if (quantity > 1) {
                 quantity--
                 tv_product_quantity_value?.text = "$quantity"
             }
@@ -132,9 +138,10 @@ class ProductDetailsActivity : BaseActivity() {
         } else
             userImage?.setUrls(data.subImages)
         log("images >> ${data.subImages}")
-
+        btn_buy_now?.isEnabled = isAvailableForSale
         btn_buy_now?.setOnClickListener {
-            buyClicked(data)
+            if (isAvailableForSale)
+                buyClicked(data)
         }
     }
 
@@ -147,7 +154,7 @@ class ProductDetailsActivity : BaseActivity() {
         tv_product_desc?.text = data.description
         //tv_product_desc_full?.text = data.longForm
         tv_product_long_desc?.text = data.description
-        tv_product_location?.text = "add your address"
+        //tv_product_location?.text = "add your address"
         tv_product_quantity_value?.text = "$quantity"
         tv_product_price_value?.text = "${data?.currencyType} ${data?.currency}"
         tv_product_session_value?.text = "${data?.noOfSession}"
@@ -244,13 +251,13 @@ class ProductDetailsActivity : BaseActivity() {
                     product.id!!,
                     product.productName,
                     Calculate.getDouble(product.unitPrice),
-                    product.currency,
+                    product.currency ?: "AED",
                     product.image,
-                    1
+                    1, 0.0, "", false, false
                 )
             )
             val i = Intent(this, BuyActivity::class.java)
-            i.putExtra("type_type", 2)
+            i.putExtra("type_type", BuyActivity.TYPE_PRODUCT)
             i.putParcelableArrayListExtra("type_list", list)
             startActivity(i)
             finish()
@@ -269,11 +276,11 @@ class ProductDetailsActivity : BaseActivity() {
                     services.currency ?: 0.0,
                     services.currencyType,
                     "",
-                    1
+                    1, services.vat, services.location, true, false
                 )
             )
             val i = Intent(this, BuyActivity::class.java)
-            i.putExtra("type_type", 1)
+            i.putExtra("type_type", BuyActivity.TYPE_SERVICE)
             i.putParcelableArrayListExtra("type_list", list)
             startActivity(i)
             finish()
@@ -292,11 +299,11 @@ class ProductDetailsActivity : BaseActivity() {
                     services.price ?: 0.0,
                     services.currencyType,
                     "",
-                    1
+                    1, services.vat, services.location, false, true
                 )
             )
             val i = Intent(this, BuyActivity::class.java)
-            i.putExtra("type_type", 3)
+            i.putExtra("type_type", BuyActivity.TYPE_PACKAGE)
             i.putParcelableArrayListExtra("type_list", list)
             startActivity(i)
             finish()

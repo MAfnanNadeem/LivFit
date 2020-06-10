@@ -17,10 +17,47 @@ data class CartItem(
     var price: Double,
     var currencyType: String?,
     var image: String?,
-    var quantity: Int = 1
+    var quantity: Int = 1,
+    var vat_: Double?,
+    var location: String?,
+    val isService: Boolean = false,
+    val isPackage: Boolean = false
 ) : Parcelable {
 
+    var locationId = 0
+    var transactionId = 0
+    var encAmount = "0.0"
+
     fun getAmount(): Double {
+        return Calculate.round(price.times(quantity))
+    }
+
+    fun getVat(): Double {
+        if (vat_ ?: 0.0 > 0.0) {
+            val am = price.times(quantity)
+            val v = vat_?.div(100)
+            return Calculate.round(am.times(v ?: 0.0))
+        }
+        return 0.0
+    }
+
+    fun getTotal(): Double {
+        if (vat_ ?: 0.0 > 0.0) {
+            val am = price.times(quantity)
+            val v = vat_?.div(100)
+            val tv = am.times(v ?: 0.0)
+            return Calculate.round(am.plus(tv))
+        }
+        return Calculate.round(price.times(quantity))
+    }
+
+    fun getBillable(): Double {
+        if (vat_ ?: 0.0 > 0.0) {
+            val am = price.times(quantity)
+            val v = vat_?.div(100)
+            val tv = am.times(v ?: 0.0)
+            return Calculate.round(am.plus(tv))
+        }
         return Calculate.round(price.times(quantity))
     }
 
@@ -32,6 +69,10 @@ data class CartItem(
         parcel.writeString(currencyType)
         parcel.writeString(image)
         parcel.writeInt(quantity)
+        parcel.writeDouble(vat_ ?: 0.0)
+        parcel.writeString(location)
+        parcel.writeInt(if (isService) 1 else 0)
+        parcel.writeInt(if (isPackage) 1 else 0)
     }
 
     constructor(parcel: Parcel) : this(
@@ -40,8 +81,14 @@ data class CartItem(
         parcel.readDouble(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readInt()
-    )
+        parcel.readInt(),
+        parcel.readDouble(),
+        parcel.readString(),
+        parcel.readInt() == 1,
+        parcel.readInt() == 1
+    ) {
+
+    }
 
     override fun describeContents(): Int {
         return 0

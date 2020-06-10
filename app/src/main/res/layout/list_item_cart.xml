@@ -11,6 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/grid_1x"
+    android:padding="@dimen/grid_1x"
     android:gravity="center_horizontal">
 
 
@@ -31,7 +32,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_margin="@dimen/grid_1x"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginEnd="@dimen/grid_1x"
         android:fontFamily="@string/font_sans_serif_medium"
         android:lines="1"
         android:textColor="@color/textColorApp"
@@ -61,7 +63,7 @@
         android:id="@+id/ll_quantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/grid_1x"
+        android:layout_marginTop="@dimen/grid_1x"
         android:gravity="end"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,14 +72,15 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_minus"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/bg_round_button"
             android:fontFamily="@string/font_sans_serif_black"
             android:minWidth="0dp"
             android:text="-"
+            android:layout_margin="2dp"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_size_extra_large" />
+            android:textSize="@dimen/text_size_large" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_product_quantity_value"
@@ -93,14 +96,15 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_plus"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/bg_round_button"
             android:fontFamily="@string/font_sans_serif_black"
+            android:layout_margin="2dp"
             android:minWidth="0dp"
             android:text="+"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_size_extra_large" />
+            android:textSize="@dimen/text_size_large" />
 
 
     </LinearLayout>
@@ -125,9 +129,61 @@
         android:fontFamily="@string/font_sans_serif_medium"
         android:text="@string/price"
         android:textColor="@color/textColorApp"
+        app:layout_goneMarginBottom="@dimen/grid_1x"
         android:textSize="@dimen/text_size_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_quantity" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_product_tax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif"
+        android:text="@string/vat_tax"
+        android:textColor="@color/textColor"
+        android:visibility="gone"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintStart_toEndOf="@+id/iv_image"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_price" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_product_tax_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif_medium"
+        android:text="@string/price"
+        android:textColor="@color/textColorApp"
+        android:visibility="gone"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_price_value" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_product_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif"
+        android:text="@string/total"
+        android:visibility="gone"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintStart_toEndOf="@+id/iv_image"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_tax" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_product_tax_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif_medium"
+        android:text="@string/price"
+        android:textColor="@color/textColorApp"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_tax_value" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

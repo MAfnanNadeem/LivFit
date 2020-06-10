@@ -1,6 +1,7 @@
 <resources>
     <!--    <string name="app_name">Mibo Hexa</string>-->
     <string name="app_name">MI.BO. LivFit</string>
+    <string name="app_version">0.1.10</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -21,6 +22,7 @@
     <string name="menu_send">Send</string>
     <string name="enter_fname">Enter Your First Name</string>
     <string name="enter_lname">Enter Your Last Name</string>
+    <string name="enter_address">Enter Address</string>
     <string name="enter_email">Email Id is Required</string>
     <string name="enter_your_password">Please enter your password</string>
     <string name="enter_password">Enter Your Password</string>
@@ -33,10 +35,13 @@
     <string name="select_gender">Please Select the Gender</string>
     <string name="select_your_country">Select Your Country</string>
     <string name="enter_number">Mobile Number is Mandatory</string>
-    <string name="email_not_valid">Enter a valid email id</string>
+    <string name="enter_area_number">Area Code is Mandatory</string>
+    <string name="email_not_valid">Enter a valid email address in the format: yourname@example.com</string>
     <string name="confirm_password_not_matched">Password does not match the confirm password</string>
-    <string name="password_requirement">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
+    <string name="password_requirement2">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
+    <string name="password_requirement">Passwords must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special character.</string>
     <string name="error_occurred">An error occurred</string>
+    <string name="otp_not_sent">Unable to send OTP</string>
     <string name="scan_devices">Scan Devices</string>
     <string name="unable_to_connect">Unable to connect</string>
     <string name="logout">Logout</string>
@@ -95,6 +100,7 @@
     <string name="date_of_birth_hint"><small>Date of Birth</small></string>
     <string name="city_hint"><small>City</small></string>
     <string name="country_hint"><small>Country</small></string>
+    <string name="phone_area_hint"><small>Area Code</small></string>
     <string name="phone_number_hint"><small>Phone Number</small></string>
     <string name="register">Register</string>
     <string name="otp_verification">OTP VERIFICATION</string>
@@ -114,6 +120,7 @@
     <!-- Page Titles -->
     <string name="booster_page_title">Myo Boost</string>
     <string name="add_product">Add Product</string>
+    <string name="create_service">Create Service</string>
     <string name="rxl">RXL</string>
     <string name="programs">Programs</string>
     <string name="calories_title">Calories</string>
@@ -225,15 +232,17 @@
     <string name="current_password"><small>Current Password</small></string>
     <string name="new_password"><small>New Password</small></string>
     <string name="confirm_password"><small>Confirm Password</small></string>
+    <string name="confirm_password_error">Password does not match the confirm password</string>
     <string name="change_password">Change Password</string>
+    <string name="reset_password">Reset Password</string>
     <string name="sessions">Sessions</string>
     <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>
 
     <string name="calories">Calories</string>
     <string name="all_images">All Images</string>
-    <string name="password_req"><![CDATA[Password must be 8 character in length, must contain 1 Upper & Lower case, 1 number and 1 special character]]></string>
-    <string name="pwd_req_not_match">Password requirement not matched</string>
+    <string name="password_req"><![CDATA[A Password must contain at least eight characters, including uppercase (A–Z), lowercase (a–z), digits (0–9), and special characters]]></string>
+    <string name="pwd_req_not_match">Invalid password format</string>
     <string name="pwd_not_match">Confirm password not matched</string>
     <string name="skip">Skip</string>
     <string name="upload_profile_photo">Take a minute to upload profile photo.</string>
@@ -322,7 +331,8 @@
     <string name="purchase">Purchase</string>
     <string name="heart_beats_per_minute">HEART BEATS PER MINUTE</string>
     <string name="share_with_friends">Share with friends</string>
-    <string name="good_to_see_you">It\'s good to see you again</string>
+    <string name="good_to_see_you_again">It\'s good to see you again</string>
+    <string name="good_to_see_you">It\'s good to see you</string>
     <string name="login">LOGIN</string>
     <string name="sign_in">Sign  In</string>
     <string name="create_new_account">Create  New  Account</string>
@@ -370,6 +380,7 @@
     <string name="search_services">Services</string>
     <string name="search_professionals">Search Professionals</string>
     <string name="invite_me">Invite Me</string>
+    <string name="invited_already">Already Invited</string>
     <string name="no_service_found">No Service Found.</string>
     <string name="services">Services</string>
     <string name="specializations">Specializations</string>
@@ -403,13 +414,15 @@
     <string name="dob">DOB</string>
     <string name="cm_unit">CM</string>
     <string name="feet_in_unit">Feet/in</string>
-    <string name="no_notifications_found">No Notifications Found!</string>
+    <string name="no_notifications_found">There are no new notifications!</string>
     <string name="confirm">Confirm</string>
     <string name="decline">Decline</string>
     <string name="reject">Reject</string>
     <string name="no_products_found">No Products Found!</string>
     <string name="no_services_found">No Services Found!</string>
+    <string name="no_invoices_found">No Invoices Found!</string>
     <string name="no_package_found">No Package Found!</string>
+    <string name="no_orders_found">No Orders Found!</string>
     <string name="mibo_store">MI.BO. STORE</string>
     <string name="price">Price:</string>
     <string name="quantity">Quantity:</string>
@@ -431,8 +444,37 @@
     <string name="products">Products</string>
     <string name="packages">Packages</string>
     <string name="shipping_address">Shipping Address</string>
+    <string name="shipping_service_address">Service Address</string>
     <string name="select_a_shipping_address">Select a Shipping Address</string>
     <string name="your_cart">Your Cart</string>
+    <string name="invalid_amount">Invalid Amount</string>
+    <string name="select_shipping_address">Select shipping address</string>
+    <string name="apply_promo_code">Apply promo code</string>
+    <string name="add_new_address">Add New Address</string>
+    <string name="promo_code">Promo Code</string>
+    <string name="add_new_shipping_address">Add a New Shipping Address</string>
+    <string name="save_address">Save Address</string>
+    <string name="total">Total:</string>
+    <string name="vat_tax">VAT:</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="customer_information_s">Customer Information\'s</string>
+    <string name="package_information_s">Package Information\'s</string>
+    <string name="booking_information_s">Booking Information\'s</string>
+    <string name="sub_total">Sub Total</string>
+    <string name="convenience_fee">Convenience Fee</string>
+    <string name="vat_tax_info">VAT Tax</string>
+    <string name="booking">Booking #</string>
+    <string name="date_title">Date</string>
+    <string name="unable_to_process">Unable to process your request</string>
+    <string name="invoices">Invoices</string>
+    <string name="orders">Orders</string>
+    <string name="my_invoices">My Invoices</string>
+    <string name="my_orders">My Orders</string>
+    <string name="payment_history">Payment History</string>
+    <string name="gender_select">Select Gender</string>
+    <string name="unpaid">Unpaid</string>
+    <string name="on_your_address">add your address</string>
+    <string name="height">Height</string>
 
 
     <string-array name="names">

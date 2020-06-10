@@ -10,7 +10,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.MemberPost
-import life.mibo.android.models.product.Products
+import life.mibo.android.models.catalog.Products
 import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Callback

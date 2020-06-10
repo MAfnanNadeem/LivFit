@@ -168,19 +168,25 @@
                     android:id="@+id/ll_quantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/grid_2x"
+                    android:layout_margin="@dimen/grid_1x"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
                     app:layout_constraintStart_toEndOf="@id/tv_product_quantity"
                     app:layout_constraintTop_toBottomOf="@id/tv_product_validity">
 
                     <Button
                         android:id="@+id/btn_minus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:fontFamily="@string/font_sans_serif_black"
                         android:minWidth="0dp"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:background="@drawable/bg_round_button"
+                        android:paddingStart="@dimen/grid_2x"
+                        android:paddingEnd="@dimen/grid_2x"
+                        android:textColor="@color/white"
                         android:text="-"
-                        android:textSize="@dimen/text_size_extra_large" />
+                        android:textSize="@dimen/text_size_large" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_product_quantity_value"
@@ -195,12 +201,15 @@
 
                     <Button
                         android:id="@+id/btn_plus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_round_button"
                         android:fontFamily="@string/font_sans_serif_black"
                         android:minWidth="0dp"
+                        android:layout_margin="@dimen/grid_1x"
                         android:text="+"
-                        android:textSize="@dimen/text_size_extra_large" />
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_large" />
 
                 </LinearLayout>
 
@@ -255,12 +264,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/grid_4x"
-                    android:background="@drawable/login_button_accent"
+                    android:background="@drawable/button_accent_selector"
                     android:text="@string/buy_now"
                     android:textColor="@color/white"
+                    app:layout_constraintBottom_toTopOf="@id/btn_add_cart"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_product_in_stock"
+                    app:layout_goneMarginBottom="@dimen/grid_2x"
                     app:layout_constraintWidth_percent="0.7" />
 
                 <Button
@@ -270,7 +281,7 @@
                     android:layout_margin="@dimen/grid_2x"
                     android:layout_marginTop="@dimen/grid_2x"
                     android:layout_marginBottom="@dimen/grid_2x"
-                    android:background="@drawable/login_button_primary"
+                    android:background="@drawable/button_primary_selector"
                     android:text="@string/add_to_cart"
                     android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"

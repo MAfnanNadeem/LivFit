@@ -11,6 +11,7 @@ package life.mibo.android.models.biometric
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BaseModel
 import life.mibo.android.models.base.BaseResponse
+import java.io.Serializable
 
 class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data) {
 
@@ -82,6 +83,6 @@ class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data)
         var timezone: String?,
         @SerializedName("timezone_type")
         var timezoneType: String?
-    )
+    ) : Serializable
 
 }

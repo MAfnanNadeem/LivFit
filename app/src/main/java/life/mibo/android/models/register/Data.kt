@@ -27,7 +27,9 @@ data class Data(
     @SerializedName("type")
     var type: String?,
     @SerializedName("key")
-    var key: String?
+    var key: String?,
+    @SerializedName("areaCode")
+    var areaCode: String?
 ) {
     @SerializedName("MemberID")
     var memberID: String? = ""

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/3/20 10:14 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/14/20 3:53 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app"
+    android:padding="@dimen/grid_1x">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_invoices"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:background="@drawable/profile_edittext"
+        android:padding="@dimen/grid_2x"
+        android:text="@string/my_orders"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_orders"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:background="@drawable/profile_edittext"
+        android:padding="@dimen/grid_2x"
+        android:text="@string/my_orders"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_invoices" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_payments"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:background="@drawable/profile_edittext"
+        android:padding="@dimen/grid_2x"
+        android:text="@string/payment_history"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_orders" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

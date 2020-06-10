@@ -43,7 +43,7 @@ class ScheduleController(var fragment: ScheduleFragment) {
                 override fun onFailure(call: Call<BookSession>, t: Throwable) {
                     fragment.getDialog()?.dismiss()
                     t.printStackTrace()
-                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+                    Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
                     MiboEvent.log(t)
                 }
 
@@ -91,7 +91,7 @@ class ScheduleController(var fragment: ScheduleFragment) {
             override fun onFailure(call: Call<SearchPrograms>, t: Throwable) {
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
-                Toasty.error(fragment.context!!, fragment.getString(R.string.unable_to_connect))
+                Toasty.error(fragment.requireContext(), fragment.getString(R.string.unable_to_connect))
                     .show()
             }
 
@@ -107,10 +107,10 @@ class ScheduleController(var fragment: ScheduleFragment) {
                         parse(data.data?.programs)
 
                     } else if (data.status.equals("error", true)) {
-                        Toasty.error(fragment.context!!, "${data.errors?.get(0)?.message}").show()
+                        Toasty.error(fragment.requireContext(), "${data.errors?.get(0)?.message}").show()
                     }
                 } else {
-                    Toasty.error(fragment.context!!, R.string.error_occurred).show()
+                    Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
                 }
             }
         })

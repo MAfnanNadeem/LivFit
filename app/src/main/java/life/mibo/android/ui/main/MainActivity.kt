@@ -47,7 +47,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -75,6 +74,7 @@ import life.mibo.android.ui.main.Navigator.Companion.CLEAR_HOME
 import life.mibo.android.ui.main.Navigator.Companion.CONNECT
 import life.mibo.android.ui.main.Navigator.Companion.DISCONNECT
 import life.mibo.android.ui.main.Navigator.Companion.HOME
+import life.mibo.android.ui.main.Navigator.Companion.HOME_DRAWER
 import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
 import life.mibo.android.ui.main.Navigator.Companion.LOGOUT
 import life.mibo.android.ui.main.Navigator.Companion.RXL_COURSE_CREATE
@@ -96,6 +96,7 @@ import life.mibo.android.ui.rxl.create.ReflexCourseCreateFragment
 import life.mibo.android.ui.rxl.impl.CreateCourseAdapter
 import life.mibo.android.utils.Constants
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import life.mibo.hardware.AlarmManager
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
@@ -199,6 +200,7 @@ class MainActivity : BaseActivity(), Navigator {
         return navigation!!
     }
 
+    private var isMember = true
     private fun setNavigationView() {
         getNavigation().setNavigationItemSelectedListener {
             drawerItemClicked(it.itemId)
@@ -217,7 +219,8 @@ class MainActivity : BaseActivity(), Navigator {
             Prefs.get(this@MainActivity).get("user_email")
         navigation?.setCheckedItem(R.id.nav_home)
 
-        if (member.isMember())
+        isMember = member.isMember()
+        if (isMember)
             navigation!!.getHeaderView(0)
                 .findViewById<View?>(R.id.drawer_user_trainer)?.visibility =
                 View.INVISIBLE
@@ -226,7 +229,7 @@ class MainActivity : BaseActivity(), Navigator {
 
         loadImage(
             navigation!!.getHeaderView(0).findViewById<CircleImageView?>(R.id.drawer_user_image),
-            R.drawable.ic_user_test, member.profileImg
+            R.drawable.ic_user_test, member.profileImg, member.isMale()
         )
 
         //navigation.s
@@ -299,17 +302,24 @@ class MainActivity : BaseActivity(), Navigator {
 //        }
     }
 
-    private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
-        if (url == null) {
-            if (iv != null)
-                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
-                    .into(iv)
-            return
-        }
-        url?.let {
-            if (iv != null)
-                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
-        }
+    private fun loadImage(
+        iv: ImageView?,
+        defaultImage: Int,
+        url: String?,
+        male: Boolean
+    ) {
+
+        Utils.loadImage(iv, url, male)
+//        if (url == null) {
+//            if (iv != null)
+//                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+//                    .into(iv)
+//            return
+//        }
+//        url?.let {
+//            if (iv != null)
+//                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+//        }
 //        Maybe.fromCallable {
 //            log("loadImage fromCallable")
 //            var bitmap: Bitmap? = null
@@ -980,16 +990,19 @@ class MainActivity : BaseActivity(), Navigator {
             CONNECT -> {
                 if (data is Device)
                     manager?.connectDevice(data)
+                return
             }
             DISCONNECT -> {
                 if (data is Device)
                     manager?.disconnectDevice(data)
+                return
             }
             SCAN -> {
                 //stopScanning()
                 //manager.stopScanning()
                 if (data is Boolean)
                     startScanning(true, data)
+                return
             }
             HOME -> {
                 if (data != null && data is HomeItem)
@@ -997,12 +1010,16 @@ class MainActivity : BaseActivity(), Navigator {
             }
             CLEAR_HOME -> {
                 popup(R.id.navigation_home)
-                navigation?.setCheckedItem(R.id.nav_home)
+                //navigation?.setCheckedItem(R.id.nav_home)
                 isHome = true
             }
             HOME_VIEW -> {
                 if (data != null && data is Boolean)
                     updateBar(data)
+            }
+            HOME_DRAWER -> {
+                updateDrawerHomeButton()
+                return
             }
             RXL_HOME -> {
                 navigate(0, R.id.navigation_rxl_home)
@@ -1128,6 +1145,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             Navigator.BODY_MEASURE_SUMMARY -> {
+                //todo check popup impact
                 //popup(R.id.navigation_home)
                 var bundle: Bundle? = null
                 if (data is Bundle)
@@ -1140,7 +1158,7 @@ class MainActivity : BaseActivity(), Navigator {
                     loadImage(
                         navigation!!.getHeaderView(0)
                             .findViewById<CircleImageView?>(R.id.drawer_user_image),
-                        R.drawable.ic_user_test, data as String
+                        R.drawable.ic_user_test, data as String, getMember()?.isMale() ?: true
                     )
                     //loadImage()
                 } catch (e: java.lang.Exception) {
@@ -1174,19 +1192,49 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_reschedule, bundle)
             }
             Navigator.SCHEDULE -> {
+                trainerWebView(2)
+                return
+            }
+
+            Navigator.INVOICES -> {
                 var bundle: Bundle? = null
                 if (data is Bundle)
                     bundle = data
-                navigate(
-                    R.id.action_navigation_home_to_schedule,
-                    R.id.navigation_schedule, bundle
-                )
+                navigate(0, R.id.navigation_orders, bundle)
+            }
+            Navigator.ORDERS -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_orders, bundle)
             }
 
             else -> {
                 drawerItemClicked(type)
             }
         }
+    }
+
+    private fun trainerWebView(type: Int) {
+        if (isMember)
+            return
+        navigate(
+            0,
+            R.id.navigation_webview,
+            WebViewFragment.bundle("https://test.mibolivfit.club")
+        )
+        title = "MI.BO World"
+//        navigate(
+//            R.id.action_navigation_home_to_schedule,
+//            R.id.navigation_schedule
+//        )
+//        var bundle: Bundle? = null
+//        if (data is Bundle)
+//            bundle = data
+//        navigate(
+//            R.id.action_navigation_home_to_schedule,
+//            R.id.navigation_schedule, bundle
+//        )
     }
 
     var isFromDialog = false
@@ -1470,10 +1518,8 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigateFragment(R.id.navigation_calories)
             }
             HomeItem.Type.SCHEDULE -> {
-                navigate(
-                    R.id.action_navigation_home_to_schedule,
-                    R.id.navigation_schedule
-                )
+                trainerWebView(3)
+                return
                 //navigateFragment(R.id.navigation_schedule)
             }
 
@@ -1532,11 +1578,16 @@ class MainActivity : BaseActivity(), Navigator {
                 return
             }
             HomeItem.Type.MY_ACCOUNT -> {
-                comingSoon()
+                navigate(0, R.id.navigation_my_account)
+                //comingSoon()
                 return
             }
             HomeItem.Type.MY_SERVICES -> {
-                comingSoon()
+                trainerWebView(4)
+                return
+            }
+            HomeItem.Type.ADD_SERVICE -> {
+                trainerWebView(5)
                 return
             }
             HomeItem.Type.NOTIFICATIONS -> {
@@ -1589,6 +1640,8 @@ class MainActivity : BaseActivity(), Navigator {
         } catch (e: java.lang.Exception) {
             navigate(0, fragmentId)
         }
+        if (fragmentId == R.id.navigation_home)
+            navigation?.setCheckedItem(R.id.nav_home)
     }
 
     private fun saveFirebaseToken(member: Member?) {
@@ -1734,6 +1787,16 @@ class MainActivity : BaseActivity(), Navigator {
         return true
     }
 
+    private fun updateDrawerHomeButton() {
+        log("updateDrawerHomeButton")
+        try {
+            if (navigation?.checkedItem?.itemId != R.id.nav_home)
+                navigation?.setCheckedItem(R.id.nav_home)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        log("updateDrawerHomeButton end")
+    }
 
     override fun onBackPressed() {
         log("onBackPressed")
@@ -1747,6 +1810,7 @@ class MainActivity : BaseActivity(), Navigator {
         // Navigation.findNavController(this, R.id.nav_host_fragment)
         if (Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()) {
             lastId = -1
+            //updateDrawerHomeButton()
             return
         }
         navigation?.setCheckedItem(R.id.nav_home)

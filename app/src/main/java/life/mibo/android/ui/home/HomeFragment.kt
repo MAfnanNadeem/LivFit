@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.android.gms.location.LocationServices
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -92,14 +91,18 @@ class HomeFragment : BaseFragment(), HomeObserver {
         iv_user_pic?.setOnClickListener {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
         }
-        loadImage(iv_user_pic, R.drawable.ic_user_test, member?.profileImg)
+        loadImage(
+            iv_user_pic,
+            member.profileImg,
+            member.isMale()
+        )
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
         setBottomView()
         checkIntro()
         getDashboardApis()
-        //setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
         // if (!isMember)
         //    tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
     }
@@ -218,17 +221,18 @@ class HomeFragment : BaseFragment(), HomeObserver {
             }
     }
 
-    private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
-        if (url == null) {
-            if (iv != null)
-                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
-                    .into(iv)
-            return
-        }
-        url?.let {
-            if (iv != null)
-                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
-        }
+    private fun loadImage(iv: ImageView?, url: String?, male: Boolean) {
+        Utils.loadImage(iv, url, male)
+//        if (url == null) {
+//            if (iv != null)
+//                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+//                    .into(iv)
+//            return
+//        }
+//        url?.let {
+//            if (iv != null)
+//                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+//        }
     }
     private fun loadImage(iv: ImageView, defaultImage: Int) {
         Maybe.fromCallable {
@@ -555,6 +559,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
             controller?.getDashboard()
         }
         isStoped = false
+        navigate(Navigator.HOME_DRAWER, null)
         // videoView?.resume()
         //videoBg()
     }

@@ -68,17 +68,22 @@ class MeasureBodyFragment : BodyBaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        updateNextButton(false)
-        updateSkipButton(false)
+        log("onResume onResume")
+        updateButtons()
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         log("setUserVisibleHint $isVisibleToUser")
         super.setUserVisibleHint(isVisibleToUser)
         if (isVisibleToUser) {
-            updateNextButton(false)
-            updateSkipButton(false)
+            updateButtons()
         }
+    }
+
+    fun updateButtons() {
+        log(" updateButtons()")
+        updateNextButton(false)
+        updateSkipButton(false)
     }
 
     private fun getShapes(male: Boolean): ArrayList<BodyShapeAdapter.Item> {
@@ -86,22 +91,50 @@ class MeasureBodyFragment : BodyBaseFragment() {
         if (male) {
             list.add(
                 BodyShapeAdapter.Item(
-                    1, R.drawable.ic_intro_male_chest, "Chest", "", "cm", 36, 170, 36
+                    1,
+                    R.drawable.ic_intro_male_chest,
+                    getString(R.string.chest),
+                    "",
+                    "cm",
+                    36,
+                    170,
+                    36
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    2, R.drawable.ic_intro_male_waist, "Waist", "", "cm", 36, 146, 36
+                    2,
+                    R.drawable.ic_intro_male_waist,
+                    getString(R.string.waist),
+                    "",
+                    "cm",
+                    36,
+                    146,
+                    36
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    3, R.drawable.ic_intro_male_thigh, "Hips", "", "cm", 50, 150, 50
+                    3,
+                    R.drawable.ic_intro_male_thigh,
+                    getString(R.string.hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    4, R.drawable.ic_intro_male_hip, "High Hip", "", "cm", 50, 150, 50
+                    4,
+                    R.drawable.ic_intro_male_hip,
+                    getString(R.string.high_hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
                 )
             )
 //            list.add(
@@ -117,33 +150,75 @@ class MeasureBodyFragment : BodyBaseFragment() {
         } else {
             list.add(
                 BodyShapeAdapter.Item(
-                    1, R.drawable.ic_intro_female_chest, "Breast", "", "cm", 36, 170, 36
+                    1,
+                    R.drawable.ic_intro_female_chest,
+                    getString(R.string.breast),
+                    "",
+                    "cm",
+                    36,
+                    170,
+                    36
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    2, R.drawable.ic_intro_female_waist, "Waist", "", "cm", 36, 146, 36
+                    2,
+                    R.drawable.ic_intro_female_waist,
+                    getString(R.string.waist),
+                    "",
+                    "cm",
+                    36,
+                    146,
+                    36
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    3, R.drawable.ic_intro_female_thigh, "Hips", "", "cm", 50, 150, 50
+                    3,
+                    R.drawable.ic_intro_female_thigh,
+                    getString(R.string.hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    4, R.drawable.ic_intro_female_hip, "High Hip", "", "cm", 50, 150, 50
+                    4,
+                    R.drawable.ic_intro_female_hip,
+                    getString(R.string.high_hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
                 )
             )
 
             list.add(
                 BodyShapeAdapter.Item(
-                    5, R.drawable.ic_intro_female_wrist, "Wrist", "", "cm", 5, 25, 5
+                    5,
+                    R.drawable.ic_intro_female_wrist,
+                    getString(R.string.wrist),
+                    "",
+                    "cm",
+                    5,
+                    35,
+                    5
                 )
             )
             list.add(
                 BodyShapeAdapter.Item(
-                    6, R.drawable.ic_intro_female_forearm, "Forearm", "", "cm", 5, 25, 5
+                    6,
+                    R.drawable.ic_intro_female_forearm,
+                    getString(R.string.forearm),
+                    "",
+                    "cm",
+                    5,
+                    35,
+                    5
                 )
             )
         }

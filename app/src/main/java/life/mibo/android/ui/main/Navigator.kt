@@ -30,6 +30,9 @@ interface Navigator {
         const val RESCHEDULE = 123;
         const val SCHEDULE = 124;
         const val SELECT_TRAINER_SESSION = 125;
+        const val INVOICES = 126;
+        const val ORDERS = 127;
+        const val HOME_DRAWER = 128;
         const val POST = 201;
         const val LOGOUT = 202;
         const val PIC_UPLOADED = 203;

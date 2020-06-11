@@ -76,9 +76,14 @@ class BMIFragment : BodyBaseFragment() {
         super.setUserVisibleHint(isVisibleToUser)
         if (isVisibleToUser) {
             updateNextButton(false)
-            updateSkipButton(false)
+            updateSkipButton(true, getString(R.string.skip))
             setDefaults()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateSkipButton(true, getString(R.string.skip))
     }
 
     var isHeight = false
@@ -354,7 +359,7 @@ class BMIFragment : BodyBaseFragment() {
                         rulerValuePickerHeight?.setFeetMode(true)
                         rulerValuePickerHeight?.setMinMaxValue(24, 62)
                         rulerValuePickerHeight?.invalidate()
-                        heightUnit = "Ft"
+                        heightUnit = "ft/in"
                         heightType = 3
                         tv_height?.text = "4'0 $heightUnit"
 
@@ -392,7 +397,7 @@ class BMIFragment : BodyBaseFragment() {
     var selectedWeight: Double = 0.0
     var selectedAge = 0
 
-    fun getWeight(): Double {
+    private fun getWeight(): Double {
         //log("getWeight weightType $weightType selectedWeight $selectedWeight")
 //        try {
 //            return tv_weight?.toString()?.replace("[^0-9]".toRegex(), "")?.toDoubleOrNull() ?: 0.0
@@ -404,7 +409,7 @@ class BMIFragment : BodyBaseFragment() {
         return selectedWeight.toDouble()
     }
 
-    fun getHeight(): Double {
+    private fun getHeight(): Double {
         //log("getHeight heightType $heightType selectedHeight $selectedHeight")
 
 //        try {

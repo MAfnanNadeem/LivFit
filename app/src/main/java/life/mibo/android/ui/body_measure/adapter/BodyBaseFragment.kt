@@ -46,15 +46,17 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
             log("BodyBaseFragment updateNextButton ")
             val frg = parentFragment
             log("BodyBaseFragment updateNextButton $frg")
+            if (frg is MeasurementFragment) {
+                frg.updateNext(enable, title)
+                return
+            }
+
             if (frg is MeasurementFragmentDialog) {
                 log("BodyBaseFragment MeasurementFragmentDialog updateNext")
                 frg.updateNext(enable, title)
                 return
             }
-            if (frg is MeasurementFragment) {
-                frg.updateNext(enable, title)
-                return
-            }
+
 
 
             val frg2 = parentFragmentManager?.fragments
@@ -74,16 +76,17 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
 
     }
 
-    fun updateSkipButton(enable: Boolean) {
+    fun updateSkipButton(enable: Boolean, text: String = "") {
         try {
             log("BodyBaseFragment updateSkipButton")
             val frg = parentFragment
-            if (frg is MeasurementFragmentDialog) {
-                frg.updateSkip(enable)
+
+            if (frg is MeasurementFragment) {
+                frg.updateSkip(enable, text)
                 return
             }
 
-            if (frg is MeasurementFragment) {
+            if (frg is MeasurementFragmentDialog) {
                 frg.updateSkip(enable)
                 return
             }
@@ -92,7 +95,7 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
             if (frg2 != null && frg2.size > 0) {
                 for (frg3 in frg2) {
                     if (frg3 is MeasurementFragment) {
-                        frg3.updateSkip(enable)
+                        frg3.updateSkip(enable, text)
                         return
                     }
                 }

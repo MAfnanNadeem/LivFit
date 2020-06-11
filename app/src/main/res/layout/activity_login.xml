@@ -8,27 +8,27 @@
 
 
     <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:src="@drawable/login_bg"
+        android:layout_marginBottom="4dp"
         android:alpha="0.8"
-        android:layout_marginBottom="@dimen/grid_1x"
+        android:scaleType="fitEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/grid_1x"
-        android:scaleType="fitCenter"
-        android:visibility="gone"
-        android:background="@color/background_color_app"
-        android:src="@drawable/login_social_bottom"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_bottom"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginBottom="@dimen/grid_1x"-->
+    <!--        android:scaleType="fitCenter"-->
+    <!--        android:visibility="gone"-->
+    <!--        android:src="@drawable/login_social_bottom"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -91,26 +91,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:id="@+id/et_usr"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:textColorHint="@color/textColor2"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/tv_login">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:singleLine="true"-->
-        <!--                android:layout_margin="2x"-->
-        <!--                android:textColorHint="@color/grey"-->
-        <!--                android:inputType="textEmailAddress"-->
-        <!--                android:background="@drawable/login_edittext"-->
-        <!--                android:hint="@string/email_hint"-->
-        <!--                android:padding="@dimen/grid_1x" />-->
-
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/et_username"
@@ -126,6 +106,7 @@
             android:ems="11"
             android:hint="@string/password_hint"
             android:imeOptions="actionDone"
+            android:paddingEnd="32dp"
             android:inputType="textPassword"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_username" />
@@ -272,6 +253,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_register" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <FrameLayout
+        android:id="@+id/splashLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color_app">
+
+        <ImageView
+            android:id="@+id/splashImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/mibo_livfit_top" />
+
+        <ImageView
+            android:id="@+id/splashImage2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/mibo_livfit_bottom" />
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

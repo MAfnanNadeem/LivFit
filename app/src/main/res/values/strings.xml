@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--    <string name="app_name">Mibo Hexa</string>-->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="app_version">0.1.10</string>
@@ -252,7 +252,7 @@
     <string name="age">Age</string>
     <string name="done">Done</string>
     <string name="choose_your_body_type">Choose your body type</string>
-    <string name="your_body_type">Your body type</string>
+    <string name="your_body_type">Your Body Shape</string>
     <string name="body_type_a">A Type  (pear)</string>
     <string name="body_type_i">I Type  (Rectangle)</string>
     <string name="body_type_x">X Type  (Hourglass)</string>
@@ -304,22 +304,22 @@
     <string name="goal_que_1_desc">Eat and Train for optimum health</string>
     <string name="goal_que_2_desc">Get leaner and increase your stamina</string>
     <string name="goal_que_3_desc">Build muscle strength and flexibility</string>
-<!--    <string name="que_activity_1_title_">Sedentary lifestyle</string>-->
+    <!--    <string name="que_activity_1_title_">Sedentary lifestyle</string>-->
     <string name="que_activity_1_title">LOW</string>
     <string name="que_activity_1_desc">Little or no exercise</string>
-<!--    <string name="que_activity_2_title_">Slightly active lifestyle</string>-->
+    <!--    <string name="que_activity_2_title_">Slightly active lifestyle</string>-->
     <string name="que_activity_2_title">AVERAGE</string>
     <string name="que_activity_2_desc">Light exercise or sports 1–2 days/week</string>
-<!--    <string name="que_activity_3_title_">Moderately active lifestyle</string>-->
+    <!--    <string name="que_activity_3_title_">Moderately active lifestyle</string>-->
     <string name="que_activity_3_title">ACTIVE</string>
     <string name="que_activity_3_desc">Moderate exercise or sports 2–3 days/week</string>
-<!--    <string name="que_activity_4_title_">Very active lifestyle</string>-->
+    <!--    <string name="que_activity_4_title_">Very active lifestyle</string>-->
     <string name="que_activity_4_desc">Hard exercise or sports 4–5 days/week</string>
     <string name="que_activity_4_title">VIGOROUS</string>
-<!--    <string name="que_activity_5_title_">Extra active lifestyle</string>-->
+    <!--    <string name="que_activity_5_title_">Extra active lifestyle</string>-->
     <string name="que_activity_5_title">ATHLETIC</string>
     <string name="que_activity_5_desc">Very hard exercise, physical job or sports 6–7 days/week</string>
-<!--    <string name="que_activity_6_title_">Professional athlete</string>-->
+    <!--    <string name="que_activity_6_title_">Professional athlete</string>-->
     <string name="que_activity_6_title">PROFESSIONAL</string>
     <string name="que_activity_6_desc">Moderate exercise or sports 2–3 days/week</string>
     <string name="back">Back</string>
@@ -413,7 +413,8 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="dob">DOB</string>
     <string name="cm_unit">CM</string>
-    <string name="feet_in_unit">Feet/in</string>
+    <string name="feet_in_unit">Feet/Inches</string>
+    <string name="feet_in_unit_abr">ft/in</string>
     <string name="no_notifications_found">There are no new notifications!</string>
     <string name="confirm">Confirm</string>
     <string name="decline">Decline</string>
@@ -475,6 +476,13 @@
     <string name="unpaid">Unpaid</string>
     <string name="on_your_address">add your address</string>
     <string name="height">Height</string>
+    <string name="chest">Chest</string>
+    <string name="waist">Waist</string>
+    <string name="hips">Hips</string>
+    <string name="high_hips">High Hip</string>
+    <string name="breast">Bust</string>
+    <string name="wrist">Wrist</string>
+    <string name="forearm">Forearm</string>
 
 
     <string-array name="names">

@@ -26,6 +26,10 @@ import life.mibo.android.ui.base.ItemClickListener
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CatalogProductsFragment : BaseFragment() {
@@ -232,12 +236,31 @@ class CatalogProductsFragment : BaseFragment() {
                 return
             name?.text = item.productName
             desc?.text = item.shortForm
-            price?.text = item.unitPrice
+            price?.text = getPrice(item.currency, item.unitPrice?.toDoubleOrNull() ?: 0.0)
             Glide.with(img!!).load(item.image).fallback(R.drawable.ic_default_product)
                 .error(R.drawable.ic_default_product).fitCenter().into(img)
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }
+        }
+
+        var formator: NumberFormat? = null
+        fun getPrice(currency: String?, amount: Double): String {
+            try {
+                if (formator == null) {
+                    //java.text.NumberFormat.getCurrencyInstance()
+                    formator = DecimalFormat.getCurrencyInstance()
+                    formator?.maximumFractionDigits = 2
+                    if (currency != null && currency.isNotEmpty())
+                        formator?.currency = Currency.getInstance(currency)
+                    else formator?.currency = Currency.getInstance("AED")
+                }
+                //Logger.e("getPrice $currency, $amount - " + formator?.format(amount))
+                return formator?.format(amount) ?: "$currency $amount"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return "$currency $amount"
         }
 
     }

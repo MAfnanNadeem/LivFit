@@ -3,6 +3,7 @@ package life.mibo.android.ui.login
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 //import com.twilio.verification.TwilioVerification
 //import com.twilio.verification.external.Via
 import io.reactivex.disposables.Disposable
@@ -15,11 +16,13 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.receiver.SMSBroadcastReceiver
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.core.Logger
 
 
-class RegisterActivity : BaseActivity() {
+class RegisterActivity : AppCompatActivity() {
 
     //SID SK1a9a10e57385098b542fa54f4c6d3a3b
     //SECRET ekHtNKxLLF1yPeqWROHTw1CuCfPHHWUM
@@ -37,7 +40,8 @@ class RegisterActivity : BaseActivity() {
             phoneNumber: String?,
             socialType: String,
             socialKey: String,
-            socialPhoto: String
+            socialPhoto: String,
+            areaCode: String
         )
 
         fun onSendOtpClicked(number: String?)
@@ -90,6 +94,7 @@ class RegisterActivity : BaseActivity() {
         //ccp.registerPhoneNumberTextView(tv_country)
         controller.ccp = ccp
         controller.otpCcp = ccp_otp
+
 
         ccp.setDefaultCountryUsingPhoneCodeAndApply(971)
         ccp.registerPhoneNumberTextView(et_phone_number)
@@ -359,10 +364,10 @@ class RegisterActivity : BaseActivity() {
                 et_password.text?.toString(),
                 et_confirm_password.text?.toString(),
                 et_city.text?.toString(),
-                tv_country.text?.toString(),
+                ccp?.defaultCountryNameCode,
                 tv_dob.text?.toString(),
                 checkbox_terms.isChecked,
-                et_phone_number.text?.toString(), socialType, socialKey, updateMemberId
+                et_phone_number.text?.toString(), socialType, socialKey, updateMemberId, "0"
             )
             return
         }
@@ -373,10 +378,10 @@ class RegisterActivity : BaseActivity() {
             et_password.text?.toString(),
             et_confirm_password.text?.toString(),
             et_city.text?.toString(),
-            tv_country.text?.toString(),
+            ccp?.defaultCountryNameCode,
             tv_dob.text?.toString(),
             checkbox_terms.isChecked,
-            et_phone_number.text?.toString(), socialType, socialKey, socialPhoto
+            et_phone_number.text?.toString(), socialType, socialKey, socialPhoto, "0"
         )
 
     }
@@ -504,6 +509,18 @@ class RegisterActivity : BaseActivity() {
     override fun onBackPressed() {
         if (controller.onBackPressed())
             super.onBackPressed()
+    }
+
+    var mDialog: MyDialog? = null
+
+    fun getDialog(): MyDialog? {
+        if (mDialog == null)
+            mDialog = MyDialog.get(this)
+        return mDialog
+    }
+
+    fun log(msg : String?){
+        Logger.e("RegisterActivity", "$msg")
     }
 
 }

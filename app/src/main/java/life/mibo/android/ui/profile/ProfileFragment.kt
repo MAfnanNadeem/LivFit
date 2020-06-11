@@ -110,7 +110,7 @@ class ProfileFragment : BaseFragment() {
         tv_city?.setText(member.city)
         tv_number?.setText(member.contact)
         tv_country?.setText(member.country)
-        setUserImage(member?.profileImg)
+        setUserImage(member?.profileImg, member.isMale())
 
         tv_change_pwd?.setOnClickListener {
             log("ChangePassword")
@@ -125,10 +125,10 @@ class ProfileFragment : BaseFragment() {
         profileEditable(false)
     }
 
-    private fun setUserImage(profileImg: String?) {
+    private fun setUserImage(profileImg: String?, male: Boolean) {
 
         //userImage?.setImageResource(R.drawable.ic_user_test)
-        loadImage(userImage, R.drawable.ic_user_test, profileImg)
+        Utils.loadImage(userImage, profileImg, male)
 //        constraintLayout1?.setBackgroundColor(
 //            ContextCompat.getColor(
 //                requireContext(),
@@ -234,16 +234,16 @@ class ProfileFragment : BaseFragment() {
 //    }
 
     private fun loadImage(iv: ImageView?, defaultImage: Int, url: String?) {
-        if (url == null) {
-            if (iv != null)
-                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
-                    .into(iv)
-            return
-        }
-        url?.let {
-            if (iv != null)
-                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
-        }
+//        if (url == null) {
+//            if (iv != null)
+//                Glide.with(this).load(defaultImage).error(defaultImage).fallback(defaultImage)
+//                    .into(iv)
+//            return
+//        }
+//        url?.let {
+//            if (iv != null)
+//                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
+//        }
     }
 
     private fun loadImage(iv: ImageView, defaultImage: Int) {

@@ -107,14 +107,15 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         phoneNumber: String?,
         socialType: String,
         socialKey: String,
-        socialPhoto: String
+        socialPhoto: String,
+        areaCode: String
     ) {
         //context.log("onRegisterClicked $firstName, $lastName, $email, $password, $cPassword, $city, $dob, $gender, $phoneNumber")
         //updateNumber(1)
         validate(
             firstName, lastName, email,
             password, cPassword, city,
-            country, dob, checkBox, phoneNumber, socialType, socialKey, socialPhoto
+            country, dob, checkBox, phoneNumber, socialType, socialKey, socialPhoto, areaCode
         )
     }
 
@@ -260,7 +261,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         phoneNumber: String?,
         socialType: String,
         socialKey: String,
-        socialPhoto: String
+        socialPhoto: String,
+        areaCode: String
     ) {
         if (firstName.isNullOrEmpty()) {
             error(getString(R.string.enter_fname))
@@ -304,6 +306,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             error(getString(R.string.enter_number))
             return
         }
+//        if (areaCode.isNullOrEmpty()) {
+//            error(getString(R.string.enter_area_number))
+//            return
+//        }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toasty.warning(context, getString(R.string.email_not_valid)).show()
@@ -334,7 +340,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 ccp!!.selectedCountryCodeWithPlus,
                 phoneNumber,
                 socialType,
-                socialKey
+                socialKey, areaCode
             )
             register(RegisterMember(data))
 
@@ -450,7 +456,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         phoneNumber: String?,
         socialType: String,
         socialKey: String,
-        memberId: String
+        memberId: String,
+        areaCode: String
     ) {
         if (firstName.isNullOrEmpty()) {
             error(getString(R.string.enter_fname))
@@ -494,6 +501,10 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
             error(getString(R.string.enter_number))
             return
         }
+//        if (areaCode.isNullOrEmpty()) {
+//            error(getString(R.string.enter_area_number))
+//            return
+//        }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toasty.warning(context, getString(R.string.email_not_valid)).show()
@@ -524,7 +535,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 ccp!!.selectedCountryCodeWithPlus,
                 phoneNumber,
                 socialType,
-                socialKey
+                socialKey, areaCode
             )
             data.memberID = memberId
             context.log("registerInvitedMember memberId $memberId")
@@ -670,7 +681,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 context.getDialog()?.dismiss()
                 val data = response.body()
                 if (data == null) {
-                    error(getString(R.string.error_occurred))
+                    error(getString(R.string.otp_not_sent))
                     return
                 }
                 when {
@@ -842,8 +853,11 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     }
 
     fun showGender() {
-        val genders = arrayOf("Male", "Female")
-        AlertDialog.Builder(context).setTitle("Select Gender")
+        val genders = arrayOf(
+            context.getString(R.string.gender_male),
+            context.getString(R.string.gender_female)
+        )
+        AlertDialog.Builder(context).setTitle(context.getString(R.string.gender_select))
             .setItems(genders) { _, which ->
                 if (which == 0)
                     gender = "Male"

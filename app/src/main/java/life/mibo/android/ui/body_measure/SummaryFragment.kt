@@ -61,12 +61,12 @@ class SummaryFragment : BaseFragment() {
         val fab = view?.findViewById<View?>(R.id.fab_add)
         fab?.setOnClickListener {
             //Toasty.snackbar(it, "clicked")
-            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+            navigate(Navigator.BODY_MEASURE, null)
         }
     }
 
     override fun onPlusClicked(): Boolean {
-        navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+      //  navigate(Navigator.BODY_MEASURE, null)
        // showMeasureDialog()
         return false
     }
@@ -583,7 +583,7 @@ class SummaryFragment : BaseFragment() {
                             }
                             isFromDialog = true
                             //showMeasureDialog()
-                            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE, null)
+                            navigate(Navigator.BODY_MEASURE, null)
                             return
 
                         } else {

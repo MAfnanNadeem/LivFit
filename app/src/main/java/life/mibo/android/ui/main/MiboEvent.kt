@@ -9,9 +9,12 @@ package life.mibo.android.ui.main
 
 import android.content.Context
 import android.os.Bundle
+import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import life.mibo.android.core.Prefs
+import java.util.*
 
 object MiboEvent {
 
@@ -19,6 +22,11 @@ object MiboEvent {
 
     fun init(context: Context) {
         firebase = FirebaseAnalytics.getInstance(context)
+        try {
+            firebase.setUserId(Prefs.get(context).memberId)
+           // firebase.setUserProperty(FirebaseAnalytics.UserProperty.SIGN_UP_METHOD)
+        } catch (e: java.lang.Exception) {
+        }
     }
 
     fun pageEvent(userName: String, userId: String, pageName: String) {
@@ -74,6 +82,12 @@ object MiboEvent {
         post("mibo_event", bundle)
     }
 
+    fun event(type: String, tag: String, value: String?) {
+        val bundle = Bundle()
+        bundle.putString(tag, value)
+        post(type, bundle)
+    }
+
     private fun post(type: String, bundle: Bundle?) {
         try {
             firebase.logEvent(type, bundle)
@@ -113,6 +127,16 @@ object MiboEvent {
     fun fbLog(context: Context, event: String) {
         try {
             AppEventsLogger.newLogger(context).logEvent(event)
+        } catch (e: Exception) {
+            log(e)
+        }
+    }
+
+    fun fbPurchase(context: Context, price: Double, currency: String?) {
+        try {
+            val bundle = Bundle()
+            bundle.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, currency)
+            AppEventsLogger.newLogger(context).logEvent(AppEventsConstants.EVENT_NAME_PURCHASED, price, bundle)
         } catch (e: Exception) {
             log(e)
         }

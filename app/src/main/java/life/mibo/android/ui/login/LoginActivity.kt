@@ -4,8 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_login.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
@@ -14,13 +19,14 @@ import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import java.util.concurrent.TimeUnit
 
 
 class LoginActivity : BaseActivity() {
 
     interface Listener {
         fun onCreate()
-        fun onLogin(user: String, password: String)
+        fun onLogin(user: String, password: String, autoLogin: Boolean)
         fun onRegister()
         fun onForgetPassword()
         fun onStop()
@@ -32,6 +38,8 @@ class LoginActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        log("onCreate")
+        setSplash()
         controller = LoginController(this)
 
         btn_login?.setOnClickListener {
@@ -97,14 +105,16 @@ class LoginActivity : BaseActivity() {
         // debug()
 
         if (Utils.isConnected(this)) {
-             controller.autoLogin()
+            isAutologin = controller.autoLogin()
+            log("autoLogin")
         } else {
             Toasty.snackbar(btn_register, R.string.unable_to_connect)
         }
         if (DEBUG) {
+            log("DEBUG MODE")
             btn_login?.setOnLongClickListener {
                //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")
-                controller.onLogin("sumeetgehi@gmail.com", "123")
+                controller.onLogin("sumeet.kumar@mibo.life", "123Qwe@@", false)
                 //controller.onLogin("alisher@mibo.life", "123456")
                 return@setOnLongClickListener true
             }
@@ -124,8 +134,9 @@ class LoginActivity : BaseActivity() {
                     Toasty.snackbar(btn_register, getString(R.string.auth_error))
                 }
             } else {
-                controller?.onSocialLogin(type, response)
+                controller?.onSocialLogin(type, response, false)
             }
+            log("Social toast")
         })
 
         btn_facebook?.setOnClickListener {
@@ -146,6 +157,48 @@ class LoginActivity : BaseActivity() {
 
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
        // videoBg()
+    }
+
+    var isAutologin = false
+    private fun setSplash() {
+        val anim = AnimationUtils.loadAnimation(this, R.anim.slide_image_from_right)
+        anim.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                stopAnim()
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+
+            }
+
+        })
+        splashLayout?.visibility = View.VISIBLE
+        splashImage.animation = AnimationUtils.loadAnimation(this, R.anim.slide_image_from_left)
+        splashImage2.animation = anim
+    }
+
+    fun stopAnim() {
+        Single.just("0").delay(300, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess {
+                if (!isAutologin)
+                    splashLayout?.visibility = View.GONE
+            }.doOnError {
+                if (!isAutologin)
+                    splashLayout?.visibility = View.GONE
+            }.subscribe()
+
+    }
+
+    fun hideSplashView() {
+        runOnUiThread {
+            splashImage?.clearAnimation()
+            splashImage2?.clearAnimation()
+            splashLayout?.visibility = View.GONE
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -181,7 +234,7 @@ class LoginActivity : BaseActivity() {
             return
         }
 
-        controller.onLogin(et_username?.text.toString(), et_password?.text.toString())
+        controller.onLogin(et_username?.text.toString(), et_password?.text.toString(), false)
     }
 
     fun debug() {
@@ -192,6 +245,7 @@ class LoginActivity : BaseActivity() {
     }
 
     fun clear(){
+        log("clear db")
         Prefs.get(this).clear()
         Database.getInstance(this).clearAll()
     }

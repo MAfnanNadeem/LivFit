@@ -33,7 +33,13 @@ data class HomeItem(
         imageRes = image
     }
 
-    constructor(title: String, header: String = "",  type: Type, icon: Int = 0, image: Int = 0) : this(
+    constructor(
+        title: String,
+        header: String = "",
+        type: Type,
+        icon: Int = 0,
+        image: Int = 0
+    ) : this(
         0,
         title,
         0,
@@ -57,7 +63,10 @@ data class HomeItem(
     var updateTitle = false
 
     enum class Type {
-        HEART, WEIGHT, CALORIES, PROFILE, SERVICES, PROFILE_UPLOAD, CALENDAR, PROGRAMS, EXERCISE, RXL, BOOSTER_SCAN, WEATHER, RXL_SCAN, TILES, FLOOR, UNKNOWN, ADD, SCHEDULE, STEPS, RXL_TEST, MEASURE, MY_ACCOUNT, MY_SERVICES, MEASURE_NEW, CENTER_BUTTON, NOTIFICATIONS
+        HEART, WEIGHT, CALORIES, PROFILE, SERVICES, PROFILE_UPLOAD, CALENDAR,
+        PROGRAMS, EXERCISE, RXL, BOOSTER_SCAN, WEATHER, RXL_SCAN, TILES, FLOOR,
+        UNKNOWN, ADD, ADD_SERVICE, SCHEDULE, STEPS, RXL_TEST, MEASURE, MY_ACCOUNT,
+        MY_SERVICES, MEASURE_NEW, CENTER_BUTTON, NOTIFICATIONS
     }
 
     fun bind(view: ViewGroup) {

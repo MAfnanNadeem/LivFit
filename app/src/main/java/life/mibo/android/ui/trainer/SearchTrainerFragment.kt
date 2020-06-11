@@ -205,9 +205,12 @@ class SearchTrainerFragment : BaseFragment() {
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
         fun bind(item: Professional, listener: ItemClickListener<Professional>?) {
-            if (item.avatar != null)
-                Glide.with(itemView).load(item.avatar).error(R.drawable.ic_user_test).fitCenter()
+            if (item.avatar != null) {
+                var def =
+                    if (item.gender?.toLowerCase() == "male") R.drawable.ic_user_male else R.drawable.ic_user_female
+                Glide.with(itemView).load(item.avatar).error(def).fallback(def).fitCenter()
                     .into(img!!)
+            }
             name?.text = item.name
             desc?.text = item.designation
             info?.text = "${item.city}, ${item.country}"

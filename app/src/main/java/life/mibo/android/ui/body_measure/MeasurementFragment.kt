@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
@@ -30,6 +31,7 @@ import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
+import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import retrofit2.Call
 import retrofit2.Response
@@ -50,6 +52,8 @@ class MeasurementFragment : BaseFragment() {
     private var viewModel: MeasureViewModel? = null
 
 
+
+    var viewPagerAdapter : PagerAdapter? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //adapter = BodyAdapter(ArrayList<BodyAdapter.Item>(), 0)
@@ -63,14 +67,15 @@ class MeasurementFragment : BaseFragment() {
         //viewPager.adapter = PageAdapter(getPages(), activity!!.supportFragmentManager, lifecycle)
         viewPager?.setPagingEnabled(false)
         viewPager?.offscreenPageLimit = 1
-        viewPager.adapter = PagerAdapter(getPages(), childFragmentManager)
+        viewPagerAdapter = PagerAdapter(getPages(), childFragmentManager)
+        viewPager.adapter = viewPagerAdapter
         // viewPager.isUserInputEnabled = false;
         //viewPager?.setPageTransformer(PageTransformation())
         //tabLayout.setupWithViewPager(viewPager2)
         //controller.setRecycler(recyclerView)
 
         tv_skip?.setOnClickListener {
-            viewPager?.currentItem = --frg
+            skipClicked()
         }
 
         imageNext?.setOnClickListener {
@@ -149,10 +154,13 @@ class MeasurementFragment : BaseFragment() {
     }
 
     @Synchronized
-    fun updateSkip(enable: Boolean) {
-        log("parentFragment updateNext $enable")
+    fun updateSkip(enable: Boolean, title: String) {
+        log("parentFragment updateSkip $enable")
         if (enable) {
             tv_skip.visibility = View.VISIBLE
+            if (title?.isEmpty())
+                tv_skip?.text = getString(R.string.back)
+            else tv_skip?.text = title
         } else {
             tv_skip.visibility = View.INVISIBLE
         }
@@ -187,6 +195,14 @@ class MeasurementFragment : BaseFragment() {
 
     var frg = 1;
     var lastFrg = 0;
+    private fun skipClicked() {
+        if ("skip" == tv_skip?.text?.toString()?.toLowerCase()) {
+            navigate(Navigator.CLEAR_HOME, null)
+            return
+        }
+        viewPager?.currentItem = --frg
+    }
+
     private fun nextClicked() {
         // startActivity(Intent(activity, TestActivity::class.java))
         //log("nextClicked $frg")
@@ -197,7 +213,15 @@ class MeasurementFragment : BaseFragment() {
         }
         viewPager?.currentItem = frg++
         //log("nextClicked2 $frg")
+       // isNextClickable()
+    }
 
+    private fun isNextClickable() : Boolean {
+        log("isNextClickable")
+        viewPagerAdapter?.getItemCount()
+
+
+        return false
     }
 
     // for ViewPager2

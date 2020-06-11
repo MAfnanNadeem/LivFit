@@ -57,7 +57,8 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     // SocialHelper 200 :: {"id":"100833147217416230443","displayName":"Sumit Raj","email":"raj8xm@gmail.com","photoUrl":"https:\/\/lh3.googleusercontent.com\/DialogListener-\/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg","familyName":"Raj","givenName":"Sumit"}
     //SocialHelper 100 :: {"id":"3174109019295426","first_name":"Sumeet","last_name":"Gehi","email":"sumeetgehi@gmail.com"} -- false
-    fun onSocialLogin(code: Int, bundle: Bundle) {
+    fun onSocialLogin(code: Int, bundle: Bundle, autoLogin: Boolean) {
+        // context.log(" - onSocialLogin $code")
         val email = bundle.getString("email")
         val pwd = bundle.getString("id")
         if (email == null || pwd == null) {
@@ -75,7 +76,11 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 ""
             }
         }
-        context.getDialog()?.show()
+        context.log(" - onSocialLogin socialType $socialType")
+        if (socialType.isEmpty())
+            return
+        if (!autoLogin)
+            context.getDialog()?.show()
         API.request.getApi().socialLoginUser(SocialLoginUser(email, pwd, socialType))
             .enqueue(object : Callback<LoginResponse> {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
@@ -83,6 +88,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                     t.printStackTrace()
                     Toasty.error(context, R.string.unable_to_connect).show()
                     // if(MiboApplication.DEBUG)
+                    context?.hideSplashView()
                     //     loginSucceed()
                 }
 
@@ -94,7 +100,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
                     val data = response.body()
                     if (data != null) {
-                        if (data.status.equals("success", true)) {
+                        if (data.isSuccess()) {
                             save(email, pwd, "$code", bundle)
                             Observable.just("").observeOn(Schedulers.newThread()).doOnComplete {
                                 Database.getInstance(context).memberDao()
@@ -112,6 +118,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
                             loginSucceed()
                         } else if (data.status.equals("error", true)) {
+                            context?.hideSplashView()
                             onRegister(bundle, code)
                             // Toasty.error(context, "${data.errors?.get(0)?.message}").show()
                         }
@@ -122,7 +129,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             })
     }
 
-    override fun onLogin(user: String, password: String) {
+    override fun onLogin(user: String, password: String, autoLogin: Boolean) {
         //var usr = user;
        // var pwd = password;
 //        if (BuildConfig.DEBUG && usr.isEmpty() && pwd.isEmpty()) {
@@ -147,12 +154,14 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             return
         }
 
-        context.getDialog()?.show()
+        if (!autoLogin)
+            context.getDialog()?.show()
         API.request.getApi().login(LoginUser(user, password)).enqueue(object : Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 context.getDialog()?.dismiss()
                 t.printStackTrace()
                 Toasty.error(context, R.string.unable_to_connect).show()
+                context?.hideSplashView()
                // if(MiboApplication.DEBUG)
                //     loginSucceed()
             }
@@ -192,9 +201,11 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
                         loginSucceed()
                     } else if (data.status.equals("error", true)) {
+                        context?.hideSplashView()
                         Toasty.error(context, "${data.errors?.get(0)?.message}").show()
                     }
                 } else {
+                    context?.hideSplashView()
                     Toasty.error(context, R.string.error_occurred).show()
                 }
             }
@@ -220,6 +231,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
     fun autoLogin(): Boolean {
         try {
             val prefs = Prefs.getEncrypted(context)
+            //context.log(" - autoLogin")
             //prefs.create()
             prefs.initCipher()
             val isLogin = prefs.get("login_enable", "false", true)
@@ -227,18 +239,30 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
             val pwd = prefs.get("user_password", "", true)
             val social = prefs.get("user_social", "2", true)
             if (java.lang.Boolean.parseBoolean(isLogin) && user != null && pwd != null) {
-                val i = social!!.toInt()
+                val i = getInt(social)
+                //context.log(" - autoLogin social i $i")
                 if (i == 100 || i == 200) {
-                    // onSocialLogin(i, Bundle())
+                    val bundle = Bundle()
+                    bundle.putString("email", user)
+                    bundle.putString("id", pwd)
+                    onSocialLogin(i, bundle, true)
                     return true;
                 }
-                onLogin(user, pwd)
+                onLogin(user, pwd, true)
                 return true
             }
         } catch (e: Exception) {
             MiboEvent.log(e)
         }
         return false
+    }
+
+    fun getInt(i: String?): Int {
+        try {
+            return i!!.toInt()
+        } catch (e: java.lang.Exception) {
+            return 0
+        }
     }
 
     private fun loginSucceed() {

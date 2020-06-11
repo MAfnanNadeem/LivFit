@@ -508,13 +508,17 @@ public class Utils {
     public static void loadImage(ImageView imageView, String url, boolean genderMale) {
         if (imageView == null)
             return;
-        if (url != null && url.length() > 0) {
-            Glide.with(imageView).load(url).fitCenter().error(R.drawable.ic_user_test).into(imageView);
-        } else {
-            if (genderMale)
-                imageView.setImageResource(R.drawable.ic_user_test);
-            else imageView.setImageResource(R.drawable.ic_user_test);
+        try {
+            int def = genderMale ? R.drawable.ic_user_male : R.drawable.ic_user_female;
+            if (url != null && url.length() > 0) {
+                Glide.with(imageView).load(url).fitCenter().error(def).fallback(def).into(imageView);
+            } else {
+                imageView.setImageResource(def);
+            }
+        } catch (Exception e) {
+
         }
+
     }
 
     public static void expand(final View v) {

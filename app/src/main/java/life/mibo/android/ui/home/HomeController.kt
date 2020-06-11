@@ -525,7 +525,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 "",
                 HomeItem.Type.CALENDAR,
                 R.drawable.ic_dashboard_calendar,
-                R.drawable.dashboard_item_bg_2
+                R.drawable.dashboard_item_bg_12
             )
         )
 //        list.add(
@@ -568,14 +568,14 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 weather + " " + 0x00B0.toChar(),
                 HomeItem.Type.WEATHER,
                 R.drawable.ic_dashboard_weather,
-                R.drawable.dashboard_item_bg_3
+                R.drawable.dashboard_item_bg_10
             )
         )
 
         list.add(
             HomeItem(
-                fragment.getString(R.string.add_product), "",
-                HomeItem.Type.ADD, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
+                fragment.getString(R.string.create_service), "",
+                HomeItem.Type.ADD_SERVICE, R.drawable.ic_add_circle_24dp, R.drawable.dashboard_item_bg_8
             )
         )
 //

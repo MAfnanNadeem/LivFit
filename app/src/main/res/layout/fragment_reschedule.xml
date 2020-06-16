@@ -28,7 +28,7 @@
         android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
         android:drawableTint="@color/white"
         android:textColor="@color/textColor"
-        android:fontFamily="@string/font_sans_serif_black"
+        android:fontFamily="@string/font_roboto_black"
         android:textSize="18sp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"

@@ -36,6 +36,7 @@ import life.mibo.android.models.session.RescheduleMemberSession
 import life.mibo.android.models.session.SessionDetails
 import life.mibo.android.models.session.SessionReport
 import life.mibo.android.models.trainer.*
+import life.mibo.android.models.user_details.UpdateMemberDetails
 import life.mibo.android.models.user_details.UserDetails
 import life.mibo.android.models.user_details.UserDetailsPost
 import life.mibo.android.models.verify_otp.VerifyOTP
@@ -216,6 +217,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("memberDetails")
         fun userDetails(@Body data: UserDetailsPost): Call<UserDetails>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("updateMemberDetails")
+        fun updateMemberDetails(@Body data: UpdateMemberDetails): Call<ResponseData>
 
 //        @Headers("Accept: application/json", "Content-Type: application/json")
 //        @POST("userDetails")

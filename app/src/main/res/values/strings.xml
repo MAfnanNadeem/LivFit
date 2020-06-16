@@ -1,7 +1,35 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!--    <string name="app_name">Mibo Hexa</string>-->
+    <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="app_version">0.1.10</string>
+    <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
+    <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="numbers_only">0123456789</string>
+    <string name="play_store_url">http://play.google.com/store/apps/details?id=</string>
+    <string name="dummy_name">Sumeet Kumar</string>
+    <string name="dummy_email">example@mibo.life</string>
+    <string name="facebook_app_id">281412099702866</string>
+    <string name="fb_login_protocol_scheme">fb281412099702866</string>
+    <string name="google_app_id_key">ABC</string>
+    <string name="twitter_app_id">ABC</string>
+    <string name="twitter_app_secret">ABC</string>
+    <string name="instagram_app_id">ABC</string>
+    <string name="context_error">mContext should be an instanceof Activity.</string>
+
+    <string name="font_roboto_black">sans-serif-black</string>
+    <string name="font_roboto_medium">sans-serif-medium</string>
+    <string name="font_roboto_regular">sans-serif</string>
+    <string name="font_roboto_light">sans-serif-light</string>
+    <string name="font_roboto">sans-serif-black</string>
+    <string name="font_roboto_condensed">sans-serif-condensed</string>
+    <string name="font_sans_serif">sans-serif</string>
+
+    <!--  DON NOT TRANSLATE END  -->
+
+    <string name="unable_to_connect">Unable to connect</string>
+    <string name="error_occurred">An error occurred</string>
+
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -9,11 +37,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="close">Close</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
@@ -40,10 +65,8 @@
     <string name="confirm_password_not_matched">Password does not match the confirm password</string>
     <string name="password_requirement2">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
     <string name="password_requirement">Passwords must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special character.</string>
-    <string name="error_occurred">An error occurred</string>
     <string name="otp_not_sent">Unable to send OTP</string>
     <string name="scan_devices">Scan Devices</string>
-    <string name="unable_to_connect">Unable to connect</string>
     <string name="logout">Logout</string>
     <string name="registered">Successfully Registered</string>
     <string name="otp_sent">OTP Code sent successfully</string>
@@ -63,7 +86,6 @@
     <string name="stop">Stop</string>
     <string name="start">Start</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="send">Send</string>
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
@@ -78,8 +100,6 @@
     <string name="three_pods_required">Please connect at least 3 Reaction Lights</string>
     <string name="forgot_pwd"><u>Forgot Password?</u></string>
     <string name="click_here"> <u>Click Here</u> </string>
-    <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
-    <string name="numbers_only">0123456789</string>
     <string name="accept_terms_of_agreement"><u>I accept the Terms of Agreement</u></string>
     <string name="terms_of_agreement">Terms of Agreement</string>
     <string name="enter_your_otp">Enter your OTP</string>
@@ -228,7 +248,6 @@
     <string name="presets">Presets</string>
     <string name="_6_channels">6 Channels</string>
     <string name="start_session">Start Session</string>
-    <string name="sumeet">Sumeet Kumar</string>
     <string name="current_password"><small>Current Password</small></string>
     <string name="new_password"><small>New Password</small></string>
     <string name="confirm_password"><small>Confirm Password</small></string>
@@ -259,10 +278,14 @@
     <string name="body_type_o">O Type  (Apple)</string>
     <string name="body_type_v">V Type  (Inverted triangle)</string>
     <string name="your_biometrics_summary">Your Biometrics Summary</string>
-    <string name="what_is_goal">What is Goal ?</string>
+    <string name="what_is_goal">Fitness Goal ?</string>
     <string name="what_is_physical">Select Your Physical Activity</string>
     <string name="meter_square">m²</string>
     <string name="kg_unit">Kg</string>
+    <string name="lbs_unit">lbs</string>
+    <string name="cm_unit">CM</string>
+    <string name="feet_in_unit">Feet/Inches</string>
+    <string name="feet_in_unit_abr">ft/in</string>
     <string name="bmp_unit">BPM</string>
     <string name="feet_square">ft²</string>
     <string name="ffmi_unit">kg/m²</string>
@@ -299,11 +322,15 @@
     <string name="faq">FAQs</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="goal_que_1_title">Be healthier</string>
-    <string name="goal_que_2_title">Lose weight</string>
+    <string name="goal_que_2_title">Weight Loss</string>
     <string name="goal_que_3_title">Gain weight</string>
+    <string name="goal_que_4_title">Toning</string>
+    <string name="goal_que_5_title">Performance Enhancement</string>
     <string name="goal_que_1_desc">Eat and Train for optimum health</string>
     <string name="goal_que_2_desc">Get leaner and increase your stamina</string>
     <string name="goal_que_3_desc">Build muscle strength and flexibility</string>
+    <string name="goal_que_4_desc">-----</string>
+    <string name="goal_que_5_desc">-----</string>
     <!--    <string name="que_activity_1_title_">Sedentary lifestyle</string>-->
     <string name="que_activity_1_title">LOW</string>
     <string name="que_activity_1_desc">Little or no exercise</string>
@@ -338,28 +365,21 @@
     <string name="create_new_account">Create  New  Account</string>
 
     <!--  SOCIAL  -->
-    <string name="facebook_app_id">281412099702866</string>
-    <string name="fb_login_protocol_scheme">fb281412099702866</string>
-    <string name="google_app_id_key">ABC</string>
-    <string name="twitter_app_id">ABC</string>
-    <string name="twitter_app_secret">ABC</string>
-    <string name="instagram_app_id">ABC</string>
     <string name="facebook_logout_error">Facebook logout failed</string>
     <string name="facebook_request_cancel">Facebook request cancel</string>
     <string name="facebook_login_error">Facebook login failed</string>
-    <string name="context_error">mContext should be an instanceof Activity.</string>
     <string name="google_login_success">Google account login successfully</string>
     <string name="google_logout_success">Google account logout successfully</string>
     <string name="general_error">Something went wrong</string>
     <string name="auth_error">Authentication Error</string>
     <string name="linkedin_request_cancel">LinkedIn request cancel</string>
     <string name="create_your_profile">CREATE YOUR PROFILE</string>
-    <string name="update_your_profile2">PLEASE UPDATE YOUR PROFILE</string>
     <string name="update_your_profile">UPDATE YOUR PROFILE</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="verify">VERIFY</string>
     <string name="upload">Upload</string>
     <!-- SOCIAL END -->
+
     <string name="communicate">Communicate</string>
     <string name="independent_professional">Independent Professional</string>
     <string name="remember_password">Remember Password?</string>
@@ -376,7 +396,7 @@
     <string name="coming_soon">Coming Soon</string>
     <string name="professional_name">Professional Name</string>
     <string name="name_profession"><small> Name/Profession</small> </string>
-    <string name="no_professionals">No Professionals found</string>
+    <string name="no_professionals">Thank you for your interest! No Professionals have registered yet.</string>
     <string name="search_services">Services</string>
     <string name="search_professionals">Search Professionals</string>
     <string name="invite_me">Invite Me</string>
@@ -389,11 +409,6 @@
     <string name="search_products">Search Products</string>
     <string name="book">Book</string>
     <string name="reschedule">Reschedule</string>
-    <string name="font_sans_serif_black">sans-serif-black</string>
-    <string name="font_sans_serif_medium">sans-serif-medium</string>
-    <string name="font_roboto">sans-serif-black</string>
-    <string name="font_sans_serif">sans-serif</string>
-    <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="schedules">Schedules</string>
     <string name="checkout">Checkout</string>
     <string name="full_name"><small>Full Name</small></string>
@@ -412,9 +427,7 @@
     <string name="save_profile">Save Profile</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="dob">DOB</string>
-    <string name="cm_unit">CM</string>
-    <string name="feet_in_unit">Feet/Inches</string>
-    <string name="feet_in_unit_abr">ft/in</string>
+    <string name="dob_hint"><small>Date Of Birth</small></string>
     <string name="no_notifications_found">There are no new notifications!</string>
     <string name="confirm">Confirm</string>
     <string name="decline">Decline</string>
@@ -484,7 +497,21 @@
     <string name="wrist">Wrist</string>
     <string name="forearm">Forearm</string>
 
+    <string name="booster_no_response">Connected Device does not responding!</string>
+    <string name="booster_inactive">Connected device is inactive</string>
+    <string name="completed">Completed</string>
+    <string name="select_weight">Please select weight</string>
+    <string name="select_height">Please select height</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="account_profile">Account Profile</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="password_information">Security</string>
+    <string name="profile_update">Update Profile</string>
+    <string name="not_editable">Not Editable!</string>
+    <string name="profile_updated">Profile successfully updated</string>
 
+
+    <!-- customer reviews -->
     <string-array name="names">
         <item>Terrible</item>
         <item>Bad</item>

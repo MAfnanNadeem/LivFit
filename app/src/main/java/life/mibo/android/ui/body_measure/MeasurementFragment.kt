@@ -15,11 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.fragment.app.findFragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.android.synthetic.main.fragment_body_measurement.*
 import life.mibo.android.R
@@ -29,6 +26,7 @@ import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
+import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
@@ -39,6 +37,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.pow
 import kotlin.math.roundToInt
+
 
 class MeasurementFragment : BaseFragment() {
 
@@ -204,38 +203,47 @@ class MeasurementFragment : BaseFragment() {
     }
 
     private fun nextClicked() {
+        if (isNextClickable()) {
+            if ("finish" == tv_continue?.text?.toString()?.toLowerCase()) {
+                saveBiometric()
+                //navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE_SUMMARY, null)
+                return
+            }
+            viewPager?.currentItem = frg++
+            //log("nextClicked2 $frg")
+            //isNextClickable()
+        }
         // startActivity(Intent(activity, TestActivity::class.java))
         //log("nextClicked $frg")
-        if ("finish" == tv_continue?.text?.toString()?.toLowerCase()) {
-            saveBiometric()
-            //navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE_SUMMARY, null)
-            return
-        }
-        viewPager?.currentItem = frg++
-        //log("nextClicked2 $frg")
-       // isNextClickable()
     }
 
     private fun isNextClickable() : Boolean {
         log("isNextClickable")
-        viewPagerAdapter?.getItemCount()
-
-
-        return false
+        viewPager?.currentItem
+        val page: Fragment? =
+            childFragmentManager.findFragmentByTag("android:switcher:" + R.id.viewPager + ":" + viewPager?.currentItem)
+        log("isNextClickable page is $page")
+        if (page != null && page is BodyBaseFragment) {
+            return page.isNextClickable()
+        }
+        // if (viewPager?.currentItem == 0 && page != null) {
+        //  (page as BMIFragment)
+        //}
+        return true
     }
 
     // for ViewPager2
-    class PageAdapter(val list: ArrayList<Fragment>, fa: FragmentManager, lifecycle: Lifecycle) :
-        FragmentStateAdapter(fa, lifecycle) {
-        //constructorfm: FragmentManager) : this(fm)
-        override fun getItemCount(): Int = list.size
-
-        override fun createFragment(position: Int): Fragment {
-            if (position < itemCount)
-                return list[position]
-            return MeasurementFragment()
-        }
-    }
+//    class PageAdapter(val list: ArrayList<Fragment>, fa: FragmentManager, lifecycle: Lifecycle) :
+//        FragmentStateAdapter(fa, lifecycle) {
+//        //constructorfm: FragmentManager) : this(fm)
+//        override fun getItemCount(): Int = list.size
+//
+//        override fun createFragment(position: Int): Fragment {
+//            if (position < itemCount)
+//                return list[position]
+//            return MeasurementFragment()
+//        }
+//    }
 
     class PagerAdapter(val list: ArrayList<Fragment>, fa: FragmentManager) :
         FragmentPagerAdapter(fa, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -256,6 +264,10 @@ class MeasurementFragment : BaseFragment() {
 
         override fun getCount(): Int {
             return list.size
+        }
+
+        fun getCurrentItem(pos: Int): Fragment? {
+            return list[pos]
         }
     }
 
@@ -589,6 +601,7 @@ class MeasurementFragment : BaseFragment() {
                             return
                         } else if (body != null && body.isError()) {
                             val msg = body.errors?.get(0)?.message
+                            getDialog()?.dismiss()
                             msg?.let {
                                 Toasty.snackbar(view, msg)
                             }

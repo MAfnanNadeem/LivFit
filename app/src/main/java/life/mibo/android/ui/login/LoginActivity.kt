@@ -9,6 +9,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
+import com.bumptech.glide.Glide
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_login.*
@@ -134,9 +135,17 @@ class LoginActivity : BaseActivity() {
                     Toasty.snackbar(btn_register, getString(R.string.auth_error))
                 }
             } else {
-                controller?.onSocialLogin(type, response, false)
+
+                controller?.onSocialLogin(type, response, false,
+                    View.OnClickListener {
+                        if (type == SocialHelper.FACEBOOK) {
+                           // socialHelper?.facebookLogout()
+                        } else if (type == SocialHelper.GOOGLE) {
+                            socialHelper?.googleLogout()
+                        }
+                    })
             }
-            log("Social toast")
+            //log("Social toast")
         })
 
         btn_facebook?.setOnClickListener {
@@ -161,6 +170,8 @@ class LoginActivity : BaseActivity() {
 
     var isAutologin = false
     private fun setSplash() {
+        //Glide.with(this).asGif().load(R.drawable.mibo_livfit_giff).into(splashImage3)
+
         val anim = AnimationUtils.loadAnimation(this, R.anim.slide_image_from_right)
         anim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationRepeat(animation: Animation?) {

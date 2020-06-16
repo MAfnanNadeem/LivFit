@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:fontFamily="@string/font_sans_serif_medium"
+        android:fontFamily="@string/font_roboto_medium"
         android:gravity="center"
         android:text="@string/forgot_password"
         android:textColor="@color/textColor"

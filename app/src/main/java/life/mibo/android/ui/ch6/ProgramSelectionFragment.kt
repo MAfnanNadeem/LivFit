@@ -313,8 +313,9 @@ class ProgramSelectionFragment : BaseFragment() {
         Single.just("").doOnSuccess {
             val d = SessionManager.getInstance().userSession.booster
             if (d != null) {
-                d.colorPalet = Color.RED
+                d.colorPalet = Color.YELLOW
                 EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                changeColor(Color.YELLOW)
             }
         }.subscribe()
     }

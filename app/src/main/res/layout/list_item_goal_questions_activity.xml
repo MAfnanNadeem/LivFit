@@ -32,15 +32,22 @@
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/que_activity_6_title"
+            android:fontFamily="@string/font_roboto_medium"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:autoSizeMaxTextSize="22sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@id/activity_image1"
             app:layout_constraintBottom_toTopOf="@id/tv_desc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="@dimen/text_size_large" />
+            tools:text="PROF" />
 
 
         <TextView
@@ -51,6 +58,7 @@
             android:text="Eat and Train for optimum health"
             android:textColor="@color/textColor2"
             android:textSize="@dimen/text_size_small"
+            android:fontFamily="@string/font_sans_serif"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/activity_image1"
             app:layout_constraintStart_toStartOf="parent"

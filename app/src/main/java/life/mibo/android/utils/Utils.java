@@ -41,10 +41,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import life.mibo.android.R;
 import life.mibo.android.models.program.Program;
+import life.mibo.android.ui.main.MiboApplication;
 import life.mibo.android.ui.main.MiboEvent;
 import life.mibo.hardware.core.Logger;
 
 public class Utils {
+
+    public static void toastDebug(String msg) {
+        if (MiboApplication.Companion.getDEBUG()) {
+            try {
+                Toasty.info(MiboApplication.Companion.getContext(), msg).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public static int getColor(@NonNull Bitmap bitmap) {
         long red = 0;

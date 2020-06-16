@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 6/16/20 2:16 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/16/20 2:16 PM
+  ~  Mibo Hexa - app
+  -->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <translate
+        android:duration="@android:integer/config_mediumAnimTime"
+        android:fromYDelta="0%p"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:toYDelta="100%p" />
+
+
+</set>

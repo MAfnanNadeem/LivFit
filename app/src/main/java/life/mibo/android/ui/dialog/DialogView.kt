@@ -49,6 +49,10 @@ class DialogView(context: Context, attrs: AttributeSet?, res: Int) :
         mFrameTime = (1000f / 12f / scale).toInt()
     }
 
+    override fun startUpdate() {
+
+    }
+
     override fun onDraw(canvas: Canvas) {
         canvas.rotate(mRotateDegrees, (width / 2).toFloat(), (height / 2).toFloat())
         super.onDraw(canvas)

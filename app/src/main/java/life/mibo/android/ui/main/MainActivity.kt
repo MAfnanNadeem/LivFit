@@ -163,7 +163,7 @@ class MainActivity : BaseActivity(), Navigator {
 
             //getScanned()
             commHandler = CommHandler(this)
-            checkPermissions()
+            //checkPermissions()
             //startManager()
             commHandler.register()
 
@@ -370,8 +370,39 @@ class MainActivity : BaseActivity(), Navigator {
         }
 
 
+
+        drawerToggle.setToolbarNavigationClickListener {
+            log("onBack setToolbarNavigationClickListener")
+            if (!drawer.isDrawerOpen(GravityCompat.START))
+                drawer.openDrawer(GravityCompat.START)
+        }
+
+//        drawer.addDrawerListener(object : DrawerLayout.DrawerListener {
+//            override fun onDrawerStateChanged(newState: Int) {
+//                log("onBack onDrawerStateChanged")
+//            }
+//
+//            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+//                log("onBack onDrawerSlide")
+//            }
+//
+//            override fun onDrawerClosed(drawerView: View) {
+//                log("onBack onDrawerClosed")
+//            }
+//
+//            override fun onDrawerOpened(drawerView: View) {
+//                log("onBack onDrawerOpened")
+//            }
+//
+//        });
+
+        drawer.addDrawerListener(drawerToggle)
+        drawerToggle.isDrawerIndicatorEnabled = true;
+        toolbar!!.setupWithNavController(navController, drawer)
+        drawerToggle.syncState();
+
         toolbar.setNavigationOnClickListener {
-            log("setNavigationOnClickListener")
+            log("onBack setNavigationOnClickListener")
             if (childBackPressed()) {
                 log("setNavigationOnClickListener")
                 NavigationUI.navigateUp(
@@ -381,19 +412,6 @@ class MainActivity : BaseActivity(), Navigator {
                 // navController.navigateUp()
             }
         }
-        drawerToggle.setToolbarNavigationClickListener {
-            log("setToolbarNavigationClickListener")
-            if (!drawer.isDrawerOpen(GravityCompat.START))
-                drawer.openDrawer(GravityCompat.START)
-        }
-        drawer.addDrawerListener(drawerToggle);
-        drawerToggle.isDrawerIndicatorEnabled = true;
-        toolbar!!.setupWithNavController(navController, drawer)
-        drawerToggle.syncState();
-
-//        toolbar?.setNavigationOnClickListener {
-//            log("setNavigationOnClickListener")
-//        }
     }
 
 //    fun setupWithNavController(
@@ -483,32 +501,57 @@ class MainActivity : BaseActivity(), Navigator {
         Manifest.permission.BLUETOOTH_ADMIN
     )
 
-    private fun checkPermissions() {
+    private fun startScanningView(isRxl: Boolean) {
 
-        SessionManager.initUser()
         PermissionHelper.requestPermission(this@MainActivity, permissions) {
             startManager()
+            val bundle = Bundle()
+            bundle.putBoolean("is_rxl", isRxl)
+            navigate(
+                R.id.action_navigation_home_to_navigation_scan,
+                R.id.navigation_devices, bundle
+            )
         }
     }
 
     var manager: CommunicationManager? = null
     private fun startManager() {
-        log("getScanning started")
+        log("startManager..... ")
 
+        try {
+            SessionManager.initUser()
 
-        val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        wifi?.isWifiEnabled = true
-        val lock = wifi.createMulticastLock("MIBO Cast")
-        lock.setReferenceCounted(true)
-        lock?.acquire()
+            val wifi = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            wifi?.isWifiEnabled = true
+            val lock = wifi.createMulticastLock("MIBO Cast")
+            lock.setReferenceCounted(true)
+            lock?.acquire()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
 
 
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
+
             override fun onDeviceDisconnect(uid: String?) {
+                //Toasty.warning(this@MainActivity, "Device Disconnected by user $uid").show()
                 EventBus.getDefault().post(RemoveConnectionStatus(uid))
             }
 
+            override fun onConnect(name: String?, status: Int) {
+               // Toasty.warning(this@MainActivity, "Device Connected! $name : $status").show()
+            }
+
+            override fun onDisconnect(failed: Boolean, name: String?, status: Int, error: String?) {
+                if (failed) {
+                    Toasty.error(this@MainActivity, error ?: "Failed to connect $status").show()
+                } else {
+                    //  Toasty.warning(this@MainActivity, "Device disconnected $status").show()
+                }
+
+            }
             override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {
                 parseCommands(code, command, uid)
             }
@@ -549,6 +592,7 @@ class MainActivity : BaseActivity(), Navigator {
                 log("HrEvent $hr : $uid")
                 parseHrCommands(hr, uid, property)
             }
+
 
             override fun DeviceStatusEvent(uid: String?) {
                 log("DeviceStatusEvent $uid")
@@ -1146,7 +1190,7 @@ class MainActivity : BaseActivity(), Navigator {
 
             Navigator.BODY_MEASURE_SUMMARY -> {
                 //todo check popup impact
-                //popup(R.id.navigation_home)
+                popup(R.id.navigation_home)
                 var bundle: Bundle? = null
                 if (data is Bundle)
                     bundle = data
@@ -1207,6 +1251,13 @@ class MainActivity : BaseActivity(), Navigator {
                 if (data is Bundle)
                     bundle = data
                 navigate(0, R.id.navigation_orders, bundle)
+            }
+
+            Navigator.PROFILE_UPDATE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_profile_edit, bundle)
             }
 
             else -> {
@@ -1314,12 +1365,7 @@ class MainActivity : BaseActivity(), Navigator {
 
             R.id.nav_test3 -> {
                 lastId = -1
-                val bundle = Bundle()
-                bundle.putBoolean("is_rxl", true)
-                navigate(
-                    R.id.action_navigation_home_to_navigation_scan,
-                    R.id.navigation_devices, bundle
-                )
+                startScanningView(true)
                 // SessionManager.getInstance().userSession.createDummy()
                 //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
                 //Payments.testPayment(this@MainActivity)
@@ -1508,12 +1554,7 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.BOOSTER_SCAN -> {
                 //navController.navigate(R.id.action_navigation_home_pop)
                 //navController.navigate(R.id.navigation_home)
-                val bundle = Bundle()
-                bundle.putBoolean("is_rxl", false)
-                navigate(
-                    R.id.action_navigation_home_to_navigation_scan,
-                    R.id.navigation_devices, bundle
-                )
+                startScanningView(false)
                 // navigate(0, R.id.navigation_devices)
                 //navigateFragment(R.id.navigation_calories)
             }
@@ -1541,12 +1582,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             HomeItem.Type.RXL_SCAN -> {
-                val bundle = Bundle()
-                bundle.putBoolean("is_rxl", true)
-                navigate(
-                    R.id.action_navigation_home_to_navigation_scan,
-                    R.id.navigation_devices, bundle
-                )
+                startScanningView(true)
                 // navigate(0, R.id.navigation_rxl_home)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
@@ -1792,6 +1828,7 @@ class MainActivity : BaseActivity(), Navigator {
         try {
             if (navigation?.checkedItem?.itemId != R.id.nav_home)
                 navigation?.setCheckedItem(R.id.nav_home)
+            lastId = -1
         } catch (e: Exception) {
             e.printStackTrace()
         }

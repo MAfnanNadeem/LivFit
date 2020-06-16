@@ -277,6 +277,14 @@
             android:scaleType="centerInside"
             android:src="@drawable/mibo_livfit_bottom" />
 
+        <ImageView
+            android:id="@+id/splashImage3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:scaleType="centerInside" />
+
     </FrameLayout>
 
 

@@ -38,7 +38,7 @@
         tools:text="Name"
         android:textColor="@color/textColor2"
         android:textSize="@dimen/text_size_large"
-        android:fontFamily="@string/font_sans_serif_medium"
+        android:fontFamily="@string/font_roboto_medium"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_image"
         app:layout_constraintTop_toTopOf="parent" />

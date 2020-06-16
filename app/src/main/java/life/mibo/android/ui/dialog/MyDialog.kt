@@ -23,6 +23,7 @@ class MyDialog {
 
     interface Indeterminate {
         fun setAnimationSpeed(scale: Float)
+        fun startUpdate()
     }
 
     companion object {
@@ -37,7 +38,6 @@ class MyDialog {
 
         operator fun get(c: Context, title: String? = null, msg: String? = null, cancel: Boolean = false): MyDialog {
             return MyDialog(c)
-                .setCustomView()
                 .setLabel(title)
                 .setDetailsLabel(msg)
                 .setCancellable(cancel)
@@ -67,21 +67,25 @@ class MyDialog {
         mProgressDialog = ProgressDialog(context)
         mDimAmount = 0f
 
-        mWindowColor = ContextCompat.getColor(context, R.color.dialog_color)
         mAnimateSpeed = 1
         mCornerRadius = 10f
         mIsAutoDismiss = true
         mGraceTimeMs = 0
         mFinished = false
 
-        setCustomView()
+        setCustomView(100)
     }
 
 
+    fun setCustomView(type: Int): MyDialog {
+        if (type == 100) {
+            mProgressDialog!!.setView(DialogView2(mContext!!))
+            mWindowColor = Color.TRANSPARENT
+        } else {
+            mProgressDialog!!.setView(DialogView(mContext!!))
+            mWindowColor = ContextCompat.getColor(mContext!!, R.color.dialog_color)
 
-
-     fun setCustomView(): MyDialog {
-        mProgressDialog!!.setView(DialogView(mContext!!))
+        }
         return this
     }
 
@@ -244,6 +248,13 @@ class MyDialog {
             initViews()
         }
 
+        override fun show() {
+            super.show()
+            if (mIndeterminateView != null) {
+                mIndeterminateView?.startUpdate()
+            }
+        }
+
         private fun initViews() {
             mBackgroundLayout = findViewById(R.id.background)
             mBackgroundLayout!!.setBaseColor(mWindowColor)
@@ -259,7 +270,7 @@ class MyDialog {
                 mIndeterminateView!!.setAnimationSpeed(mAnimateSpeed.toFloat())
             }
 
-            mLabelText = findViewById(R.id.label) as TextView
+            mLabelText = findViewById<TextView?>(R.id.label)
             setLabel(mLabel, mLabelColor)
             mDetailsText = findViewById(R.id.details_label)
             setDetailsLabel(mDetailsLabel, mDetailColor)
@@ -273,7 +284,7 @@ class MyDialog {
         }
 
         private fun updateBackgroundSize() {
-            val params = mBackgroundLayout!!.getLayoutParams()
+            val params = mBackgroundLayout!!.layoutParams
             params.width = Utils.dpToPixel(mWidth, context)
             params.height = Utils.dpToPixel(mHeight, context)
             mBackgroundLayout!!.setLayoutParams(params)

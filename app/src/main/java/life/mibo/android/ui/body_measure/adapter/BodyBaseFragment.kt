@@ -113,4 +113,8 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
             updateSkipButton(true)
         }
     }
+
+    open fun isNextClickable(): Boolean {
+        return true
+    }
 }

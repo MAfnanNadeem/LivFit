@@ -18,6 +18,7 @@ import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.ui.body_measure.adapter.Calculate
+import life.mibo.android.utils.Toasty
 import life.mibo.views.body.picker.RulerValuePickerListener
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
@@ -69,6 +70,20 @@ class BMIFragment : BodyBaseFragment() {
         // updateNextButton(false)
         setSpinners()
         setListeners()
+    }
+
+
+    override fun isNextClickable(): Boolean {
+        log("BMIFragment isNextClickable called")
+        if (!isWeight) {
+            Toasty.snackbar(tv_weight, getString(R.string.select_weight))
+            return false
+        }
+        if (!isHeight) {
+            Toasty.snackbar(tv_weight, getString(R.string.select_height))
+            return false
+        }
+        return true
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {

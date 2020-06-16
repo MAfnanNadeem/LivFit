@@ -1,5 +1,7 @@
 package life.mibo.android.ui.home
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -7,7 +9,9 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,7 +39,6 @@ import life.mibo.hardware.SessionManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -84,9 +87,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //        )
         controller.getDashboard(!member!!.isMember())
         navigate(HOME_VIEW, true)
-        val format = SimpleDateFormat("EEE, dd MMM, yyyy")
+        //val format = SimpleDateFormat("EEE, dd MMM, yyyy")
         //controller.setRecycler(recyclerView!!)
-        textView2?.text = format.format(Date())
+        //textView2?.text = format.format(Date())
+        textView2?.visibility = View.INVISIBLE
 
         iv_user_pic?.setOnClickListener {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
@@ -111,6 +115,13 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     }
 
+    fun testAnim() {
+        getDialog()?.show()
+        Single.just("").delay(5, TimeUnit.SECONDS).doOnSuccess {
+            getDialog()?.dismiss()
+        }.subscribe()
+    }
+
     private var isMember = false
     fun setBottomView() {
         ib_item_1?.setOnClickListener {
@@ -131,6 +142,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
         tv_item_fab?.setOnClickListener {
             // if (isMember)
+            //testAnim()
             navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
         }
     }
@@ -199,11 +211,21 @@ class HomeFragment : BaseFragment(), HomeObserver {
     fun getDashboardApis() {
         controller.getCalories()
         log("weather fusedLocationClient--------------")
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
+            .addOnSuccessListener { location: Location? ->
                 log("weather fusedLocationClient: $location")
-               // YahooWeather.load(location?.latitude, location?.longitude)
+                // YahooWeather.load(location?.latitude, location?.longitude)
                 YahooWeather.OpenApiWeather(
                     context,
                     location?.latitude,
@@ -363,11 +385,17 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     override fun onNotify(type: Int, data: Any?) {
-
+        log("onNotify $type :: $data")
         if (type == 20) {
             if (data is Int) {
                 activity?.runOnUiThread {
                     adapter?.updateCalories(data)
+                }
+            }
+        } else if (type == 30) {
+            if (data is String) {
+                activity?.runOnUiThread {
+                    adapter?.updateUserWeight(data)
                 }
             }
         }
@@ -560,6 +588,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
         isStoped = false
         navigate(Navigator.HOME_DRAWER, null)
+        tv_item_fab?.show()
+        tv_item_fab?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up_anim))
         // videoView?.resume()
         //videoBg()
     }

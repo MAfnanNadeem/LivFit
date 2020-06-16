@@ -11,6 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
+    android:layout_margin="@dimen/grid_2x"
     android:orientation="vertical">
 
 
@@ -37,6 +38,7 @@
             android:gravity="center"
             android:singleLine="true"
             android:text="Program Name"
+            android:fontFamily="@string/font_roboto_medium"
             android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium" />
 
@@ -46,7 +48,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:singleLine="true"
+            android:layout_marginStart="@dimen/grid_4dp"
+            android:layout_marginEnd="@dimen/grid_4dp"
+            android:fontFamily="@string/font_sans_serif"
             android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium"
             android:text="Are you sure want to finish this session?" />
@@ -101,14 +105,13 @@
                 android:layout_alignStart="@id/hexa_image1"
                 android:layout_alignEnd="@id/hexa_image1"
                 android:layout_centerVertical="true"
-                android:layout_margin="@dimen/grid_1x"
-                android:layout_marginStart="@dimen/grid_1x"
-                android:fontFamily="@string/font_sans_serif_black"
+                android:layout_margin="@dimen/grid_4dp"
+                android:fontFamily="@string/font_roboto_medium"
                 android:gravity="center"
                 android:singleLine="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
-                tools:text="100" />
+                tools:text="78965" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -162,14 +165,13 @@
                 android:layout_alignStart="@id/hexa_image2"
                 android:layout_alignEnd="@id/hexa_image2"
                 android:layout_centerVertical="true"
-                android:layout_margin="@dimen/grid_1x"
-                android:layout_marginStart="@dimen/grid_1x"
-                android:fontFamily="@string/font_sans_serif_black"
+                android:layout_margin="@dimen/grid_4dp"
+                android:fontFamily="@string/font_roboto_medium"
                 android:gravity="center"
                 android:singleLine="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
-                tools:text="100" />
+                tools:text="78965" />
         </RelativeLayout>
 
 
@@ -177,7 +179,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_2x"
-            android:fontFamily="@string/font_sans_serif_medium"
+            android:fontFamily="@string/font_roboto_medium"
             android:text="@string/customer_feedback"
             android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium" />
@@ -198,7 +200,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/grid_2x"
-            android:fontFamily="@string/font_sans_serif_medium"
+            android:fontFamily="@string/font_roboto_medium"
             android:text="@string/your_feedback"
             android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium" />

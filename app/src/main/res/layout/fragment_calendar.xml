@@ -39,7 +39,7 @@
             android:id="@+id/tv_month"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@string/font_sans_serif_medium"
+            android:fontFamily="@string/font_roboto_medium"
             android:gravity="center"
             android:textColor="@color/textColor"
             android:textSize="24sp"

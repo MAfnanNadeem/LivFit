@@ -54,6 +54,18 @@ public class SocialHelper {
         google.login();
     }
 
+
+    public void googleLogout() {
+        if (google != null)
+            google.logout();
+    }
+
+    public void facebookLogout() {
+        if (facebook != null)
+            facebook.logout();
+    }
+
+
     public void withTwitter(Context context) {
         if (twitter == null)
             twitter = new Twitter(context, (response, error) -> {

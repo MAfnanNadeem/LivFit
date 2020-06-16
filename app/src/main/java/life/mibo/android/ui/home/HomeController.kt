@@ -81,21 +81,24 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             var weight = ""
             var weather = "0 "
             var cal = 0
+            var today = ""
             try {
                 weight = Prefs.get(fragment.context)["user_weight"]
                 val date = SimpleDateFormat("yymmddhh").format(Date())
                 weather = Prefs.getTemp(fragment.context)["weather_$date"]
                 cal = Prefs.get(this.fragment.context).get("calories_burnt", 0)
+                val format = SimpleDateFormat("EEE, dd MMM")
+                today = format.format(Date())
             } catch (e: java.lang.Exception) {
 
             }
             if (Utils.isEmpty(weather))
                 weather = "0 "
             if (trainer) {
-                getTrainerMenu(weight, weather)
+                getTrainerMenu(weight, weather, today)
             } else {
                 getBioMetric(weight)
-                getMemberMenu(weight, weather, cal)
+                getMemberMenu(weight, weather, cal, today)
             }
             return
         }
@@ -303,7 +306,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     }
 
 
-    fun getMemberMenu(weight: String, weather: String, cal: Int) {
+    fun getMemberMenu(weight: String, weather: String, cal: Int, date: String) {
         val list = ArrayList<HomeItem>()
 
 
@@ -327,7 +330,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         list.add(
             HomeItem(
-                fragment.getString(R.string.calendar_title),
+                date,
                 "",
                 HomeItem.Type.CALENDAR,
                 R.drawable.ic_dashboard_calendar,
@@ -499,7 +502,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         observer.onDataReceived(list)
     }
 
-    private fun getTrainerMenu(weight: String, weather: String) {
+    private fun getTrainerMenu(weight: String, weather: String, date: String) {
         val list = ArrayList<HomeItem>()
         list.add(
             HomeItem(
@@ -521,7 +524,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         )
         list.add(
             HomeItem(
-                fragment.getString(R.string.calendar_title),
+                date,
                 "",
                 HomeItem.Type.CALENDAR,
                 R.drawable.ic_dashboard_calendar,
@@ -662,7 +665,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 //    }
 
     private fun getBioMetric(weight: String?) {
-        if (weight != null && weight.isNotEmpty())
+        if (weight != null && weight.length > 1)
             return
         val member = Prefs.get(fragment.context).member
         val memberId = member?.id() ?: ""
@@ -697,11 +700,13 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         if (bio != null) {
             try {
                 val data = bio[bio.size - 1]
-                Prefs.get(fragment.context)["user_weight"] = "${Calculate.round(data!!.weight)} KG"
-                Prefs.get(fragment.context)["user_height"] = "${data!!.height} CM"
+                var kg = fragment.getString(R.string.kg_unit)?.toUpperCase()
+                var cm = fragment.getString(R.string.cm_unit)?.toUpperCase()
+                Prefs.get(fragment.context)["user_weight"] = "${Calculate.round(data!!.weight)} $kg"
+                Prefs.get(fragment.context)["user_height"] = "${data!!.height} $cm"
                 Prefs.get(fragment.context)["user_date"] =
                     "${data.createdAt?.date?.split(" ")?.get(0)}"
-                observer.onNotify(10, null)
+                observer.onNotify(30, "${Calculate.round(data.weight)} $kg")
             } catch (e: Exception) {
                 // Prefs.get(fragment.context)["user_date"] = "${data.createdAt?.date}"
             }

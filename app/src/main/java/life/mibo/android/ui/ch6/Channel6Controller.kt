@@ -133,6 +133,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     if (item != null) {
                         if (item.id >= 1) {
                             stopUserSession(userUid)
+                            //demoSave()
                             saveTrainerSessionApi(trainerUserId, item.rating, item.feedback)
                             isSessionActive = false
                             cancelTimer()
@@ -144,6 +145,12 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             },
             cancel, title, msg, "" + getProgramTime(), "$calories"
         ).show()
+    }
+
+    fun demoSave() {
+        Toasty.info(fragment.requireContext(), "Demo Saved!", Toasty.LENGTH_LONG).show()
+        // navigateToHome()
+
     }
 
     private fun sessionCompleteDialog2(name: String?, time: String?, calory: String?) {
@@ -287,6 +294,12 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                         pauseUserSession()
                     else if (SessionManager.getInstance().userSession.currentSessionStatus == 1)
                         startUserSession(SessionManager.getInstance().userSession.user)
+                    else {
+                        Toasty.snackbar(
+                            fragment.view,
+                            fragment.getString(R.string.booster_no_response)
+                        )
+                    }
                 } else {
                     bookSession(it.toIntOrZero())
                 }
@@ -422,16 +435,16 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //        bindMuscleGroup(muscleGroup10, 10, R.drawable.img_fullbodyback);
 
         val list = ArrayList<Muscle>()
-        list.add(Muscle(1, "", "", 1, 100, R.drawable.ic_channel_back_neck))
-        list.add(Muscle(2, "", "", 2, 100, R.drawable.ic_channel_glutes))
-        list.add(Muscle(3, "", "", 3, 100, R.drawable.ic_channel_thighs))
-        list.add(Muscle(4, "", "", 4, 100, R.drawable.ic_channel_abdomen))
-        list.add(Muscle(5, "", "", 5, 100, R.drawable.ic_channel_chest))
-        list.add(Muscle(6, "", "", 6, 100, R.drawable.ic_channel_biceps))
-        list.add(Muscle(7, "", "", 7, 100, R.drawable.ic_channel_back_neck))
-        list.add(Muscle(8, "", "", 8, 100, R.drawable.ic_channel_back_neck))
-        list.add(Muscle(9, "", "", 9, 100, R.drawable.ic_channel_back_neck))
-        list.add(Muscle(10, "", "", 10, 100, R.drawable.ic_channel_back_neck))
+        list.add(Muscle(1, "", "", 1, 100, R.drawable.ic_channel_fron_leg))
+        list.add(Muscle(2, "", "", 2, 100, R.drawable.ic_channel_back_leg))
+        list.add(Muscle(3, "", "", 3, 100, R.drawable.ic_channel_glutes))
+        list.add(Muscle(4, "", "", 4, 100, R.drawable.ic_channel_lower_back))
+        list.add(Muscle(5, "", "", 5, 100, R.drawable.ic_channel_upper_back))
+        list.add(Muscle(6, "", "", 6, 100, R.drawable.ic_channel_neck))
+        list.add(Muscle(7, "", "", 7, 100, R.drawable.ic_channel_abs))
+        list.add(Muscle(8, "", "", 8, 100, R.drawable.ic_channel_chest))
+        list.add(Muscle(9, "", "", 9, 100, R.drawable.ic_channel_biceps))
+        list.add(Muscle(10, "", "", 10, 100, R.drawable.ic_channel_calfs))
         return list
     }
 
@@ -600,9 +613,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
             //DevicePlayPauseEvent
             SessionManager.getInstance().userSession.currentSessionStatus = 2
-            isPaused = true;
-            observer.updatePlayButton(isPaused);
+           // isPaused = true;
+           // observer.updatePlayButton(isPaused);
             //isStartedSession = true
+        } else {
+            Toasty.snackbar(fragment.view, fragment.getString(R.string.booster_inactive))
         }
     }
 
@@ -641,6 +656,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //            log("pauseUserSession")
             // Toasty.info(fragment?.requireContext(), "Pause functionality is remaining").show()
 
+        } else {
+            Toasty.snackbar(fragment.view, fragment.getString(R.string.booster_inactive))
         }
 
     }
@@ -825,6 +842,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             return
         }
         isStartedSession = true
+
 //        EventBus.getDefault().postSticky(
 //            SendProgramEvent(
 //                SessionManager.getInstance().userSession.currentSessionProgram,
@@ -832,6 +850,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //            )
 //        )
         if (SessionManager.getInstance().userSession.booster.isStarted) {
+            isPaused = true;
+            observer.updatePlayButton(isPaused);
             disposable?.dispose()
             disposable = null
             startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)
@@ -880,9 +900,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
                     override fun onComplete() {
                         adapter?.notifyDataSetChanged()
+                        pauseUserSession()
                     }
                 })
         }
+
     }
 
     var buttonId = 0
@@ -993,6 +1015,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         fragment?.activity?.runOnUiThread {
             totalDuration = seconds.toLong()
             cancelTimer()
+            countTimer = null
             countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
                 override fun onTick(it: Long) {
                     log("onTimerUpdate onTick $seconds : $it")
@@ -1025,14 +1048,17 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     fun onTimerUpdate(time: Long) {
         log("onTimerUpdate $time")
         if (time == 0L) {
-            tvTimer?.text = "Completed"
-            //exerciseCompleted(false)
             SessionManager.getInstance().userSession.currentSessionStatus =
                 UserSession.SESSION_FINISHED;
-            currentDuration = totalDuration
-            isSessionActive = false
-            saveSessionApi()
-            isTimerStarted = false
+            fragment?.activity?.runOnUiThread {
+                tvTimer?.text = fragment.getString(R.string.completed)
+                //exerciseCompleted(false)
+                currentDuration = 0
+                isSessionActive = false
+                saveSessionApi()
+                isTimerStarted = false
+            }
+
         } else {
             currentDuration = time
             // tvTimer?.text = "${end.minus(it)} sec"
@@ -1149,7 +1175,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun updateStatus(action: Int, pause: Int) {
-        log("UpdateStatus.. pause: $pause , action: $action  timer=" + SessionManager.getInstance().userSession.booster?.deviceSessionTimer)
+        log("UpdateStatus.. pause: $pause , action: $action")
 
         if (pause > 0) {
             progress(100, 1, pauseDuration)
@@ -1316,7 +1342,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                             ).show()
                             sessionId = "${data.data?.sessionID}"
                             Prefs.get(fragment.context).set("member_sessionId", sessionId)
-                            isSessionActive = true
+                            //isSessionActive = true
                             startMemberSession()
                             isBooked = true
 
@@ -1379,7 +1405,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
                             //sessionId = "${data.data?.sessionID}"
                             Prefs.get(fragment.context).set("member_sessionId", trainerSessionId)
-                            isSessionActive = true
+                            //isSessionActive = true
                             startMemberSession()
                             isBooked = true
 
@@ -1645,7 +1671,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     //Calories Calculate
-    //(((BORG RATING+17%)*weight(kg))*2(equal to 2 hours workout in DialogListener gym))+10%(afterburn)=total calories burned during DialogListener 20 minute session
+    //(((BORG RATING+17%)*weight(kg))*2(equal to 2 hours workout in a gym))+10%(afterburn)=total calories burned during a 20 minute session
     private fun calculateCalories(borg: Int, weight: Double, time: Int): Int {
         //borg 12, weight 88.0, time 16    borgRate  4.285714285714286
 
@@ -1753,13 +1779,14 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         if (totalDuration == currentDuration)
             return totalDuration;
         tvTimer?.text?.let {
-            if (it == "Completed")
+            if (it == fragment.getString(R.string.completed))
                 return totalDuration
         }
         return totalDuration.minus(currentDuration)
     }
 
     private fun getProgramTime(): Int {
+        fragment.log("getProgramTime programDuration $programDuration  currentDuration $currentDuration")
         return try {
             programDuration.minus(currentDuration).toInt()
         } catch (e: java.lang.Exception) {

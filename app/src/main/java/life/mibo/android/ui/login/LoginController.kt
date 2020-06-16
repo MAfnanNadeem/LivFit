@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -57,7 +58,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     // SocialHelper 200 :: {"id":"100833147217416230443","displayName":"Sumit Raj","email":"raj8xm@gmail.com","photoUrl":"https:\/\/lh3.googleusercontent.com\/DialogListener-\/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg","familyName":"Raj","givenName":"Sumit"}
     //SocialHelper 100 :: {"id":"3174109019295426","first_name":"Sumeet","last_name":"Gehi","email":"sumeetgehi@gmail.com"} -- false
-    fun onSocialLogin(code: Int, bundle: Bundle, autoLogin: Boolean) {
+    fun onSocialLogin(code: Int, bundle: Bundle, autoLogin: Boolean, listner : View.OnClickListener?) {
         // context.log(" - onSocialLogin $code")
         val email = bundle.getString("email")
         val pwd = bundle.getString("id")
@@ -119,6 +120,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                             loginSucceed()
                         } else if (data.status.equals("error", true)) {
                             context?.hideSplashView()
+                            listner?.onClick(null)
                             onRegister(bundle, code)
                             // Toasty.error(context, "${data.errors?.get(0)?.message}").show()
                         }
@@ -245,7 +247,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                     val bundle = Bundle()
                     bundle.putString("email", user)
                     bundle.putString("id", pwd)
-                    onSocialLogin(i, bundle, true)
+                    onSocialLogin(i, bundle, true, null)
                     return true;
                 }
                 onLogin(user, pwd, true)

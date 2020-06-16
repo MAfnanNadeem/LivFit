@@ -25,18 +25,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/grid_2x"
+                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:tint="@color/textColor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/grid_2x"
-                android:gravity="center"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:gravity="start"
                 android:text="@string/my_bmi_title"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_large"
+                android:fontFamily="@string/font_roboto_regular"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_back"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout

@@ -51,6 +51,12 @@ class QuestionFragment : BodyBaseFragment() {
 
     }
 
+    override fun isNextClickable(): Boolean {
+        log("QuestionFragment isNextClickable called")
+        return super.isNextClickable()
+    }
+
+
     fun setupAdapters() {
         adapter = QuestionsAdapter(type_,
             getQues(type_),
@@ -128,6 +134,22 @@ class QuestionFragment : BodyBaseFragment() {
                 3,
                 getString(R.string.goal_que_3_title),
                 getString(R.string.goal_que_3_desc),
+                false
+            )
+        )
+        list.add(
+            QuestionsAdapter.Item(
+                4,
+                getString(R.string.goal_que_4_title),
+                getString(R.string.goal_que_4_desc),
+                false
+            )
+        )
+        list.add(
+            QuestionsAdapter.Item(
+                5,
+                getString(R.string.goal_que_5_title),
+                getString(R.string.goal_que_5_desc),
                 false
             )
         )

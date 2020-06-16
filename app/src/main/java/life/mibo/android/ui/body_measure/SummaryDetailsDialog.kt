@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.Legend.LegendForm
@@ -27,6 +26,8 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.biometric.Biometric
@@ -36,6 +37,7 @@ import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 
@@ -71,6 +73,7 @@ class SummaryDetailsDialog(
         var image: ImageView? = view?.findViewById(R.id.image_circle)
         var profilePic: ImageView? = view?.findViewById(R.id.imageViewProfile)
         var chart: BarChart? = view?.findViewById(R.id.barChart)
+        var back: View?? = view?.findViewById(R.id.btn_back)
         //var tabs: TabLayout? = view?.findViewById(R.id.tabLayout)
 //        if (data?.title?.trim() == "BMI") {
 //            data?.title = "BMI (Body Mass Index)"
@@ -113,7 +116,7 @@ class SummaryDetailsDialog(
 
             //"${pref["user_date"]}"
             //tvDate?.text = "${pref["user_date"]}"
-            loadImage(profilePic, pref?.member?.profileImg, R.drawable.ic_user_test)
+            Utils.loadImage(profilePic, pref?.member?.profileImg, pref?.member?.isMale() ?: true)
             tvName?.text = pref.member?.firstName + " " + pref.member?.lastName
             tvDate?.text = SimpleDateFormat.getDateInstance()
                 .format(SimpleDateFormat("yyyy-MM-dd").parse(pref["user_date"]))
@@ -125,33 +128,14 @@ class SummaryDetailsDialog(
         data?.title?.let {
             getChartPrefs(it.toLowerCase(), chart)
         }
-    }
-
-    private fun loadImage(iv: ImageView?, url: String?, defaultImage: Int) {
-        if (iv != null)
-            Glide.with(this).load(url).error(defaultImage).fallback(defaultImage).into(iv)
-//        Maybe.fromCallable {
-//            var bitmap: Bitmap? = null
-//            bitmap = if (!base64.isNullOrEmpty())
-//                Utils.base64ToBitmap(base64)
-//            else
-//                BitmapFactory.decodeResource(resources, defaultImage)
-//            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
-//            bitmap
-//        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-//            if (it != null)
-//                iv?.setImageBitmap(it)
-//            else
-//                iv?.setImageResource(defaultImage)
-//        }.doOnError {
-//
-//        }.subscribe()
-    }
-
-    fun setData(chart: BarChart?) {
-        if (chart != null) {
-
+        back?.setOnClickListener {
+            dismiss()
         }
+    }
+
+    override fun onActivityCreated(arg0: Bundle?) {
+        super.onActivityCreated(arg0)
+        dialog?.window?.attributes?.windowAnimations = R.style.DialogAnimation
     }
 
     private fun getTitle(title: String?): String? {
@@ -481,10 +465,22 @@ class SummaryDetailsDialog(
                 count++
             }
             Logger.e("getChartPrefs $count list.size ${entries.size} ${dates.size}")
-            setupChart(chart, entries, dates)
+            Single.just("").delay(400, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+                    setupChart(chart, entries, dates)
+                }.doOnError {
+                    activity?.runOnUiThread {
+                        setupChart(chart, entries, dates)
+                    }
+                }.subscribe()
 
         }
 
+    }
+
+    fun getIndicators(): String {
+
+        return ""
     }
 
     private fun parseEntry(title: String?): String? {

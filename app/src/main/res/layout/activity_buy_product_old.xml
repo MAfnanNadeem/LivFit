@@ -109,7 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/grid_2x"
-                    android:fontFamily="@string/font_sans_serif_black"
+                    android:fontFamily="@string/font_roboto_black"
                     android:text="@string/add_new_address"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium" />
@@ -149,7 +149,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/grid_2x"
-                        android:fontFamily="@string/font_sans_serif_black"
+                        android:fontFamily="@string/font_roboto_black"
                         android:hint="@string/promo_code"
                         android:inputType="text"
                         android:lines="1"

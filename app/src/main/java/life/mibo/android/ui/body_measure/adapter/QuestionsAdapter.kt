@@ -101,7 +101,6 @@ class QuestionsAdapter(
                 } else {
                     if (item.selected) {
                         text?.setTextColor(Color.WHITE)
-                        //desc?.setTextColor(Color.WHITE)
                         imageView?.setImageResource(R.drawable.bg_goal_gues_selected)
                     } else {
                         text?.setTextColor(
@@ -127,10 +126,12 @@ class QuestionsAdapter(
             when (type) {
                 1 -> {
                     if (selected) {
+                        desc?.setTextColor(Color.WHITE)
                         imageView?.setImageDrawable(
                             Utils.getColorFilterDrawable(itemView.context, id, 0xFFFE3030.toInt())
                         )
                     } else {
+                        desc?.setTextColor(Color.GRAY)
                         imageView?.setImageDrawable(
                             Utils.getColorFilterDrawable(itemView.context, id, 0x80FE3030.toInt())
                         )
@@ -240,6 +241,11 @@ class QuestionsAdapter(
                 }
             }
 
+            if (selected) {
+                desc?.setTextColor(Color.WHITE)
+            } else {
+                desc?.setTextColor(Color.GRAY)
+            }
         }
     }
 

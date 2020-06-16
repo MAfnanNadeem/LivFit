@@ -66,6 +66,11 @@ class MeasureBodyFragment : BodyBaseFragment() {
 
     }
 
+    override fun isNextClickable(): Boolean {
+        //log("MeasureBodyFragment isNextClickable called")
+        return calculateType()
+    }
+
     override fun onResume() {
         super.onResume()
         log("onResume onResume")
@@ -262,7 +267,26 @@ class MeasureBodyFragment : BodyBaseFragment() {
         }
     }
 
-    fun calculateType() {
+    fun refreshAdapter() {
+        val data = Calculate.getMeasureData()
+        val chest = data.getMeasurement(1)
+        val waist = data.getMeasurement(2)
+        val hips = data.getMeasurement(3)
+        val highHips = data.getMeasurement(4)
+
+        if (chest > 0 && waist > 0 && hips > 0 && highHips > 0) {
+            if (isMale) {
+
+            } else {
+                if (data.getMeasurement(5) > 0 && data.getMeasurement(6) > 0) {
+
+                }
+            }
+
+        }
+    }
+
+    fun calculateType(): Boolean {
         try {
             val data = Calculate.getMeasureData()
             val chest = data.getMeasurement(1)
@@ -281,9 +305,11 @@ class MeasureBodyFragment : BodyBaseFragment() {
             if (chest > 0 && waist > 0 && hips > 0 && highHips > 0) {
                 if (isMale) {
                     updateNextButton(true)
+                    return true
                 } else {
                     if (data.getMeasurement(5) > 0 && data.getMeasurement(6) > 0) {
                         updateNextButton(true)
+                        return true
                     }
                 }
 
@@ -292,6 +318,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
             e.printStackTrace()
             log("calculateType $e")
         }
+        return false
     }
 
     fun getInt(str: String?): Int {

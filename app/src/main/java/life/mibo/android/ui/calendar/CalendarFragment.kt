@@ -20,6 +20,8 @@ import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlinx.android.synthetic.main.list_item_calendar_reschedule.view.*
@@ -42,6 +44,7 @@ import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class CalendarFragment : BaseFragment(), CalendarObserver {
@@ -159,6 +162,10 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                 }
             }
             setUpCalendar(calendarView, weeks, list)
+            Single.just("").delay(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+                    updateDefault(true, LocalDate.now())
+                }.subscribe()
         }
     }
 
@@ -308,6 +315,10 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                 }
             }
             setUpTrainerCalendar(calendarView, weeks, list)
+            Single.just("").delay(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+                updateDefault(true, LocalDate.now())
+            }.subscribe()
         }
     }
 
@@ -441,6 +452,85 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
             scheduleAdapter?.update(list)
         }
 
+    }
+
+    fun updateDefault(isTrainer: Boolean, selected: LocalDate) {
+        if (isTrainer) {
+            val crypt = Encrypt()
+            //selectedDate = item?.date
+            //calendarView?.notifyCalendarChanged()
+            val list = ArrayList<Schedule>()
+            var count = 0
+            var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
+            var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
+            for (session in sessionDates) {
+                try {
+                    val date = session.startDatetime?.split(" ")?.get(0) ?: ""
+                    // val date = formatter.parse(d.startDateTime)
+                    if (LocalDate.parse(date) == selected) {
+                        if (session.members != null) {
+                            var mmember = session.members?.get(0)
+                            list.add(
+                                Schedule(
+                                    session.sessionId,
+                                    session.startDatetime,
+                                    session.endDatetime,
+                                    String(crypt.decrypt(mmember?.firstName)) + " " + String(
+                                        crypt.decrypt(
+                                            mmember?.lastName
+                                        )
+                                    ),
+                                    session.notes,
+                                    if (count == 0) color1 else color2, session.completed == 1
+                                )
+                            )
+                        }
+                        count++
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            activity?.runOnUiThread {
+                scheduleAdapter?.update(list)
+            }
+        } else {
+            //selectedDate = item?.date
+            //calendarView?.notifyCalendarChanged()
+            val list = ArrayList<Schedule>()
+            var count = 0
+            var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
+            var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
+            for (session in scheduleDates) {
+                try {
+                    val date = session.startDateTime?.split(" ")?.get(0) ?: ""
+                    // val date = formatter.parse(d.startDateTime)
+                    if (LocalDate.parse(date) == selected) {
+                        list.add(
+                            Schedule(
+                                session.sessionID,
+                                session.startDateTime,
+                                session.endDateTime,
+                                session.trainerFullName,
+                                session.serviceName,
+                                if (count == 0) color1 else color2,
+                                session.completed == 1,
+                                "",
+                                session.trainerID
+                            )
+                        )
+                        count++
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            activity?.runOnUiThread {
+                scheduleAdapter?.update(list)
+            }
+        }
     }
 
 

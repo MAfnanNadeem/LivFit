@@ -120,7 +120,7 @@
             app:ccp_defaultCode="971"
             android:layout_weight="1"
             app:ccp_textColor="@color/textColor"
-            app:ccp_dialogTextColor="@color/white"
+            app:ccp_dialogTextColor="@color/textColor"
             app:ccp_hideNameCode="true"
             app:ccp_showFullName="false" />
 

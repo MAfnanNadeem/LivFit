@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.fragment_channel6.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.events.*
@@ -58,7 +59,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         if (arguments != null)
             stateBundle = requireArguments()
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
-        life.mibo.hardware.core.Logger.e("Channel6Fragment : stateBundle ", stateBundle)
+        //life.mibo.hardware.core.Logger.e("Channel6Fragment : stateBundle ", stateBundle)
         isTrainer = stateBundle.getBoolean("is_trainer", false)
         controller.onViewCreated(view, stateBundle)
 
@@ -104,6 +105,12 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         if (isTrainer)
             Utils.loadImage(hexagonImageView, stateBundle.getString("member_image", ""), true)
         else Utils.loadImage(hexagonImageView, Prefs.get(context).member?.profileImg, true)
+
+        MiboEvent.event(
+            "Booster_Session",
+            "Channel6Fragment isTrainer=$isTrainer",
+            "ProgramName=$name  UserId=$userId"
+        )
     }
 
 

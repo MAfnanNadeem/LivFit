@@ -97,6 +97,11 @@ class BodyTypeFragment : BodyBaseFragment() {
         tv_continue?.visibility = View.GONE
     }
 
+    override fun isNextClickable(): Boolean {
+        log("BodyTypeFragment isNextClickable called")
+        return super.isNextClickable()
+    }
+
     override fun onResume() {
         super.onResume()
         setup()
@@ -141,10 +146,10 @@ class BodyTypeFragment : BodyBaseFragment() {
         viewPager?.offscreenPageLimit = 1
         viewPager.adapter =
             PageAdapter(getDefaultPages(male, types), childFragmentManager, lifecycle)
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            //tab.text = "OBJECT ${(position + 1)}"
-            tab.text = ""
-        }.attach()
+//        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+//            //tab.text = "OBJECT ${(position + 1)}"
+//            tab.text = ""
+//        }.attach()
 
 //        Toasty.info(
 //            requireContext(),

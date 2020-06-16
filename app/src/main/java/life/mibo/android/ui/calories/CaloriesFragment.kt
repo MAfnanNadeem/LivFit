@@ -59,7 +59,7 @@ class CaloriesFragment : BaseFragment(), CaloriesObserver {
 
         val pref = Prefs.get(context)
         var gndr = getString(R.string.gender_male)
-        if ("female" == pref["user_gender"]?.toLowerCase()) {
+        if ("female" == pref?.member?.gender?.toLowerCase()) {
             gndr = getString(R.string.gender_female)
             isMale = false
         }

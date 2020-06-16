@@ -76,6 +76,7 @@ class TermsDialog(c: Context, var listener: ItemClickListener<Int>? = null) : Al
         //window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
 
         web?.setListener(ownerActivity, this)
+        //web?.loadUrl("http://test.mibo.life/terms-condition-mobile/")
         web?.loadUrl("http://test.mibo.life/privacy-policy-mobile/")
         accept?.isEnabled = false
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));

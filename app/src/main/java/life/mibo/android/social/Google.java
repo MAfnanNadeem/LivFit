@@ -96,9 +96,9 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
                 @Override
                 public void onResult(@NonNull Status status) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("message", mContext.getString(R.string.google_logout_success));
-                    listener.onResponse(SocialHelper.GOOGLE, bundle, false);
+                    //Bundle bundle = new Bundle();
+                    //bundle.putString("message", mContext.getString(R.string.google_logout_success));
+                    //listener.onResponse(SocialHelper.GOOGLE, bundle, false);
                 }
             });
         } else {

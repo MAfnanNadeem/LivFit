@@ -38,6 +38,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
+import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
@@ -123,6 +124,16 @@ class ProfileFragment : BaseFragment() {
         }
 
         profileEditable(false)
+        try {
+            val update = Prefs.get(context).get("profile_update")
+            if (update?.toBoolean() == true){
+
+            }
+        }
+        catch (e : java.lang.Exception){
+
+        }
+
     }
 
     private fun setUserImage(profileImg: String?, male: Boolean) {
@@ -469,6 +480,7 @@ class ProfileFragment : BaseFragment() {
             }
             R.id.action_edit -> {
                 //profileEditable(true)
+                navigate(Navigator.PROFILE_UPDATE, null)
             }
         }
         return super.onOptionsItemSelected(item)

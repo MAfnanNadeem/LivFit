@@ -244,7 +244,7 @@ class QuestionsAdapter(
             if (selected) {
                 desc?.setTextColor(Color.WHITE)
             } else {
-                desc?.setTextColor(Color.GRAY)
+                desc?.setTextColor(Color.DKGRAY)
             }
         }
     }

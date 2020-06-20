@@ -477,7 +477,9 @@ final class RulerView extends View {
         mMinValue = minValue;
         mMaxValue = maxValue;
        // invalidate();
+        forceLayout();
         requestLayout();
+        invalidate();
     }
 
     /**

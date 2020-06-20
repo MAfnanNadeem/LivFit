@@ -19,7 +19,7 @@
         android:background="@drawable/bg_gradient2"
         android:gravity="center"
         android:padding="@dimen/grid_1x"
-        android:text="@string/schedules"
+        android:text="@string/training_schedules"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"

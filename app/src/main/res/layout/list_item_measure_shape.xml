@@ -32,7 +32,7 @@
             tools:text="Chest" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/iv_body_image"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginStart="@dimen/grid_2x"

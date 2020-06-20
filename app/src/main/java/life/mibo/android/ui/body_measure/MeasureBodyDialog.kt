@@ -128,10 +128,18 @@ class MeasureBodyDialog(
             dismiss()
         }
 
+        view?.findViewById<View?>(R.id.btn_back)?.setOnClickListener {
+            dismiss()
+        }
+
         Logger.e("MeasureBodyDialog onCreate $data")
 
     }
 
+    override fun onActivityCreated(arg0: Bundle?) {
+        super.onActivityCreated(arg0)
+        dialog?.window?.attributes?.windowAnimations = R.style.DialogAnimation
+    }
 
     override fun onStart() {
         super.onStart()

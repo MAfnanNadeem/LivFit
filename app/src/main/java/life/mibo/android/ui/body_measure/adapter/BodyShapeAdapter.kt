@@ -12,12 +12,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.android.R
-import life.mibo.android.ui.base.ItemClickListener
+import java.io.Serializable
 
-class BodyShapeAdapter(var list: List<Item>, var listener: ItemClickListener<Item>) :
+class BodyShapeAdapter(var list: List<Item>, var listener: ItemClickListener) :
     RecyclerView.Adapter<BodyShapeAdapter.Holder>() {
+
+
+    public interface ItemClickListener {
+        fun onItemClicked(item: Item?, holder: Holder, position: Int)
+    }
 
     //var list: ArrayList<Item>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -70,10 +76,10 @@ class BodyShapeAdapter(var list: List<Item>, var listener: ItemClickListener<Ite
         var text: TextView? = itemView.findViewById(R.id.tv_title)
         var value: TextView? = itemView.findViewById(R.id.tv_value)
         var unit: TextView? = itemView.findViewById(R.id.tv_value_unit)
-        var image: ImageView? = itemView.findViewById(R.id.imageView)
+        var image: ImageView? = itemView.findViewById(R.id.iv_body_image)
 
         // var hexa: HexagonImageView? = itemView.findViewById(R.id.test_image_hexa)
-        fun bind(item: Item?, listener: ItemClickListener<Item>?) {
+        fun bind(item: Item?, listener: ItemClickListener?) {
             if (item != null) {
                 text?.text = item.title
                 if (!item.value.isNullOrEmpty()) {
@@ -84,10 +90,15 @@ class BodyShapeAdapter(var list: List<Item>, var listener: ItemClickListener<Ite
                     unit?.text = ""
                 }
                 image?.setImageResource(item.imageRes)
+                ViewCompat.setTransitionName(image!!, item.transitionImage())
+                ViewCompat.setTransitionName(text!!, item.transitionTitle())
+                ViewCompat.setTransitionName(value!!, item.transitionValue())
+                ViewCompat.setTransitionName(unit!!, item.transitionUnit())
                 image?.setOnClickListener {
                     //item?.selected = item?.selected?.not()
-                    listener?.onItemClicked(item, adapterPosition)
+                    listener?.onItemClicked(item, this, adapterPosition)
                 }
+
 
             }
         }
@@ -103,5 +114,22 @@ class BodyShapeAdapter(var list: List<Item>, var listener: ItemClickListener<Ite
         var maxValue: Int = 100,
         var defValue: Int = 0,
         var selected: Boolean = false
-    )
+    ) : Serializable {
+
+        fun transitionImage(): String {
+            return "" + id + "_image"
+        }
+
+        fun transitionValue(): String {
+            return "" + id + "_value"
+        }
+
+        fun transitionUnit(): String {
+            return "" + id + "_unit"
+        }
+
+        fun transitionTitle(): String {
+            return "" + id + "_title"
+        }
+    }
 }

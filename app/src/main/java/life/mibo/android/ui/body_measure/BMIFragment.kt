@@ -117,9 +117,9 @@ class BMIFragment : BodyBaseFragment() {
     private fun setListeners() {
 
         if (gender == 1) {
-            rulerValuePicker?.selectValue(65)
+           // rulerValuePicker?.selectValue(65)
         } else {
-            rulerValuePicker?.selectValue(50)
+            // rulerValuePicker?.selectValue(50)
         }
 
 
@@ -383,23 +383,19 @@ class BMIFragment : BodyBaseFragment() {
             }
             3 -> {
                 if (position == 0) {
-                    rulerValuePicker?.post {
-                        rulerValuePicker?.setMinMaxValue(MIN_WEIGHT_KG, MAX_WEIGHT_KG)
-
-                    }
+                    rulerValuePicker?.setMinMaxValue(MIN_WEIGHT_KG, MAX_WEIGHT_KG)
+                    rulerValuePicker?.invalidate()
                     //rulerValuePicker?.invalidate()
                     weightType = 1
-                    weightUnit = "kgs"
+                    weightUnit = getString(R.string.kg_unit)?.toUpperCase()
+                    tv_weight?.text = "$MIN_WEIGHT_KG $weightUnit"
                 } else if (position == 1) {
                     //(MIN_WEIGHT_KG * 2.205).toInt() + 1
-                    rulerValuePicker?.post {
-                        rulerValuePicker?.setMinMaxValue(
-                            65,
-                            (MAX_WEIGHT_KG * 2.205).toInt()
-                        )
-                    }
+                    rulerValuePicker?.setMinMaxValue(65, (MAX_WEIGHT_KG.times(2.205)).toInt())
+                    rulerValuePicker?.invalidate()
                     weightType = 2
-                    weightUnit = "lbs"
+                    weightUnit = getString(R.string.lbs_unit)?.toUpperCase()
+                    tv_weight?.text = "65 $weightUnit"
                 }
                 // Weight
 

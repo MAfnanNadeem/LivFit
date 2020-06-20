@@ -19,19 +19,14 @@
     <!--        android:layout_height="240dp" />-->
 
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/constraintLayout1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/bg_gradient2"
-        app:layout_constraintBottom_toTopOf="@id/guideline4"
+        app:layout_constraintHeight_percent="0.35"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -54,30 +49,41 @@
         <!--            app:layout_constraintWidth_percent="0.5"-->
         <!--            tools:src="@drawable/ic_user_test" />-->
 
-        <life.mibo.views.CircleImageView
+        <View
+            android:id="@+id/view1"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <life.mibo.views.HexagonImageView
             android:id="@+id/userImage"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:civ_border_color="@color/grey"
             app:civ_border_width="1dp"
-            app:layout_constraintBottom_toTopOf="@id/tv_name"
+            app:layout_constraintDimensionRatio="1:1"
+            android:padding="@dimen/grid_1x"
+            app:layout_constraintHeight_percent="0.5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view1"
             tools:src="@drawable/ic_user_test" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/grid_1x"
+            android:layout_height="0dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHeight_percent="0.3"
             app:layout_constraintTop_toBottomOf="@id/userImage"
-            tools:text="@string/sumeet" />
+            tools:text="@string/dummy_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -87,7 +93,7 @@
         android:translationY="-24dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline4">
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -288,7 +294,7 @@
                         app:layout_constraintEnd_toEndOf="@id/cardview"
                         app:layout_constraintStart_toStartOf="@id/cardview"
                         app:layout_constraintTop_toBottomOf="@id/tv_email_frame"
-                        tools:text="@string/sumeet" />
+                        tools:text="@string/dummy_name" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -319,7 +325,7 @@
                         app:layout_constraintEnd_toEndOf="@id/cardview"
                         app:layout_constraintStart_toStartOf="@id/cardview"
                         app:layout_constraintTop_toBottomOf="@id/tv_dob_frame"
-                        tools:text="@string/sumeet" />
+                        tools:text="@string/dummy_name" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -346,7 +352,7 @@
                         android:padding="@dimen/grid_2x"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/text_size_medium"
-                        tools:text="@string/sumeet" />
+                        tools:text="@string/dummy_name" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -376,7 +382,7 @@
                         app:layout_constraintEnd_toEndOf="@id/cardview"
                         app:layout_constraintStart_toStartOf="@id/cardview"
                         app:layout_constraintTop_toBottomOf="@id/tv_city_frame"
-                        tools:text="@string/sumeet" />
+                        tools:text="@string/dummy_name" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 

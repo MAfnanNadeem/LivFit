@@ -121,7 +121,7 @@ class ProgramSelectionFragment : BaseFragment() {
 
     private fun onNextClicked(){
         if (program == null) {
-            Toasty.info(requireContext(), "Please select program").show()
+            Toasty.snackbar(button_next, getString(R.string.select_program_tp_start_session))
             return
         }
         Observable.just<Program>(program).subscribeOn(Schedulers.computation()).observeOn(

@@ -7,6 +7,8 @@
 
 package life.mibo.android.ui.body_measure
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,14 +51,17 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     isMale
                 ),
                 object :
-                    ItemClickListener<BodyShapeAdapter.Item> {
+                    BodyShapeAdapter.ItemClickListener {
                     override fun onItemClicked(
                         item: BodyShapeAdapter.Item?,
+                        holder: BodyShapeAdapter.Holder,
                         position: Int
                     ) {
+                        log("onItemClicked ${item?.id}  ${item?.title} : position $position")
                         adapter?.select(item)
                         selected = position
-                        showPicker(item)
+                        //showPicker2(item)
+                        showPicker(item, holder)
                     }
 
                 })
@@ -85,10 +90,14 @@ class MeasureBodyFragment : BodyBaseFragment() {
         }
     }
 
+    var isUpdate = false
     fun updateButtons() {
+        if (isUpdate)
+            return
         log(" updateButtons()")
         updateNextButton(false)
         updateSkipButton(false)
+        isUpdate = true
     }
 
     private fun getShapes(male: Boolean): ArrayList<BodyShapeAdapter.Item> {
@@ -142,6 +151,43 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     50
                 )
             )
+            /*list.add(
+                BodyShapeAdapter.Item(
+                    5,
+                    R.drawable.ic_intro_male_hip,
+                    getString(R.string.high_hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
+                )
+            )
+            list.add(
+                BodyShapeAdapter.Item(
+                    6,
+                    R.drawable.ic_intro_male_hip,
+                    getString(R.string.high_hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
+                )
+            )
+
+            list.add(
+                BodyShapeAdapter.Item(
+                    7,
+                    R.drawable.ic_intro_male_hip,
+                    getString(R.string.high_hips),
+                    "",
+                    "cm",
+                    50,
+                    150,
+                    50
+                )
+            )*/
 //            list.add(
 //                BodyShapeAdapter.Item(
 //                    5, R.drawable.ic_intro_male_wrist, "Wrist", "", "cm", 5, 25, 5
@@ -232,39 +278,79 @@ class MeasureBodyFragment : BodyBaseFragment() {
     }
 
     var lastUnit = ""
-    fun showPicker(data: BodyShapeAdapter.Item?) {
+    fun showPicker(
+        data: BodyShapeAdapter.Item?,
+        holder: BodyShapeAdapter.Holder
+    ) {
+        data?.let {
+            MeasureBodyActivity.launch(
+                it,
+                this,
+                data.unit,
+                getInt(data.value),
+                holder.image,
+                holder.text,
+                holder.value,
+                holder.unit
+            )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == MeasureBodyActivity.CODE && resultCode == Activity.RESULT_OK) {
+            val i: BodyShapeAdapter.Item? =
+                data?.getSerializableExtra("data_result") as BodyShapeAdapter.Item?
+            i?.let {
+                onPickerItemClicked(it)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    fun showPicker2(data: BodyShapeAdapter.Item?) {
         data?.let {
             MeasureBodyDialog(
                 it,
                 object : ItemClickListener<BodyShapeAdapter.Item> {
                     override fun onItemClicked(item: BodyShapeAdapter.Item?, position: Int) {
                         if (item != null) {
-                            if (item.unit.toLowerCase().contains("cm")) {
-                                lastUnit = "cm"
-                                Calculate.getMeasureData()
-                                    .addMeasurement(item.id, getInt(item.value))
-                                // item.value = String.format("%.2f", Calculate.cmToInch(item.value))
-                                // item.unit = "inches"
-
-                            } else {
-                                lastUnit = "inches"
-                                Calculate.getMeasureData()
-                                    .addMeasurement(item.id, Calculate.inchToCm(item.value).toInt())
-                            }
-
-                            item.value = item.value
-                            item.unit = item.unit
-
-                            adapter?.update(item)
+                            onPickerItemClicked(item)
                         }
                         //Calculate.getMeasureData().addMeasurement(item)
                         //Calculate.addValue("value_${item?.id}", item?.value)
-                        calculateType()
+
                     }
 
                 }, lastUnit
             ).show(childFragmentManager, "BodyShapeDialog")
         }
+    }
+
+    @Synchronized
+    fun onPickerItemClicked(item: BodyShapeAdapter.Item) {
+        log("onPickerItemClicked $item")
+        if (item.value.isNullOrEmpty())
+            return
+        if (item.unit.toLowerCase().contains("cm")) {
+            lastUnit = "cm"
+            Calculate.getMeasureData()
+                .addMeasurement(item.id, getInt(item.value))
+            // item.value = String.format("%.2f", Calculate.cmToInch(item.value))
+            // item.unit = "inches"
+
+        } else {
+            lastUnit = "inches"
+            Calculate.getMeasureData()
+                .addMeasurement(item.id, Calculate.inchToCm(item.value).toInt())
+        }
+
+        //item.value = item.value
+        //item.unit = item.unit
+
+        adapter?.update(item)
+
+        calculateType()
     }
 
     fun refreshAdapter() {
@@ -286,7 +372,9 @@ class MeasureBodyFragment : BodyBaseFragment() {
         }
     }
 
-    fun calculateType(): Boolean {
+    @Synchronized
+    private fun calculateType(): Boolean {
+        log("calculateType started")
         try {
             val data = Calculate.getMeasureData()
             val chest = data.getMeasurement(1)
@@ -294,7 +382,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
             val hips = data.getMeasurement(3)
             val highHips = data.getMeasurement(4)
 
-            log("chest $chest, waist $waist, hips: $hips, highHips $highHips")
+            log("calculateType chest $chest, waist $waist, hips: $hips, highHips $highHips")
 //            Snackbar.make(
 //                view!!,
 //                "chest $chest, waist $waist, hips: $hips, highHips $highHips",
@@ -305,10 +393,12 @@ class MeasureBodyFragment : BodyBaseFragment() {
             if (chest > 0 && waist > 0 && hips > 0 && highHips > 0) {
                 if (isMale) {
                     updateNextButton(true)
+                    log("calculateType updateNextButton Male")
                     return true
                 } else {
                     if (data.getMeasurement(5) > 0 && data.getMeasurement(6) > 0) {
                         updateNextButton(true)
+                        log("calculateType updateNextButton Female")
                         return true
                     }
                 }

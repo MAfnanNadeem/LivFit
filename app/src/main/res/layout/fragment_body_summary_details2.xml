@@ -40,8 +40,6 @@
                 android:id="@+id/tv_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_2x"
                 android:gravity="start"
                 android:text="@string/my_bmi_title"
                 android:textColor="@color/textColor"
@@ -49,7 +47,10 @@
                 android:fontFamily="@string/font_roboto_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_back"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="@id/btn_back"
+                app:layout_constraintTop_toTopOf="@id/btn_back"
+
+                />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayoutInfo"
@@ -62,7 +63,7 @@
                 android:padding="@dimen/grid_2x"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_title">
+                app:layout_constraintTop_toBottomOf="@id/btn_back">
 
 
                 <life.mibo.views.HexagonImageView
@@ -84,7 +85,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/imageViewProfile"
-                    tools:text="@string/sumeet" />
+                    tools:text="@string/dummy_name" />
 
 
                 <androidx.cardview.widget.CardView

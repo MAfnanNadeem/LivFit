@@ -27,8 +27,8 @@
         android:id="@+id/tv_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_margin="@dimen/grid_2x"
+        android:gravity="start"
         android:textColor="@color/textColor2"
         android:textSize="@dimen/text_size_large"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,14 +38,14 @@
 
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_body_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/grid_4x"
         android:layout_marginBottom="@dimen/grid_4x"
         android:minHeight="120dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/tv_weight"
+        app:layout_constraintBottom_toTopOf="@+id/linerLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
@@ -58,24 +58,44 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
         android:checked="false"
-        android:textOff="CM"
-        android:textOn="Inch"
+        android:textOff="@string/cm_unit"
+        android:textOn="@string/inch_unit"
         app:layout_constraintBottom_toTopOf="@id/frame_bottom"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_weight"
+
+    <LinearLayout
+        android:id="@+id/linerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:lines="1"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/text_size_large"
-        android:textStyle="bold"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/frame_bottom"
         app:layout_constraintEnd_toEndOf="@id/frame_bottom"
-        app:layout_constraintStart_toStartOf="@id/frame_bottom"
-        tools:text="50 CM" />
+        app:layout_constraintStart_toStartOf="@id/frame_bottom">
+
+        <TextView
+            android:id="@+id/tv_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/font_roboto_black"
+            android:lines="1"
+            tools:text="50"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_large" />
+
+        <TextView
+            android:id="@+id/tv_value_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_4dp"
+            android:fontFamily="@string/font_roboto_regular"
+            android:lines="1"
+            tools:text="CM"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_large" />
+    </LinearLayout>
+
 
     <FrameLayout
         android:id="@+id/frame_bottom"

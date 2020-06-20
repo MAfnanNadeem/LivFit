@@ -5,6 +5,7 @@
     <dimen name="grid_2x">16dp</dimen>
     <dimen name="grid_1x">8dp</dimen>
     <dimen name="grid_4dp">4dp</dimen>
+    <dimen name="grid_12dp">4dp</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>

@@ -177,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/grid_2x"
                 android:layout_marginEnd="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
                 android:background="@drawable/login_button_accent"
                 android:text="@string/save_address"
                 android:textColor="@color/white"

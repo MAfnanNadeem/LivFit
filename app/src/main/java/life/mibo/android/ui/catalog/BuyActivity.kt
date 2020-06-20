@@ -589,6 +589,7 @@ class BuyActivity : BaseActivity() {
         val country: TextView? = itemView.findViewById(R.id.personCountry)
         val phone: TextView? = itemView.findViewById(R.id.personNumber)
         val radio: RadioButton? = itemView.findViewById(R.id.radio_button)
+        val item_view: View? = itemView.findViewById(R.id.item_view)
 
         fun bind(item: AddressItem?, listener: ItemClickListener<AddressItem>?) {
             if (item == null)
@@ -610,7 +611,7 @@ class BuyActivity : BaseActivity() {
             //phone?.text = item.phone
             radio?.isChecked = item.selected
 
-            itemView?.setOnClickListener {
+            item_view?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }
 

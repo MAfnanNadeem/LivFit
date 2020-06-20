@@ -1,6 +1,9 @@
 package life.mibo.android.ui.login
 
+import android.R.attr.animation
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -9,7 +12,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
-import com.bumptech.glide.Glide
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_login.*
@@ -20,6 +22,7 @@ import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.views.svg.AnimatedSvgView
 import java.util.concurrent.TimeUnit
 
 
@@ -171,6 +174,19 @@ class LoginActivity : BaseActivity() {
     var isAutologin = false
     private fun setSplash() {
         //Glide.with(this).asGif().load(R.drawable.mibo_livfit_giff).into(splashImage3)
+//        splashImage3?.start();
+//        splashImage3?.setOnStateChangeListener {
+//            if(it == AnimatedSvgView.STATE_FINISHED){
+//                hideSplashView()
+//            }
+//            log("setSplash setOnStateChangeListener $it")
+//        }
+//        val d: Drawable? = splashImage3.drawable
+//        if (d is AnimatedVectorDrawable) {
+//            d.start()
+//            //splashImage3.animation = d
+//            //splashImage3.animation.start()
+//        }
 
         val anim = AnimationUtils.loadAnimation(this, R.anim.slide_image_from_right)
         anim.setAnimationListener(object : Animation.AnimationListener {
@@ -206,8 +222,8 @@ class LoginActivity : BaseActivity() {
 
     fun hideSplashView() {
         runOnUiThread {
-            splashImage?.clearAnimation()
-            splashImage2?.clearAnimation()
+            //splashImage?.clearAnimation()
+            //splashImage2?.clearAnimation()
             splashLayout?.visibility = View.GONE
         }
     }

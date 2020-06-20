@@ -7,6 +7,7 @@
 
 package life.mibo.views.body.picker;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -261,10 +262,10 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
     @Override
     protected void onLayout(boolean isChanged, int left, int top, int right, int bottom) {
         super.onLayout(isChanged, left, top, right, bottom);
-        log("onLayout: ----- " + isChanged);
+        // log("onLayout: ----- " + isChanged);
         if (isChanged) {
             final int width = getWidth();
-            log("onLayout ----- " + width);
+            //  log("onLayout ----- " + width);
 
             //Set width of the left spacer to the half of this view.
             final ViewGroup.LayoutParams leftParams = mLeftSpacer.getLayoutParams();
@@ -275,7 +276,7 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
             final ViewGroup.LayoutParams rightParams = mRightSpacer.getLayoutParams();
             rightParams.width = width / 2;
             mRightSpacer.setLayoutParams(rightParams);
-            log("onLayout width ----- " + leftParams.width + " :: " + rightParams.width);
+            // log("onLayout width ----- " + leftParams.width + " :: " + rightParams.width);
             mLeftSpacer.invalidate();
             mRightSpacer.invalidate();
 
@@ -319,7 +320,7 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
      *              will be selected.
      */
     public void selectValue(final int value) {
-        log("selectValue " + value);
+        //log("selectValue " + value);
         mHorizontalScrollView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -338,13 +339,38 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
         }, 400);
     }
 
+
+    public void selectValue(final int value, boolean animate) {
+        //log("selectValue " + value);
+        mHorizontalScrollView.postDelayed(() -> {
+            int valuesToScroll;
+            if (value < mRulerView.getMinValue()) {
+                valuesToScroll = 0;
+            } else if (value > mRulerView.getMaxValue()) {
+                valuesToScroll = mRulerView.getMaxValue() - mRulerView.getMinValue();
+            } else {
+                valuesToScroll = value - mRulerView.getMinValue();
+            }
+
+            try {
+                ObjectAnimator animator = ObjectAnimator.ofInt(mHorizontalScrollView, "scrollX", valuesToScroll * mRulerView.getIndicatorIntervalWidth());
+                animator.setDuration(600);
+                animator.start();
+            }
+            catch (Exception eee){
+                eee.printStackTrace();
+                mHorizontalScrollView.smoothScrollTo(valuesToScroll * mRulerView.getIndicatorIntervalWidth(), 0);
+            }
+        }, 400);
+    }
+
     /**
      * @return Get the current selected value.
      */
     public int getCurrentValue() {
         int absoluteValue = mHorizontalScrollView.getScrollX() / mRulerView.getIndicatorIntervalWidth();
         int value = mRulerView.getMinValue() + absoluteValue;
-        log("getCurrentValue absolute " + absoluteValue + " -value- " + value);
+        //log("getCurrentValue absolute " + absoluteValue + " -value- " + value);
         if (value > mRulerView.getMaxValue()) {
             return mRulerView.getMaxValue();
         } else if (value < mRulerView.getMinValue()) {
@@ -366,11 +392,11 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
         if (mListener != null) {
             mListener.onValueChange(getCurrentValue());
         }
-        log("onScrollStopped ");
+        //log("onScrollStopped ");
     }
 
     private void makeOffsetCorrection(final int indicatorInterval) {
-        log("makeOffsetCorrection " + indicatorInterval);
+        //log("makeOffsetCorrection " + indicatorInterval);
 
         int offsetValue = mHorizontalScrollView.getScrollX() % indicatorInterval;
         if (offsetValue < indicatorInterval / 2) {
@@ -499,8 +525,9 @@ public final class RulerValuePicker extends FrameLayout implements ScrollChanged
     public void setMinMaxValue(final int minValue, final int maxValue) {
         log("setMinMaxValue " + minValue + " -- " + maxValue);
         mRulerView.setValueRange(minValue, maxValue);
-        mHorizontalScrollView.requestLayout();
+        //mHorizontalScrollView.requestLayout();
         //refresh();
+        //forceLayout();
         requestLayout();
         selectValue(minValue);
     }

@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 
 import life.mibo.android.R;
 import life.mibo.android.utils.Utils;
@@ -148,9 +149,29 @@ public class DashboardItem extends FrameLayout {
 
     TextView textViewTitle;
     TextView textViewHeader;
+    ImageView imageIcon;
+
+    void countViews() {
+        Logger.e("countViews start");
+        for (int i = 0; i < getChildCount(); i++) {
+            Logger.e("countViews -1 at " + i);
+            View v = getChildAt(i);
+            if (v instanceof ViewGroup) {
+                Logger.e("countViews -2 view2 " + ((ViewGroup) v).getChildCount());
+                View v2 = getChildAt(i);
+                if (v2 instanceof ViewGroup) {
+                    Logger.e("countViews -3 view3 " + ((ViewGroup) v2).getChildCount());
+                }
+            }
+
+        }
+    }
 
     public boolean updateHeader(String header) {
+        //Logger.e("updateHeader text " + header + " :: " + textViewHeader);
         if (textViewHeader != null) {
+            //textViewHeader.setText("");
+            //textViewHeader.setTextColor(Color.RED);
             textViewHeader.setText(header);
             return true;
         }
@@ -158,6 +179,7 @@ public class DashboardItem extends FrameLayout {
     }
 
     public boolean updateTitle(String header) {
+        //Logger.e("updateHeader text " + header + " :: " + textViewTitle);
         if (textViewTitle != null) {
             textViewTitle.setText(header);
             return true;
@@ -165,8 +187,17 @@ public class DashboardItem extends FrameLayout {
         return false;
     }
 
-    public void addViews(int imageId, int iconId, String header, String title) {
+    boolean isAdded = false;
 
+    private LinearLayout createLinearView() {
+        LinearLayout layout = new LinearLayout(this.getContext());
+        layout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        layout.setOrientation(LinearLayout.VERTICAL);
+        return layout;
+    }
+
+    public void addViews(int imageId, int iconId, String header, String title) {
+        isAdded = false;
         //Logger.e("DashboardItem addViews image="+imageId+" icon="+iconId+" header="+header+" text="+title);
         ConstraintSet set = new ConstraintSet();
         LinearLayout layout = new LinearLayout(this.getContext());
@@ -178,37 +209,52 @@ public class DashboardItem extends FrameLayout {
         }
 
         if (iconId != 0) {
-            ImageView iv = new ImageView(this.getContext());
-            iv.setId(View.generateViewId());
-            iv.setImageResource(iconId);
-            iv.setLayoutParams(new ViewGroup.LayoutParams(getDp(40), getDp(40)));
-            layout.addView(iv);
+            if (imageIcon == null) {
+                imageIcon = new ImageView(this.getContext());
+                imageIcon.setId(View.generateViewId());
+                imageIcon.setImageResource(iconId);
+                imageIcon.setLayoutParams(new ViewGroup.LayoutParams(getDp(40), getDp(40)));
+                layout.addView(imageIcon);
+                isAdded = true;
+            } else {
+                imageIcon.setImageResource(iconId);
+            }
         }
 
 
         if (!Utils.isEmpty(header)) {
-            textViewHeader = new TextView(getContext());
-            textViewHeader.setText(header);
-            textViewHeader.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            textViewHeader.setId(View.generateViewId());
-            textViewHeader.setTextColor(Color.WHITE);
-            textViewHeader.setSingleLine();
-            textViewHeader.setTypeface(null, Typeface.BOLD);
-            //tv2.setPadding(0,getDp(8),0,0);
-            textViewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            layout.addView(textViewHeader);
+            if (textViewHeader == null) {
+                textViewHeader = new TextView(getContext());
+                textViewHeader.setText(header);
+                textViewHeader.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                textViewHeader.setId(View.generateViewId());
+                textViewHeader.setTextColor(Color.WHITE);
+                textViewHeader.setSingleLine();
+                textViewHeader.setTypeface(null, Typeface.BOLD);
+                //tv2.setPadding(0,getDp(8),0,0);
+                textViewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                layout.addView(textViewHeader);
+                isAdded = true;
+            } else {
+                textViewHeader.setText(header);
+            }
         }
 
         if (!Utils.isEmpty(title)) {
-            textViewTitle = new TextView(getContext());
-            textViewTitle.setText(title);
-            textViewTitle.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            textViewTitle.setId(View.generateViewId());
-            textViewTitle.setPadding(0, getDp(8), 0, 0);
-            textViewTitle.setSingleLine();
-            textViewTitle.setTextColor(Color.WHITE);
-            textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            layout.addView(textViewTitle);
+            if (textViewTitle == null) {
+                textViewTitle = new TextView(getContext());
+                textViewTitle.setText(title);
+                textViewTitle.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                textViewTitle.setId(View.generateViewId());
+                textViewTitle.setPadding(0, 0, 0, 0);
+                //textViewTitle.setSingleLine();
+                textViewTitle.setTextColor(Color.WHITE);
+                textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                layout.addView(textViewTitle);
+                isAdded = true;
+            } else {
+                textViewTitle.setText(title);
+            }
         }
 
 //        if (imageId != 0) {
@@ -252,7 +298,8 @@ public class DashboardItem extends FrameLayout {
         layout.setHorizontalGravity(Gravity.CENTER);
 
         ///constraintLayout.removeAllViews();
-        constraintLayout.addView(layout);
+        if (isAdded)
+            constraintLayout.addView(layout);
         set.clone(constraintLayout);
         set.connect(layout.getId(), ConstraintSet.TOP, imageView.getId(), ConstraintSet.TOP, 0);
         set.connect(layout.getId(), ConstraintSet.BOTTOM, imageView.getId(), ConstraintSet.BOTTOM, 0);

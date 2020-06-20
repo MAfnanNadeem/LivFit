@@ -15,6 +15,7 @@
     <color name="grey_ddd">#bbb</color>
     <color name="textColor">#313131</color>
     <color name="textColor2">#606060</color>
+    <color name="textColorGreen">#00a475</color>
     <color name="textColorApp">#58468C</color>
     <color name="textColorAppDisable">#9958468C</color>
     <color name="textColorApp2">#FF8A73</color>
@@ -58,5 +59,15 @@
     <color name="background_color_app">#F3F4F8</color>
     <color name="dialog_ip_bg_color">#EDF0FB</color>
 
+
+    <integer-array name="mibo_svg_colors">
+        <item>@color/textColorGreen</item>
+        <item>@color/white</item>
+        <item>@color/textColorGreen</item>
+        <item>@color/textColorApp2</item>
+        <item>@color/textColorGreen</item>
+        <item>@color/white</item>
+        <item>@color/textColor</item>
+    </integer-array>
 
 </resources>

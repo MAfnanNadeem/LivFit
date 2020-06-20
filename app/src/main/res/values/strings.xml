@@ -2,7 +2,8 @@
     <!--    <string name="app_name">Mibo Hexa</string>-->
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
-    <string name="app_version">0.1.10</string>
+    <string name="mibo_world">MI.BO. World</string>
+    <string name="app_version">0.1.14</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="numbers_only">0123456789</string>
@@ -21,10 +22,19 @@
     <string name="font_roboto_medium">sans-serif-medium</string>
     <string name="font_roboto_regular">sans-serif</string>
     <string name="font_roboto_light">sans-serif-light</string>
-    <string name="font_roboto">sans-serif-black</string>
+    <string name="font_roboto">sans-serif</string>
     <string name="font_roboto_condensed">sans-serif-condensed</string>
     <string name="font_sans_serif">sans-serif</string>
 
+    <string-array name="mibo_logo_svg">
+        <item>M 174.178 72.726 L 187.852 72.726 L 187.852 29.173 L 162.452 29.173 L 162.452 97.047 L 174.181 97.047 Z</item>
+        <item>M 162.449 1.808 L 187.853 1.808 L 187.853 22.738 L 162.449 22.738 Z</item>
+        <item>M 108.23 2.057 C 95.35 2.057 85.689 9.39 80.321 17.437 C 75.56 6.893 65.94 2.504 55.012 2.097 L 55.012 2.057 L 0 2.057 L 0 87.304 L 25.4 87.304 L 25.4 43.383 C 25.4 25.315 37.566 22.098 42.574 22.098 C 58.674 22.098 58.674 34.441 58.674 45.171 L 58.674 92.471 L 84.074 92.471 L 84.074 45.526 C 84.074 33.897 86.757 22.093 101.068 22.093 C 115.559 22.093 116.631 32.288 116.631 44.631 L 116.631 97.047 L 142.031 97.047 L 142.031 35.147 C 142.04 11.178 127.909 2.057 108.23 2.057 Z</item>
+        <item>M 177.849 76.66 L 203.126 76.66 L 203.126 101.454 L 177.849 101.454 Z</item>
+        <item>M 178.014 227.322 L 203.291 227.322 L 203.291 252.116 L 178.014 252.116 Z</item>
+        <item>M 181.151 156.832 C 171.903 146.953 160.166 141.944 146.264 141.944 C 136.256 141.944 124.264 144.806 116.136 150.451 C 109.802 154.851 103.555 161.48 97.507 170.205 C 91.459 161.48 85.207 154.851 78.876 150.451 C 70.873 144.845 61.319 141.87 51.548 141.944 C 44.762 141.992 38.081 143.636 32.048 146.744 L 32.048 173.587 L 32.201 173.535 C 34.116 171.486 36.436 169.857 39.014 168.753 C 41.593 167.649 44.373 167.094 47.177 167.123 C 50.278 167.18 53.357 167.651 56.333 168.523 C 56.478 168.562 56.622 168.611 56.766 168.653 Q 57.477 168.864 58.182 169.107 L 58.391 169.179 C 60.94 170.027 63.347 171.256 65.529 172.823 Q 73.129 178.523 84.529 196.35 C 84.229 196.813 83.871 197.299 83.489 197.795 Q 74.663 211.295 70.989 215.582 C 68.229 218.774 64.935 221.463 61.255 223.529 C 54.593 227.041 50.18 226.845 46.319 226.274 C 43.373 225.893 40.533 224.924 37.969 223.423 C 35.405 221.923 33.168 219.922 31.393 217.54 C 28.611 213.904 26.595 209.74 25.468 205.303 L 25.468 101.903 L 0.214 101.903 L 0.214 251.336 L 53.401 251.336 L 53.41 251.302 C 62.478 251.011 71.27 248.096 78.716 242.913 C 85.074 238.538 91.376 231.874 97.507 223.051 C 103.637 231.874 109.939 238.539 116.294 242.912 C 124.413 248.502 136.355 251.336 146.264 251.336 C 156.303 251.525 166.136 248.442 174.271 242.555 L 174.271 223.327 L 189.807 223.327 C 193.224 215.684 194.956 206.765 194.956 196.64 C 194.956 180.017 190.312 166.624 181.151 156.832 Z M 163.419 216.94 Q 157.556 225.378 146.693 225.374 C 142.785 225.374 136.339 224.494 132.957 222.729 C 129.546 220.945 126.512 218.518 124.023 215.582 Q 120.162 211.082 110.585 196.354 Q 121.74 178.913 129.169 173.338 C 134.123 169.621 141.976 167.763 147.122 167.763 C 150.133 167.741 153.111 168.398 155.833 169.684 C 158.556 170.971 160.954 172.855 162.848 175.196 Q 169.28 182.632 169.281 196.069 Q 169.281 208.504 163.419 216.94 Z</item>
+        <item>M 205.275 0 C 206.605 0.009 207.912 0.353 209.075 1 C 210.297 1.651 211.303 2.646 211.967 3.861 C 212.643 5.036 213 6.367 213.003 7.722 C 213.006 9.077 212.654 10.41 211.982 11.587 C 211.323 12.796 210.33 13.791 209.122 14.453 C 207.949 15.121 206.622 15.473 205.272 15.473 C 203.922 15.473 202.595 15.121 201.422 14.453 C 200.213 13.791 199.218 12.796 198.556 11.587 C 197.881 10.411 197.527 9.078 197.53 7.722 C 197.533 6.366 197.892 5.034 198.571 3.861 C 199.239 2.646 200.247 1.652 201.471 1 C 202.635 0.353 203.943 0.009 205.275 0 Z M 205.275 1.282 C 204.164 1.289 203.072 1.576 202.101 2.118 C 201.083 2.665 200.244 3.495 199.687 4.507 C 199.118 5.484 198.818 6.594 198.815 7.724 C 198.812 8.855 199.108 9.966 199.672 10.946 C 200.227 11.953 201.058 12.782 202.066 13.336 C 203.043 13.897 204.149 14.192 205.275 14.192 C 206.402 14.192 207.508 13.897 208.485 13.336 C 209.492 12.783 210.321 11.953 210.874 10.946 C 211.434 9.965 211.728 8.854 211.725 7.724 C 211.722 6.595 211.423 5.485 210.858 4.507 C 210.303 3.493 209.464 2.663 208.444 2.118 C 207.475 1.578 206.385 1.29 205.275 1.283 Z M 201.881 12.018 L 201.881 3.692 L 204.74 3.692 C 205.455 3.659 206.171 3.737 206.863 3.923 C 207.29 4.067 207.657 4.349 207.908 4.723 C 208.16 5.08 208.296 5.506 208.298 5.943 C 208.301 6.238 208.244 6.531 208.133 6.804 C 208.021 7.077 207.856 7.325 207.647 7.533 C 207.188 7.995 206.57 8.267 205.919 8.292 C 206.18 8.394 206.42 8.544 206.627 8.733 C 207.096 9.237 207.508 9.79 207.857 10.383 L 208.872 12.014 L 207.232 12.014 L 206.493 10.701 C 206.146 9.977 205.672 9.32 205.093 8.763 C 204.775 8.551 204.397 8.45 204.016 8.476 L 203.226 8.476 L 203.226 12.014 Z M 203.224 7.332 L 204.855 7.332 C 205.41 7.388 205.968 7.266 206.449 6.983 C 206.675 6.793 206.823 6.526 206.864 6.233 C 206.904 5.941 206.835 5.644 206.67 5.399 C 206.528 5.2 206.329 5.048 206.1 4.963 C 205.661 4.843 205.206 4.795 204.752 4.82 L 203.224 4.82 Z</item>
+    </string-array>
     <!--  DON NOT TRANSLATE END  -->
 
     <string name="unable_to_connect">Unable to connect</string>
@@ -134,6 +144,7 @@
     <string name="number_verified">Your mobile number is verified!</string>
     <string name="logout_message">Are You Sure You Want to Log Out</string>
     <string name="no_data_found">No Data Found</string>
+    <string name="no_session_found">No Sessions Found</string>
     <string name="user_has_no_service">This user has not added any services yet</string>
     <string name="no_heart_rate_data">No Heart Rate Data Available</string>
     <string name="session_expired">Session Expired Please log in again.</string>
@@ -284,6 +295,7 @@
     <string name="kg_unit">Kg</string>
     <string name="lbs_unit">lbs</string>
     <string name="cm_unit">CM</string>
+    <string name="inch_unit">Inch</string>
     <string name="feet_in_unit">Feet/Inches</string>
     <string name="feet_in_unit_abr">ft/in</string>
     <string name="bmp_unit">BPM</string>
@@ -397,10 +409,11 @@
     <string name="professional_name">Professional Name</string>
     <string name="name_profession"><small> Name/Profession</small> </string>
     <string name="no_professionals">Thank you for your interest! No Professionals have registered yet.</string>
-    <string name="search_services">Services</string>
+    <string name="search_services">Discover</string>
     <string name="search_professionals">Search Professionals</string>
     <string name="invite_me">Invite Me</string>
     <string name="invited_already">Already Invited</string>
+    <string name="invitation_sent">Success! An Invitation has been sent to %s</string>
     <string name="no_service_found">No Service Found.</string>
     <string name="services">Services</string>
     <string name="specializations">Specializations</string>
@@ -410,12 +423,15 @@
     <string name="book">Book</string>
     <string name="reschedule">Reschedule</string>
     <string name="schedules">Schedules</string>
+    <string name="training_schedules">Training Schedules</string>
     <string name="checkout">Checkout</string>
     <string name="full_name"><small>Full Name</small></string>
     <string name="customer_feedback">Customer Feedback</string>
     <string name="your_feedback">Your Feedback</string>
     <string name="enter_your_feedback">Enter Your Feedback</string>
     <string name="save">Save</string>
+    <string name="yes_text">Yes</string>
+    <string name="no_text">No</string>
     <string name="basic_info">Basic Info</string>
     <string name="weight_compare">Weight Compare</string>
     <string name="select_date">Select Date</string>
@@ -497,9 +513,14 @@
     <string name="wrist">Wrist</string>
     <string name="forearm">Forearm</string>
 
+    <string name="ems_tens"><small><small>EMS</small></small></string>
+    <string name="ems_tens_sessions">EMS/TENS \n Sessions </string>
+
     <string name="booster_no_response">Connected Device does not responding!</string>
     <string name="booster_inactive">Connected device is inactive</string>
     <string name="completed">Completed</string>
+    <string name="in_progress">In Progress</string>
+    <string name="missed_session">Missed</string>
     <string name="select_weight">Please select weight</string>
     <string name="select_height">Please select height</string>
     <string name="profile_picture">Profile Picture</string>
@@ -509,6 +530,18 @@
     <string name="profile_update">Update Profile</string>
     <string name="not_editable">Not Editable!</string>
     <string name="profile_updated">Profile successfully updated</string>
+    <string name="no_certifications">This user has not added any certifications yet</string>
+    <string name="no_specialization_yet">This user has not added any specialization yet</string>
+    <string name="biometric_share_title">Biometric</string>
+    <string name="biometric_share_info">Connect your account and start sharing your data with me. This will help me better understand your lifestyle patterns and daily habits so I can coach you more effectively to accomplish your fitness and wellness goals.</string>
+    <string name="view_photo">View Profile Photo</string>
+    <string name="change_photo">Change Profile Photo</string>
+    <string name="remove_photo">Remove Profile Photo</string>
+    <string name="attendance">Attendance</string>
+    <string name="remove_photo_hint">Are you sure want to remove profile photo?</string>
+    <string name="remove_photo_success">Your profile photo will be removed!</string>
+    <string name="select_program_tp_start_session">\"Please select a program in order to launch the session. \"</string>
+    <string name="start_session_text">Are you sure you want to start the session?</string>
 
 
     <!-- customer reviews -->

@@ -308,7 +308,7 @@ public class Utils {
         }
     }
 
-    public static void loadImage(ImageView image, String thumbnail, int defaultRes) {
+    public static void loadBase64Image(ImageView image, String thumbnail, int defaultRes) {
         if (image == null)
             return;
         try {
@@ -522,10 +522,11 @@ public class Utils {
             return;
         try {
             int def = genderMale ? R.drawable.ic_user_male : R.drawable.ic_user_female;
-            if (url != null && url.length() > 0) {
+            if (url != null && (url.endsWith("jpg") || url.endsWith("png"))) {
                 Glide.with(imageView).load(url).fitCenter().error(def).fallback(def).into(imageView);
             } else {
-                imageView.setImageResource(def);
+                Glide.with(imageView).load(def).fitCenter().error(def).fallback(def).into(imageView);
+                //imageView.setImageResource(def);
             }
         } catch (Exception e) {
 

@@ -98,6 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/grid_2x"
                     android:fontFamily="@string/font_roboto_medium"
+                    android:background="?android:attr/selectableItemBackground"
                     android:text="@string/add_new_address"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium" />

@@ -182,7 +182,7 @@ class CatalogProductsFragment : BaseFragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             val v = if (!grid) LayoutInflater.from(parent.context)
                 .inflate(
-                    R.layout.list_item_trainer_search,
+                    R.layout.list_item_product_catalog,
                     parent,
                     false
                 ) else LayoutInflater.from(

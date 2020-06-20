@@ -277,13 +277,19 @@
             android:scaleType="centerInside"
             android:src="@drawable/mibo_livfit_bottom" />
 
-        <ImageView
-            android:id="@+id/splashImage3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:scaleType="centerInside" />
+<!--        <life.mibo.views.svg.AnimatedSvgView-->
+<!--            android:id="@+id/splashImage3"-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            app:animatedSvgFillColors="@array/mibo_svg_colors"-->
+<!--            app:animatedSvgGlyphStrings="@array/mibo_logo_svg"-->
+<!--            app:animatedSvgFillStart="600"-->
+<!--            app:animatedSvgFillTime="500"-->
+<!--            app:animatedSvgImageSizeX="213"-->
+<!--            app:animatedSvgImageSizeY="252"-->
+<!--            app:animatedSvgTraceTime="1000"-->
+<!--            app:animatedSvgTraceTimePerGlyph="500"/>-->
 
     </FrameLayout>
 

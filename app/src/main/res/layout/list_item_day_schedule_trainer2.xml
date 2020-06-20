@@ -20,7 +20,6 @@
     android:paddingStart="@dimen/grid_1x"
     android:paddingEnd="@dimen/grid_1x">
 
-
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_text"
         android:layout_width="wrap_content"
@@ -36,54 +35,15 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="12:34" />
 
-    <View
-        android:id="@+id/viewStarted"
-        android:layout_width="8dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/grid_1x"
-        android:layout_marginTop="@dimen/grid_1x"
-        android:background="@color/colorDeviceColorGreen"
-        app:layout_constraintBottom_toBottomOf="@id/tv_end"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_text" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/grid_1x"
-        android:fontFamily="@string/font_roboto_medium"
-        android:gravity="start"
-        android:textColor="@color/textColor2"
-        android:textSize="@dimen/text_size_medium"
-        app:fontFamily="@string/font_sans_serif"
-        app:layout_constraintStart_toEndOf="@id/viewStarted"
-        app:layout_constraintTop_toTopOf="@id/viewStarted"
-        tools:text="Start: 12:35" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/grid_1x"
-        android:fontFamily="@string/font_roboto_medium"
-        android:gravity="start"
-        android:textColor="@color/textColor2"
-        android:textSize="@dimen/text_size_medium"
-        app:fontFamily="@string/font_sans_serif"
-        app:layout_constraintStart_toEndOf="@id/viewStarted"
-        app:layout_constraintTop_toBottomOf="@id/tv_start"
-        tools:text="End:   12:45" />
-
     <RelativeLayout
+        android:id="@+id/rl_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_1x"
         android:paddingBottom="@dimen/grid_1x"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_end">
+        app:layout_constraintTop_toBottomOf="@id/tv_text">
 
         <life.mibo.views.CircleImageView
             android:id="@+id/imageView"
@@ -130,6 +90,82 @@
 
 
     </RelativeLayout>
+
+<!--    <androidx.appcompat.widget.AppCompatTextView-->
+<!--        android:id="@+id/tv_location"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:drawableStart="@drawable/ic_location_on_black_24dp"-->
+<!--        android:drawableTint="@color/grey_888"-->
+<!--        android:fontFamily="@string/font_roboto"-->
+<!--        android:padding="2dp"-->
+<!--        android:textColor="@color/textColor2"-->
+<!--        android:textSize="@dimen/text_size_medium"-->
+<!--        android:visibility="gone"-->
+<!--        app:fontFamily="@string/font_sans_serif"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/rl_layout"-->
+<!--        tools:text="End: 12:45" />-->
+
+
+    <View
+        android:id="@+id/viewStarted"
+        android:layout_width="8dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:background="@color/colorDeviceColorGreen"
+        app:layout_constraintBottom_toBottomOf="@id/tv_end"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_layout" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:gravity="start"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toTopOf="@id/viewStarted"
+        tools:text="Start: 12:35" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginBottom="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:gravity="start"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toBottomOf="@id/tv_start"
+        tools:text="End:   12:45" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_completed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginBottom="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto"
+        android:gravity="start"
+        android:visibility="gone"
+        android:textColor="@color/textColorApp2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/grid_1x"
+        tools:text="@string/completed" />
+
 
     <View
         android:layout_width="match_parent"

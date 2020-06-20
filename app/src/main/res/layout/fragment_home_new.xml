@@ -58,15 +58,17 @@
 
                 <life.mibo.views.HexagonImageView
                     android:id="@+id/iv_user_pic"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintHeight_percent="0.9"
                     android:layout_marginStart="@dimen/grid_2x"
+                    app:layout_constraintDimensionRatio="1:1"
                     app:civ_type="hexa"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@drawable/ic_user_test" />
+                     />
 
                 <!--        <life.mibo.views.DashboardItem-->
                 <!--            android:id="@+id/iv_user_pic2"-->
@@ -88,7 +90,7 @@
                     android:layout_marginStart="@dimen/grid_2x"
                     android:gravity="center"
                     android:textColor="@color/textColor"
-                    android:fontFamily="@string/font_sans_serif_medium"
+                    android:fontFamily="@string/font_roboto_medium"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintBottom_toBottomOf="@id/iv_user_pic"
                     app:layout_constraintStart_toEndOf="@+id/iv_user_pic"

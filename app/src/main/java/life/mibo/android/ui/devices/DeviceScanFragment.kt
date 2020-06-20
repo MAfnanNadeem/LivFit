@@ -45,6 +45,7 @@ import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.ui.trainer.TrainerCalendarActivity
 import life.mibo.android.ui.trainer.TrainerCalendarDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
@@ -159,6 +160,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
         button_connect_all?.setOnClickListener {
             //testCal()
+            //startTrainerCalenderResult()
             if (button_connect_all.getState() == State.IDLE || button_connect_all.getState() == State.STOPPED) {
                 connectAllDevices(isRxl)
             }
@@ -209,10 +211,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                                 SessionManager.getInstance().userSession.booster = i
                                 navigate(Navigator.SELECT_SUITS, null)
                             } else {
-                                TrainerCalendarDialog(CalendarListener).show(
-                                    childFragmentManager,
-                                    "TrainerCalendarDialog"
-                                )
+                                startTrainerCalenderResult()
                             }
                             return
                         }
@@ -256,6 +255,18 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             }
 
         }
+
+
+    private fun startTrainerCalenderResult() {
+        val i = Intent(requireContext(), TrainerCalendarActivity::class.java)
+        i.putExtra("activity_type", 15)
+        startActivityForResult(i, REQUEST_CALENDER)
+    }
+
+    private fun proceedToNext(bundle: Bundle) {
+        navigate(Navigator.SELECT_PROGRAM, bundle)
+    }
+
 
     var isConnectTrigger = false
 
@@ -722,6 +733,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     private val REQUEST_BLUETOOTH = 1022
     private val REQUEST_LOCATION = 1023
+    private val REQUEST_CALENDER = 1025
 
     private val REQUEST_BLUETOOTH2 = 1032
     private val REQUEST_LOCATION2 = 1033
@@ -872,7 +884,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             },
             {
                 Toasty.error(
-                    this@DeviceScanFragment.context!!,
+                    this.requireContext(),
                     getString(R.string.permission_denied)
                 )
             })
@@ -880,6 +892,15 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         log("onActivityResult $requestCode  $resultCode  : $data")
+        if (requestCode == REQUEST_CALENDER) {
+            if (resultCode == Activity.RESULT_OK) {
+                val bundle = data?.getBundleExtra("result_data")
+                if (bundle != null && bundle.containsKey("session_id")) {
+                    proceedToNext(bundle)
+                }
+            }
+        }
+
         if (requestCode == REQUEST_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
                 //isBluetooth = true

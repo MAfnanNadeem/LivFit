@@ -110,6 +110,14 @@
             android:name="life.mibo.android.ui.trainer.ProfessionalDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Material.FullScreen" />
+        <activity
+            android:name="life.mibo.android.ui.body_measure.MeasureBodyActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Material.FullScreen" />
+        <activity
+            android:name="life.mibo.android.ui.trainer.TrainerCalendarActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Material.FullScreen" />
 
 
         <!--        <service-->

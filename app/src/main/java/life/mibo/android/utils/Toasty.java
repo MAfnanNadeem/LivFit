@@ -2,6 +2,7 @@ package life.mibo.android.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -50,6 +51,12 @@ public class Toasty {
 
     public static Snackbar snackbar(View view, String message) {
         Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+        bar.show();
+        return bar;
+    }
+
+    public static Snackbar snackbarLong(View view, String message) {
+        Snackbar bar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
         bar.show();
         return bar;
     }
@@ -197,6 +204,16 @@ public class Toasty {
         return custom(context, message, ToastyUtils.getDrawable(context, R.drawable.ic_info_outline_white_24dp),
                 ToastyUtils.getColor(context, R.color.infoColor), ToastyUtils.getColor(context, R.color.defaultTextColor),
                 duration, withIcon, true);
+    }
+
+    @CheckResult
+    public static Toast grey(@NonNull Context context, @NonNull CharSequence message) {
+        return custom(context, message, null, 0, Color.WHITE, LENGTH_SHORT, false, false);
+    }
+
+    @CheckResult
+    public static Toast grey(@NonNull Context context, @NonNull CharSequence message, int duration) {
+        return custom(context, message, null, 0, Color.WHITE, duration, false, false);
     }
 
     @CheckResult

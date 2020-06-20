@@ -15,71 +15,84 @@
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="@dimen/grid_1x">
 
-
-    <RadioButton
-        android:id="@+id/radio_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/grid_1x"
-        android:buttonTint="@color/textColorApp"
-        android:clickable="false"
-        android:enabled="false" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:layout_marginBottom="@dimen/grid_2x"
-        android:orientation="vertical">
+        android:background="?android:attr/selectableItemBackground">
 
-        <TextView
-            android:id="@+id/personName"
+        <RadioButton
+            android:id="@+id/radio_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@string/font_roboto_black"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium"
-            tools:text="Sumeet Kumar" />
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/grid_1x"
+            android:buttonTint="@color/textColorApp"
+            android:clickable="false"
+            android:enabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/personAddress"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/grid_1x"
-            android:fontFamily="@string/font_sans_serif"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium"
-            tools:text="Address: Flat 03, Building 100 Jabel Ali Downtown Jafza" />
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_2x"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/radio_button"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/personCity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@string/font_sans_serif"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium"
-            tools:text="Dubai" />
+            <TextView
+                android:id="@+id/personName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_roboto_black"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Sumeet Kumar" />
 
-        <TextView
-            android:id="@+id/personCountry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@string/font_sans_serif"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium"
-            tools:text="UAE" />
+            <TextView
+                android:id="@+id/personAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/grid_1x"
+                android:fontFamily="@string/font_sans_serif"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Address: Flat 03, Building 100 Jabel Ali Downtown Jafza" />
 
-        <TextView
-            android:id="@+id/personNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@string/font_sans_serif"
-            android:textColor="@color/textColor"
-            android:textSize="@dimen/text_size_medium"
-            tools:text="Phone: +971 55 XXX XXXX" />
+            <TextView
+                android:id="@+id/personCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_sans_serif"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Dubai" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/personCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_sans_serif"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="UAE" />
+
+            <TextView
+                android:id="@+id/personNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_sans_serif"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Phone: +971 55 XXX XXXX" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.cardview.widget.CardView>

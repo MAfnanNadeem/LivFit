@@ -1274,7 +1274,7 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_webview,
             WebViewFragment.bundle("https://test.mibolivfit.club")
         )
-        title = "MI.BO World"
+        title = "MI.BO. World"
 //        navigate(
 //            R.id.action_navigation_home_to_schedule,
 //            R.id.navigation_schedule

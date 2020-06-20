@@ -243,12 +243,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         }
 
         if (!isConnected) {
-            Toasty.info(
-                this.fragment.requireContext(),
-                fragment.getString(R.string.device_not_connected),
-                Toasty.LENGTH_SHORT,
-                false
-            ).show()
+            Toasty.snackbar(tvTimer, fragment.getString(R.string.device_not_connected))
         }
 
     }

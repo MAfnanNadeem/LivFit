@@ -384,8 +384,7 @@ public final class RulerViewVertical extends View {
         //canvas.drawLine(0, startX, mLongIndicatorWidth, startX, mLongIndicatorPaint);
     }
 
-    private void drawValueText(@NonNull final Canvas canvas,
-                               final int value) {
+    private void drawValueText(@NonNull final Canvas canvas, final int value) {
         if (mTextHeight == 0) {
             Paint.FontMetrics fm = mTextPaint.getFontMetrics();
             mTextHeight = fm.descent - fm.ascent;
@@ -401,9 +400,13 @@ public final class RulerViewVertical extends View {
                 inches = 0;
             }
 
-            canvas.drawText(feet + "'" + inches,
-                    mIndicatorInterval * value,
-                    mTextPaint.getTextSize(),
+//            canvas.drawText(feet + "'" + inches,
+//                    mIndicatorInterval * value,
+//                    mTextPaint.getTextSize(),
+//                    mTextPaint);
+            canvas.drawText((feet + 4) + "'" + inches,
+                    mLongIndicatorWidth + mTextPaint.getTextSize(),
+                    mIndicatorInterval * value + (mTextHeight / 4),
                     mTextPaint);
         } else {
 //            canvas.drawText(String.valueOf(value + mMinValue),

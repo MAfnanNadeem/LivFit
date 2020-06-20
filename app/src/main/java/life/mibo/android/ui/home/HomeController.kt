@@ -557,7 +557,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
         list.add(
             HomeItem(
-                fragment.getString(R.string.myobooster_10ch),
+                fragment.getString(R.string.ems_tens_sessions),
                 "",
                 HomeItem.Type.BOOSTER_SCAN,
                 R.drawable.ic_dashboard_booster,

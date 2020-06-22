@@ -42,6 +42,7 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.rxl.adapter.ScoreAdapter
 import life.mibo.android.ui.rxl.impl.ScoreDialog
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.SessionManager
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
@@ -104,7 +105,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         d.show()
     }
 
+    private var isTrainerDialog = false
     private fun sessionCompleteTrainerDialog(type: Int) {
+        if (isTrainerDialog)
+            return
+        isTrainerDialog = true
         log("sessionCompleteTrainerDialog")
         val cancel: Boolean
         val title: String?
@@ -119,32 +124,63 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             msg = fragment.getString(R.string.session_completed)
         }
 
+        val time = getProgramTime()
         val calories = calculateCalories(
             SessionManager.getInstance().userSession.program.borgRating,
             getWeight().toDouble(),
-            getProgramTime()
+            time
         )
 
-        FeedbackDialog(
+        val di = FeedbackDialog(
             fragment.requireContext(),
             object : ItemClickListener<FeedbackDialog.Feedback> {
                 override fun onItemClicked(item: FeedbackDialog.Feedback?, position: Int) {
                     // Toasty.info(fragment.requireContext(), "clicked $item").show()
+                    try {
+                        if (type == 1)
+                            fragment.event(
+                                "stopped",
+                                "sessionId=$trainerSessionId userId=$trainerUserId",
+                                "duration=$time  calories=$calories"
+                            )
+                        else fragment.event(
+                            "complete",
+                            "sessionId=$trainerSessionId userId=$trainerUserId",
+                            "duration=$time  calories=$calories"
+                        )
+                    } catch (e: java.lang.Exception) {
+
+                    }
+                    isTrainerDialog = false
                     if (item != null) {
                         if (item.id >= 1) {
-                            stopUserSession(userUid)
-                            //demoSave()
-                            saveTrainerSessionApi(trainerUserId, item.rating, item.feedback)
-                            isSessionActive = false
+                            //exerciseCompleted(true)
                             cancelTimer()
+                            stopUserSession(userUid)
+                            isSessionActive = false
+                            //demoSave()
+                            saveTrainerSessionApi(
+                                trainerUserId,
+                                item.rating,
+                                item.feedback,
+                                calories,
+                                time
+                            )
+
+                            //cancelTimer()
                             return
                         }
                     }
                 }
 
             },
-            cancel, title, msg, "" + getProgramTime(), "$calories"
-        ).show()
+            cancel, title, msg, time, "$calories"
+        )
+        di.setOnDismissListener {
+            isTrainerDialog = false
+            log("sessionCompleteTrainerDialog dismissed $isTrainerDialog")
+        }
+        di.show()
     }
 
     fun demoSave() {
@@ -200,6 +236,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     //var list = ArrayList<Channel6Model>()
+    var eventTag = "myboost_session"
     var isSessionActive = false
     var progressBar: ProgressBar? = null
     var tvTimer: TextView? = null
@@ -213,6 +250,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     var pauseDuration: Int = 0
     var actionDuration: Int = 0
     private val plays = BooleanArray(10)
+
+    fun getBoosterUid() = userUid
 
     // TODO Overrides
     override fun onViewCreated(view: View, bundle: Bundle) {
@@ -228,8 +267,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         if (SessionManager.getInstance().userSession != null) {
             if (SessionManager.getInstance().userSession.user != null) {
                 sendProgramToBooster()
-                val time = SessionManager.getInstance().userSession.program.durationSeconds
-                tvTimer?.text = String.format("%02d:%02d", time / 60, time % 60)
+                programDuration = SessionManager.getInstance().userSession.program.durationSeconds
+                tvTimer?.text =
+                    String.format("%02d:%02d", programDuration / 60, programDuration % 60)
+                //programDuration = SessionManager.getInstance().userSession.program?.duration?.valueInt ?: 0
                 if (SessionManager.getInstance().userSession.booster != null && SessionManager.getInstance().userSession.program != null) {
                     isConnected = true
                     pauseDuration =
@@ -280,21 +321,22 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     override fun onMainPlayClicked() {
-        log("onPlayClicked paused: $isPaused : " + SessionManager.getInstance().userSession.currentSessionStatus)
+        log("onPlayClicked paused: $isPlaying : " + SessionManager.getInstance().userSession.currentSessionStatus)
         if (isConnected) {
             SessionManager.getInstance().userSession.program.id?.let {
                 if (isBooked) {
                     //pause // restart
-                    if (SessionManager.getInstance().userSession.currentSessionStatus == 2)
-                        pauseUserSession()
-                    else if (SessionManager.getInstance().userSession.currentSessionStatus == 1)
-                        startUserSession(SessionManager.getInstance().userSession.user)
-                    else {
-                        Toasty.snackbar(
-                            fragment.view,
-                            fragment.getString(R.string.booster_no_response)
-                        )
-                    }
+                    pauseResumeClicked()
+//                    if (SessionManager.getInstance().userSession.currentSessionStatus == 2) {
+//                        pauseUserSession()
+//                    } else if (SessionManager.getInstance().userSession.currentSessionStatus == 1) {
+//                        startUserSession(SessionManager.getInstance().userSession.user)
+//                    } else {
+//                        Toasty.snackbar(
+//                            fragment.view,
+//                            fragment.getString(R.string.booster_no_response)
+//                        )
+//                    }
                 } else {
                     bookSession(it.toIntOrZero())
                 }
@@ -510,7 +552,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             return
         }
         startTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
-        log("sendPlaySignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
+        // log("sendPlaySignals " + SessionManager.getInstance().userSession?.user?.debugLevels())
         Observable.timer(0, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
                 log("starting SendChannelsLevelEvent")
@@ -525,7 +567,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             }.subscribe()
         Observable.timer(2, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
-                log("starting again device")
+                log("BEEP 1 starting again device")
                 SessionManager.getInstance().userSession.isBooster = true
                 startUserSession(SessionManager.getInstance().userSession.user)
                 //EventBus.getDefault().postSticky(SendDevicePlayEvent(uid))
@@ -533,7 +575,9 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
         Observable.timer(4, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
+                log("BEEP 2....... isStartedSession $isStartedSession")
                 if (!isStartedSession) {
+                    log("BEEP 2....... isStartedSession $isStartedSession")
                     startUserSession(SessionManager.getInstance().userSession.user)
                 }
             }.subscribe()
@@ -572,7 +616,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     var isProgramSent = false
     private fun sendProgramToBooster() {
-        log("sendProgramToBooster SendProgramEvent")
+        //log("sendProgramToBooster SendProgramEvent "+SessionManager.getInstance().userSession?.program?.duration)
 
         Single.fromCallable {
             if (SessionManager.getInstance().userSession.currentSessionStatus == 0) {
@@ -584,8 +628,6 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 )
                 log("sendProgramToBooster SendProgramEvent sent")
                 isProgramSent = true
-                programDuration =
-                    SessionManager.getInstance().userSession.program?.duration?.valueInt ?: 0
             }
         }.subscribeOn(Schedulers.io()).delay(100, TimeUnit.MILLISECONDS).subscribe()
 
@@ -628,6 +670,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
             SessionManager.getInstance().userSession.currentSessionStatus = 1
             SessionManager.getInstance().userSession.program?.setDuration(currentDuration.toInt())
+            log("sendProgramToBooster SendProgramEvent again... $currentDuration")
             EventBus.getDefault().postSticky(
                 SendProgramEvent(
                     SessionManager.getInstance().userSession.program, userUid
@@ -638,8 +681,8 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 //            SessionManager.getInstance().userSession.booster.isStarted = true
 //            EventBus.getDefault().postSticky(SendDevicePlayEvent(userUid))
 //            SessionManager.getInstance().userSession.currentSessionStatus = 1
-            isPaused = false;
-            observer.updatePlayButton(isPaused);
+            isPlaying = false;
+            observer.updatePlayButton(isPlaying);
             Single.just(lastFrom).observeOn(AndroidSchedulers.mainThread())
                 .delay(200, TimeUnit.MILLISECONDS).doOnSuccess {
                     fragment?.activity?.runOnUiThread {
@@ -825,79 +868,139 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         }
     }
 
+
+    // TODO NEW
+    var isDevicesPlaying = false
+    private fun pauseResumeClicked() {
+        log("pauseResume clicked $isDevicesPlaying")
+        if (isSessionActive) {
+            if (isDevicesPlaying) {
+                isDevicesPlaying = false
+                Single.just("").doOnSuccess {
+                    CommunicationManager.getInstance().onDeviceResumePauseEvent(
+                        DevicePauseResumeEvent(userUid, 1)
+                    )
+                }.subscribe()
+            } else {
+                isDevicesPlaying = true
+                Single.just("").doOnSuccess {
+                    CommunicationManager.getInstance().onDeviceResumePauseEvent(
+                        DevicePauseResumeEvent(userUid, 0)
+                    )
+                }.subscribe()
+            }
+        }
+    }
+
+    fun onResumeFromDevice(fromDevice: Boolean) {
+        isStartedSession = true
+        isSessionActive = true
+        log("onResumeFromDevice ")
+        disposable?.dispose()
+        disposable = null
+        if (currentDuration > 0)
+            startTimer(currentDuration.toInt(), "1")
+        else startTimer(programDuration, "3")
+
+
+        SessionManager.getInstance().userSession.booster.isStarted = true
+        SessionManager.getInstance().userSession.currentSessionStatus = 2
+        Observable.fromIterable(adapter!!.list!!).subscribeOn(Schedulers.computation())
+            .delay(300, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : io.reactivex.Observer<Muscle> {
+                override fun onSubscribe(d: Disposable) {
+                }
+
+                override fun onNext(t: Muscle) {
+                    //log("onPlayClicked " + SessionManager.getInstance().userSession)
+                    //mViewMvc.updatePlayPause(SessionManager.getInstance().getSession().getUserSelected().getUserBooster().getIsStarted())
+                    t.isPlay = false
+                }
+
+                override fun onError(e: Throwable) {
+                    log("iv_plus onError", e)
+                    e.printStackTrace()
+                }
+
+                override fun onComplete() {
+                    adapter?.notifyDataSetChanged()
+
+                }
+            })
+    }
+
+    fun onPauseFromDevice(fromDevice: Boolean) {
+        disposable?.dispose()
+        log("onPauseFromDevice")
+        Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
+            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : io.reactivex.Observer<Muscle> {
+                override fun onSubscribe(d: Disposable) {
+
+                }
+
+                override fun onNext(t: Muscle) {
+                    t.isPlay = true
+                }
+
+                override fun onError(e: Throwable) {
+                    log("iv_plus onError", e)
+                    e.printStackTrace()
+                }
+
+                override fun onComplete() {
+                    adapter?.notifyDataSetChanged()
+                    SessionManager.getInstance().userSession.booster.isStarted = false
+                    // SessionManager.getInstance().userSession.user.mainLevel = 0
+                    SessionManager.getInstance().userSession.currentSessionStatus = 1
+                    cancelTimer()
+                    Single.just(lastFrom).observeOn(AndroidSchedulers.mainThread())
+                        .delay(200, TimeUnit.MILLISECONDS).doOnSuccess {
+                            fragment?.activity?.runOnUiThread {
+                                progressBar!!.visibility = View.GONE
+                            }
+                            lastFrom = -1
+                        }.subscribe()
+
+                }
+            })
+    }
+
+    //
+
+
     // TODO Event bus events
 
-    var isChannelClicked = false
+    // var isChannelClicked = false
 
     // for main click
     fun onDevicePlayPauseEvent(event: DevicePlayPauseEvent) {
-        log("onDevicePlayPauseEvent")
-        if (isChannelClicked) {
-            isChannelClicked = false
-            return
-        }
+        log("onDevicePlayPauseEvent isPlaying $isPlaying")
         isStartedSession = true
+//        if (isChannelClicked) {
+//            isChannelClicked = false
+//            return
+//        }
 
-//        EventBus.getDefault().postSticky(
+//        if (MiboApplication.DEBUG) {
+//            fragment?.activity?.runOnUiThread {
+//                val p = SessionManager.getInstance().userSession.program
+//                Toasty.snackbar(
+//                    tvTimer,
+//                    "time: " + p.duration?.valueInt + " Block: " + p.blocks?.size
+//                )
+//            }
+//        }
+        //        EventBus.getDefault().postSticky(
 //            SendProgramEvent(
 //                SessionManager.getInstance().userSession.currentSessionProgram,
 //                SessionManager.getInstance().userSession.device.uid
 //            )
 //        )
         if (SessionManager.getInstance().userSession.booster.isStarted) {
-            isPaused = true;
-            observer.updatePlayButton(isPaused);
-            disposable?.dispose()
-            disposable = null
-            startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)
-            isSessionActive = true
-            log("onDevicePlayPauseEvent play button enable")
-            Observable.fromIterable(adapter!!.list!!).subscribeOn(Schedulers.computation())
-                .delay(300, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : io.reactivex.Observer<Muscle> {
-                    override fun onSubscribe(d: Disposable) {
-                    }
-
-                    override fun onNext(t: Muscle) {
-                        //log("onPlayClicked " + SessionManager.getInstance().userSession)
-                        //mViewMvc.updatePlayPause(SessionManager.getInstance().getSession().getUserSelected().getUserBooster().getIsStarted())
-                        t.isPlay = false
-                    }
-
-                    override fun onError(e: Throwable) {
-                        log("iv_plus onError", e)
-                        e.printStackTrace()
-                    }
-
-                    override fun onComplete() {
-                        adapter?.notifyDataSetChanged()
-
-                    }
-                })
+            onResumeFromDevice(false)
         } else {
-            disposable?.dispose()
-            log("onDevicePlayPauseEvent play button disable")
-            Observable.fromArray(adapter!!.list!!).flatMapIterable { x -> x }
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : io.reactivex.Observer<Muscle> {
-                    override fun onSubscribe(d: Disposable) {
-
-                    }
-
-                    override fun onNext(t: Muscle) {
-                        t.isPlay = true
-                    }
-
-                    override fun onError(e: Throwable) {
-                        log("iv_plus onError", e)
-                        e.printStackTrace()
-                    }
-
-                    override fun onComplete() {
-                        adapter?.notifyDataSetChanged()
-                        pauseUserSession()
-                    }
-                })
+            onPauseFromDevice(false)
         }
 
     }
@@ -961,20 +1064,20 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     fun onGetProgramStatusEvent(event: ProgramStatusEvent) {
-        log("onGetProgramStatusEvent $event  $isTimerStarted")
+        log("onGetProgramStatusEvent $isTimerStarted")
         EventBus.getDefault().removeStickyEvent(event)
         if (SessionManager.getInstance().userSession.booster.isStarted) {
             if (SessionManager.getInstance().userSession.user.tsLastStatus + 100 < System.currentTimeMillis()) {// sepueden ejecutar varios antes de hacer esto?
                 SessionManager.getInstance().userSession.user.tsLastStatus =
                     System.currentTimeMillis()
                 // Log.e("GroupController","event status");
-                log("UpdateStatus.. getProgramStatusTime  " + event.remainingTime)
+                log("UpdateStatus.. getProgramStatusTime  " + event?.remainingTime)
                 updateStatus(event.actionTime, event.pauseTime)
                 // log("onGetProgramStatusEvent session time " + SessionManager.getInstance().userSession.currentSessionTimer)
                 //updateStatus(event.remainingProgramTime, event.remainingProgramAction, event.remainingProgramPause, event.currentBlock, event.currentProgram, event.uid)
             }
             if (!isTimerStarted)
-                startTimer(SessionManager.getInstance().userSession.program.duration.valueInt)
+                startTimer(programDuration, "2")
         } else {
             fragment?.activity?.runOnUiThread {
                 progressBar!!.visibility = View.GONE
@@ -1001,16 +1104,23 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
     // timer
     private var programDuration = 0
-    private var totalDuration = 0L
-    private var currentDuration = 0L
+
+    //private var totalDuration = 0L
+    private var currentDuration: Long = 0L
     private var countTimer: CountDownTimer? = null
     var isTimerStarted = false
-    private fun startTimer(seconds: Int) {
-        log("startTimer.............. $seconds $isTimerStarted")
+    private fun startTimer(seconds: Int, tag: String) {
+        log("$tag : startTimer.............. $seconds $isTimerStarted")
+        if (isTimerStarted)
+            return
         fragment?.activity?.runOnUiThread {
-            totalDuration = seconds.toLong()
+            //totalDuration = seconds.toLong()
             cancelTimer()
             countTimer = null
+            isTimerStarted = true
+            isPlaying = true;
+            isDevicesPlaying = true
+            observer.updatePlayButton(isPlaying);
             countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
                 override fun onTick(it: Long) {
                     log("onTimerUpdate onTick $seconds : $it")
@@ -1023,18 +1133,22 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 }
             }
             countTimer?.start()
-            isTimerStarted = true
+
         }
         // SessionManager.getInstance().userSession.startTimer(SessionManager.getInstance().userSession.program.duration.value.toLong())
 
     }
 
     internal fun cancelTimer() {
+        log("cancelTimer ")
         if (countTimer != null) {
             fragment?.activity?.runOnUiThread {
+                isDevicesPlaying = false
                 countTimer?.cancel()
                 //updateTime(SessionManager.getInstance().userSession.currentSessionTimer)
                 isTimerStarted = false
+                isPlaying = false;
+                observer.updatePlayButton(isPlaying);
             }
         }
     }
@@ -1045,13 +1159,14 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         if (time == 0L) {
             SessionManager.getInstance().userSession.currentSessionStatus =
                 UserSession.SESSION_FINISHED;
+            pauseResumeClicked()
             fragment?.activity?.runOnUiThread {
                 tvTimer?.text = fragment.getString(R.string.completed)
-                //exerciseCompleted(false)
                 currentDuration = 0
                 isSessionActive = false
-                saveSessionApi()
                 isTimerStarted = false
+                exerciseCompleted(true)
+
             }
 
         } else {
@@ -1173,19 +1288,21 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         log("UpdateStatus.. pause: $pause , action: $action")
 
         if (pause > 0) {
-            progress(100, 1, pauseDuration)
+            progress(100, 1, pause)
         } else if (action > 0) {
-            progress(1, 99, actionDuration)
+            progress(1, 99, action)
         }
     }
 
-    var lastFrom = -1
+    private var lastFrom = -1
+    private var lastDuration = -1
     fun progress(valueFrom: Int, valueTo: Int, duration: Int) {
         log("UpdateStatus progress from $valueFrom to $valueTo duration $duration")
-        if (lastFrom == valueFrom) {
+        if (lastFrom == valueFrom && duration < lastDuration) {
             log("UpdateStatus progress return.........")
             return
         }
+        lastDuration = duration
         lastFrom = valueFrom
         // Observable.fromCallable {  }
         Single.just(duration).subscribeOn(Schedulers.io())
@@ -1293,7 +1410,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     // TODO APIs
     var sessionId = ""
     var isBooked = false
-    var isPaused = true
+    var isPlaying = false
 
     private fun bookSession(programId: Int) {
         val member = Prefs.get(fragment.context).member ?: return
@@ -1329,6 +1446,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     val data = response.body()
                     if (data != null) {
                         if (data.status.equals("success", true)) {
+                            fragment.event(
+                                "started_user",
+                                "success",
+                                "---"
+                            )
                             Toasty.info(
                                 fragment.requireContext(),
                                 "${data.data?.message}",
@@ -1386,6 +1508,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     t.printStackTrace()
                     Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
                     MiboEvent.log(t)
+                    fragment.event(
+                        "started_failed",
+                        "failed",
+                        "---"
+                    )
                 }
 
                 override fun onResponse(
@@ -1397,6 +1524,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     val data = response.body()
                     if (data != null) {
                         if (data.status.equals("success", true)) {
+                            fragment.event(
+                                "started",
+                                "success",
+                                "---"
+                            )
 
                             //sessionId = "${data.data?.sessionID}"
                             Prefs.get(fragment.context).set("member_sessionId", trainerSessionId)
@@ -1405,6 +1537,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                             isBooked = true
 
                         } else if (data.status.equals("error", true)) {
+                            fragment.event(
+                                "started_error",
+                                "error",
+                                "---"
+                            )
                             Toasty.error(
                                 fragment.requireContext(),
                                 "${data.errors?.get(0)?.message}"
@@ -1452,7 +1589,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         )
 
         val session = Session(
-            calories, adapter?.getChannels(), getTime().toInt(),
+            calories, adapter?.getChannels(), getProgramTime(),
             SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Date()),
             member.id, SessionManager.getInstance().userSession.program.name, complete, 1,
             sessionId.toIntOrZero(), startTime, 0
@@ -1469,6 +1606,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     MiboEvent.log(t)
                     log("SaveSession Error : " + t?.message)
                     t.printStackTrace()
+                    fragment.event(
+                        "user_api_failed",
+                        "failed",
+                        "---"
+                    )
                 }
 
                 override fun onResponse(
@@ -1480,6 +1622,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     val data = response.body()
                     if (data != null) {
                         if (data.status.equals("success", true)) {
+                            fragment.event(
+                                "user_api_success",
+                                "success",
+                                "---"
+                            )
 //                            Toasty.success(
 //                                fragment.requireContext(),
 //                                "${data.response?.message}",
@@ -1494,6 +1641,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                             )
 
                         } else if (data.status.equals("error", true)) {
+                            fragment.event(
+                                "user_api_error",
+                                "error",
+                                "---"
+                            )
                             Toasty.error(
                                 fragment.requireContext(),
                                 "${data.errors?.get(0)?.message}"
@@ -1526,28 +1678,34 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     private fun saveTrainerSessionApi(
         userId: Int,
         userRating: Int?,
-        feedback: String?
+        feedback: String?,
+        calories: Int,
+        time: Int
     ) {
 
-        log("saveTrainerSessionApi $userId : $userRating : $feedback")
+        // log("saveTrainerSessionApi $userId : $userRating : $feedback")
         val trainer = Prefs.get(fragment.context).member ?: return
         fragment.getDialog()?.show()
 
-        val calories = calculateCalories(
-            SessionManager.getInstance().userSession.program.borgRating,
-            getWeight().toDouble(),
-            getProgramTime()
-        )
+//        val calories = calculateCalories(
+//            SessionManager.getInstance().userSession.program.borgRating,
+//            getWeight().toDouble(),
+//            getProgramTime()
+//        )
+
+        var trainerFeedback = feedback ?: ""
+        if (trainerFeedback.trim().length < 2)
+            trainerFeedback = "N/A"
 
         val m = SaveTrainerSessionReport.Member(
             calories, adapter?.getChannels(),
             userId, 0, 0, 0,
-            feedback, userRating?.plus(1), listOf(0, 0, 0, 0, 0)
+            trainerFeedback, userRating?.plus(1), listOf(0, 0, 0, 0, 0)
         );
 
         val sessionData = SaveTrainerSessionReport.Data(
             1,
-            getTime().toInt(),
+            time,
             SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()),
             trainer.locationID,
             Collections.singletonList(m),
@@ -1555,14 +1713,14 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             "$trainerSessionId",
             startTime,
             trainer.id(),
-            feedback
+            trainerFeedback
         )
 
         val post = SaveTrainerSessionReport(sessionData, trainer?.accessToken)
 
-        log("saveTrainerSessionApi user > $calories : ${getTime()} - ${getProgramTime()}, $m")
-        log("saveTrainerSessionApi sessionData > $sessionData")
-        log("saveTrainerSessionApi SessionReport > $post")
+        //log("saveTrainerSessionApi user > $calories :  - ${getProgramTime()}, $m")
+        // log("saveTrainerSessionApi sessionData > $sessionData")
+        // log("saveTrainerSessionApi SessionReport > $post")
 
         API.request.getTrainerApi()
             .saveTrainerSession(post)
@@ -1575,6 +1733,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     MiboEvent.log(t)
                     log("SaveSession Error : " + t?.message)
                     t.printStackTrace()
+                    fragment.event(
+                        "api_failed",
+                        "reason=$t",
+                        "duration=$time feedbak=$feedback calories=$calories"
+                    )
                 }
 
                 override fun onResponse(
@@ -1586,6 +1749,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     val data = response.body()
                     if (data != null) {
                         if (data.status.equals("success", true)) {
+                            fragment.event(
+                                "api_success",
+                                "success",
+                                "duration=$time feedbak=$feedback calories=$calories"
+                            )
 //                            Toasty.success(
 //                                fragment.requireContext(),
 //                                "${data.response?.message}",
@@ -1598,6 +1766,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
 
 
                         } else if (data.status.equals("error", true)) {
+                            fragment.event(
+                                "api_error",
+                                "success",
+                                "duration=$time feedbak=$feedback calories=$calories"
+                            )
                             Toasty.error(
                                 fragment.requireContext(),
                                 "${data.errors?.get(0)?.message}"
@@ -1694,7 +1867,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             //user.userSessionTimer.toDouble()
             return burnt.plus(0.5).roundToInt()
         } catch (e: Exception) {
-            MiboEvent.log("ERROR: calculateCalories borgRate $borg, weight $weight, time $time :: " + e?.message)
+            fragment.log("ERROR: calculateCalories borgRate $borg, weight $weight, time $time :: " + e?.message)
         }
 
         return 0
@@ -1769,16 +1942,20 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         }
     }
 
-    private fun getTime(): Long {
-        log("getTime : total : $totalDuration current: $currentDuration prg $programDuration")
-        if (totalDuration == currentDuration)
-            return totalDuration;
-        tvTimer?.text?.let {
-            if (it == fragment.getString(R.string.completed))
-                return totalDuration
-        }
-        return totalDuration.minus(currentDuration)
-    }
+//    private fun getTime(): Long {
+//        log("getTime : total : $totalDuration current: $currentDuration prg $programDuration")
+//        try {
+//            if (totalDuration == currentDuration)
+//                return totalDuration;
+//            tvTimer?.text?.let {
+//                if (it == fragment.getString(R.string.completed))
+//                    return totalDuration
+//            }
+//        } catch (e: java.lang.Exception) {
+//
+//        }
+//        return totalDuration.minus(currentDuration)
+//    }
 
     private fun getProgramTime(): Int {
         fragment.log("getProgramTime programDuration $programDuration  currentDuration $currentDuration")

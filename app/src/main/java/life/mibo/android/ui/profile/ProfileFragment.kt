@@ -19,7 +19,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
@@ -38,6 +37,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
+import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
@@ -126,13 +126,43 @@ class ProfileFragment : BaseFragment() {
         profileEditable(false)
         try {
             val update = Prefs.get(context).get("profile_update")
-            if (update?.toBoolean() == true){
+            if (update?.toBoolean() == true) {
 
             }
-        }
-        catch (e : java.lang.Exception){
+        } catch (e: java.lang.Exception) {
 
         }
+
+        try {
+            val mnt = Prefs.get(this.context).get("calories_session_hours", 0)
+            val ses = Prefs.get(this.context).get("calories_session", 0)
+            val cal = Prefs.get(this.context).get("calories_burnt", 0)
+
+
+            when {
+                mnt > 60 -> {
+                    tv_session_title?.setText(R.string.hours)
+                    tv_hour?.setText("${mnt.div(60)}")
+
+                }
+                mnt > 0 -> {
+                    tv_session_title?.setText(R.string.minutes)
+                    tv_hour?.setText("$mnt")
+
+                }
+                else -> {
+                    tv_session_title?.setText(R.string.hours)
+                    tv_hour?.setText("$mnt")
+                }
+            }
+
+            tv_cal?.setText("$cal")
+            tv_session?.setText("$ses")
+        } catch (e: java.lang.Exception) {
+
+        }
+
+        MiboEvent.event("profile_page", "profile page visited", "${member?.id()}")
 
     }
 
@@ -499,6 +529,6 @@ class ProfileFragment : BaseFragment() {
     }
 
     fun refreshMenu() {
-        (activity as AppCompatActivity?)?.supportActionBar?.invalidateOptionsMenu()
+        // (activity as AppCompatActivity?)?.supportActionBar?.invalidateOptionsMenu()
     }
 }

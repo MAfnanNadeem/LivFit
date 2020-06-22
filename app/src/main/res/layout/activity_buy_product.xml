@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/grid_2x"
                 android:layout_marginTop="@dimen/grid_1x"
-                android:text="@string/your_cart"
+                android:text="@string/your_cart_place"
                 android:textColor="@color/textColorApp"
                 android:textSize="@dimen/text_size_large" />
 
@@ -172,7 +172,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
         android:background="@drawable/button_accent_selector"
-        android:text="@string/checkout"
+        android:text="@string/your_cart_place"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -11,7 +11,6 @@ package life.mibo.android.ui.main
 ///import leakcanary.AppWatcher
 import android.app.Application
 import android.content.Context
-import coil.util.CoilLogger
 import com.danikula.videocache.HttpProxyCacheServer
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.android.BuildConfig
@@ -25,13 +24,17 @@ import okhttp3.Cache
 class MiboApplication : Application() {
 
     companion object {
-        var context : Context? = null
+        var context: Context? = null
 
         //val DEBUG = true
         val DEBUG = BuildConfig.DEBUG
+        val RELEASE = false
         val SCAN_TIME: Long = 15000L
 
+        fun isRelease() = true
+
         private var proxy: HttpProxyCacheServer? = null
+
 
         fun getProxy(context: Context?): HttpProxyCacheServer? {
             return if (proxy == null) newProxy(context)

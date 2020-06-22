@@ -348,6 +348,11 @@ class BuyActivity : BaseActivity() {
 
                 total?.text = getPrice(item.currencyType, item.getTotal())
                 vat?.text = getPrice(item.currencyType, item.getVat())
+
+                if(item.quantityDisable){
+                    plus?.visibility = View.INVISIBLE
+                    minus?.visibility = View.INVISIBLE
+                }
                 // vat?.setText("${item.currencyType} ${item.getVat()}")
 
             } else if (item.isPackage) {
@@ -736,6 +741,7 @@ class BuyActivity : BaseActivity() {
                 true,
                 false
             )
+            cartItem?.quantityDisable = true
             cartList.add(cartItem!!)
             runOnUiThread {
                 recyclerView?.layoutManager = LinearLayoutManager(this)

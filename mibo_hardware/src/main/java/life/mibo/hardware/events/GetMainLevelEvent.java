@@ -9,7 +9,8 @@ public class GetMainLevelEvent {
     private int level;
     private String uid;
 
-    public GetMainLevelEvent(int level, String uid) {
+
+    public GetMainLevelEvent(int level, String uid, String empty) {
         this.level = level;
         this.uid = uid;
     }

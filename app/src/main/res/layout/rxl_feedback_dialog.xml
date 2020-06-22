@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_1x"
                     android:singleLine="true"
-                    android:text="@string/total_time"
+                    android:text="@string/total_time_sec"
                     android:textColor="@color/textColor"
                     android:textStyle="bold" />
             </LinearLayout>

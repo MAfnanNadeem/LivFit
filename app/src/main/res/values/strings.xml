@@ -99,6 +99,7 @@
     <string name="send">Send</string>
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
+    <string name="ok_button">OK</string>
     <string name="filters">Filters</string>
     <string name="transition_icon">course_icon</string>
     <string name="transition_title">course_title</string>
@@ -142,7 +143,8 @@
     <string name="ent_otp">Please enter the OTP</string>
     <string name="otp_hint">We will send you an OTP number</string>
     <string name="number_verified">Your mobile number is verified!</string>
-    <string name="logout_message">Are You Sure You Want to Log Out</string>
+    <string name="logout_message">Are You Sure You Want to Log Out?</string>
+    <string name="logout_dialog">Confirm Logout</string>
     <string name="no_data_found">No Data Found</string>
     <string name="no_session_found">No Sessions Found</string>
     <string name="user_has_no_service">This user has not added any services yet</string>
@@ -253,7 +255,8 @@
     <string name="your_hits">Your Hits</string>
     <string name="your_missed">Your Missed</string>
     <string name="total_time_mint">TOTAL TIME <small>(min)</small></string>
-    <string name="total_time">TOTAL TIME <small>(sec)</small></string>
+    <string name="total_time_sec">TOTAL TIME <small>(sec)</small></string>
+    <string name="total_time">TOTAL TIME</string>
     <string name="logic_not_supported">Selected logic not supported</string>
     <string name="my_muscle">My Muscle</string>
     <string name="presets">Presets</string>
@@ -268,6 +271,7 @@
     <string name="sessions">Sessions</string>
     <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
 
     <string name="calories">Calories</string>
     <string name="all_images">All Images</string>
@@ -473,10 +477,11 @@
     <string name="validity">Validity:</string>
     <string name="products">Products</string>
     <string name="packages">Packages</string>
-    <string name="shipping_address">Shipping Address</string>
-    <string name="shipping_service_address">Service Address</string>
+    <string name="shipping_address">Delivery Address</string>
+    <string name="shipping_service_address">Billing Address</string>
     <string name="select_a_shipping_address">Select a Shipping Address</string>
     <string name="your_cart">Your Cart</string>
+    <string name="your_cart_place">Place Your Order</string>
     <string name="invalid_amount">Invalid Amount</string>
     <string name="select_shipping_address">Select shipping address</string>
     <string name="apply_promo_code">Apply promo code</string>
@@ -542,6 +547,15 @@
     <string name="remove_photo_success">Your profile photo will be removed!</string>
     <string name="select_program_tp_start_session">\"Please select a program in order to launch the session. \"</string>
     <string name="start_session_text">Are you sure you want to start the session?</string>
+    <string name="reschedule_session">Reschedule Session</string>
+    <string name="reschedule_session_message">Are you sure want to reschedule session on %s at %s</string>
+    <string name="session_completed_msg">This session has already been completed. You can not start a completed session</string>
+    <string name="session_started_msg">This session has already started. Please provide your feedback if there were any interruptions. For Re-scheduling kindly contact your Administrator.</string>
+    <string name="session_missed_msg">This session has already expired. You can not start a expired session. For Re-scheduling kindly contact your Administrator.</string>
+    <string name="session_upcomming_msg">You can start session at most 15 minutes before schedule time.</string>
+    <string name="session_start_after"><small>start session after %d minutes.</small></string>
+    <string name="order_confirmation">Order Confirmation</string>
+    <string name="payments_failed">Payments Failed</string>
 
 
     <!-- customer reviews -->

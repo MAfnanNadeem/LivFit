@@ -79,6 +79,31 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
             //onPlayClicked()
         }
 
+//        if (MiboApplication.DEBUG) {
+//            iv_play?.setOnClickListener {
+//                Single.just("").doOnSuccess {
+//                    Toasty.info(
+//                        this@Channel6Fragment.requireContext(),
+//                        "Long Click! $isLongClicked"
+//                    ).show()
+//
+//                    if (isLongClicked) {
+//                        isLongClicked = false
+//                        CommunicationManager.getInstance().onDeviceResumePauseEvent(
+//                            DevicePauseResumeEvent(controller.getBoosterUid(), 1)
+//                        )
+//                    } else {
+//                        isLongClicked = true
+//                        CommunicationManager.getInstance().onDeviceResumePauseEvent(
+//                            DevicePauseResumeEvent(controller.getBoosterUid(), 0)
+//                        )
+//
+//                    }
+//
+//                }.subscribe()
+//            }
+//        }
+
         iv_plus?.setOnLongClickListener {
             Observable.timer(2, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).doOnComplete {
@@ -106,20 +131,25 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
             Utils.loadImage(hexagonImageView, stateBundle.getString("member_image", ""), true)
         else Utils.loadImage(hexagonImageView, Prefs.get(context).member?.profileImg, true)
 
-        MiboEvent.event(
-            "Booster_Session",
+        event(
+            "page",
             "Channel6Fragment isTrainer=$isTrainer",
             "ProgramName=$name  UserId=$userId"
         )
     }
 
-
-    override fun updatePlayButton(isPaused: Boolean) {
+    var isLongClicked = false
+    var lastPlay = false
+    override fun updatePlayButton(isPlaying: Boolean) {
+        log("updatePlayButton isPlaying $isPlaying")
+        if (lastPlay == isPlaying)
+            return
+        lastPlay = isPlaying
         activity?.runOnUiThread {
             iv_play?.setImageBitmap(null)
             //iv_play?.background = null
-           // iv_play?.scaleType = ImageView.ScaleType.CENTER
-            if (isPaused) {
+            // iv_play?.scaleType = ImageView.ScaleType.CENTER
+            if (isPlaying) {
                 //iv_play?.setBackground(AppCompatResources.getDrawable(context!!, R.drawable.ic_resume_hexa))
                 iv_play?.setImageResource(R.drawable.ic_resume_hexa)
                 //iv_play?.scaleType = ImageView.ScaleType.CENTER
@@ -160,6 +190,13 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
     fun onDevicePlayPauseEvent(event: DevicePlayPauseEvent) {
         log("onDevicePlayPauseEvent")
         EventBus.getDefault().removeStickyEvent(event)
+        if (event.pause()) {
+            controller.onPauseFromDevice(true)
+            return
+        } else if (event.start()) {
+            controller.onResumeFromDevice(true)
+            return
+        }
         controller.onDevicePlayPauseEvent(event)
     }
 
@@ -238,5 +275,9 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
             return true
         }
         return false
+    }
+
+    fun event(header: String, tag: String = "", value: String = "") {
+        MiboEvent.event("myboost_session_$header", tag, value)
     }
 }

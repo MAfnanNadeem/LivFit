@@ -74,6 +74,7 @@
                 android:layout_gravity="center_vertical"
                 android:background="@color/transparent"
                 android:paddingEnd="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto_medium"
                 android:singleLine="true"
                 android:text="@string/scan"
                 android:textSize="@dimen/text_size_medium"

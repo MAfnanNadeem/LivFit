@@ -19,8 +19,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.fragment_ip_profile2.*
 import life.mibo.android.R
 import life.mibo.android.core.API
@@ -33,6 +33,7 @@ import life.mibo.android.models.trainer.TrainerInviteResponse
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,10 +111,13 @@ class ProfessionalDetailsActivity : BaseActivity() {
         finish()
     }
 
+
+    private var professional: Professional? = null
     private fun setup(data: Professional) {
-        if (data.avatar != null)
-            Glide.with(this).load(data.avatar).fitCenter().error(R.drawable.ic_user_test)
-                .into(userImage!!)
+        Utils.loadImage(userImage, data.avatar, data.gender?.toLowerCase() == "male")
+        //if (data.avatar != null)
+        //  Glide.with(this).load(data.avatar).fitCenter().error(R.drawable.ic_user_test).into(userImage!!)
+        professional = data
         tv_name?.text = data.name
         tv_desg?.text = data.designation
         tv_city?.text = data.city
@@ -132,7 +136,8 @@ class ProfessionalDetailsActivity : BaseActivity() {
             btn_invite?.setOnClickListener {
                 if (isIpConnected)
                     return@setOnClickListener
-                inviteIP(data.id, member)
+                inviteDialog()
+                //inviteIP(data.id, member)
                 // dismiss()
             }
         } else {
@@ -142,6 +147,21 @@ class ProfessionalDetailsActivity : BaseActivity() {
         log("ProfessionalDetails ${data.id} >> $data")
         getDetails(data.id, member)
     }
+
+    fun inviteDialog() {
+        //MaterialAlertDialogBuilder
+        val d =
+            MaterialAlertDialogBuilder(this).setMessage(getString(R.string.biometric_share_info))
+                .setPositiveButton(R.string.yes_text)
+                { dialog, which ->
+                    inviteIP(professional?.id, Prefs.get(this).member!!, 1)
+                }.setNegativeButton(R.string.no_text)
+                { dialog, which ->
+                    inviteIP(professional?.id, Prefs.get(this).member!!, 0)
+                }.create()
+        d.show()
+    }
+
 
     fun showProgress() {
         progressBar?.visibility = View.VISIBLE
@@ -199,8 +219,9 @@ class ProfessionalDetailsActivity : BaseActivity() {
                             }
                             val er = data?.errors
                             if (er != null)
-                                er?.get(0)?.message?.let {
-                                    Toasty.snackbar(btn_invite, it)
+                                er?.get(0)?.let {
+                                    if (it?.code != 404)
+                                        Toasty.snackbar(btn_invite, it?.message)
                                 }
                             //tv_service_no?.visibility = View.VISIBLE
                             //tv_specialization_no?.visibility = View.VISIBLE
@@ -298,7 +319,7 @@ class ProfessionalDetailsActivity : BaseActivity() {
         //Toasty.snackbar(btn_invite, "connected $connected")
     }
 
-    private fun inviteIP(userId: Int?, member: Member) {
+    private fun inviteIP(userId: Int?, member: Member, bio: Int = 0) {
         if (userId == null) {
             return
         }
@@ -328,7 +349,7 @@ class ProfessionalDetailsActivity : BaseActivity() {
                     if (data != null && data.isSuccess()) {
                         //parseData(data.data?.professionals)
                         data.data?.get(0)?.message?.let {
-                            Toasty.info(this@ProfessionalDetailsActivity, it).show()
+                            Toasty.grey(this@ProfessionalDetailsActivity, getString(R.string.invitation_sent, "${professional?.name}")).show()
                         }
                         finish()
                     } else {

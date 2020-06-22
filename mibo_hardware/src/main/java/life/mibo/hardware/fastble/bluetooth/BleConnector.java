@@ -19,7 +19,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import life.mibo.hardware.CommunicationManager;
@@ -417,7 +416,7 @@ public class BleConnector {
         if (descriptor == null) {
             indicateMsgInit();
             if (bleIndicateCallback != null)
-                bleIndicateCallback.onIndicateFailure(new OtherException("descriptor equals null"));
+                bleIndicateCallback.onIndicateFailure(new OtherException("descriptor equals null "));
             return false;
         } else {
             descriptor.setValue(enable ? BluetoothGattDescriptor.ENABLE_INDICATION_VALUE :
@@ -438,15 +437,15 @@ public class BleConnector {
     public synchronized void writeCharacteristic(byte[] data, BleWriteCallback bleWriteCallback, String uuid_write) {
         if (data == null || data.length <= 0) {
             if (bleWriteCallback != null)
-                bleWriteCallback.onWriteFailure(new OtherException("the data to be written is empty"));
+                bleWriteCallback.onWriteFailure(new OtherException("the data to be written is empty " + uuid_write));
             return;
         }
 
         if (mCharacteristic == null
                 || (mCharacteristic.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) == 0) {
-            BleManager.log("mCharacteristic this characteristic not support write! ");
+            BleManager.log("mCharacteristic this characteristic not support write! " + uuid_write);
             if (bleWriteCallback != null)
-                bleWriteCallback.onWriteFailure(new OtherException("this characteristic not support write!"));
+                bleWriteCallback.onWriteFailure(new OtherException("this characteristic not support write! " + uuid_write));
             return;
         }
         BleManager.log("mCharacteristic service " + mCharacteristic.getService());
@@ -455,7 +454,7 @@ public class BleConnector {
             if (!mBluetoothGatt.writeCharacteristic(mCharacteristic)) {
                 writeMsgInit();
                 if (bleWriteCallback != null)
-                    bleWriteCallback.onWriteFailure(new OtherException("gatt writeCharacteristic fail"));
+                    bleWriteCallback.onWriteFailure(new OtherException("gatt writeCharacteristic fail " + uuid_write));
             }
         } else {
             if (bleWriteCallback != null)
@@ -467,15 +466,15 @@ public class BleConnector {
     public void writeCharacteristicNonSync(byte[] data, BleWriteCallback bleWriteCallback, String uuid_write) {
         if (data == null || data.length <= 0) {
             if (bleWriteCallback != null)
-                bleWriteCallback.onWriteFailure(new OtherException("the data to be written is empty"));
+                bleWriteCallback.onWriteFailure(new OtherException("the data to be written is empty " + uuid_write));
             return;
         }
 
         if (mCharacteristic == null
                 || (mCharacteristic.getProperties() & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) == 0) {
-            BleManager.log("mCharacteristic this characteristic not support write! ");
+            BleManager.log("mCharacteristic this characteristic not support write! " + uuid_write);
             if (bleWriteCallback != null)
-                bleWriteCallback.onWriteFailure(new OtherException("this characteristic not support write!"));
+                bleWriteCallback.onWriteFailure(new OtherException("this characteristic not support write! " + uuid_write));
             return;
         }
         BleManager.log("mCharacteristic service " + mCharacteristic.getService());
@@ -508,7 +507,7 @@ public class BleConnector {
         } else {
             if (bleReadCallback != null) {
                 if (mCharacteristic != null)
-                    bleReadCallback.onReadFailure(new OtherException("this characteristic not support read: " + mCharacteristic.getProperties() + " : " + mCharacteristic.getDescriptors()));
+                    bleReadCallback.onReadFailure(new OtherException("this characteristic not support read: " + mCharacteristic.getProperties() + " : " + uuid_read));
                 else
                     bleReadCallback.onReadFailure(new OtherException("this characteristic not support read mCharacteristic null"));
             }

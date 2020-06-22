@@ -32,6 +32,10 @@ public interface CommunicationListener {
     void onStatus(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
     void onStatus(byte[] command, String uid);
 
+    void onConnect(String name, int status);
+
+    void onDisconnect(boolean failed, String name, int status, String error);
+
     void onCommandReceived(int code, byte[] command, String uid);
 
     void DevicePlayPauseEvent(String uid);

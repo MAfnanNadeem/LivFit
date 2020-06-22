@@ -7,12 +7,14 @@
 
 package life.mibo.android.ui.trainer
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,6 +28,7 @@ import life.mibo.android.models.trainer.SearchTrainers
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -205,15 +208,22 @@ class SearchTrainerFragment : BaseFragment() {
         val img: ImageView? = itemView.findViewById(R.id.imageView)
 
         fun bind(item: Professional, listener: ItemClickListener<Professional>?) {
-            if (item.avatar != null) {
-                var def =
-                    if (item.gender?.toLowerCase() == "male") R.drawable.ic_user_male else R.drawable.ic_user_female
-                Glide.with(itemView).load(item.avatar).error(def).fallback(def).fitCenter()
-                    .into(img!!)
-            }
+            Utils.loadImage(img, item.avatar, item.gender?.toLowerCase() == "male")
+//            var url = item.avatar
+//            var def = if (item.gender?.toLowerCase() == "male") R.drawable.ic_user_male else R.drawable.ic_user_female
+//
+//            if (url != null && (url.endsWith("jpg") || url.endsWith("png"))) {
+//                Glide.with(itemView).load(item.avatar).error(def).fallback(def).fitCenter()
+//                    .into(img!!)
+//            } else {
+//                Glide.with(itemView).load(def).error(def).fallback(def).fitCenter()
+//                    .into(img!!)
+//            }
             name?.text = item.name
             desc?.text = item.designation
             info?.text = "${item.city}, ${item.country}"
+            val drw = Utils.getColorFilterDrawable(itemView.context, R.drawable.ic_location_on_black_24dp, Color.GRAY)
+            info?.setCompoundDrawablesWithIntrinsicBounds(drw, null, null, null)
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }

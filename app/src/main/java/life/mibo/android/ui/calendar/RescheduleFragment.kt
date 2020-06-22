@@ -48,15 +48,14 @@ class RescheduleFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?):
             View? {
-        val root = inflater.inflate(R.layout.fragment_reschedule, container, false)
         //recyclerView = root.findViewById(R.id.hexagonRecycler) as HexagonRecyclerView
-        return root
+        return inflater.inflate(R.layout.fragment_reschedule, container, false)
     }
 
-    var trainerName = ""
-    var serverName = ""
-    var sessionId: Int = 0
-    var trainerId: Int = 0
+    private var trainerName = ""
+    private var serverName = ""
+    private var sessionId: Int = 0
+    private var trainerId: Int = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -129,19 +128,19 @@ class RescheduleFragment : BaseFragment() {
 
         //val date = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
         val date = SimpleDateFormat("dd-MM-yyyy").format(calendar.time)
-        val time = SimpleDateFormat("hh:mm:ss").format(calendar.time)
+        val time = SimpleDateFormat("hh:mm a").format(calendar.time)
         //val time = SimpleDateFormat("HH:mm").format(calendar.time)
         MessageDialog(
             requireContext(),
-            "Reschedule Session",
-            "Are you sure want to reschedule session on $date at $time",
-            "Cancel",
-            "Reschedule",
+            getString(R.string.reschedule_session),
+            getString(R.string.reschedule_session_message, date, time),
+            getString(R.string.cancel),
+            getString(R.string.reschedule),
             object : MessageDialog.Listener {
                 override fun onClick(button: Int) {
                     if (button == MessageDialog.POSITIVE) {
                         //bookSession(sessionId, calendar.time)
-                        rescheduleSession(sessionId, trainerId,  calendar.time)
+                        rescheduleSession(sessionId, trainerId, calendar.time)
                     }
                 }
 

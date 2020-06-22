@@ -604,7 +604,7 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun GetMainLevelEvent(mainLevel: Int, uid: String?) {
                 log("GetMainLevelEvent $mainLevel : $uid")
-                EventBus.getDefault().postSticky(GetMainLevelEvent(mainLevel, uid))
+                EventBus.getDefault().postSticky(GetMainLevelEvent(mainLevel, uid, "1"))
                 EventBus.getDefault().postSticky(SendMainLevelEvent(1, uid));
 
             }
@@ -747,7 +747,8 @@ class MainActivity : BaseActivity(), Navigator {
                         }
                         if (SessionManager.getInstance().userSession.currentSessionStatus == 1 || SessionManager.getInstance().userSession.currentSessionStatus == 2) {
                             if (SessionManager.getInstance().userSession.setDeviceAlarm(
-                                    uid, command
+                                    uid,
+                                    command
                                 )
                             ) {
 
@@ -788,7 +789,7 @@ class MainActivity : BaseActivity(), Navigator {
             COMMAND_SET_MAIN_LEVEL_RESPONSE -> {
                 logw("parseCommands COMMAND_SET_MAIN_LEVEL_RESPONSE")
                 EventBus.getDefault()
-                    .postSticky(GetMainLevelEvent(DataParser.getMainLevel(command), uid))
+                    .postSticky(GetMainLevelEvent(DataParser.getMainLevel(command), uid, ""))
                 SessionManager.getInstance().userSession.user.mainLevel =
                     DataParser.getMainLevel(command)
                 //EventBus.getDefault().postSticky(new SendMainLevelEvent(1,uid));
@@ -798,15 +799,17 @@ class MainActivity : BaseActivity(), Navigator {
                 EventBus.getDefault().postSticky(GetLevelsEvent(uid))
             }
             COMMAND_START_CURRENT_CYCLE_RESPONSE -> {
-                logw("parseCommands COMMAND_START_CURRENT_CYCLE_RESPONSE")
+                logw("parseCommands COMMAND_ASYNC_START_RESPONSE")
                 SessionManager.getInstance().userSession.booster.isStarted = true
-                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+                //EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 3))
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 1))
             }
             COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE -> {
-                logw("parseCommands COMMAND_PAUSE_CURRENT_CYCLE_RESPONSE")
+                logw("parseCommands COMMAND_ASYNC_PAUSE_RESPONSE")
                 SessionManager.getInstance().userSession.booster.isStarted = false
                 //SessionManager.getInstance().getSession().getRegisteredDevicebyUid(uid).setIsStarted(false);
-                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+                // EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 4))
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 2))
             }
             ASYNC_PROGRAM_STATUS -> {
                 // RXL_TAP_EVENT
@@ -827,19 +830,21 @@ class MainActivity : BaseActivity(), Navigator {
             COMMAND_ASYNC_SET_MAIN_LEVEL -> {
                 logw("parseCommands COMMAND_ASYNC_SET_MAIN_LEVEL")
                 EventBus.getDefault()
-                    .postSticky(GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid));
+                    .postSticky(GetMainLevelEvent(DataParser.getMainLevelAsync(command), uid, ""));
                 SessionManager.getInstance().userSession.user.mainLevel =
                     DataParser.getMainLevelAsync(command)
             }
             COMMAND_ASYNC_PAUSE -> {
                 logw("parseCommands COMMAND_ASYNC_PAUSE")
+
                 SessionManager.getInstance().userSession.booster.isStarted = false
-                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid));
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 2));
             }
             COMMAND_ASYNC_START -> {
                 logw("parseCommands COMMAND_ASYNC_START")
+
                 SessionManager.getInstance().userSession.booster.isStarted = true
-                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
+                EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 1))
 
             }
             else -> {
@@ -1462,13 +1467,17 @@ class MainActivity : BaseActivity(), Navigator {
 //            }
             R.id.nav_logout -> {
                 lastId = -1
-                AlertDialog.Builder(this).setTitle(getString(R.string.logout))
+                AlertDialog.Builder(this).setTitle(getString(R.string.logout_dialog))
                     .setMessage(getString(R.string.logout_message))
                     .setPositiveButton(
-                        R.string.logout
+                        R.string.ok_button
                     ) { dialog, which ->
                         dialog.dismiss()
                         logout()
+                    }.setNegativeButton(
+                        R.string.cancel
+                    ) { dialog, which ->
+                        dialog.dismiss()
                     }.show()
             }
             else -> {

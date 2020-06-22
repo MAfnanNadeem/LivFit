@@ -68,8 +68,8 @@ public class SuccessPaymentActivity extends BaseActivity {
     private void getResponse() {
 
         StatusResponse status = (StatusResponse) getIntent().getParcelableExtra(WebviewActivity.PAYMENT_RESPONSE);
-        TextView textView = (TextView) findViewById(R.id.textViewInfo0);
-        textView.setText(textView.getText() + " : " + status.getTrace());
+       // TextView textView = (TextView) findViewById(R.id.textViewInfo0);
+       // textView.setText(textView.getText() + " : " + status.getTrace());
 
         telrAuth = status.auth;
 //        if (status.getAuth() != null) {

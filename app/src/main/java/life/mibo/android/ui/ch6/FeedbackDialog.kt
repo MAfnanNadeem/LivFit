@@ -27,7 +27,7 @@ class FeedbackDialog(
     var isCancel: Boolean = false,
     var title: String? = "",
     var msg: String? = "",
-    var time: String? = "",
+    var time: Int = 0,
     var calories: String? = ""
 ) :
     AlertDialog(c) {
@@ -49,13 +49,21 @@ class FeedbackDialog(
         val feedback = findViewById<EditText?>(R.id.et_feedback)
         val program = findViewById<TextView?>(R.id.tv_program)
         val message = findViewById<TextView?>(R.id.tv_message)
+        val tvTime = findViewById<TextView?>(R.id.tv_name1)
         val value1 = findViewById<TextView?>(R.id.tv_value1)
         val value2 = findViewById<TextView?>(R.id.tv_value2)
 
         program?.text = title
         message?.text = msg
-        value1?.text = time
         value2?.text = calories
+
+        if (time > 60) {
+            tvTime?.setText(R.string.total_time)
+            value1?.text =String.format("%02d:%02d", time / 60, time % 60)
+        } else {
+            tvTime?.setText(R.string.total_time_sec)
+            value1?.text = "$time"
+        }
 
         save?.setOnClickListener {
             listener?.onItemClicked(

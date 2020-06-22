@@ -733,7 +733,7 @@ public class BluetoothManager2 {
             public void onConnectFail(BleDevice device, BleException exception) {
                 log("connectBleFast onConnectFail " + exception);
                 if (listener != null)
-                    listener.onConnectFailed(device.getName());
+                    listener.onConnectFailed(device.getName(), exception.getCodeMessage());
                 //SessionManager.getInstance().getUserSession().setDeviceStatusByName(device.getName(), DEVICE_FAILED);
                 //EventBus.getDefault().postSticky(DeviceStatusEvent(d))
 
@@ -743,7 +743,7 @@ public class BluetoothManager2 {
             public void onConnectSuccess(BleDevice device, BluetoothGatt gatt, int status) {
                 log("connectBleFast onConnectSuccess " + status);
                 if (listener != null)
-                    listener.onConnect(device.getName());
+                    listener.onConnect(device.getName(), status);
                 if (status == BluetoothGatt.STATE_CONNECTED) {
                     setMtu(device, 300);
                 }
@@ -759,6 +759,12 @@ public class BluetoothManager2 {
 //                    indicateBleFast(device, BleGattManager.HEART_RATE_SERVICE_UUID.toString(),
 //                            BleGattManager.HEART_RATE_MEASUREMENT_CHAR_UUID.toString());
 
+                } else if (device.getDevice().getName().contains("MIBO-")) {
+                    log("connectBleFast device is Booster.....");
+                    //readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString());
+                    notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
+                            BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString(), false);
+                    //life.mibo.android.utils.Utils.toastDebug("Device Connected "+device.getDevice().getName());
                 } else {
                     readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
                     notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
@@ -773,7 +779,7 @@ public class BluetoothManager2 {
             @Override
             public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
                 if (listener != null)
-                    listener.onDisconnect(device.getName());
+                    listener.onDisconnect(isActiveDisConnected, device.getName(), status);
 
                 log("connectBleFast onDisConnected ");
             }
@@ -996,6 +1002,45 @@ public class BluetoothManager2 {
         }
 
         log("print End--------------------------------- ");
+    }
+
+
+    public static synchronized void read(BluetoothGatt mBluetoothGatt) {
+        CommunicationManager.log("read BluetoothGatt " + mBluetoothGatt);
+        CommunicationManager.log("read start--------------------------------- ");
+        int count = 1;
+        if (mBluetoothGatt != null) {
+            // mBluetoothGatt.discoverServices();
+            for (BluetoothGattService service : mBluetoothGatt.getServices()) {
+                CommunicationManager.log(count + " print service " + service);
+                if (service != null) {
+                    CommunicationManager.log("read service uid " + service.getUuid());
+                    CommunicationManager.log("read service type " + service.getType());
+                    for (BluetoothGattCharacteristic chr : service.getCharacteristics()) {
+                        CommunicationManager.log(count + " print Characteristic " + chr);
+                        if (chr != null) {
+                            CommunicationManager.log("read Characteristic uid " + chr.getUuid());
+                            CommunicationManager.log("read Characteristic property " + chr.getProperties());
+                            for (BluetoothGattDescriptor desc : chr.getDescriptors()) {
+                                CommunicationManager.log(count + " print Descriptors " + desc);
+                                if (desc != null) {
+                                    CommunicationManager.log("read Descriptors uid " + desc.getUuid());
+                                    CommunicationManager.log("read Descriptors value " + Arrays.toString(desc.getValue()));
+                                }
+
+                            }
+                        }
+                    }
+                } else {
+                    CommunicationManager.log("readservice is NULL ");
+                }
+                count++;
+            }
+        } else {
+            CommunicationManager.log("read mBluetoothGatt is NULL ");
+        }
+
+        CommunicationManager.log("read End--------------------------------- ");
     }
 
 }

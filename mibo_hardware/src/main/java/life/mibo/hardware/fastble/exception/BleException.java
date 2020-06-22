@@ -59,6 +59,11 @@ public abstract class BleException extends Throwable implements Serializable {
         return this;
     }
 
+    public String getCodeMessage() {
+        return description + " Status " + code;
+    }
+
+
     @Override
     public String toString() {
         return "BleException { " +

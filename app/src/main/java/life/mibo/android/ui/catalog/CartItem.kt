@@ -24,6 +24,8 @@ data class CartItem(
     val isPackage: Boolean = false
 ) : Parcelable {
 
+    var quantityDisable = false
+
     var locationId = 0
     var transactionId = 0
     var encAmount = "0.0"

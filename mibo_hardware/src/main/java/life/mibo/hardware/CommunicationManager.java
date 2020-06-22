@@ -27,6 +27,7 @@ import life.mibo.hardware.encryption.Encryption;
 import life.mibo.hardware.events.BleConnection;
 import life.mibo.hardware.events.ChangeColorEvent;
 import life.mibo.hardware.events.DelayColorEvent;
+import life.mibo.hardware.events.DevicePauseResumeEvent;
 import life.mibo.hardware.events.DeviceSearchEvent;
 import life.mibo.hardware.events.PodEvent;
 import life.mibo.hardware.events.ProximityEvent;
@@ -54,14 +55,12 @@ import static java.lang.Thread.sleep;
 import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
 import static life.mibo.hardware.constants.Config.RXL_TAP_EVENT;
 import static life.mibo.hardware.constants.Config.TCP_PORT;
-import static life.mibo.hardware.models.DeviceConstants.DEVICE_ALARM_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCONNECTED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_DISCOVERED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_FAILED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
-import static life.mibo.hardware.models.DeviceConstants.DEVICE_WAITING;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
@@ -130,6 +129,7 @@ public class CommunicationManager {
         @Override
         public void run() {
             while (commRunning) {
+                log("PingThread commRunning ");
                 try {
                     Thread.sleep(4000);
                     for (TCPClient t : tcpClients) {
@@ -139,25 +139,17 @@ public class CommunicationManager {
                         // Log.e("commManag", "send ping");
                     }
                     if (bluetoothManager != null) {
-                        for (BluetoothDevice d : bluetoothManager.getConnectedBleDevices()) {
+                        ArrayList<BluetoothDevice> list = bluetoothManager.getConnectedBleDevices();
+                        log("PingThread bluetoothManager size " + list.size());
+                        for (BluetoothDevice d : list) {
                             log("PingThread bluetoothManager sendMessage " + d);
                             if (d.getName() != null) {
                                 if (d.getName().contains("MBRXL")) {
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
                                     log("PingThread bluetoothManager to MBRXL");
                                 }
-
                                 if (d.getName().contains("MIBO-")) {
-//                                    if (d.getName().contains("MIBO-RXL")) {
-//                                        bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
-//                                        log("PingThread bluetoothManager to MBRXL");
-//                                    } else {
-//                                        bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
-//                                        //pingSentDevice(d.getName().replace("MIBO-", ""));
-//                                        log("PingThread bluetoothManager to MIBO-");
-//                                    }
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
-                                    //pingSentDevice(d.getName().replace("MIBO-", ""));
                                     log("PingThread bluetoothManager to MIBO-");
                                 }
                                 if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
@@ -167,58 +159,61 @@ public class CommunicationManager {
                                 }
                             }
                         }
+                    } else {
+                        log("PingThread bluetoothManager is NULL ");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    log("PingThread Exception " + e.getMessage());
                 }
             }
         }
     }
 
-    private void pingSentDevice(String uid) {
-        for (Device d : SessionManager.getInstance().getUserSession().getDevices()) {//for(Device d : mDiscoveredDevices) {
-            if (d.getUid().equals(uid)) {
-                switch (d.getStatusConnected()) {
-                    case DEVICE_NEUTRAL:
-                        d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
-                        break;
-                    case DEVICE_CONNECTED:
-                        d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
-                        break;
-                    case DEVICE_WAITING:
-                        d.setStatusConnected(DEVICE_WARNING);
-                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
-                        if (listener != null)
-                            listener.onConnectionStatus(d.getUid());
-                        //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
-                        break;
-                    case DEVICE_WARNING:
-                        d.setStatusConnected(DEVICE_DISCONNECTED);
-                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_DISCONNECTED);
-                        if (listener != null)
-                            listener.onConnectionStatus(d.getUid());
-                        //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
-
-                        break;
-                    case DEVICE_DISCONNECTED:
-                        AlarmManager.getInstance().getAlarms().AddDeviceAlarmByType(DEVICE_ALARM_DISCONNECTED, d.getUid());
-                        if (listener != null)
-                            listener.onAlarmEvent();
-
-                        //EventBus.getDefault().postSticky(new onAlarmEvent());
-                        break;
-                    case DEVICE_CONNECTING:
-
-                        break;
-                    default:
-                        d.setStatusConnected(DEVICE_WAITING);
-                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
-                }
-            }
-        }
-    }
+//    private void pingSentDevice(String uid) {
+//        for (Device d : SessionManager.getInstance().getUserSession().getDevices()) {//for(Device d : mDiscoveredDevices) {
+//            if (d.getUid().equals(uid)) {
+//                switch (d.getStatusConnected()) {
+//                    case DEVICE_NEUTRAL:
+//                        d.setStatusConnected(DEVICE_WAITING);
+//                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
+//                        break;
+//                    case DEVICE_CONNECTED:
+//                        d.setStatusConnected(DEVICE_WAITING);
+//                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
+//                        break;
+//                    case DEVICE_WAITING:
+//                        d.setStatusConnected(DEVICE_WARNING);
+//                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
+//                        if (listener != null)
+//                            listener.onConnectionStatus(d.getUid());
+//                        //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
+//                        break;
+//                    case DEVICE_WARNING:
+//                        d.setStatusConnected(DEVICE_DISCONNECTED);
+//                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_DISCONNECTED);
+//                        if (listener != null)
+//                            listener.onConnectionStatus(d.getUid());
+//                        //EventBus.getDefault().postSticky(new onConnectionStatus(d.getUid()));
+//
+//                        break;
+//                    case DEVICE_DISCONNECTED:
+//                        AlarmManager.getInstance().getAlarms().AddDeviceAlarmByType(DEVICE_ALARM_DISCONNECTED, d.getUid());
+//                        if (listener != null)
+//                            listener.onAlarmEvent();
+//
+//                        //EventBus.getDefault().postSticky(new onAlarmEvent());
+//                        break;
+//                    case DEVICE_CONNECTING:
+//
+//                        break;
+//                    default:
+//                        d.setStatusConnected(DEVICE_WAITING);
+//                        SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WAITING);
+//                }
+//            }
+//        }
+//    }
 
     public void removeNotConnectedDevices() {
         log("reScanNonConnectedDevices");
@@ -298,19 +293,28 @@ public class CommunicationManager {
         }
 
         @Override
-        public void onConnect(String name) {
+        public void onConnect(String name, int status) {
+            if (listener != null)
+                listener.onConnect(name, status);
             SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_CONNECTED);
         }
 
         @Override
-        public void onDisconnect(String name) {
+        public void onDisconnect(boolean isActive, String name, int code) {
+            if (listener != null)
+                listener.onDisconnect(false, name, code, "");
+
             SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_DISCONNECTED);
         }
 
         @Override
-        public void onConnectFailed(String name) {
+        public void onConnectFailed(String name, String error) {
+            if (listener != null)
+                listener.onDisconnect(true, name, 0, error);
+
             SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_FAILED);
         }
+
     };
 
     private OnBleCharChanged bleCharChanged = new OnBleCharChanged() {
@@ -790,6 +794,19 @@ public class CommunicationManager {
 
 
     public synchronized void connectDevice(Device device) {
+        //  log("PingThread connectDevice commRunning " + commRunning + " :: " + pingThread);
+        if (pingThread == null) {
+            //  log("PingThread connectDevice PingThread WAS NULL NOW INIT..... ");
+            commRunning = true;
+            pingThread = new Thread(new PingThread());
+            pingThread.start();
+        }
+        if (!commRunning) {
+            // log("PingThread connectDevice commRunning WAS FALSE NOW INIT..... ");
+            commRunning = true;
+            pingThread.start();
+        }
+        //  log("PingThread connectDevice commRunning " + commRunning + " :: " + pingThread);
         log("connectDevice " + device);
         if (device == null)
             return;
@@ -1065,6 +1082,7 @@ public class CommunicationManager {
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onSendProgramEvent(SendProgramEvent event) {
+        log("onSendProgramEvent " + event);
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
@@ -1328,6 +1346,36 @@ public class CommunicationManager {
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDeviceRestartEvent(SendDeviceStartEvent event) {
         onDeviceStartEvent(event);
+    }
+
+    public void onDeviceResumePauseEvent(DevicePauseResumeEvent event) {
+        log("onDeviceResumePauseEvent DevicePauseResumeEvent ");
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                log("onDeviceStartEvent ");
+                t.sendMessage(DataParser.sendPause(event.getData()));
+            }
+        }
+        if (bluetoothManager != null)
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendPause(event.getData()), "onDeviceResumePauseEvent");
+        //tcpClients.get(0).sendMessage(DataParser.sendStart());
+        log("RESTART EVENT");
+
+    }
+
+    public void onFirmwareEvent(String uid) {
+        log("onFirmwareEvent");
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(uid)) {
+                t.sendMessage(DataParser.sendGetFirm());
+            }
+        }
+        if (bluetoothManager != null)
+            bluetoothManager.sendMessage(uid, DataParser.sendGetFirm(), "onFirmwareEvent");
+        //tcpClients.get(0).sendMessage(DataParser.sendStart());
     }
 
     public void onDeviceStartEvent(SendDeviceStartEvent event) {

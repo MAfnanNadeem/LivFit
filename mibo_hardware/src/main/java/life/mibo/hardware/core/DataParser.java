@@ -10,6 +10,7 @@ import life.mibo.hardware.models.program.Program;
 
 import static life.mibo.hardware.constants.Config.COMMAND_GET_DEVICE_STATUS;
 import static life.mibo.hardware.constants.Config.COMMAND_GET_FIRMWARE_REVISION;
+import static life.mibo.hardware.constants.Config.COMMAND_PAUSE_CURRENT_CYCLE;
 import static life.mibo.hardware.constants.Config.COMMAND_PING_STIMULATOR;
 import static life.mibo.hardware.constants.Config.COMMAND_RESET_CURRENT_CYCLE;
 import static life.mibo.hardware.constants.Config.COMMAND_SEARCH_STIMULATOR;
@@ -142,6 +143,16 @@ public class DataParser {
     public static byte[] sendReStart() {
         byte[] aux = new byte[0];
         return fullMessage(new byte[]{COMMAND_RESET_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
+    }
+
+    public static byte[] sendPause(int data) {
+        if (data == 1) {
+            byte[] aux = new byte[0];
+            return fullMessage(new byte[]{COMMAND_PAUSE_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
+        } else {
+            byte[] aux = new byte[0];
+            return fullMessage(new byte[]{COMMAND_START_CURRENT_CYCLE}, new byte[]{0}, aux, BOOSTER);
+        }
     }
 
     public static byte[] sendStop() {

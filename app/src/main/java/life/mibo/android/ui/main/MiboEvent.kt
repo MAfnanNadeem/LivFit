@@ -69,6 +69,12 @@ object MiboEvent {
         post(FirebaseAnalytics.Event.SIGN_UP+"_error", bundle)
     }
 
+    fun registerFailed(s: String) {
+        val bundle = Bundle()
+        bundle.putString("err_msg", s)
+        post(FirebaseAnalytics.Event.SIGN_UP+"_failed", bundle)
+    }
+
     fun otpSuccess(userId: String, otp: String) {
         val bundle = Bundle()
         bundle.putString("user_id", userId)
@@ -141,4 +147,6 @@ object MiboEvent {
             log(e)
         }
     }
+
+
 }

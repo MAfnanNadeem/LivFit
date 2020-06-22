@@ -54,59 +54,59 @@ public class FailedPaymentActivity extends BaseActivity {
 
     public void getFailedResponse() {
         Object object = getIntent().getParcelableExtra(WebviewActivity.PAYMENT_RESPONSE);
-        TextView textView = (TextView) findViewById(R.id.textViewInfo0);
+       // TextView textView = (TextView) findViewById(R.id.textViewInfo0);
 
-        if (object instanceof StatusResponse) {
-            StatusResponse status = (StatusResponse) object;
-            String msg = textView.getText() + " : " + status.getTrace();
-            log("Failed StatusResponse auth: " + status.auth);
-            log("Failed StatusResponse trace: " + status.trace);
-
-            Auth auth = status.auth;
-            if (auth != null) {
-                log("Failed StatusResponse trace9: " + auth.avs);
-                log("Failed StatusResponse trace8: " + auth.ca_valid);
-                log("Failed StatusResponse trace7: " + auth.cardcode);
-                log("Failed StatusResponse trace6: " + auth.cardfirst6);
-                log("Failed StatusResponse trace5: " + auth.cardlast4);
-                log("Failed StatusResponse trace4: " + auth.code);
-                log("Failed StatusResponse trace3: " + auth.message);
-                log("Failed StatusResponse trace2: " + auth.status);
-                log("Failed StatusResponse trace1: " + auth.tranref);
-                msg += " \n " + auth.message;
-            }
-            textView.setText(msg);
-
-            if (status.getAuth() != null) {
-                status.getAuth().getStatus();   // Authorisation status. A indicates an authorised transaction. H also indicates an authorised transaction, but where the transaction has been placed on hold. Any other value indicates that the request could not be processed.
-                status.getAuth().getAvs();      /* Result of the AVS check:
-                                            Y = AVS matched OK
-                                            P = Partial match (for example, post-code only)
-                                            N = AVS not matched
-                                            X = AVS not checked
-                                            E = Error, unable to check AVS */
-                status.getAuth().getCode();     // If the transaction was authorised, this contains the authorisation code from the card issuer. Otherwise it contains a code indicating why the transaction could not be processed.
-                status.getAuth().getMessage();  // The authorisation or processing error message.
-                status.getAuth().getCa_valid();
-                status.getAuth().getCardcode(); // Code to indicate the card type used in the transaction. See the code list at the end of the document for a list of card codes.
-                //  status.getAuth().getCardlast4();// The last 4 digits of the card number used in the transaction. This is supplied for all payment types (including the Hosted Payment Page method) except for PayPal.
-                status.getAuth().getCvv();      /* Result of the CVV check:
-                                           Y = CVV matched OK
-                                           N = CVV not matched
-                                           X = CVV not checked
-                                           E = Error, unable to check CVV */
-                status.getAuth().getTranref(); //The payment gateway transaction reference allocated to this request.
-                status.getAuth().getAvs();     /* Result of the AVS check:
-                                           Y = AVS matched OK
-                                           P = Partial match (for example, post-code only)
-                                           N = AVS not matched
-                                           X = AVS not checked
-                                           E = Error, unable to check AVS */
-            }
-        } else if (object instanceof String) {
-            String errorMessage = (String) object;
-            Toasty.error(this, errorMessage, Toasty.LENGTH_LONG).show();
-            textView.setText(errorMessage);
-        }
+//        if (object instanceof StatusResponse) {
+//            StatusResponse status = (StatusResponse) object;
+//            String msg = textView.getText() + " : " + status.getTrace();
+//            log("Failed StatusResponse auth: " + status.auth);
+//            log("Failed StatusResponse trace: " + status.trace);
+//
+//            Auth auth = status.auth;
+//            if (auth != null) {
+//                log("Failed StatusResponse trace9: " + auth.avs);
+//                log("Failed StatusResponse trace8: " + auth.ca_valid);
+//                log("Failed StatusResponse trace7: " + auth.cardcode);
+//                log("Failed StatusResponse trace6: " + auth.cardfirst6);
+//                log("Failed StatusResponse trace5: " + auth.cardlast4);
+//                log("Failed StatusResponse trace4: " + auth.code);
+//                log("Failed StatusResponse trace3: " + auth.message);
+//                log("Failed StatusResponse trace2: " + auth.status);
+//                log("Failed StatusResponse trace1: " + auth.tranref);
+//                msg += " \n " + auth.message;
+//            }
+//            textView.setText(msg);
+//
+//            if (status.getAuth() != null) {
+//                status.getAuth().getStatus();   // Authorisation status. A indicates an authorised transaction. H also indicates an authorised transaction, but where the transaction has been placed on hold. Any other value indicates that the request could not be processed.
+//                status.getAuth().getAvs();      /* Result of the AVS check:
+//                                            Y = AVS matched OK
+//                                            P = Partial match (for example, post-code only)
+//                                            N = AVS not matched
+//                                            X = AVS not checked
+//                                            E = Error, unable to check AVS */
+//                status.getAuth().getCode();     // If the transaction was authorised, this contains the authorisation code from the card issuer. Otherwise it contains a code indicating why the transaction could not be processed.
+//                status.getAuth().getMessage();  // The authorisation or processing error message.
+//                status.getAuth().getCa_valid();
+//                status.getAuth().getCardcode(); // Code to indicate the card type used in the transaction. See the code list at the end of the document for a list of card codes.
+//                //  status.getAuth().getCardlast4();// The last 4 digits of the card number used in the transaction. This is supplied for all payment types (including the Hosted Payment Page method) except for PayPal.
+//                status.getAuth().getCvv();      /* Result of the CVV check:
+//                                           Y = CVV matched OK
+//                                           N = CVV not matched
+//                                           X = CVV not checked
+//                                           E = Error, unable to check CVV */
+//                status.getAuth().getTranref(); //The payment gateway transaction reference allocated to this request.
+//                status.getAuth().getAvs();     /* Result of the AVS check:
+//                                           Y = AVS matched OK
+//                                           P = Partial match (for example, post-code only)
+//                                           N = AVS not matched
+//                                           X = AVS not checked
+//                                           E = Error, unable to check AVS */
+//            }
+//        } else if (object instanceof String) {
+//            String errorMessage = (String) object;
+//            Toasty.error(this, errorMessage, Toasty.LENGTH_LONG).show();
+//            textView.setText(errorMessage);
+//        }
     }
 }

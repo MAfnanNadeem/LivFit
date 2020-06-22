@@ -387,6 +387,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 Toasty.error(context, R.string.unable_to_connect).show()
                 t.printStackTrace()
                 Logger.e("RegisterActivity : register API ", t)
+                MiboEvent.registerFailed("${t?.message}")
 
             }
 

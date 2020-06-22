@@ -1,14 +1,14 @@
 package life.mibo.hardware.events;
 
-public class DevicePlayPauseEvent {
+public class DevicePauseResumeEvent {
     private String uid;
     private int data = -1;
 
-    public DevicePlayPauseEvent(String uid) {
+    public DevicePauseResumeEvent(String uid) {
         this.uid = uid;
     }
 
-    public DevicePlayPauseEvent(String uid, int data) {
+    public DevicePauseResumeEvent(String uid, int data) {
         this.uid = uid;
         this.data = data;
     }
@@ -27,14 +27,6 @@ public class DevicePlayPauseEvent {
 
     public boolean pause() {
         return data == 2;
-    }
-
-    public boolean startResponse() {
-        return data == 3;
-    }
-
-    public boolean pauseResponse() {
-        return data == 4;
     }
 
 }

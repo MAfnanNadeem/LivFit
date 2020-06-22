@@ -744,11 +744,18 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     fun parseCalories(calories: Calories?) {
         try {
             var cal = 0
+            var hours = 0
             if (calories != null) {
                 calories.data?.forEach {
                     // list.add(it!!)
                     cal += it?.caloriesBurnt ?: 0
+                    hours += 20
                 }
+                Prefs.get(this.fragment.context).set("calories_session", calories?.data?.size ?: 0)
+
+                //hours = hours.div(60)
+
+                Prefs.get(this.fragment.context).set("calories_session_hours", hours)
             }
             Prefs.get(this.fragment.context).set("calories_burnt", cal)
             observer?.onNotify(20, cal)

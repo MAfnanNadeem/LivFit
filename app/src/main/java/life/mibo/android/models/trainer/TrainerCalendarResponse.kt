@@ -76,7 +76,9 @@ class TrainerCalendarResponse(data: Data?) : BaseResponse<TrainerCalendarRespons
         @SerializedName("suitName")
         var suitName: String?,
         @SerializedName("weight")
-        var weight: String?
+        var weight: String?,
+        @SerializedName("weight_unit")
+        var weightUnit: String?
     )
 
     data class Attendance(

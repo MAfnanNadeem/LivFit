@@ -84,13 +84,15 @@ object MiboEvent {
 
     fun event(tag: String, value: String?) {
         val bundle = Bundle()
-        bundle.putString(tag, value)
+        bundle.putString("tag", tag)
+        bundle.putString("value", value)
         post("mibo_event", bundle)
     }
 
     fun event(type: String, tag: String, value: String?) {
         val bundle = Bundle()
-        bundle.putString(tag, value)
+        bundle.putString("tag", tag)
+        bundle.putString("value", value)
         post(type, bundle)
     }
 

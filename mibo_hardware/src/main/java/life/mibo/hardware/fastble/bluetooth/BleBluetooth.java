@@ -256,7 +256,7 @@ public class BleBluetooth {
 
         @Override
         public void handleMessage(Message msg) {
-            BleManager.log("BleBluetooth handleMessage " + msg);
+            //BleManager.log("BleBluetooth handleMessage " + msg);
             switch (msg.what) {
                 case BleMsg.MSG_CONNECT_FAIL: {
                     disconnectGatt();

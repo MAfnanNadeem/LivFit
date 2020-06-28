@@ -417,6 +417,7 @@
     <string name="search_professionals">Search Professionals</string>
     <string name="invite_me">Invite Me</string>
     <string name="invited_already">Already Invited</string>
+    <string name="invite_sent">Request Sent</string>
     <string name="invitation_sent">Success! An Invitation has been sent to %s</string>
     <string name="no_service_found">No Service Found.</string>
     <string name="services">Services</string>
@@ -519,7 +520,7 @@
     <string name="forearm">Forearm</string>
 
     <string name="ems_tens"><small><small>EMS</small></small></string>
-    <string name="ems_tens_sessions">EMS/TENS \n Sessions </string>
+    <string name="ems_tens_sessions">MyoBoost \n Sessions </string>
 
     <string name="booster_no_response">Connected Device does not responding!</string>
     <string name="booster_inactive">Connected device is inactive</string>
@@ -553,9 +554,48 @@
     <string name="session_started_msg">This session has already started. Please provide your feedback if there were any interruptions. For Re-scheduling kindly contact your Administrator.</string>
     <string name="session_missed_msg">This session has already expired. You can not start a expired session. For Re-scheduling kindly contact your Administrator.</string>
     <string name="session_upcomming_msg">You can start session at most 15 minutes before schedule time.</string>
-    <string name="session_start_after"><small>start session after %d minutes.</small></string>
+    <string name="session_start_after_minutes"><small>Start in %d minutes</small></string>
+    <string name="session_start_after_hour"><small>Start in %d hour %d minutes</small></string>
+    <string name="session_start_after_hours"><small>Start in %d hours %d minutes</small></string>
     <string name="order_confirmation">Order Confirmation</string>
     <string name="payments_failed">Payments Failed</string>
+    <string name="camera_option">Camera</string>
+    <string name="gallery_option">Gallery</string>
+    <string name="title_choose_image_provider">Choose</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="title_gallery">Gallery</string>
+    <string name="title_camera">Camera</string>
+    <string name="image_picker_provider_authority_suffix">.imagepicker.provider</string>
+
+    <string name="message_gallery_permission_denied">Read External Storage permissions is needed to select Image. Please turn on requested permissions from Settings > Permissions.</string>
+    <string name="message_camera_permission_denied">Camera and External Storage permissions are needed to capture image. Turning off any permission won\'t allow application run smoothly. Please turn on all requested permissions from Settings > Permissions.</string>
+    <string name="permission_gallery_denied">
+        <![CDATA[Storage permission is needed to pick gallery image. Please allow storage permission from Settings > Permissions.]]></string>
+    <string name="permission_camera_extended_denied">
+        <![CDATA[Camera and Storage permissions are needed to take a picture. Please allow both the requested permissions from Settings > Permissions.]]></string>
+    <string name="permission_camera_denied">
+        <![CDATA[Storage permission is needed to take a picture. Please allow storage permission from Settings > Permissions.]]></string>
+
+    <string name="error_failed_to_create_camera_image_file">Failed to create Camera image file</string>
+    <string name="error_failed_pick_gallery_image">Failed to pick Gallery image</string>
+    <string name="error_failed_to_crop_image">Failed to crop image</string>
+    <string name="error_failed_to_compress_image">Failed to compress image</string>
+    <string name="error_task_cancelled">Task Cancelled</string>
+    <string name="invalid_image_file">Invalid image path</string>
+    <string name="upper_and_lower"><![CDATA[* Upper & Lower]]></string>
+    <string name="pwd_number">* Number</string>
+    <string name="pwd_8_character">* 8 Character</string>
+    <string name="pwd_special_char">* Special Char</string>
+    <string name="address_titles">Shipment Address</string>
+    <string name="add_a_new_address">Add a New Address</string>
+    <string name="device_disconnected">Device Disconnected!</string>
+    <string name="connecting_device">Connecting device…</string>
+    <string name="finish">Finish</string>
+    <string name="continue_action">Continue</string>
+    <string name="last_update_on">Last update on\n %s</string>
+    <string name="shipment_address">Shipment Address</string>
+    <string name="google_fit">Google Fit</string>
+    <string name="connected">Connected</string>
 
 
     <!-- customer reviews -->

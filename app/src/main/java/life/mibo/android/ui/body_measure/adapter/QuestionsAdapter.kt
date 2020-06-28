@@ -64,6 +64,26 @@ class QuestionsAdapter(
 
     }
 
+    fun click(
+        ID: Int,
+        clicker: ItemClickListener<Item>
+    ) {
+
+        var item: Item? = null
+        for (i in list) {
+            if (i.id == ID) {
+                i.selected = true
+                item = i
+            } else {
+                i.selected = false
+            }
+        }
+        notifyDataSetChanged()
+        if (item != null) {
+            clicker?.onItemClicked(item, -1)
+        }
+    }
+
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var text: TextView? = itemView.findViewById(R.id.tv_title)

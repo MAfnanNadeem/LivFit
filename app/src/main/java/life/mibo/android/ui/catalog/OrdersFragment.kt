@@ -13,7 +13,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_catalog_products.*
 import life.mibo.android.R
@@ -21,14 +23,24 @@ import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.catalog.GetInvoices
+import life.mibo.android.models.catalog.ShipmentAddress
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.utils.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
 class OrdersFragment : BaseFragment() {
+
+    companion object {
+        fun create(type: Int): Bundle {
+            val bundle = Bundle()
+            bundle.putInt("type_", type)
+            return bundle
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,23 +56,30 @@ class OrdersFragment : BaseFragment() {
     var products = ArrayList<GetInvoices.Invoice>()
     //var backupList = ArrayList<Services.Data>()
 
+    private var type_ = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //setupAdapter()
 
-        swipeToRefresh?.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorAccent,
-            R.color.colorPrimaryDark,
-            R.color.infoColor2,
-            R.color.successColor
-        )
+//        val kk = Utils.getRefreshColors()
+//        val colorRes = IntArray(kk.size)
+//        for (i in kk) {
+//            colorRes[i] = ContextCompat.getColor(requireContext(), i)
+//        }
+//        swipeToRefresh?.setColorSchemeColors(kk)
+//        swipeToRefresh?.setColorSchemeResources(
+//            R.color.colorPrimary, R.color.colorAccent,
+//            R.color.infoColor2, R.color.textColorApp2, R.color.textColorApp
+//        )
+        setSwipeRefreshColors(swipeToRefresh)
         swipeToRefresh?.setOnRefreshListener {
             log("swipeToRefresh?.setOnRefreshListener $isRefreshing")
             isRefreshing = true
             getInvoices()
         }
         recyclerView?.layoutManager = GridLayoutManager(context, 1)
+
+        type_ = arguments?.getInt("type_", 0) ?: 0
 
         getInvoices()
         //  getProfessionals()
@@ -92,6 +111,10 @@ class OrdersFragment : BaseFragment() {
 
     private fun getInvoices() {
         val member = Prefs.get(context).member ?: return
+        if (type_ == 2) {
+            getAddress()
+            return
+        }
         showProgress()
         API.request.getApi().getAllInvoice(
             MemberPost(member.id(), member.accessToken!!, "GetAllInvoices")
@@ -110,8 +133,80 @@ class OrdersFragment : BaseFragment() {
 
     }
 
-    private fun parseProducts(invoices: GetInvoices.Data?) {
+    private fun getAddress() {
+        val member = Prefs.get(context).member ?: return
+        showProgress()
+        API.request.getApi().getMemberShippingAddress(
+            MemberPost(
+                member.id(),
+                member.accessToken!!,
+                "GetMemberShippingAddress"
+            )
+        ).enqueue(object : Callback<ShipmentAddress> {
+            override fun onFailure(call: Call<ShipmentAddress>, t: Throwable) {
+                hideProgress()
+            }
 
+            override fun onResponse(
+                call: Call<ShipmentAddress>,
+                response: Response<ShipmentAddress>
+            ) {
+                hideProgress()
+                val list = response?.body()?.data
+                val address = ArrayList<BuyActivity.AddressItem>()
+                if (list != null && list.isNotEmpty()) {
+                    for (i in list) {
+                        if (i != null)
+                            address.add(
+                                BuyActivity.AddressItem(
+                                    i.id!!,
+                                    i.name,
+                                    i.address,
+                                    i.city,
+                                    i.country,
+                                    i.phone
+                                )
+                            )
+                    }
+
+                }
+                activity?.runOnUiThread {
+                    setupAddresses(address)
+                }
+            }
+
+        })
+
+    }
+
+    private fun setupAddresses(address: ArrayList<BuyActivity.AddressItem>?) {
+        if (address == null || address.isEmpty()) {
+            tv_empty?.setText(R.string.no_data_found)
+            tv_empty?.visibility = View.VISIBLE
+            return
+        }
+
+        for (add in address) {
+            add.isViewMode = true
+        }
+
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        val addressAdapters =
+            BuyActivity.AddressAdapters(
+                address,
+                object : ItemClickListener<BuyActivity.AddressItem> {
+                    override fun onItemClicked(item: BuyActivity.AddressItem?, position: Int) {
+
+                    }
+
+                })
+
+        recyclerView?.adapter = addressAdapters
+
+    }
+
+    private fun parseProducts(invoices: GetInvoices.Data?) {
+        //isRefreshing = false
         val data = invoices?.invoice
         if (data != null && data.isNotEmpty()) {
             tv_empty?.visibility = View.GONE

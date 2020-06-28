@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:singleLine="true"
-        tools:text="@string/sumeet"
+        tools:text="@string/dummy_name"
         android:textColor="@color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 

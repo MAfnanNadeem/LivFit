@@ -9,6 +9,8 @@ package life.mibo.android.ui.profile
 
 //import com.dichotome.profilebar.ui.tabPager.TabFragment
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -34,6 +36,7 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.libs.image.ImagePicker
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
@@ -42,12 +45,6 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
-import life.mibo.imagepicker.RxGalleryFinal
-import life.mibo.imagepicker.RxGalleryFinalApi
-import life.mibo.imagepicker.imageloader.ImageLoaderType
-import life.mibo.imagepicker.rxbus.RxBusResultDisposable
-import life.mibo.imagepicker.rxbus.event.ImageRadioResultEvent
-import life.mibo.imagepicker.ui.base.IRadioImageCheckedListener
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -113,6 +110,7 @@ class ProfileFragment : BaseFragment() {
         tv_country?.setText(member.country)
         setUserImage(member?.profileImg, member.isMale())
 
+        tv_change_pwd?.visibility = View.GONE
         tv_change_pwd?.setOnClickListener {
             log("ChangePassword")
             ChangePasswordDialog(requireContext()).show()
@@ -141,23 +139,25 @@ class ProfileFragment : BaseFragment() {
 
             when {
                 mnt > 60 -> {
-                    tv_session_title?.setText(R.string.hours)
+                    tv_hour_title?.setText(R.string.hours)
                     tv_hour?.setText("${mnt.div(60)}")
 
                 }
                 mnt > 0 -> {
-                    tv_session_title?.setText(R.string.minutes)
+                    tv_hour_title?.setText(R.string.minutes)
                     tv_hour?.setText("$mnt")
 
                 }
                 else -> {
-                    tv_session_title?.setText(R.string.hours)
+                    tv_hour_title?.setText(R.string.hours)
                     tv_hour?.setText("$mnt")
                 }
             }
 
             tv_cal?.setText("$cal")
             tv_session?.setText("$ses")
+            tv_session_title?.setText(R.string.sessions)
+            tv_cal_title?.setText(R.string.calories)
         } catch (e: java.lang.Exception) {
 
         }
@@ -179,19 +179,6 @@ class ProfileFragment : BaseFragment() {
         //setGradient(constraintLayout1, userImage.drawable)
     }
 
-    private fun openPickerOld() {
-        log("openPicker called")
-        RxGalleryFinal.with(requireActivity()).image()
-            .single()
-            .crop()
-            .imageLoader(ImageLoaderType.GLIDE)
-            .subscribe(object : RxBusResultDisposable<ImageRadioResultEvent>() {
-                override fun onEvent(t: ImageRadioResultEvent?) {
-                    Logger.e("openPicker RxGalleryFinalApi onEvent $t")
-                }
-            })
-            .openGallery();
-    }
 
     private val permissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -202,32 +189,67 @@ class ProfileFragment : BaseFragment() {
     private fun openPicker() {
         PermissionHelper.requestPermission(this@ProfileFragment, permissions) {
             log("requestPermission")
-            openPicker2()
+            //openPicker2()
+            openPickerOptions()
         }
         log("openPicker")
     }
 
-    private fun openPicker2() {
-        log("openPicker called")
-        RxGalleryFinalApi.getInstance(requireActivity())
-            .openGalleryRadioImgDefault(object : RxBusResultDisposable<ImageRadioResultEvent>() {
-                override fun onEvent(t: ImageRadioResultEvent?) {
-                    Logger.e("openPicker RxGalleryFinalApi onEvent $t")
-                }
-            })
-            .onCropImageResult(object : IRadioImageCheckedListener {
-
-                override fun isActivityFinish(): Boolean {
-                    Logger.e("openPicker RxGalleryFinalApi isActivityFinish")
-                    return true
-                }
-
-                override fun cropAfter(file: File?) {
-                    Logger.e("openPicker RxGalleryFinalApi cropAfter $file")
-                    uploadPicApi("", file)
-                }
-            })
+    private fun openPickerOptions() {
+        ImagePicker.with(this@ProfileFragment).crop().compress(1024).start()
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        log("onActivityResult")
+        if (requestCode == ImagePicker.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            log("onActivityResult data?.data $data")
+
+            // val fileUri = data?.data
+            //log("onActivityResult fileUri $fileUri")
+            //userImage.setImageURI(fileUri)
+
+            val file: File? = ImagePicker.getFile(data)
+            // Glide.with(userImage).load(file).error(R.drawable.ic_user_female)
+            //   .fallback(R.drawable.ic_user_male).into(userImage)
+            uploadPicApi(file)
+//            val file: File? = ImagePicker.getFile(data)
+//            log("onActivityResult file $file")
+//            val exist = file?.exists()
+//            log("onActivityResult exist $exist")
+//
+//            val filePath: String? = ImagePicker.getFilePath(data)
+//            log("onActivityResult filePath $filePath ")
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toasty.info(requireContext(), ImagePicker.getError(data)).show()
+        } else {
+            log("onActivityResult  Task Cancelled")
+            // Toasty.info(requireContext(), "Task Cancelled").show()
+        }
+    }
+
+//    private fun openPicker2() {
+//        log("openPicker called")
+//        RxGalleryFinalApi.getInstance(requireActivity())
+//            .openGalleryRadioImgDefault(object : RxBusResultDisposable<ImageRadioResultEvent>() {
+//                override fun onEvent(t: ImageRadioResultEvent?) {
+//                    Logger.e("openPicker RxGalleryFinalApi onEvent $t")
+//                }
+//            })
+//            .onCropImageResult(object : IRadioImageCheckedListener {
+//
+//                override fun isActivityFinish(): Boolean {
+//                    Logger.e("openPicker RxGalleryFinalApi isActivityFinish")
+//                    return true
+//                }
+//
+//                override fun cropAfter(file: File?) {
+//                    Logger.e("openPicker RxGalleryFinalApi cropAfter $file")
+//                    uploadPicApi(file)
+//                }
+//            })
+//    }
 
     private fun saveAndUpload(drawable: Drawable?) {
         drawable?.let {
@@ -398,11 +420,11 @@ class ProfileFragment : BaseFragment() {
         return bitmap
     }
 
-    private fun uploadPicApi(base64: String, file: File?) {
+    private fun uploadPicApi(file: File?) {
         log("uploadPicApi $file")
-        log("bitmapToBase64 uploadPicApi ${base64.length} : ${base64?.length?.div(1024)}")
+        //log("bitmapToBase64 uploadPicApi ${base64.length} : ${base64?.length?.div(1024)}")
         if (file == null) {
-            Toasty.snackbar(view, "Invalid image path")
+            Toasty.snackbar(view, getString(R.string.invalid_image_file))
             return
         }
         getDialog()?.show()

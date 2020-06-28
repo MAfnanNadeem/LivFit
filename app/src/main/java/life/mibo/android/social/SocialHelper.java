@@ -17,6 +17,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
+import life.mibo.android.ui.main.MiboEvent;
+
 public class SocialHelper {
 
     public static int GOOGLE_REQUEST_CODE = 101;
@@ -54,10 +56,24 @@ public class SocialHelper {
         google.login();
     }
 
+    public void googleConnect(Context context) {
+        try {
+            if (google == null)
+                google = new Google(context, listener);
+            google.connect();
+        } catch (Exception ee) {
+            MiboEvent.INSTANCE.log(ee);
+        }
+    }
+
 
     public void googleLogout() {
-        if (google != null)
-            google.logout();
+        try {
+            if (google != null)
+                google.logout();
+        } catch (Exception ee) {
+            MiboEvent.INSTANCE.log(ee);
+        }
     }
 
     public void facebookLogout() {

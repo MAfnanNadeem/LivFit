@@ -19,6 +19,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+
 
 
     <uses-feature
@@ -130,6 +132,9 @@
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
+        <activity android:name=".libs.image.ImagePickerActivity"
+            android:theme="@style/Theme.ImagePicker"
+            android:screenOrientation="unspecified"/>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -139,6 +144,18 @@
             android:name="com.telr.mobile.sdk.activity.WebviewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
+
+        <provider
+            android:name="life.mibo.android.libs.image.code.ImagePickerFileProvider"
+            android:authorities="${applicationId}.imagepicker.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/picker_provider_paths" />
+
+        </provider>
 
         <receiver
             android:name="life.mibo.android.receiver.SMSBroadcastReceiver"

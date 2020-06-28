@@ -34,6 +34,9 @@ interface Navigator {
         const val ORDERS = 127;
         const val HOME_DRAWER = 128;
         const val PROFILE_UPDATE = 129;
+        const val HOME_START = 131;
+        const val HOME_STOP = 132;
+        const val GOOGLE_FIT = 133;
         const val POST = 201;
         const val LOGOUT = 202;
         const val PIC_UPLOADED = 203;

@@ -15,4 +15,4 @@
     android:paddingTop="@dimen/grid_2x"
     android:paddingBottom="@dimen/grid_2x"
     android:singleLine="true"
-    tools:text="@string/sumeet" />
+    tools:text="@string/dummy_name" />

@@ -10,9 +10,11 @@ package life.mibo.android.ui.body_measure.adapter
 import android.os.Bundle
 import android.util.SparseIntArray
 import life.mibo.android.core.toIntOrZero
+import life.mibo.android.models.biometric.Biometric
 import life.mibo.hardware.core.Logger
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.math.roundToInt
 
 object Calculate {
 
@@ -41,6 +43,16 @@ object Calculate {
     fun clear() {
         bundle.clear()
         measureData.reset()
+        bioData = null
+    }
+
+    fun getBioData() = bioData
+
+    private var bioData: Biometric.Data? = null
+
+    fun addBioData(data: Biometric.Data) {
+        bioData = data
+        //bundle.putParcelable("bio_data", data)
     }
 
     fun calculateBmi(weight: Double?, heightCm: Double?): Double {
@@ -292,6 +304,14 @@ object Calculate {
 
     fun kgToPounds(weight: Double): Double {
         return weight.times(2.205)
+    }
+
+    fun poundToKg(weight: Int?): Int {
+        return try {
+            (weight?.div(2.205) ?: 0.0).roundToInt()
+        } catch (e: Exception) {
+            0
+        }
     }
 
     fun round(value: Double?): Double {

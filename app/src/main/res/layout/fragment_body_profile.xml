@@ -72,7 +72,7 @@
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/sumeet" />
+        tools:text="@string/dummy_name" />
 
     <TextView
         android:id="@+id/user_welcome"

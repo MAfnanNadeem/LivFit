@@ -83,10 +83,10 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
             var cal = 0
             var today = ""
             try {
-                weight = Prefs.get(fragment.context)["user_weight"]
+                weight = Prefs.get(fragment.context)[Prefs.WEIGHT]
                 val date = SimpleDateFormat("yymmddhh").format(Date())
                 weather = Prefs.getTemp(fragment.context)["weather_$date"]
-                cal = Prefs.get(this.fragment.context).get("calories_burnt", 0)
+                cal = Prefs.get(this.fragment.context).get(Prefs.CALORIES, 0)
                 val format = SimpleDateFormat("EEE, dd MMM")
                 today = format.format(Date())
             } catch (e: java.lang.Exception) {
@@ -716,7 +716,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
     fun getCalories() {
 
-        val cal = Prefs.get(this.fragment.context).get("calories_burnt", -1)
+        val cal = Prefs.get(this.fragment.context).get(Prefs.CALORIES, -1)
         if (cal >= 0) {
             observer?.onNotify(21, cal)
             return
@@ -751,13 +751,14 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                     cal += it?.caloriesBurnt ?: 0
                     hours += 20
                 }
-                Prefs.get(this.fragment.context).set("calories_session", calories?.data?.size ?: 0)
+                Prefs.get(this.fragment.context)
+                    .set(Prefs.CALORIES_SESSION, calories?.data?.size ?: 0)
 
                 //hours = hours.div(60)
 
-                Prefs.get(this.fragment.context).set("calories_session_hours", hours)
+                Prefs.get(this.fragment.context).set(Prefs.CALORIES_HOUR, hours)
             }
-            Prefs.get(this.fragment.context).set("calories_burnt", cal)
+            Prefs.get(this.fragment.context).set(Prefs.CALORIES, cal)
             observer?.onNotify(20, cal)
 
         } catch (e: java.lang.Exception) {

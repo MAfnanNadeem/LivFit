@@ -147,12 +147,10 @@ public class CommunicationManager {
                                 if (d.getName().contains("MBRXL")) {
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.RXL), d);
                                     log("PingThread bluetoothManager to MBRXL");
-                                }
-                                if (d.getName().contains("MIBO-")) {
+                                } else if (d.getName().contains("MIBO-")) {
                                     bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     log("PingThread bluetoothManager to MIBO-");
-                                }
-                                if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
+                                } else if ((d.getName().contains("HW") || d.getName().contains("Geonaute"))) {
                                     //bluetoothManager.sendPingToBoosterGattDevice(DataParser.sendGetStatus(DataParser.BOOSTER), d);
                                     //pingSentDevice(d.toString());
                                     log("PingThread bluetoothManager to Geonaute-");
@@ -310,7 +308,7 @@ public class CommunicationManager {
         @Override
         public void onConnectFailed(String name, String error) {
             if (listener != null)
-                listener.onDisconnect(true, name, 0, error);
+                listener.onDisconnect(true, name, -1, error);
 
             SessionManager.getInstance().getUserSession().setDeviceStatusByName(name, DEVICE_FAILED);
         }
@@ -792,6 +790,27 @@ public class CommunicationManager {
         return list;
     }
 
+
+    public synchronized void reconnectBleBooster(@Nullable String uid) {
+        if(uid == null)
+            return;
+        if (pingThread == null) {
+            commRunning = true;
+            pingThread = new Thread(new PingThread());
+            pingThread.start();
+        }
+        if (!commRunning) {
+            commRunning = true;
+            pingThread.start();
+        }
+
+        if (bluetoothManager != null) {
+            if (uid.startsWith("MIBO-")) {
+                uid = uid.substring("MIBO-".length());
+            }
+            bluetoothManager.connectMIBOBoosterGattDevice(uid);
+        }
+    }
 
     public synchronized void connectDevice(Device device) {
         //  log("PingThread connectDevice commRunning " + commRunning + " :: " + pingThread);
@@ -1459,6 +1478,11 @@ public class CommunicationManager {
     public CommunicationManager setListener(CommunicationListener listener) {
         this.listener = listener;
         return this;
+    }
+
+    public void broadcastMessage(int status, String uid, String msg) {
+        if (listener != null)
+            listener.onDisconnect(true, uid, status, msg);
     }
 
     public void sendMessage(TCPClient client, byte[] msg) {

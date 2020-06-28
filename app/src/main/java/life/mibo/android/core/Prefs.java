@@ -40,6 +40,13 @@ public class Prefs {
     public static final String USER = "user_member";
     public static final String MEMBER = "user_member_";
     public static final String SESSION = "user_session_";
+    public static final String BIOMETRIC = "user_biometric";
+    public static final String WEIGHT = "user_weight";
+    public static final String HEIGHT = "user_height";
+    public static final String DATE = "user_date";
+    public static final String CALORIES = "calories_burnt";
+    public static final String CALORIES_HOUR = "calories_session_hours";
+    public static final String CALORIES_SESSION = "calories_session";
 
     /**
      * initialize default SharedPreferences

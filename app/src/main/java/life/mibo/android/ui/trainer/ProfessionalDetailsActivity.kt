@@ -207,7 +207,7 @@ class ProfessionalDetailsActivity : BaseActivity() {
                             runOnUiThread {
                                 parseData(list)
                                 log("parseData finish3ed")
-                                updateButton(data?.connected)
+                                updateButton(data?.connected, data?.invited)
                             }
                             isTrainer = true
 
@@ -215,7 +215,7 @@ class ProfessionalDetailsActivity : BaseActivity() {
                             log("ProfessionalDetails getDetails >> onResponse failed ${response.body()}")
                             runOnUiThread {
                                 parseData(null)
-                                updateButton(data?.connected)
+                                updateButton(data?.connected, data?.invited)
                             }
                             val er = data?.errors
                             if (er != null)
@@ -305,11 +305,15 @@ class ProfessionalDetailsActivity : BaseActivity() {
 
     }
 
-    var isIpConnected = false
-    fun updateButton(connected: Int?) {
+    var isIpConnected = true
+    fun updateButton(connected: Int?, invited: Int?) {
         if (btn_invite.isEnabled && connected == 1) {
             btn_invite?.isEnabled = false
             btn_invite?.setText(R.string.invited_already)
+            isIpConnected = true
+        } else if (btn_invite.isEnabled && invited == 1) {
+            btn_invite?.isEnabled = false
+            btn_invite?.setText(R.string.invite_sent)
             isIpConnected = true
         } else {
             btn_invite?.isEnabled = true

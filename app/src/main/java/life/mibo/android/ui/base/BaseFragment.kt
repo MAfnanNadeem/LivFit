@@ -3,6 +3,8 @@ package life.mibo.android.ui.base
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import life.mibo.android.R
 import life.mibo.android.models.base.BaseResponse
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.login.LoginActivity
@@ -32,6 +34,13 @@ abstract class BaseFragment : Fragment() {
         if (mDialog == null)
             mDialog = MyDialog.get(this@BaseFragment.requireContext())
         return mDialog
+    }
+
+    fun setSwipeRefreshColors(refresh: SwipeRefreshLayout?) {
+        refresh?.setColorSchemeResources(
+            R.color.colorPrimary, R.color.colorAccent,
+            R.color.infoColor2, R.color.textColorApp2, R.color.textColorApp
+        )
     }
 
     var navigator: Navigator? = null

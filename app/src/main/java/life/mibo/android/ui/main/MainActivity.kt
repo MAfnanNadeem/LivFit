@@ -28,7 +28,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -68,6 +67,7 @@ import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.*
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
+import life.mibo.android.ui.ch6.Channel6Fragment
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.Navigator.Companion.CLEAR_HOME
@@ -133,7 +133,7 @@ class MainActivity : BaseActivity(), Navigator {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        //window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main_cordinator)
 
         if (savedInstanceState == null) {
@@ -167,7 +167,7 @@ class MainActivity : BaseActivity(), Navigator {
             //startManager()
             commHandler.register()
 
-
+            setBottomView()
             //setBottomBar()
 
             log("OnCreate end")
@@ -224,9 +224,12 @@ class MainActivity : BaseActivity(), Navigator {
             navigation!!.getHeaderView(0)
                 .findViewById<View?>(R.id.drawer_user_trainer)?.visibility =
                 View.INVISIBLE
-        else navigation!!.getHeaderView(0)
-            .findViewById<View?>(R.id.drawer_user_trainer)?.visibility = View.VISIBLE
-
+        else {
+            val tv = navigation!!.getHeaderView(0)
+                .findViewById<TextView?>(R.id.drawer_user_trainer)
+            tv?.visibility = View.VISIBLE
+            tv?.text = member.type?.capitalize()
+        }
         loadImage(
             navigation!!.getHeaderView(0).findViewById<CircleImageView?>(R.id.drawer_user_image),
             R.drawable.ic_user_test, member.profileImg, member.isMale()
@@ -542,12 +545,24 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun onConnect(name: String?, status: Int) {
                // Toasty.warning(this@MainActivity, "Device Connected! $name : $status").show()
+                boosterAlarm(200)
             }
 
             override fun onDisconnect(failed: Boolean, name: String?, status: Int, error: String?) {
+                log("onDisconnect $failed :: $status :: $error")
                 if (failed) {
-                    Toasty.error(this@MainActivity, error ?: "Failed to connect $status").show()
+                    boosterAlarm(status)
+                    if (status > 1000) {
+                        // broadcast message
+                        if (error?.toLowerCase()?.contains("gatt exception") == true)
+                            boosterAlarm(300)
+                        else if (error?.toLowerCase()?.contains("not connect") == true)
+                            Toasty.snackbar(nav_view, "$status : $error")
+                    } else {
+                        Toasty.error(this@MainActivity, error ?: "Failed to connect $status").show()
+                    }
                 } else {
+                    boosterAlarm(100)
                     //  Toasty.warning(this@MainActivity, "Device disconnected $status").show()
                 }
 
@@ -649,6 +664,27 @@ class MainActivity : BaseActivity(), Navigator {
         })
 
         log("getScanning finished")
+    }
+
+    fun boosterAlarm(code: Int) {
+        log("boosterAlarm $code")
+        try {
+            val frg =
+                supportFragmentManager?.primaryNavigationFragment?.childFragmentManager?.fragments?.get(
+                    0
+                )
+            log("boosterAlarm frg = $frg")
+            if (frg is Channel6Fragment) {
+                log("boosterAlarm frg = Channel6Fragment")
+                return frg.onBoosterAlarm(code)
+            }
+        } catch (e: java.lang.Exception) {
+            runOnUiThread {
+                Toasty.grey(this, getString(R.string.error_occurred)).show()
+            }
+            e.printStackTrace()
+        }
+
     }
 
     private fun parseHrCommands(
@@ -1265,9 +1301,50 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_profile_edit, bundle)
             }
 
+            Navigator.GOOGLE_FIT -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_fit_history, bundle)
+            }
+
+            Navigator.HOME_START -> {
+                bottom_fab?.show()
+                bottom_app_bar?.performShow()
+                updateDrawerHomeButton()
+            }
+            Navigator.HOME_STOP -> {
+                bottom_fab?.hide()
+                bottom_app_bar?.performHide()
+            }
             else -> {
                 drawerItemClicked(type)
             }
+        }
+    }
+
+    fun setBottomView() {
+        ib_item_1?.setOnClickListener {
+            navigate(HomeItem.Type.PROFILE)
+        }
+        ib_item_2?.setOnClickListener {
+            if (isMember)
+                navigate(HomeItem.Type.MEASURE_NEW)
+            // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+            //drawerItemClicked(R.id.navigation_bio_summary)
+        }
+        ib_item_3?.setOnClickListener {
+            navigate(HomeItem.Type.MY_ACCOUNT)
+            //drawerItemClicked(R.id.navigation_account)
+        }
+        ib_item_4?.setOnClickListener {
+            navigate(HomeItem.Type.SERVICES)
+            //navigate(navigation_search_trainer)
+        }
+        bottom_fab?.setOnClickListener {
+            // if (isMember)
+            //testAnim()
+            navigate(HomeItem.Type.CENTER_BUTTON)
         }
     }
 
@@ -1932,6 +2009,7 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
     override fun onResume() {
+        log("RESUME MANI")
         super.onResume()
         try {
             if (isHome)

@@ -30,7 +30,6 @@ import life.mibo.android.ui.dialog.MyDialog;
 import life.mibo.android.ui.main.MiboEvent;
 import life.mibo.android.utils.Toasty;
 import life.mibo.hardware.core.Logger;
-import life.mibo.imagepicker.imageloader.ImageLoaderType;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

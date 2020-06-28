@@ -230,6 +230,7 @@ public class DashboardItem extends FrameLayout {
                 textViewHeader.setId(View.generateViewId());
                 textViewHeader.setTextColor(Color.WHITE);
                 textViewHeader.setSingleLine();
+
                 textViewHeader.setTypeface(null, Typeface.BOLD);
                 //tv2.setPadding(0,getDp(8),0,0);
                 textViewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
@@ -248,6 +249,7 @@ public class DashboardItem extends FrameLayout {
                 textViewTitle.setId(View.generateViewId());
                 textViewTitle.setPadding(0, 0, 0, 0);
                 //textViewTitle.setSingleLine();
+                textViewTitle.setGravity(Gravity.CENTER_HORIZONTAL);
                 textViewTitle.setTextColor(Color.WHITE);
                 textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 layout.addView(textViewTitle);

@@ -9,7 +9,6 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
@@ -32,7 +31,6 @@ import life.mibo.android.ui.base.BaseListener
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
-import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.SessionManager
@@ -86,7 +84,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //            )
 //        )
         controller.getDashboard(!member!!.isMember())
-        navigate(HOME_VIEW, true)
+       // navigate(HOME_VIEW, true)
         //val format = SimpleDateFormat("EEE, dd MMM, yyyy")
         //controller.setRecycler(recyclerView!!)
         //textView2?.text = format.format(Date())
@@ -95,15 +93,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         iv_user_pic?.setOnClickListener {
             navigate(Navigator.HOME, HomeItem(HomeItem.Type.PROFILE))
         }
-        loadImage(
-            iv_user_pic,
-            member.profileImg,
-            member.isMale()
-        )
+
+        loadImage(iv_user_pic, member.profileImg, member.isMale())
 
         SessionManager.getInstance().userSession.isBooster = false;
         SessionManager.getInstance().userSession.isRxl = false;
-        setBottomView()
+        //setBottomView()
         checkIntro()
         getDashboardApis()
         setHasOptionsMenu(true)
@@ -111,8 +106,12 @@ class HomeFragment : BaseFragment(), HomeObserver {
         //    tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
     }
 
-    fun checkBody() {
+    fun loadDashboardData() {
+        if (isMember) {
 
+        } else {
+
+        }
     }
 
     fun testAnim() {
@@ -124,27 +123,27 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private var isMember = false
     fun setBottomView() {
-        ib_item_1?.setOnClickListener {
-            navigateTo(HomeItem(HomeItem.Type.PROFILE))
-        }
-        ib_item_2?.setOnClickListener {
-            navigateTo(HomeItem(HomeItem.Type.MEASURE))
-            // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
-            //drawerItemClicked(R.id.navigation_bio_summary)
-        }
-        ib_item_3?.setOnClickListener {
-            navigateTo(HomeItem(HomeItem.Type.MY_ACCOUNT))
-            //drawerItemClicked(R.id.navigation_account)
-        }
-        ib_item_4?.setOnClickListener {
-            navigateTo(HomeItem(HomeItem.Type.SERVICES))
-            //navigate(navigation_search_trainer)
-        }
-        tv_item_fab?.setOnClickListener {
-            // if (isMember)
-            //testAnim()
-            navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
-        }
+//        ib_item_1?.setOnClickListener {
+//            navigateTo(HomeItem(HomeItem.Type.PROFILE))
+//        }
+//        ib_item_2?.setOnClickListener {
+//            navigateTo(HomeItem(HomeItem.Type.MEASURE_NEW))
+//            // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
+//            //drawerItemClicked(R.id.navigation_bio_summary)
+//        }
+//        ib_item_3?.setOnClickListener {
+//            navigateTo(HomeItem(HomeItem.Type.MY_ACCOUNT))
+//            //drawerItemClicked(R.id.navigation_account)
+//        }
+//        ib_item_4?.setOnClickListener {
+//            navigateTo(HomeItem(HomeItem.Type.SERVICES))
+//            //navigate(navigation_search_trainer)
+//        }
+//        tv_item_fab?.setOnClickListener {
+//            // if (isMember)
+//            //testAnim()
+//            navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
+//        }
     }
 
     private fun checkIntro() {
@@ -255,28 +254,6 @@ class HomeFragment : BaseFragment(), HomeObserver {
 //            if (iv != null)
 //                Glide.with(this).load(it).error(defaultImage).fallback(defaultImage).into(iv)
 //        }
-    }
-    private fun loadImage(iv: ImageView, defaultImage: Int) {
-        Maybe.fromCallable {
-            log("loadImage fromCallable")
-            var bitmap: Bitmap? = null
-            val img = Prefs.get(this.context).member?.imageThumbnail
-            bitmap = if (!img.isNullOrEmpty())
-                Utils.base64ToBitmap(img)
-            else
-                BitmapFactory.decodeResource(resources, defaultImage)
-            // else
-            //   bitmap = Utils.base64ToBitmap(Utils.testUserImage())
-            bitmap
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-            log("loadImage doOnSuccess $it")
-            if (it != null)
-                iv.setImageBitmap(it)
-            else
-                iv.setImageResource(defaultImage)
-        }.doOnError {
-
-        }.subscribe()
     }
 
     override fun onDataReceived(list: ArrayList<HomeItem>) {
@@ -577,7 +554,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     var isStoped = false
     override fun onResume() {
-        log("onResume")
+        log("RESUME HOME ")
         super.onResume()
 
         if (isStoped && recyclerView?.adapter == null) {
@@ -587,23 +564,84 @@ class HomeFragment : BaseFragment(), HomeObserver {
             controller?.getDashboard()
         }
         isStoped = false
-        navigate(Navigator.HOME_DRAWER, null)
-        tv_item_fab?.show()
-        tv_item_fab?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up_anim))
+//        navigate(Navigator.HOME_DRAWER, null)
+//        tv_item_fab?.visibility = View.GONE
+//        log("visibility " + tv_item_fab?.visibility)
+//        tv_item_fab?.visibility = View.VISIBLE
+//        log("visibility " + tv_item_fab?.visibility)
+//        tv_item_fab?.show()
+//        tv_item_fab?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up_anim))
+        // tv_item_fab?.invalidate()
         // videoView?.resume()
         //videoBg()
+        updateFab()
+    }
+
+    fun updateFab() {
+//        log("updateFab start ")
+//        log("updateFab start " + tv_item_fab?.x + " :: " + tv_item_fab.y)
+////        if (tv_item_fab.x > 0)
+////            tv_item_fab?.x = 0f
+//        //tv_item_fab.setImageResource(R.drawable.ic_add_shopping_cart_black_24dp)
+//        bottom_bar?.performHide()
+//
+//        bottom_bar?.performShow()
+//        bottom_bar?.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+//
+//        tv_item_fab.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
+//            override fun onHidden(fab: FloatingActionButton?) {
+//                super.onHidden(fab)
+//                log("updateFab hide onHidden ")
+//                // tv_item_fab?.setImageResource(R.drawable.cross_mark)
+//                tv_item_fab?.show(object : FloatingActionButton.OnVisibilityChangedListener() {
+//                    override fun onHidden(fab: FloatingActionButton?) {
+//                        super.onHidden(fab)
+//                        log("updateFab show onHidden ")
+//                    }
+//
+//                    override fun onShown(fab: FloatingActionButton?) {
+//                        super.onShown(fab)
+//                        log("updateFab show onShown ")
+//                    }
+//
+//                })
+//            }
+//
+//            override fun onShown(fab: FloatingActionButton?) {
+//                super.onShown(fab)
+//                log("updateFab hide onShown ")
+//            }
+//
+//        })
+//
+//
+//        //tv_item_fab?.bottom_bar
+//
+//        val p: CoordinatorLayout.LayoutParams =
+//            tv_item_fab.layoutParams as CoordinatorLayout.LayoutParams
+//        //p.behavior = FloatingActionButton.Behavior()
+//        p.anchorId = R.id.bottom_bar
+//        tv_item_fab.layoutParams = p
+//        log("updateFab end $p")
+//
+//
+//        log("updateFab start " + tv_item_fab?.x + " :: " + tv_item_fab.y)
+
     }
 
     override fun onStart() {
         log("onStart")
         super.onStart()
         EventBus.getDefault().register(this)
+        navigate(Navigator.HOME_START, null)
     }
+
     override fun onStop() {
         log("onStop")
         //videoView?.stopPlayback()
         isStoped = true
         super.onStop()
+        navigate(Navigator.HOME_STOP, null)
         //controller.onStop()
         //navigate(HOME_VIEW, false)
         EventBus.getDefault().unregister(this)

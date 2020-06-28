@@ -781,7 +781,7 @@ public class BluetoothManager2 {
                 if (listener != null)
                     listener.onDisconnect(isActiveDisConnected, device.getName(), status);
 
-                log("connectBleFast onDisConnected ");
+                log("connectBleFast onDisConnected " + isActiveDisConnected + " :: " + status + " :: " + gatt);
             }
 
             @Override
@@ -852,7 +852,7 @@ public class BluetoothManager2 {
             @Override
             public void onWriteFailure(BleException exception) {
                 log("FastBle: onWriteFailure " + exception);
-
+                CommunicationManager.getInstance().broadcastMessage(1002, "", exception.getDescription());
             }
         });
     }
@@ -864,13 +864,14 @@ public class BluetoothManager2 {
         BleManager.getInstance().write2(device, serviceUid, writeUid, data, false, true, 0, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                log("FastBle: onWriteSuccess " + Arrays.toString(justWrite));
+                log("FastBle: onWriteSuccess ");
 
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
                 log("FastBle: onWriteFailure " + exception);
+                CommunicationManager.getInstance().broadcastMessage(1001, "", exception.getCodeMessage());
 
             }
         });

@@ -2,6 +2,7 @@ package life.mibo.android.core
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.graphics.Color
@@ -10,9 +11,11 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -108,3 +111,59 @@ fun <T : CoordinatorLayout.Behavior<*>> View.findBehavior(): T = layoutParams.ru
     (layoutParams as CoordinatorLayout.LayoutParams).behavior as? T
         ?: throw IllegalArgumentException("Layout's behavior is not current behavior")
 }
+
+
+//fun AppCompatActivity.startActivityForResult(
+//    intent: Intent,
+//    listener: (Int, Intent?) -> Unit?
+//) {
+//    ////androidx.activity
+//    registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+//        listener.invoke(result.resultCode, result.data)
+//    }.launch(intent)
+//}
+//
+//fun Fragment.startActivityForResult(intent: Intent, listener: (Int, Intent?) -> Unit?) {
+//    registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+//        listener.invoke(result.resultCode, result.data)
+//    }.launch(intent)
+//}
+
+//
+//fun Fragment.startForResult(intent: Intent, block: (Result) -> Unit): KotlinActivityResult {
+//    return KotlinActivityResult(activity, intent, block)
+//}
+//
+//fun FragmentActivity.startForResult(intent: Intent, block: (Result) -> Unit): KotlinActivityResult {
+//    return KotlinActivityResult(this, intent, block)
+//}
+//
+//fun Fragment.startForResult(request: Request, block: (Result) -> Unit): KotlinActivityResult {
+//    return KotlinActivityResult(activity, request, block)
+//}
+//
+//fun FragmentActivity.startForResult(request: Request, block: (Result) -> Unit): KotlinActivityResult {
+//    return KotlinActivityResult(this, request, block)
+//}
+//
+//class KotlinActivityResult {
+//
+//    constructor(activity: FragmentActivity?, intentToStart: Intent, successBlock: (Result) -> Unit) {
+//        inlineActivityResult = InlineActivityResult(activity)
+//            .onSuccess(successBlock)
+//            .startForResult(intentToStart)
+//    }
+//
+//    constructor(activity: FragmentActivity?, request: Request, successBlock: (Result) -> Unit) {
+//        inlineActivityResult = InlineActivityResult(activity)
+//            .onSuccess(successBlock)
+//            .startForResult(request)
+//    }
+//
+//    val inlineActivityResult: InlineActivityResult
+//
+//    fun onFailed(failBlock: ((Result) -> Unit)): KotlinActivityResult {
+//        inlineActivityResult.onFail(failBlock)
+//        return this
+//    }
+//}

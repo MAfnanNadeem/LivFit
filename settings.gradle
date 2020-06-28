@@ -1,3 +1,3 @@
 include ':app', ':mibo_hardware', ':ShapeImageView', ':telr_sdk'
 rootProject.name='Mibo Hexa'
-include ':imagepicker'
+//include ':imagepicker'

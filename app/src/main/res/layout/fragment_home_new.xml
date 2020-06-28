@@ -20,7 +20,6 @@
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="56dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -60,8 +59,7 @@
                     android:id="@+id/iv_user_pic"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintHeight_percent="0.9"
-                    android:layout_marginStart="@dimen/grid_2x"
+                    android:layout_margin="@dimen/grid_1x"
                     app:layout_constraintDimensionRatio="1:1"
                     app:civ_type="hexa"
                     android:scaleType="centerCrop"
@@ -85,10 +83,7 @@
                     android:id="@+id/tv_user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/grid_2x"
-                    android:gravity="center"
                     android:textColor="@color/textColor"
                     android:fontFamily="@string/font_roboto_medium"
                     android:textSize="@dimen/text_size_large"
@@ -103,139 +98,147 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginStart="@dimen/grid_1x"
                 android:layout_marginEnd="@dimen/grid_1x"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/constraintLayout1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom">
+    <!--    <com.google.android.material.bottomappbar.BottomAppBar-->
+    <!--        android:id="@+id/bottom_bar"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="56dp"-->
+    <!--        app:layout_anchorGravity="center"-->
+    <!--        app:contentInsetStart="0dp"-->
+    <!--        app:fabAlignmentMode="center"-->
+    <!--        android:layout_gravity="bottom">-->
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/grid_1x">
+    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:padding="@dimen/grid_1x">-->
 
-            <ImageButton
-                android:id="@+id/ib_item_1"
-                android:layout_width="0dp"
-                android:layout_height="24dp"
-                android:background="@color/transparent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_bottom_profile"
-                android:tint="@color/textColor2"
-                app:layout_constraintBottom_toTopOf="@id/tv_item_1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+    <!--            <ImageButton-->
+    <!--                android:id="@+id/ib_item_1"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="24dp"-->
+    <!--                android:background="@color/transparent"-->
+    <!--                android:scaleType="fitCenter"-->
+    <!--                android:src="@drawable/ic_bottom_profile"-->
+    <!--                android:tint="@color/textColor2"-->
+    <!--                app:layout_constraintBottom_toTopOf="@id/tv_item_1"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:layout_constraintWidth_percent="0.2" />-->
 
-            <TextView
-                android:id="@+id/tv_item_1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/profile"
-                android:textColor="@color/textColor"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/ib_item_1"
-                app:layout_constraintStart_toStartOf="@id/ib_item_1"
-                app:layout_constraintTop_toBottomOf="@id/ib_item_1" />
+    <!--            <TextView-->
+    <!--                android:id="@+id/tv_item_1"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="@string/profile"-->
+    <!--                android:textColor="@color/textColor"-->
+    <!--                android:textSize="10sp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="@id/ib_item_1"-->
+    <!--                app:layout_constraintStart_toStartOf="@id/ib_item_1"-->
+    <!--                app:layout_constraintTop_toBottomOf="@id/ib_item_1" />-->
 
-            <ImageButton
-                android:id="@+id/ib_item_2"
-                android:layout_width="0dp"
-                android:layout_height="24dp"
-                android:background="@color/transparent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_bottom_bio"
-                android:tint="@color/textColor2"
-                app:layout_constraintBottom_toTopOf="@id/tv_item_2"
-                app:layout_constraintStart_toEndOf="@+id/ib_item_1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+    <!--            <ImageButton-->
+    <!--                android:id="@+id/ib_item_2"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="24dp"-->
+    <!--                android:background="@color/transparent"-->
+    <!--                android:scaleType="fitCenter"-->
+    <!--                android:src="@drawable/ic_bottom_bio"-->
+    <!--                android:tint="@color/textColor2"-->
+    <!--                app:layout_constraintBottom_toTopOf="@id/tv_item_2"-->
+    <!--                app:layout_constraintStart_toEndOf="@+id/ib_item_1"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:layout_constraintWidth_percent="0.2" />-->
 
-            <TextView
-                android:id="@+id/tv_item_2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/measurement"
-                android:textColor="@color/textColor"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/ib_item_2"
-                app:layout_constraintStart_toStartOf="@id/ib_item_2"
-                app:layout_constraintTop_toBottomOf="@id/ib_item_2" />
+    <!--            <TextView-->
+    <!--                android:id="@+id/tv_item_2"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="@string/measurement"-->
+    <!--                android:textColor="@color/textColor"-->
+    <!--                android:textSize="10sp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="@id/ib_item_2"-->
+    <!--                app:layout_constraintStart_toStartOf="@id/ib_item_2"-->
+    <!--                app:layout_constraintTop_toBottomOf="@id/ib_item_2" />-->
 
-            <ImageButton
-                android:id="@+id/ib_item_3"
-                android:layout_width="0dp"
-                android:layout_height="24dp"
-                android:background="@color/transparent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_nfc_black_24dp"
-                android:tint="@color/textColor2"
-                app:layout_constraintBottom_toTopOf="@id/tv_item_3"
-                app:layout_constraintEnd_toStartOf="@+id/ib_item_4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+    <!--            <ImageButton-->
+    <!--                android:id="@+id/ib_item_3"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="24dp"-->
+    <!--                android:background="@color/transparent"-->
+    <!--                android:scaleType="fitCenter"-->
+    <!--                android:src="@drawable/ic_nfc_black_24dp"-->
+    <!--                android:tint="@color/textColor2"-->
+    <!--                app:layout_constraintBottom_toTopOf="@id/tv_item_3"-->
+    <!--                app:layout_constraintEnd_toStartOf="@+id/ib_item_4"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:layout_constraintWidth_percent="0.2" />-->
 
-            <TextView
-                android:id="@+id/tv_item_3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/my_account"
-                android:textColor="@color/textColor"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/ib_item_3"
-                app:layout_constraintStart_toStartOf="@id/ib_item_3"
-                app:layout_constraintTop_toBottomOf="@id/ib_item_3" />
+    <!--            <TextView-->
+    <!--                android:id="@+id/tv_item_3"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="@string/my_account"-->
+    <!--                android:textColor="@color/textColor"-->
+    <!--                android:textSize="10sp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="@id/ib_item_3"-->
+    <!--                app:layout_constraintStart_toStartOf="@id/ib_item_3"-->
+    <!--                app:layout_constraintTop_toBottomOf="@id/ib_item_3" />-->
 
 
-            <ImageButton
-                android:id="@+id/ib_item_4"
-                android:layout_width="0dp"
-                android:layout_height="24dp"
-                android:background="@color/transparent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_search_black_24dp"
-                android:tint="@color/textColor2"
-                app:layout_constraintBottom_toTopOf="@id/tv_item_4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+    <!--            <ImageButton-->
+    <!--                android:id="@+id/ib_item_4"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="24dp"-->
+    <!--                android:background="@color/transparent"-->
+    <!--                android:scaleType="fitCenter"-->
+    <!--                android:src="@drawable/ic_search_black_24dp"-->
+    <!--                android:tint="@color/textColor2"-->
+    <!--                app:layout_constraintBottom_toTopOf="@id/tv_item_4"-->
+    <!--                app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:layout_constraintWidth_percent="0.2" />-->
 
-            <TextView
-                android:id="@+id/tv_item_4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/search_services"
-                android:textColor="@color/textColor"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/ib_item_4"
-                app:layout_constraintStart_toStartOf="@id/ib_item_4"
-                app:layout_constraintTop_toBottomOf="@id/ib_item_4" />
+    <!--            <TextView-->
+    <!--                android:id="@+id/tv_item_4"-->
+    <!--                android:layout_width="0dp"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:gravity="center"-->
+    <!--                android:text="@string/search_services"-->
+    <!--                android:textColor="@color/textColor"-->
+    <!--                android:textSize="10sp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="@id/ib_item_4"-->
+    <!--                app:layout_constraintStart_toStartOf="@id/ib_item_4"-->
+    <!--                app:layout_constraintTop_toBottomOf="@id/ib_item_4" />-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-    </com.google.android.material.bottomappbar.BottomAppBar>
+    <!--    </com.google.android.material.bottomappbar.BottomAppBar>-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/tv_item_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_shopping_cart_black_24dp"
-        android:tint="@color/white"
-        app:layout_anchor="@id/bottom_bar" />
+    <!--    <life.mibo.views.MyNewFab-->
+    <!--        android:id="@+id/tv_item_fab"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:clickable="true"-->
+    <!--        android:focusable="true"-->
+    <!--        android:elevation="0dp"-->
+    <!--        android:src="@drawable/ic_add_shopping_cart_black_24dp"-->
+    <!--        android:tint="@color/white"-->
+    <!--        app:layout_anchorGravity="center|top"-->
+    <!--        app:layout_anchor="@id/bottom_bar" />-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

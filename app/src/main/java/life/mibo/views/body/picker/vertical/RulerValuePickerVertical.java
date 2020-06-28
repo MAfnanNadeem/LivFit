@@ -7,6 +7,7 @@
 
 package life.mibo.views.body.picker.vertical;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -346,6 +347,32 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
         }, 400);
     }
 
+
+
+    public void selectValue(final int value, boolean animate) {
+        mScrollView.postDelayed(() -> {
+            int valuesToScroll;
+            if (value < mRulerView.getMinValue()) {
+                valuesToScroll = 0;
+            } else if (value > mRulerView.getMaxValue()) {
+                valuesToScroll = mRulerView.getMaxValue() - mRulerView.getMinValue();
+            } else {
+                valuesToScroll = value - mRulerView.getMinValue();
+            }
+
+            try {
+                ObjectAnimator animator = ObjectAnimator.ofInt(mScrollView, "scrollY", valuesToScroll * mRulerView.getIndicatorIntervalWidth());
+                animator.setDuration(600);
+                animator.start();
+            }
+            catch (Exception eee){
+                eee.printStackTrace();
+                mScrollView.smoothScrollTo(0, valuesToScroll * mRulerView.getIndicatorIntervalWidth());
+                //mScrollView.smoothScrollTo(valuesToScroll * mRulerView.getIndicatorIntervalWidth(), 0);
+            }
+        }, 400);
+    }
+
     /**
      * @return Get the current selected value.
      */
@@ -467,79 +494,37 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
         return mRulerView.getTextColor();
     }
 
-    /**
-     * Set the color of the text to display on the ruler.
-     *
-     * @param color Color integer value.
-     * @see #getTextColor()
-     * @see RulerViewVertical#mTextColor
-     */
+
     public void setTextColor(@ColorInt final int color) {
         mRulerView.setTextColor(color);
     }
 
-    /**
-     * Set the color of the text to display on the ruler.
-     *
-     * @param color Color resource id.
-     * @see RulerViewVertical#mTextColor
-     */
+
     public void setTextColorRes(@ColorRes final int color) {
         setTextColor(ContextCompat.getColor(getContext(), color));
     }
 
-    /**
-     * @return Size of the text of ruler in dp.
-     * @see #setTextSize(int)
-     * @see #setTextSizeRes(int)
-     * @see RulerViewVertical#mTextColor
-     */
     @CheckResult
     public float getTextSize() {
         return mRulerView.getTextSize();
     }
 
-    /**
-     * Set the size of the text to display on the ruler.
-     *
-     * @param dimensionDp Text size dimension in dp.
-     * @see #getTextSize()
-     * @see RulerViewVertical#mTextSize
-     */
+
     public void setTextSize(final int dimensionDp) {
         mRulerView.setTextSize(dimensionDp);
     }
 
-    /**
-     * Set the size of the text to display on the ruler.
-     *
-     * @param dimension Text size dimension resource.
-     * @see #getTextSize()
-     * @see RulerViewVertical#mTextSize
-     */
     public void setTextSizeRes(@DimenRes final int dimension) {
         setTextSize((int) getContext().getResources().getDimension(dimension));
     }
 
-    /**
-     * @return Color integer value of the indicator color.
-     * @see #setIndicatorColor(int)
-     * @see #setIndicatorColorRes(int)
-     * @see RulerViewVertical#mIndicatorColor
-     */
     @CheckResult
     @ColorInt
     public int getIndicatorColor() {
         return mRulerView.getIndicatorColor();
     }
 
-    /**
-     * Set the indicator color.
-     *
-     * @param color Color integer value.
-     * @see #getIndicatorColor()
-     * @see RulerViewVertical#mIndicatorColor
-     */
+
     public void setIndicatorColor(@ColorInt final int color) {
         mRulerView.setIndicatorColor(color);
     }
@@ -548,81 +533,37 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
         mRulerView.setLongIndicatorColor(color);
     }
 
-    /**
-     * Set the indicator color.
-     *
-     * @param color Color resource id.
-     * @see #getIndicatorColor()
-     * @see RulerViewVertical#mIndicatorColor
-     */
+
     public void setIndicatorColorRes(@ColorRes final int color) {
         setIndicatorColor(ContextCompat.getColor(getContext(), color));
     }
 
-    /**
-     * @return Width of the indicator in pixels.
-     * @see #setIndicatorWidth(int)
-     * @see #setIndicatorWidthRes(int)
-     * @see RulerViewVertical#mIndicatorWidthPx
-     */
+
     @CheckResult
     public float getIndicatorWidth() {
         return mRulerView.getIndicatorWidth();
     }
 
-    /**
-     * Set the width of the indicator line in the ruler.
-     *
-     * @param widthPx Width in pixels.
-     * @see #getIndicatorWidth()
-     * @see RulerViewVertical#mIndicatorWidthPx
-     */
+
     public void setIndicatorWidth(final int widthPx) {
         mRulerView.setIndicatorWidth(widthPx);
     }
 
-    /**
-     * Set the width of the indicator line in the ruler.
-     *
-     * @param width Dimension resource for indicator width.
-     * @see #getIndicatorWidth()
-     * @see RulerViewVertical#mIndicatorWidthPx
-     */
+
     public void setIndicatorWidthRes(@DimenRes final int width) {
         setIndicatorWidth(getContext().getResources().getDimensionPixelSize(width));
     }
 
-    /**
-     * @return Get the minimum value displayed on the ruler.
-     * @see #setMinMaxValue(int, int)
-     * @see RulerViewVertical#mMinValue
-     */
     @CheckResult
     public int getMinValue() {
         return mRulerView.getMinValue();
     }
 
-    /**
-     * @return Get the maximum value displayed on the ruler.
-     * @see #setMinMaxValue(int, int)
-     * @see RulerViewVertical#mMaxValue
-     */
     @CheckResult
     public int getMaxValue() {
         return mRulerView.getMaxValue();
     }
 
-    /**
-     * Set the maximum value to display on the ruler. This will decide the range of values and number
-     * of indicators that ruler will draw.
-     *
-     * @param minValue Value to display at the left end of the ruler. This can be positive, negative
-     *                 or zero. Default minimum value is 0.
-     * @param maxValue Value to display at the right end of the ruler. This can be positive, negative
-     *                 or zero.This value must be greater than min value. Default minimum value is 100.
-     * @see #getMinValue()
-     * @see #getMaxValue()
-     */
     private void setMinMaxValue() {
         mRulerView.setValueRange(mRulerView.getMinValue(), mRulerView.getMaxValue());
         invalidate();
@@ -660,41 +601,23 @@ public final class RulerValuePickerVertical extends FrameLayout implements Scrol
 
 
 
-    /**
-     * @return Get distance between two indicator in pixels.
-     * @see #setIndicatorIntervalDistance(int)
-     * @see RulerViewVertical#mIndicatorInterval
-     */
     @CheckResult
     public int getIndicatorIntervalWidth() {
         return mRulerView.getIndicatorIntervalWidth();
     }
 
-    /**
-     * Set the spacing between two vertical lines/indicators. Default value is 14 pixels.
-     *
-     * @param indicatorIntervalPx Distance in pixels. This cannot be negative number or zero.
-     * @see RulerViewVertical#mIndicatorInterval
-     */
+
     public void setIndicatorIntervalDistance(final int indicatorIntervalPx) {
         mRulerView.setIndicatorIntervalDistance(indicatorIntervalPx);
     }
 
-    /**
-     * @return Ratio of long indicator height to the ruler height.
-     * @see #setIndicatorHeight(float, float)
-     * @see RulerViewVertical#mLongIndicatorHeightRatio
-     */
+
     @CheckResult
     public float getLongIndicatorHeightRatio() {
         return mRulerView.getLongIndicatorHeightRatio();
     }
 
-    /**
-     * @return Ratio of short indicator height to the ruler height.
-     * @see #setIndicatorHeight(float, float)
-     * @see RulerViewVertical#mShortIndicatorHeight
-     */
+
     @CheckResult
     public float getShortIndicatorHeightRatio() {
         return mRulerView.getShortIndicatorHeightRatio();

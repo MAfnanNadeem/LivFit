@@ -52,13 +52,7 @@ class CatalogProductsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         //setupAdapter()
 
-        swipeToRefresh?.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorAccent,
-            R.color.colorPrimaryDark,
-            R.color.infoColor2,
-            R.color.successColor
-        )
+        setSwipeRefreshColors(swipeToRefresh)
         swipeToRefresh?.setOnRefreshListener {
             log("swipeToRefresh?.setOnRefreshListener $isRefreshing")
             isRefreshing = true

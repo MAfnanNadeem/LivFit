@@ -22,9 +22,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import life.mibo.android.R;
 import life.mibo.hardware.core.Logger;
 
@@ -52,11 +54,23 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
                 .enableAutoManage(((FragmentActivity) mContext), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+    }
+
+    public void connect() {
+        try {
+            mGoogleApiClient.connect();
+            Logger.e("Google Connected ");
+        } catch (Exception eee) {
+            eee.printStackTrace();
+            Logger.e("Google Connected error "+eee);
+        }
     }
 
     public void login() {
 
         if (mGoogleApiClient != null) {
+            //logout();
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             if (mContext instanceof Activity) {
                 ((Activity) mContext).startActivityForResult(signInIntent, SocialHelper.GOOGLE_REQUEST_CODE);
@@ -90,17 +104,41 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
 
 
     public void logout() {
-
+        Logger.e("Google logout called....... ");
         if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                Logger.e("Google logout connected success ");
+                //Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                Single.just("").subscribeOn(Schedulers.newThread()).doOnError(throwable -> {
 
-            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                    //Bundle bundle = new Bundle();
-                    //bundle.putString("message", mContext.getString(R.string.google_logout_success));
-                    //listener.onResponse(SocialHelper.GOOGLE, bundle, false);
-                }
-            });
+                }).doOnSuccess(s -> {
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(status -> {
+                        Logger.e("Google sign out success " + status);
+                    });
+                }).subscribe();
+            } else {
+                Logger.e("Google logout not connected success ");
+                Single.just("").subscribeOn(Schedulers.newThread()).doOnError(throwable -> {
+
+                }).doOnSuccess(s -> {
+                    mGoogleApiClient.connect();
+                    Single.just("").delay(4, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).doOnError(throwable -> {
+                        Logger.e("Google logout not connected.." );
+                    }).doOnSuccess(s2 -> {
+                        Logger.e("Google logout not connected.... " +s2);
+
+                        if (mGoogleApiClient.isConnected()) {
+                            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(status -> {
+                                Logger.e("Google sign out success " + status);
+                            });
+                        }
+                    }).subscribe();
+                }).subscribe();
+
+
+            }
+
+
         } else {
             generateError(mContext.getString(R.string.general_error));
         }

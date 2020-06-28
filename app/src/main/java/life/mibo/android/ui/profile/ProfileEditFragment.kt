@@ -8,6 +8,8 @@
 package life.mibo.android.ui.profile
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -24,6 +26,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.libs.datepicker.SpinnerDatePickerDialogBuilder
+import life.mibo.android.libs.image.ImagePicker
 import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.models.user_details.UpdateMemberDetails
@@ -33,10 +36,6 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
-import life.mibo.imagepicker.RxGalleryFinalApi
-import life.mibo.imagepicker.rxbus.RxBusResultDisposable
-import life.mibo.imagepicker.rxbus.event.ImageRadioResultEvent
-import life.mibo.imagepicker.ui.base.IRadioImageCheckedListener
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -256,37 +255,47 @@ class ProfileEditFragment : BaseFragment() {
     private fun openPicker() {
         PermissionHelper.requestPermission(this@ProfileEditFragment, permissions) {
             log("requestPermission")
-            openPicker2()
+            openImagePicker()
         }
         log("openPicker")
     }
 
-    private fun openPicker2() {
-        log("openPicker called")
-        RxGalleryFinalApi.getInstance(requireActivity())
-            .openGalleryRadioImgDefault(object : RxBusResultDisposable<ImageRadioResultEvent>() {
-                override fun onEvent(t: ImageRadioResultEvent?) {
-                    Logger.e("openPicker RxGalleryFinalApi onEvent $t")
-                }
-            })
-            .onCropImageResult(object : IRadioImageCheckedListener {
 
-                override fun isActivityFinish(): Boolean {
-                    Logger.e("openPicker RxGalleryFinalApi isActivityFinish")
-                    return true
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        log("onActivityResult")
+        if (requestCode == ImagePicker.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            log("onActivityResult data?.data $data")
 
-                override fun cropAfter(file: File?) {
-                    Logger.e("openPicker RxGalleryFinalApi cropAfter $file")
-                    uploadPicApi("", file)
-                }
-            })
+            // val fileUri = data?.data
+            //log("onActivityResult fileUri $fileUri")
+            //userImage.setImageURI(fileUri)
+
+            val file: File? = ImagePicker.getFile(data)
+            //Glide.with(userImage).load(file).into(userImage)
+            uploadPicApi(file)
+//            val file: File? = ImagePicker.getFile(data)
+//            log("onActivityResult file $file")
+//            val exist = file?.exists()
+//            log("onActivityResult exist $exist")
+//
+//            val filePath: String? = ImagePicker.getFilePath(data)
+//            log("onActivityResult filePath $filePath ")
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toasty.info(requireContext(), ImagePicker.getError(data)).show()
+        } else {
+            log("onActivityResult  Task Cancelled")
+            // Toasty.info(requireContext(), "Task Cancelled").show()
+        }
+    }
+
+    private fun openImagePicker() {
+        ImagePicker.with(this@ProfileEditFragment).crop().compress(1024).start()
     }
 
 
-    private fun uploadPicApi(base64: String, file: File?) {
+    private fun uploadPicApi(file: File?) {
         log("uploadPicApi $file")
-        log("bitmapToBase64 uploadPicApi ${base64.length} : ${base64?.length?.div(1024)}")
         if (file == null) {
             Toasty.snackbar(view, "Invalid image path")
             return

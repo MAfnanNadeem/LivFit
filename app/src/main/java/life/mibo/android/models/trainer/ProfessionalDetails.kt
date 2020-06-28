@@ -73,4 +73,7 @@ class ProfessionalDetails(data: List<Data?>?) :
 
     @SerializedName("connected")
     var connected: Int? = 0
+
+    @SerializedName("invited")
+    var invited: Int? = 0
 }

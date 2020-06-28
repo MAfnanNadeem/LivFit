@@ -7,6 +7,7 @@
 
 package life.mibo.android.ui.body_measure.adapter
 
+import life.mibo.android.R
 import life.mibo.android.ui.body_measure.MeasurementFragment
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 
@@ -41,7 +42,7 @@ open class BodyBaseFragment : life.mibo.android.ui.base.BaseFragment() {
 
     }
 
-    fun updateNextButton(enable: Boolean, title: String = "Continue") {
+    fun updateNextButton(enable: Boolean, title: String = getString(R.string.continue_action)) {
         try {
             log("BodyBaseFragment updateNextButton ")
             val frg = parentFragment

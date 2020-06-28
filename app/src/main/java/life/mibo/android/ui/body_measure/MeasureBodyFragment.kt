@@ -69,6 +69,8 @@ class MeasureBodyFragment : BodyBaseFragment() {
         //recyclerView?.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView?.adapter = adapter
 
+        //updateCalculateData()
+
     }
 
     override fun isNextClickable(): Boolean {
@@ -98,9 +100,34 @@ class MeasureBodyFragment : BodyBaseFragment() {
         updateNextButton(false)
         updateSkipButton(false)
         isUpdate = true
+        updateCalculateData()
     }
 
+    private var isNextEnable = false
+
     private fun getShapes(male: Boolean): ArrayList<BodyShapeAdapter.Item> {
+        var value1 = ""
+        var value2 = ""
+        var value3 = ""
+        var value4 = ""
+        var value5 = ""
+        var value6 = ""
+        val data = Calculate.getBioData()
+        if (data != null) {
+            // log("Calculate.getBioData() $data")
+
+            value1 = "${data.chest}"
+            value2 = "${data.waist}"
+            value3 = "${data.hips}"
+            value4 = "${data.highHips}"
+            value5 = "${data.wrist}"
+            value6 = "${data.forearm}"
+            if (value1.trim().length > 1 && value3.trim().length > 1) {
+                isNextEnable = true
+                isUpdateMode = true
+            }
+        }
+
         val list = ArrayList<BodyShapeAdapter.Item>()
         if (male) {
             list.add(
@@ -108,7 +135,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     1,
                     R.drawable.ic_intro_male_chest,
                     getString(R.string.chest),
-                    "",
+                    value1,
                     "cm",
                     36,
                     170,
@@ -120,7 +147,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     2,
                     R.drawable.ic_intro_male_waist,
                     getString(R.string.waist),
-                    "",
+                    value2,
                     "cm",
                     36,
                     146,
@@ -132,7 +159,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     3,
                     R.drawable.ic_intro_male_thigh,
                     getString(R.string.hips),
-                    "",
+                    value3,
                     "cm",
                     50,
                     150,
@@ -144,7 +171,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     4,
                     R.drawable.ic_intro_male_hip,
                     getString(R.string.high_hips),
-                    "",
+                    value4,
                     "cm",
                     50,
                     150,
@@ -204,7 +231,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     1,
                     R.drawable.ic_intro_female_chest,
                     getString(R.string.breast),
-                    "",
+                    value1,
                     "cm",
                     36,
                     170,
@@ -216,7 +243,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     2,
                     R.drawable.ic_intro_female_waist,
                     getString(R.string.waist),
-                    "",
+                    value2,
                     "cm",
                     36,
                     146,
@@ -228,7 +255,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     3,
                     R.drawable.ic_intro_female_thigh,
                     getString(R.string.hips),
-                    "",
+                    value3,
                     "cm",
                     50,
                     150,
@@ -240,7 +267,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     4,
                     R.drawable.ic_intro_female_hip,
                     getString(R.string.high_hips),
-                    "",
+                    value4,
                     "cm",
                     50,
                     150,
@@ -253,7 +280,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     5,
                     R.drawable.ic_intro_female_wrist,
                     getString(R.string.wrist),
-                    "",
+                    value5,
                     "cm",
                     5,
                     35,
@@ -265,7 +292,7 @@ class MeasureBodyFragment : BodyBaseFragment() {
                     6,
                     R.drawable.ic_intro_female_forearm,
                     getString(R.string.forearm),
-                    "",
+                    value6,
                     "cm",
                     5,
                     35,
@@ -372,6 +399,24 @@ class MeasureBodyFragment : BodyBaseFragment() {
         }
     }
 
+    fun updateCalculateData() {
+        log("updateCalculateData $isNextEnable")
+        if (isNextEnable) {
+            val list = adapter?.list
+            if (list != null) {
+                for (item in list) {
+                    Calculate.getMeasureData()
+                        .addMeasurement(item.id, getInt(item.value))
+                    log("updateCalculateData item ${item.id} ${getInt(item.value)}")
+                }
+
+                calculateType()
+            }
+        }
+    }
+
+    var isUpdateMode = false
+
     @Synchronized
     private fun calculateType(): Boolean {
         log("calculateType started")
@@ -392,12 +437,17 @@ class MeasureBodyFragment : BodyBaseFragment() {
 
             if (chest > 0 && waist > 0 && hips > 0 && highHips > 0) {
                 if (isMale) {
-                    updateNextButton(true)
+                    if (isUpdateMode)
+                        updateNextButton(true, getString(R.string.update))
+                    else updateNextButton(true, getString(R.string.continue_action))
+
                     log("calculateType updateNextButton Male")
                     return true
                 } else {
                     if (data.getMeasurement(5) > 0 && data.getMeasurement(6) > 0) {
-                        updateNextButton(true)
+                        if (isUpdateMode)
+                            updateNextButton(true, getString(R.string.update))
+                        else updateNextButton(true, getString(R.string.continue_action))
                         log("calculateType updateNextButton Female")
                         return true
                     }

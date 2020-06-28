@@ -35,7 +35,6 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.payments.PaymentActivity
 import life.mibo.android.utils.Toasty
-import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -547,6 +546,7 @@ class BuyActivity : BaseActivity() {
         var phone: String?
     ) {
         var selected: Boolean = false
+        var isViewMode: Boolean = false
     }
 
     class AddressAdapters(
@@ -615,6 +615,10 @@ class BuyActivity : BaseActivity() {
             //country?.text = item.country
             //phone?.text = item.phone
             radio?.isChecked = item.selected
+
+            if (item.isViewMode) {
+                radio?.visibility = View.INVISIBLE
+            }
 
             item_view?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)

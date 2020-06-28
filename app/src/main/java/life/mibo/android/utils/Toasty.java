@@ -68,7 +68,7 @@ public class Toasty {
         return bar;
     }
 
-    @CheckResult
+    //@CheckResult
     public static Snackbar closeSnackbar(View view, @StringRes int message) {
         Snackbar finalBar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
         finalBar.setAction(R.string.close, new View.OnClickListener() {

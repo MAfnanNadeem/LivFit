@@ -105,24 +105,25 @@ class SummaryDetailsDialog(
 //        tabs?.addTab(TabLayout.Tab().setText("Month"))
 
         val pref = Prefs.get(context)
+        val member = Prefs.get(context).member
         var gndr = getString(R.string.gender_male)
-        if ("female" == pref["user_gender"]?.toLowerCase())
+        if ("female" == member?.gender?.trim()?.toLowerCase())
             gndr = getString(R.string.gender_female)
         gender?.text = "$gndr"
-        weight?.text = "${pref["user_weight"]}"
-        height?.text = "${pref["user_height"]}"
+        weight?.text = "${pref[Prefs.WEIGHT]}"
+        height?.text = "${pref[Prefs.HEIGHT]}"
 
         try {
 
             //"${pref["user_date"]}"
             //tvDate?.text = "${pref["user_date"]}"
-            Utils.loadImage(profilePic, pref?.member?.profileImg, pref?.member?.isMale() ?: true)
-            tvName?.text = pref.member?.firstName + " " + pref.member?.lastName
+            Utils.loadImage(profilePic, member?.profileImg, member?.isMale() ?: true)
+            tvName?.text = member?.firstName + " " + member?.lastName
             tvDate?.text = SimpleDateFormat.getDateInstance()
-                .format(SimpleDateFormat("yyyy-MM-dd").parse(pref["user_date"]))
+                .format(SimpleDateFormat("yyyy-MM-dd").parse(pref[Prefs.DATE]))
         } catch (e: java.lang.Exception) {
             MiboEvent.log(e)
-            tvDate?.text = "${pref["user_date"]}"
+            tvDate?.text = "${pref[Prefs.DATE]}"
         }
 
         data?.title?.let {
@@ -407,7 +408,7 @@ class SummaryDetailsDialog(
         chart: BarChart?
     ) {
         val list: List<Biometric.Data?>? = Prefs.get(requireContext())
-            .getJsonList("user_biometric", Biometric.Data::class.java)
+            .getJsonList(Prefs.BIOMETRIC, Biometric.Data::class.java)
         Logger.e("getChartPrefs $title ${list?.size}")
         //Logger.e("getChartPrefs $list")
 

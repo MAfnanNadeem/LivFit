@@ -33,6 +33,7 @@ import life.mibo.android.models.muscle.Muscle
 import life.mibo.android.models.trainer.SaveTrainerSessionReport
 import life.mibo.android.models.trainer.StartTrainerSession
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.ch6.adapter.Channel6Listener
 import life.mibo.android.ui.ch6.adapter.ChannelAdapter
 import life.mibo.android.ui.login.LoginActivity
@@ -103,6 +104,10 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             })
         d.setCancelable(false)
         d.show()
+    }
+
+    fun onBoosterAlaram(code: Int) {
+
     }
 
     private var isTrainerDialog = false
@@ -415,11 +420,17 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
             trainerSessionId = bundle.getInt("session_id", 0)
             trainerUserId = bundle.getInt("userId_id", 0)
             val weight = bundle.getString("user_weight", "0")
+            val unit = bundle.getString("user_weight_unit", "kg")
             try {
-                trainerUserWeight = weight?.toInt() ?: 0
+                if (unit.toLowerCase().contains("lb") || unit.toLowerCase()?.contains("lbs"))
+                    trainerUserWeight = Calculate.poundToKg(weight?.toInt())
+                else trainerUserWeight = weight?.toInt() ?: 0
             } catch (e: java.lang.Exception) {
                 try {
-                    trainerUserWeight = weight.replace("[^0-9]".toRegex(), "").toInt()
+                    if (unit.toLowerCase().contains("lb") || unit.toLowerCase()?.contains("lbs"))
+                        trainerUserWeight =
+                            Calculate.poundToKg(weight.replace("[^0-9]".toRegex(), "").toInt())
+                    else trainerUserWeight = weight.replace("[^0-9]".toRegex(), "").toInt()
                 } catch (e: java.lang.Exception) {
 
                 }
@@ -890,6 +901,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                 }.subscribe()
             }
         }
+    }
+
+    fun onDeviceDisconnected(code: Int) {
+        log("onDeviceDisconnected onBoosterAlarm session is active")
+        onPauseFromDevice(false)
     }
 
     fun onResumeFromDevice(fromDevice: Boolean) {

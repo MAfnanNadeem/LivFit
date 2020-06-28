@@ -23,6 +23,7 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.biometric.Biometric
 import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.body_measure.adapter.BodyAdapter
@@ -63,10 +64,12 @@ class MeasurementFragment : BaseFragment() {
 
         viewModel = ViewModelProvider(this@MeasurementFragment).get(MeasureViewModel::class.java)
 
+        val type = arguments?.getInt("measure_new", 0) ?: 0
+
         //viewPager.adapter = PageAdapter(getPages(), activity!!.supportFragmentManager, lifecycle)
         viewPager?.setPagingEnabled(false)
         viewPager?.offscreenPageLimit = 1
-        viewPagerAdapter = PagerAdapter(getPages(), childFragmentManager)
+        viewPagerAdapter = PagerAdapter(getPages(type), childFragmentManager)
         viewPager.adapter = viewPagerAdapter
         // viewPager.isUserInputEnabled = false;
         //viewPager?.setPageTransformer(PageTransformation())
@@ -149,6 +152,36 @@ class MeasurementFragment : BaseFragment() {
         } else {
             tv_continue.visibility = View.INVISIBLE
             imageNext.visibility = View.INVISIBLE
+            // if (title.isNotEmpty())
+            //    tv_continue.text = title
+        }
+    }
+
+    private var actionType = 0
+
+    @Synchronized
+    fun updateNext(enable: Boolean, type: Int) {
+        log("parentFragment updateNext $enable")
+        if (enable) {
+            actionType = type
+            imageNext.visibility = View.VISIBLE
+            tv_continue.visibility = View.VISIBLE
+            when (type) {
+                0 -> {
+                    tv_continue.setText(R.string.continue_action)
+                }
+                1 -> {
+                    tv_continue.setText(R.string.update)
+                }
+                2 -> {
+                    tv_continue.setText(R.string.finish)
+                }
+            }
+        } else {
+            tv_continue.visibility = View.INVISIBLE
+            imageNext.visibility = View.INVISIBLE
+            // if (title.isNotEmpty())
+            //    tv_continue.text = title
         }
     }
 
@@ -165,10 +198,24 @@ class MeasurementFragment : BaseFragment() {
         }
     }
 
-    private fun getPages(): ArrayList<Fragment> {
+    private var isUpdateMode = false
+    private fun getPages(newType: Int): ArrayList<Fragment> {
         val member = Prefs(context).member
         val male = member?.gender.equals("male", true) ?: false
+
+        val biometrics: List<Biometric.Data?>? = Prefs.get(requireContext())
+            .getJsonList(Prefs.BIOMETRIC, Biometric.Data::class.java)
+
         Calculate.clear()
+
+        if (biometrics != null && biometrics.isNotEmpty()) {
+            val biometric = biometrics[biometrics.size - 1]
+            if (biometric != null) {
+                Calculate.addBioData(biometric)
+                isUpdateMode = true
+            }
+        }
+
         Calculate.getMeasureData().gender(male)
         val list = ArrayList<Fragment>()
         //list.add(SummaryFragment())
@@ -204,7 +251,9 @@ class MeasurementFragment : BaseFragment() {
 
     private fun nextClicked() {
         if (isNextClickable()) {
-            if ("finish" == tv_continue?.text?.toString()?.toLowerCase()) {
+            if (getString(R.string.finish)?.toLowerCase() == tv_continue?.text?.toString()
+                    ?.toLowerCase()
+            ) {
                 saveBiometric()
                 //navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE_SUMMARY, null)
                 return
@@ -218,18 +267,23 @@ class MeasurementFragment : BaseFragment() {
     }
 
     private fun isNextClickable() : Boolean {
-        log("isNextClickable")
-        viewPager?.currentItem
-        val page: Fragment? =
-            childFragmentManager.findFragmentByTag("android:switcher:" + R.id.viewPager + ":" + viewPager?.currentItem)
-        log("isNextClickable page is $page")
-        if (page != null && page is BodyBaseFragment) {
-            return page.isNextClickable()
+        try {
+            log("isNextClickable")
+            viewPager?.currentItem
+            val page: Fragment? =
+                childFragmentManager.findFragmentByTag("android:switcher:" + R.id.viewPager + ":" + viewPager?.currentItem)
+            log("isNextClickable page is $page")
+            if (page != null && page is BodyBaseFragment) {
+                return page.isNextClickable()
+            }
+            // if (viewPager?.currentItem == 0 && page != null) {
+            //  (page as BMIFragment)
+            //}
+            return true
+        } catch (e: java.lang.Exception) {
+            return false
         }
-        // if (viewPager?.currentItem == 0 && page != null) {
-        //  (page as BMIFragment)
-        //}
-        return true
+
     }
 
     // for ViewPager2
@@ -418,7 +472,13 @@ class MeasurementFragment : BaseFragment() {
             round(bodyMass),
             round(waistHeightRatio),
             round(waistHipRatio),
-            round(weightLoss)
+            round(weightLoss),
+            chest?.toDouble(),
+            waist?.toDouble(),
+            hip?.toDouble(),
+            highHips?.toDouble(),
+            wrist?.toDouble(),
+            forearm?.toDouble()
         )
     }
 
@@ -557,10 +617,26 @@ class MeasurementFragment : BaseFragment() {
 
     //var bodyShapePage = 0
     private fun saveData(
-        memberId: String, token: String, data: Calculate.MeasureData,
-        bmr: Double, ibw: Double, bsa: Double, bodyWater: Double,
-        energy: Double, ffmi: Double, bodyFat: Double, leanBodyMass: Double,
-        wHeightRatio: Double, wHipRatio: Double, weightLoss: Double
+        memberId: String,
+        token: String,
+        data: Calculate.MeasureData,
+        bmr: Double,
+        ibw: Double,
+        bsa: Double,
+        bodyWater: Double,
+        energy: Double,
+        ffmi: Double,
+        bodyFat: Double,
+        leanBodyMass: Double,
+        wHeightRatio: Double,
+        wHipRatio: Double,
+        weightLoss: Double,
+        chest: Double,
+        waist: Double,
+        hip: Double,
+        highHips: Double,
+        wrist: Double,
+        forearm: Double
     ) {
 
         getDialog()?.show()
@@ -570,9 +646,9 @@ class MeasurementFragment : BaseFragment() {
             shape = Calculate.getShapeType(Calculate.bodyShapePage)
         // Math.round()
         val post = PostBiometric.Data(
-            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, data.chest,
-            data.elbow, energy, ffmi, data.forearm, data.height, "cm",
-            data.highHips, data.hips, data.waist, data.wrist, data.weight,
+            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, chest,
+            data.elbow, energy, ffmi, forearm, data.height, "cm",
+            highHips, hip, waist, wrist, data.weight,
             wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
             leanBodyMass, "${data.activityType}", "${data.goalType}", "$shape", memberId
         )

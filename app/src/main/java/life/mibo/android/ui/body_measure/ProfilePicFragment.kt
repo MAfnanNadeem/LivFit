@@ -8,6 +8,8 @@
 package life.mibo.android.ui.body_measure
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,16 +28,13 @@ import kotlinx.android.synthetic.main.fragment_body_profile.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.libs.image.ImagePicker
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
-import life.mibo.imagepicker.RxGalleryFinalApi
-import life.mibo.imagepicker.rxbus.RxBusResultDisposable
-import life.mibo.imagepicker.rxbus.event.ImageRadioResultEvent
-import life.mibo.imagepicker.ui.base.IRadioImageCheckedListener
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -172,72 +171,43 @@ class ProfilePicFragment : BodyBaseFragment() {
 
     private fun uploadPic() {
         PermissionHelper.requestPermission(this@ProfilePicFragment, permissions) {
-            uploadPic2()
+            ImagePicker.with(this@ProfilePicFragment).crop().compress(1024).start()
         }
     }
 
-    private fun uploadPic2() {
-//        val frg = parentFragment
-//        log("parentFragment1 $frg")
-//        log("parentFragment2 ${parentFragmentManager?.fragments}")
-//        log("parentFragment2 ${parentFragmentManager?.fragments[0]}")
-//        log("parentFragment3 ${childFragmentManager?.fragments}")
-//        log("parentFragment4 $targetFragment")
-//        if (frg is MeasurementFragment) {
-//            frg.updateNext(false)
-//        }
-        // viewModel!!.updateNext(false)
-        log("openPicker called")
-        RxGalleryFinalApi.setImgSaveRxDir(context?.externalCacheDir);
-        RxGalleryFinalApi.setImgSaveRxCropDir(context?.externalCacheDir);
 
-        RxGalleryFinalApi.getInstance(requireActivity())
-            .openGalleryRadioImgDefault(object : RxBusResultDisposable<ImageRadioResultEvent>() {
-                override fun onEvent(t: ImageRadioResultEvent?) {
-                    Logger.e("openPicker RxGalleryFinalApi onEvent $t")
-                }
-            })
-            .onCropImageResult(object : IRadioImageCheckedListener {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        log("onActivityResult")
+        if (requestCode == ImagePicker.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            log("onActivityResult data?.data $data")
 
-                override fun isActivityFinish(): Boolean {
-                    Logger.e("openPicker RxGalleryFinalApi isActivityFinish")
-                    return true
-                }
+            // val fileUri = data?.data
+            //log("onActivityResult fileUri $fileUri")
+            //userImage.setImageURI(fileUri)
 
-                override fun cropAfter(file: File?) {
-                    Logger.e("openPicker RxGalleryFinalApi cropAfter $file")
-                    profile_pic_uploaded?.load(file) {
-                        Logger.e("openPicker coil response $this")
-                    }
-                    saveAndUpload(file)
-                }
-            })
-    }
-
-    private fun saveAndUpload(drawable: Drawable?) {
-        drawable?.let {
-            Single.fromCallable {
-                //log("Base64 " + bmp?.byteCount)
-                // log("Base64 " + Utils.bitmapToBase64(bmp))
-                uploadPicApi(Utils.bitmapToBase64(drawable), null)
-//                activity?.runOnUiThread {
-//                    profile_pic_uploaded?.setImageDrawable(it)
-//                }
-                "return"
-            }.doOnError {
-
-            }.subscribeOn(Schedulers.io()).subscribe()
+            val file: File? = ImagePicker.getFile(data)
+            // Glide.with(userImage).load(file).error(R.drawable.ic_user_female)
+            //   .fallback(R.drawable.ic_user_male).into(userImage)
+            uploadPicApi(file)
+//            val file: File? = ImagePicker.getFile(data)
+//            log("onActivityResult file $file")
+//            val exist = file?.exists()
+//            log("onActivityResult exist $exist")
+//
+//            val filePath: String? = ImagePicker.getFilePath(data)
+//            log("onActivityResult filePath $filePath ")
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toasty.info(requireContext(), ImagePicker.getError(data)).show()
+        } else {
+            log("onActivityResult  Task Cancelled")
+            // Toasty.info(requireContext(), "Task Cancelled").show()
         }
     }
 
-    private fun saveAndUpload(file: File?) {
-        log("saveAndUpload $file")
-        uploadPicApi("", file)
-    }
 
-    private fun uploadPicApi(base64: String, file: File?) {
+    private fun uploadPicApi(file: File?) {
         log("uploadPicApi $file")
-        log("bitmapToBase64 uploadPicApi ${base64.length} : ${base64?.length?.div(1024)}")
         if (file == null) {
             Toasty.snackbar(view, "Invalid image path")
             return

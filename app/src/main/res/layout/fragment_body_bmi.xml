@@ -60,6 +60,7 @@
         android:layout_marginTop="@dimen/grid_2x"
         android:lines="1"
         android:scaleType="center"
+        android:fontFamily="@string/font_roboto"
         android:text="@string/age"
         android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_small"
@@ -89,6 +90,20 @@
         app:layout_constraintStart_toStartOf="@id/age_text"
         app:layout_constraintTop_toBottomOf="@+id/age_text" />
 
+    <TextView
+        android:id="@+id/tv_update"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:fontFamily="@string/font_roboto"
+        android:gravity="center"
+        android:textColor="@color/textColor"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@id/spinner_height"
+        app:layout_constraintStart_toEndOf="@id/spinner_age"
+        app:layout_constraintTop_toBottomOf="@+id/header_bottom" />
+
 
     <TextView
         android:id="@+id/height_text"
@@ -98,6 +113,8 @@
         android:layout_marginEnd="@dimen/grid_2x"
         android:lines="1"
         android:paddingStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto"
+
         android:scaleType="center"
         android:text="@string/height"
         android:textColor="@color/textColor"

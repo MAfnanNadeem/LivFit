@@ -1,11 +1,13 @@
 package life.mibo.android.ui.login
 
+//import com.twilio.verification.TwilioVerification
+//import com.twilio.verification.external.Via
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-//import com.twilio.verification.TwilioVerification
-//import com.twilio.verification.external.Via
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
@@ -14,11 +16,11 @@ import kotlinx.android.synthetic.main.activity_register_page3.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.receiver.SMSBroadcastReceiver
-import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
 
 
@@ -166,7 +168,97 @@ class RegisterActivity : AppCompatActivity() {
             }
             //Toasty.info(this, socialType).show()
         }
+
+        et_password?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                // pwd_view?.visibility = View.VISIBLE
+                Utils.show(pwd_view)
+            } else {
+                Utils.hide(pwd_view)
+                // pwd_view?.visibility = View.GONE
+            }
+        }
+        et_password?.doOnTextChanged { text, start, before, count ->
+            try {
+                validatePwd(text?.toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        colorGreen = ContextCompat.getColor(this, R.color.textColorGreen)
+        colorRed = ContextCompat.getColor(this, R.color.colorAccent)
     }
+
+    var colorRed = 0
+    var colorGreen = 0
+
+    @Synchronized
+    private fun validatePwd(input: String?) {
+        if (input != null) {
+            if (colorGreen == 0) {
+                colorGreen = ContextCompat.getColor(this, R.color.textColorGreen)
+            }
+            if (colorRed == 0) {
+                colorRed = ContextCompat.getColor(this, R.color.error_message_color)
+            }
+
+            val specialChars = "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?"
+            var currentCharacter: Char
+            var result = 0
+            var numberPresent = false
+            var upperCasePresent = false
+            var lowerCasePresent = false
+            var lengthPresent = false
+            var specialCharacterPresent = false
+
+            if (input.length >= 8)
+                lengthPresent = true
+
+            for (element in input) {
+                currentCharacter = element
+                when {
+                    specialChars.contains(currentCharacter.toString()) -> specialCharacterPresent =
+                        true
+                    Character.isDigit(currentCharacter) -> numberPresent = true
+                    Character.isUpperCase(currentCharacter) -> upperCasePresent = true
+                    Character.isLowerCase(currentCharacter) -> lowerCasePresent = true
+                }
+            }
+
+            if (numberPresent) {
+                ++result
+                tv_digit?.setTextColor(colorGreen)
+            } else {
+                tv_digit?.setTextColor(colorRed)
+            }
+
+            if (upperCasePresent && lowerCasePresent) {
+                ++result
+                tv_upper?.setTextColor(colorGreen)
+            } else {
+                tv_upper?.setTextColor(colorRed)
+            }
+
+            if (lengthPresent) {
+                ++result
+                tv_8_char?.setTextColor(colorGreen)
+            } else {
+                tv_8_char?.setTextColor(colorRed)
+            }
+
+            if (specialCharacterPresent) {
+                ++result
+                tv_special?.setTextColor(colorGreen)
+            } else {
+                tv_special?.setTextColor(colorRed)
+            }
+            pwdIndicator = result
+
+
+        }
+    }
+
+    var pwdIndicator = 0
 
     private var isUpdateProfile = false
     private var updateMemberId = ""

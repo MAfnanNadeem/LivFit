@@ -11,6 +11,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,6 +93,10 @@ class TrainerCalendarActivity : BaseActivity() {
             infoDialog(getString(R.string.session_started_msg))
             return
         } else if (item.duration < -30) {
+//            if (MiboApplication.DEBUG) {
+//                showConfirmDialog()
+//                return
+//            }
             infoDialog(getString(R.string.session_missed_msg))
             return
         } else {
@@ -122,6 +127,7 @@ class TrainerCalendarActivity : BaseActivity() {
                 bundle.putInt("session_id", session.sessionId)
                 bundle.putInt("userId_id", session.memberId)
                 bundle.putString("user_weight", session.weight)
+                bundle.putString("user_weight_unit", session.weightUnit)
                 bundle.putString("member_image", session.profile)
                 bundle.putString("member_name", session.member)
                 intent.putExtra("result_data", bundle)
@@ -273,11 +279,13 @@ class TrainerCalendarActivity : BaseActivity() {
                             val member = s.members?.get(0)
                             var name = ""
                             var weight = ""
+                            var weightUnit = ""
                             try {
                                 name = String(crypt.decrypt(member?.firstName)) + " " + String(
                                     crypt.decrypt(member?.lastName)
                                 )
                                 weight = String(crypt.decrypt(member?.weight))
+                                weightUnit = String(crypt.decrypt(member?.weightUnit))
 
                             } catch (e: Exception) {
 
@@ -300,6 +308,7 @@ class TrainerCalendarActivity : BaseActivity() {
                                     member?.age,
                                     member?.height,
                                     weight,
+                                    weightUnit,
                                     s.started,
                                     s.completed,
                                     duration
@@ -476,11 +485,38 @@ class TrainerCalendarActivity : BaseActivity() {
                         viewStarted?.setBackgroundColor(Color.LTGRAY)
                         item.isSelectable = false
                         // parrent?.setBackgroundColor(0xfff0f0f0.toInt())
-                        if (item.duration < 70) {
-                            // completed?.visibility = View.VISIBLE
-                            //completed?.setTextColor(Color.GRAY)
-                            //completed?.text = itemView.context?.getString(R.string.session_start_after, item.duration.minus(15))
+                        try {
+                            val time = item.duration.minus(15).toInt()
+                            when {
+                                time < 60 -> {
+                                    completed?.visibility = View.VISIBLE
+                                    completed?.setTextColor(Color.GRAY)
+                                    completed?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                                    completed?.text = itemView.context?.getString(
+                                        R.string.session_start_after_minutes, time
+                                    )
+                                }
+                                item.duration < 120 -> {
+                                    completed?.visibility = View.VISIBLE
+                                    completed?.setTextColor(Color.GRAY)
+                                    completed?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                                    completed?.text = itemView.context?.getString(
+                                        R.string.session_start_after_hour, time.div(60), time % 60
+                                    )
+                                }
+                                else -> {
+                                    completed?.visibility = View.VISIBLE
+                                    completed?.setTextColor(Color.GRAY)
+                                    completed?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                                    completed?.text = itemView.context?.getString(
+                                        R.string.session_start_after_hours, time.div(60), time % 60
+                                    )
+                                }
+                            }
+                        } catch (e: java.lang.Exception) {
+
                         }
+
                         //completed?.setText(R.string.missed_session)
                     }
 
@@ -515,6 +551,7 @@ class TrainerCalendarActivity : BaseActivity() {
         var age: String? = "",
         var height: String? = "",
         var weight: String? = "",
+        var weightUnit: String? = "",
         var started: Int? = 0,
         var completed: Int? = 0,
         var duration: Long = 0

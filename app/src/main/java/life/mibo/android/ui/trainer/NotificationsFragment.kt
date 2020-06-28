@@ -54,17 +54,9 @@ class NotificationsFragment : BaseFragment() {
         //setupAdapter()
         recyclerView?.layoutManager = GridLayoutManager(context, 1)
         //fragment_notifications()
-        getNotifications()
 
 
-
-        swipeToRefresh?.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorAccent,
-            R.color.colorPrimaryDark,
-            R.color.infoColor2,
-            R.color.successColor
-        )
+        setSwipeRefreshColors(swipeToRefresh)
         swipeToRefresh?.setOnRefreshListener {
             log("swipeToRefresh?.setOnRefreshListener $isRefreshing")
             isRefreshing = true
@@ -72,10 +64,16 @@ class NotificationsFragment : BaseFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getNotifications()
+    }
+
     var isRefreshing = false
 
     var isGrid = false
     private val notifications = ArrayList<Notifications>()
+
     //private val list = ArrayList<Notify>()
     var searchAdapters: NotifyAdapters? = null
 

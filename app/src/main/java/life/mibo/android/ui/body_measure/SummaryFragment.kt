@@ -568,7 +568,7 @@ class SummaryFragment : BaseFragment() {
                         if (body != null && body.isSuccess()) {
                             val list = body.data
                             list.let {
-                                Prefs.get(requireContext()).setJson("user_biometric", it)
+                                Prefs.get(requireContext()).setJson(Prefs.BIOMETRIC, it)
                                 parseBiometric(it)
                             }
 
@@ -583,7 +583,9 @@ class SummaryFragment : BaseFragment() {
                             }
                             isFromDialog = true
                             //showMeasureDialog()
-                            navigate(Navigator.BODY_MEASURE, null)
+                            val bundle = Bundle()
+                            bundle.putInt("measure_new", 2)
+                            navigate(Navigator.BODY_MEASURE, bundle)
                             return
 
                         } else {

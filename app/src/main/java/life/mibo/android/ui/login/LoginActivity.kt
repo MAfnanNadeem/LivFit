@@ -1,9 +1,6 @@
 package life.mibo.android.ui.login
 
-import android.R.attr.animation
 import android.content.Intent
-import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -22,7 +19,6 @@ import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
-import life.mibo.views.svg.AnimatedSvgView
 import java.util.concurrent.TimeUnit
 
 
@@ -167,8 +163,12 @@ class LoginActivity : BaseActivity() {
         if (em.isNotEmpty())
             et_username?.setText(em)
 
+        socialHelper?.googleConnect(this)
+        Single.just("").delay(3, TimeUnit.SECONDS).doOnSuccess {
+            socialHelper?.googleLogout()
+        }.subscribe()
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
-       // videoBg()
+        // videoBg()
     }
 
     var isAutologin = false

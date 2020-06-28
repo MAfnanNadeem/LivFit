@@ -22,6 +22,7 @@ import life.mibo.android.utils.Toasty
 import life.mibo.views.body.picker.RulerValuePickerListener
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
+import org.threeten.bp.format.DateTimeFormatter
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -70,6 +71,8 @@ class BMIFragment : BodyBaseFragment() {
         // updateNextButton(false)
         setSpinners()
         setListeners()
+
+
     }
 
 
@@ -105,8 +108,12 @@ class BMIFragment : BodyBaseFragment() {
     var isWeight = false
 
     fun updateNextButton() {
-        if (isHeight && isWeight)
-            updateNextButton(true)
+        log("updateNextButton $isUpdateMode")
+        if (isHeight && isWeight) {
+            if (isUpdateMode)
+                updateNextButton(true, getString(R.string.update))
+            else updateNextButton(true, getString(R.string.continue_action))
+        }
     }
 
     override fun onStart() {
@@ -121,7 +128,6 @@ class BMIFragment : BodyBaseFragment() {
         } else {
             // rulerValuePicker?.selectValue(50)
         }
-
 
         rulerValuePicker?.setValuePickerListener(object : RulerValuePickerListener {
             override fun onValueChange(feetValue: String?) {
@@ -178,7 +184,36 @@ class BMIFragment : BodyBaseFragment() {
             }
 
         })
+
+        val data = Calculate.getBioData()
+        if (data != null) {
+            val w = data.weight
+            val h = data.height
+            log("Calculate.getBioData() w $w, h $h")
+            if (w ?: 0.0 > 0.0)
+                isUpdateMode = true
+            rulerValuePicker?.selectValue(w?.toInt() ?: 0, true)
+            rulerValuePickerHeight?.selectValue(h?.toInt() ?: 0, true)
+            try {
+                val parser = DateTimeFormatter.ofPattern("yyyy-mm-dd")
+                //val formater = SimpleDateFormat("dd/mm")
+                val format = DateTimeFormatter.ofPattern("EEE, dd MMM")
+                tv_update?.visibility = View.VISIBLE
+                val dat = data.createdAt?.date?.split(" ")?.get(0)
+                //val dat2 = parser.parse(data.createdAt?.date?.split(" ")?.get(0))
+                //log("date $dat : $dat2")
+                //tv_update?.setText(getString(R.string.last_update_on, "${format.format(parser.parse(data.createdAt?.date?.split(" ")?.get(0)))}"))
+                tv_update?.text = getString(R.string.last_update_on, "$dat")
+            } catch (e: Exception) {
+
+            }
+            activity?.runOnUiThread {
+                updateNextButton()
+            }
+        }
     }
+
+    private var isUpdateMode = false
 
     fun round(value: Double): Double {
         return try {

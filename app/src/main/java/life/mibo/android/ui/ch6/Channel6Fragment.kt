@@ -3,8 +3,11 @@ package life.mibo.android.ui.ch6
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_channel6.*
@@ -13,7 +16,10 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.SessionManager
 import life.mibo.hardware.events.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -59,7 +65,7 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         if (arguments != null)
             stateBundle = requireArguments()
         userId = Prefs.get(this@Channel6Fragment.activity)["user_uid"]
-        //life.mibo.hardware.core.Logger.e("Channel6Fragment : stateBundle ", stateBundle)
+        life.mibo.hardware.core.Logger.e("Channel6Fragment : stateBundle ", stateBundle)
         isTrainer = stateBundle.getBoolean("is_trainer", false)
         controller.onViewCreated(view, stateBundle)
 
@@ -222,6 +228,67 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         controller.onGetProgramStatusEvent(event)
     }
 
+    // @Subscribe(threadMode = ThreadMode.ASYNC)
+    var isConnectReceived = false
+    var isConnectDialog = false
+    fun onBoosterAlarm(code: Int) {
+        log("onBoosterAlarm code $code")
+        if (code == 100) {
+            isConnectReceived = false
+            if (controller.isSessionActive) {
+                log("onBoosterAlarm session is active $code")
+                controller.onDeviceDisconnected(code)
+                showDisconnectDialog()
+            }
+            log("onBoosterAlarm end $code")
+        } else if (code == 200) {
+            isConnectReceived = true
+            // connected
+        } else if (code == 300) {
+            isConnectReceived = false
+            if (controller.isSessionActive) {
+                log("onBoosterAlarm session is active $code")
+                controller.onDeviceDisconnected(code)
+                showDisconnectDialog()
+            }
+            log("onBoosterAlarm end $code")
+        }
+
+    }
+
+    private fun showDisconnectDialog() {
+        if (isConnectDialog)
+            return
+        isConnectDialog = true
+        AlertDialog.Builder(requireContext()).setTitle("")
+            .setMessage(R.string.device_disconnected).setCancelable(false)
+            .setPositiveButton(R.string.connect) { dialog, which ->
+                dialog.dismiss()
+                isConnectDialog = false
+                Single.just("").doOnSuccess {
+                    CommunicationManager.getInstance().reconnectBleBooster(
+                        SessionManager.getInstance().userSession?.booster?.uid
+                            ?: controller.getBoosterUid()
+                    )
+                }.subscribe()
+                Toasty.warning(requireContext(), getString(R.string.connecting_device)).show()
+            }
+            .setNegativeButton(R.string.close) { dialog, which ->
+                dialog?.dismiss()
+                isConnectDialog = false
+            }.show()
+    }
+
+
+    fun onBoosterAlarm(status: Int, @StringRes id: Int) {
+        Toasty.closeSnackbar(recyclerView, id)
+    }
+
+    private fun onBoosterScreen(on: Boolean) {
+        if (on)
+            activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
 
 
     override fun onStart() {
@@ -229,9 +296,11 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
         super.onStart()
         EventBus.getDefault().register(this)
         navigate(Navigator.DRAWER_LOCK, null)
+        onBoosterScreen(true)
     }
 
     override fun onStop() {
+        onBoosterScreen(false)
         log("onStop")
         navigate(Navigator.DRAWER_UNLOCK, null)
         EventBus.getDefault().unregister(this)
@@ -278,6 +347,6 @@ class Channel6Fragment : BaseFragment(), ChannelObserver {
     }
 
     fun event(header: String, tag: String = "", value: String = "") {
-        MiboEvent.event("myboost_session_$header", tag, value)
+        MiboEvent.event("myoboost_session_$header", tag, value)
     }
 }

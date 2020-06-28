@@ -49,7 +49,9 @@ class QuestionFragment : BodyBaseFragment() {
             tv_goal?.setText(R.string.what_is_physical)
         else tv_goal?.setText(R.string.what_is_goal)
 
+
     }
+
 
     override fun isNextClickable(): Boolean {
         log("QuestionFragment isNextClickable called")
@@ -66,12 +68,7 @@ class QuestionFragment : BodyBaseFragment() {
                     item: QuestionsAdapter.Item?,
                     position: Int
                 ) {
-                    adapter?.select(item)
-                    selected = position
-                    if (type_ == 2)
-                        updateNextButton(true, "Finish")
-                    else updateNextButton(true)
-                    Calculate.getMeasureData().question(type_, item?.id ?: 1)
+                    onItemClick(item, position)
                     // Calculate.addValue("Ques_Type$type_", "$selected")
 
                 }
@@ -80,13 +77,62 @@ class QuestionFragment : BodyBaseFragment() {
         recyclerView?.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView?.layoutAnimation =
-            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_from_bottom);
+            AnimationUtils.loadLayoutAnimation(
+                requireContext(),
+                R.anim.layout_animation_from_bottom
+            );
         recyclerView?.adapter = adapter
+
+        checkAndLoad()
     }
+
+    private fun checkAndLoad() {
+        var sId = -1;
+        val data = Calculate.getBioData()
+        if (data != null) {
+            if (type_ == 2) {
+                sId = getInt(data.activityType)
+            } else {
+                sId = getInt(data.goalType)
+            }
+
+            if (sId > 0) {
+                adapter?.click(sId, object : ItemClickListener<QuestionsAdapter.Item> {
+                    override fun onItemClicked(item: QuestionsAdapter.Item?, position: Int) {
+                        if (type_ == 2)
+                            updateNextButton(true, getString(R.string.finish))
+                        else updateNextButton(true)
+                        Calculate.getMeasureData().question(type_, item?.id ?: 1)
+                    }
+
+                })
+            }
+        }
+    }
+
+    fun onItemClick(item: QuestionsAdapter.Item?, position: Int) {
+        adapter?.select(item)
+        selected = position
+        if (type_ == 2)
+            updateNextButton(true, getString(R.string.finish))
+        else updateNextButton(true)
+        Calculate.getMeasureData().question(type_, item?.id ?: 1)
+    }
+
+
+    fun getInt(str: String?): Int {
+        return try {
+            str?.toDouble()?.toInt() ?: 0
+        } catch (e: Exception) {
+            0;
+        }
+    }
+
 
     override fun resumed() {
         super.resumed()
     }
+
     override fun onResume() {
         super.onResume()
         // updateNextButton(false)

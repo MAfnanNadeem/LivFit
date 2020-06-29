@@ -8,7 +8,6 @@
 package life.mibo.android.ui.payments;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -115,10 +114,11 @@ public class SuccessPaymentActivity extends BaseActivity {
         log("save " + member);
         if (member == null)
             return;
-        CartItem cartItem = Prefs.get(this).getJson("cart_item", CartItem.class);
-        log("cart_item " + cartItem);
-        Prefs.getTemp(this).setJson("cart_item", cartItem);
+        CartItem cartItem = Prefs.get(this).getJson(Prefs.CART_ITEM, CartItem.class);
+        log(Prefs.CART_ITEM + " - " + cartItem);
+        Prefs.getTemp(this).setJson(Prefs.CART_ITEM, cartItem);
         Prefs.getTemp(SuccessPaymentActivity.this).set("cart_item_failed", "1");
+        String adviceNumber = cartItem.getAdviceNumber();
 
         StringBuilder logs = new StringBuilder();
         String transactionId = "";
@@ -159,8 +159,8 @@ public class SuccessPaymentActivity extends BaseActivity {
         else if (cartItem.isPackage())
             type = "package";
 
-        SaveOrderDetails.Data data = new SaveOrderDetails.Data(logs.toString(), 1, member.getId(),
-                cartItem.getId(), cartItem.getBillable(), cartItem.getQuantity(), cartItem.getLocationId(), transactionId, type, cartItem.getVat(), cartItem.getCurrencyType(), paidStatus);
+        SaveOrderDetails.Data data = new SaveOrderDetails.Data(logs.toString(), cartItem.getServiceLocationId(), member.getId(),
+                cartItem.getId(), cartItem.getAmount(), cartItem.getQuantity(), cartItem.getLocationId(), transactionId, type, cartItem.getVat(), cartItem.getCurrencyType(), paidStatus, adviceNumber);
 
         log("SaveOrderDetails " + data);
 
@@ -173,9 +173,9 @@ public class SuccessPaymentActivity extends BaseActivity {
                 ResponseStatus body = response.body();
                // log("onResponse " + body);
                 if (body != null && body.isSuccess()) {
-                   // log("onResponse isSuccess");
-                    Prefs.getTemp(SuccessPaymentActivity.this).remove("cart_item");
-                    Prefs.getTemp(SuccessPaymentActivity.this).set("cart_item", "");
+                    // log("onResponse isSuccess");
+                    Prefs.getTemp(SuccessPaymentActivity.this).remove(Prefs.CART_ITEM);
+                    Prefs.getTemp(SuccessPaymentActivity.this).set(Prefs.CART_ITEM, "");
                     MiboEvent.INSTANCE.event("PAYMENT_API_SUCCESS", "response", body + "" + telrAuth);
                 } else {
                     MiboEvent.INSTANCE.event("PAYMENT_API_ERROR", "response", body + "" + telrAuth);

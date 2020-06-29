@@ -230,6 +230,7 @@ class OrdersFragment : BaseFragment() {
                                     Intent(this@OrdersFragment.activity, BuyActivity::class.java)
                                 i.putExtra("type_type", BuyActivity.TYPE_INVOICE)
                                 i.putExtra("type_data", item.invoiceNumber)
+                                i.putExtra("type_location", item.locationID)
                                 startActivity(i)
                                 return
                             }

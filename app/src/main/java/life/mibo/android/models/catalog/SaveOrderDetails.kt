@@ -19,7 +19,7 @@ class SaveOrderDetails(
         @SerializedName("Device")
         var device: String?,
         @SerializedName("LocationID")
-        var locationID: Int?,
+        var locationID: String?,
         @SerializedName("MemberID")
         var memberID: Int?,
         @SerializedName("PackageID")
@@ -39,6 +39,8 @@ class SaveOrderDetails(
         @SerializedName("CurrencyType")
         var currency: String?,
         @SerializedName("PaidStatus")
-        var paidStatus: String?
+        var paidStatus: String?,
+        @SerializedName("BookingAdvice")
+        var bookingAdvice: String?
     )
 }

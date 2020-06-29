@@ -140,6 +140,7 @@ class ProfileEditFragment : BaseFragment() {
 
         ccp?.setOnCountryChangeListener {
             tv_country2?.setText(it.name)
+            countryCode = it.iso
         }
 
         isMale = member.isMale()
@@ -148,6 +149,7 @@ class ProfileEditFragment : BaseFragment() {
 
     }
 
+    var countryCode = ""
 
     var dobUpdate = ""
     private var isMale = true
@@ -424,6 +426,10 @@ class ProfileEditFragment : BaseFragment() {
             error(getString(R.string.select_your_country))
             return
         }
+        if (countryCode.isEmpty()) {
+            error(getString(R.string.select_your_country))
+            return
+        }
         if (et_number?.text?.toString().isNullOrEmpty()) {
             error(getString(R.string.enter_number))
             return
@@ -462,7 +468,7 @@ class ProfileEditFragment : BaseFragment() {
         val member = Prefs.get(context).member ?: return
         val data = UpdateMemberDetails.Data(
             et_city?.text?.toString(),
-            tv_country2?.text?.toString(),
+            countryCode,
             date,
             et_fname?.text?.toString(),
             et_lname?.text?.toString(),

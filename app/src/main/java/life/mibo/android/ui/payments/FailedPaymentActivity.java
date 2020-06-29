@@ -42,8 +42,8 @@ public class FailedPaymentActivity extends BaseActivity {
             findViewById(R.id.btn_close).setOnClickListener(v -> {
                 finish();
             });
-            Prefs.getTemp(this).remove("cart_item");
-            Prefs.getTemp(this).set("cart_item", "");
+            Prefs.getTemp(this).remove(Prefs.CART_ITEM);
+            Prefs.getTemp(this).set(Prefs.CART_ITEM, "");
             MiboEvent.INSTANCE.event("PAYMENT_FAILED_ACTIVITY", "", "auth");
 
         } catch (Exception e) {

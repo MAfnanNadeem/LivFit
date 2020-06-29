@@ -47,6 +47,7 @@ public class Prefs {
     public static final String CALORIES = "calories_burnt";
     public static final String CALORIES_HOUR = "calories_session_hours";
     public static final String CALORIES_SESSION = "calories_session";
+    public static final String CART_ITEM = "cart_item";
 
     /**
      * initialize default SharedPreferences

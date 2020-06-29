@@ -33,6 +33,8 @@ class GetInvoices(data: Data?) : BaseResponse<GetInvoices.Data?>(data) {
         @SerializedName("price")
         var price: Double?,
         @SerializedName("vat")
-        var vat: Double?
+        var vat: Double?,
+        @SerializedName("locationID")
+        var locationID: String?
     )
 }

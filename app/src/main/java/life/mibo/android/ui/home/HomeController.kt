@@ -686,6 +686,12 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                             list.let {
                                 parseBiometric(it)
                             }
+                        } else {
+                            try {
+                                Prefs.get(fragment.context)["user_weigh  t"] = "0 "
+                            } catch (e: java.lang.Exception) {
+
+                            }
                         }
                     } catch (e: Exception) {
                         MiboEvent.log(e)

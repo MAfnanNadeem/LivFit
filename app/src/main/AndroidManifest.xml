@@ -121,20 +121,26 @@
             android:screenOrientation="portrait"
             android:theme="@style/Material.FullScreen" />
 
+        <activity
+            android:name="life.mibo.android.ui.TestActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Material.FullScreen" />
+
 
         <!--        <service-->
         <!--            android:name="com.onecoder.devicelib.base.control.manage.BluetoothLeService"-->
         <!--            android:enabled="true" />-->
 
 
-        <activity
-            android:name="life.mibo.imagepicker.ui.activity.MediaActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <!--        <activity-->
+        <!--            android:name="life.mibo.imagepicker.ui.activity.MediaActivity"-->
+        <!--            android:exported="true"-->
+        <!--            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />-->
 
-        <activity android:name=".libs.image.ImagePickerActivity"
+        <activity
+            android:name=".libs.image.ImagePickerActivity"
             android:theme="@style/Theme.ImagePicker"
-            android:screenOrientation="unspecified"/>
+            android:screenOrientation="unspecified" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

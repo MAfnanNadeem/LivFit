@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.fitness.FitnessActivities
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,6 +37,7 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.ch6.adapter.Channel6Listener
 import life.mibo.android.ui.ch6.adapter.ChannelAdapter
+import life.mibo.android.ui.fit.GoogleFit
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboEvent
@@ -1752,7 +1754,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     fragment.event(
                         "api_failed",
                         "reason=$t",
-                        "duration=$time feedbak=$feedback calories=$calories"
+                        "duration=$time feedback=$feedback calories=$calories"
                     )
                 }
 
@@ -1768,7 +1770,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                             fragment.event(
                                 "api_success",
                                 "success",
-                                "duration=$time feedbak=$feedback calories=$calories"
+                                "duration=$time feedback=$feedback calories=$calories"
                             )
 //                            Toasty.success(
 //                                fragment.requireContext(),
@@ -1785,7 +1787,7 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                             fragment.event(
                                 "api_error",
                                 "success",
-                                "duration=$time feedbak=$feedback calories=$calories"
+                                "duration=$time feedback=$feedback calories=$calories"
                             )
                             Toasty.error(
                                 fragment.requireContext(),
@@ -1813,10 +1815,62 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
                     }
                 }
             })
+
+        googleFitEnd(time, feedback, calories)
+    }
+
+    private var sessionStartTime: Long = 0L
+
+    private fun googleFitStart() {
+        try {
+            sessionStartTime = System.currentTimeMillis()
+            GoogleFit(this.fragment).subscribeWithSession(
+                null,
+                SessionManager.getInstance().userSession.program?.name,
+                "$programDuration",
+                sessionStartTime,
+                FitnessActivities.CIRCUIT_TRAINING
+            )
+            MiboEvent.event(
+                "googlefit_session_start",
+                "success",
+                "duration=$programDuration"
+            )
+        } catch (e: Exception) {
+            MiboEvent.log(e)
+            MiboEvent.event(
+                "googlefit_session_start_failed",
+                "success $e",
+                "duration=$programDuration"
+            )
+        }
+    }
+
+    private fun googleFitEnd(time: Int?, feedback: String?, calories: Int?) {
+        try {
+            GoogleFit(this.fragment).unsubscribeWithSession(
+                null,
+                SessionManager.getInstance().userSession.program?.name,
+                sessionStartTime
+            )
+            MiboEvent.event(
+                "googlefit_session_end",
+                "success",
+                "duration=$time feedback=$feedback calories=$calories"
+            )
+        } catch (e: Exception) {
+            MiboEvent.log(e)
+            MiboEvent.event(
+                "googlefit_session_end_failed",
+                "success $e",
+                "duration=$time feedback=$feedback calories=$calories"
+            )
+        }
     }
 
     private fun startMemberSession() {
         startUserSession(userUid)
+        googleFitStart()
     }
 
 

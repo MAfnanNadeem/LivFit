@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~  Created by Sumeet Kumar on 5/12/20 3:20 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 3/8/20 4:57 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    android:gravity="center_horizontal"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            style="@style/textview_item_rxl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:gravity="start"
+            android:lines="1"
+            android:text="text"
+            android:textColor="@color/textColorApp"
+            android:textSize="@dimen/text_size_medium" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_info"
+            style="@style/textview_item_rxl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto"
+            android:gravity="start"
+            android:singleLine="false"
+            android:text="text"
+            android:textColor="@color/textColor2"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toTopOf="@id/tv_info2" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_info2"
+            style="@style/textview_item_rxl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto"
+            android:gravity="start"
+            android:lines="1"
+            android:text="text"
+            android:textColor="@color/textColor2"
+            android:textSize="@dimen/text_size_small" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

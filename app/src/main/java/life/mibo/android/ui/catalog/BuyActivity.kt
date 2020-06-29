@@ -63,6 +63,7 @@ class BuyActivity : BaseActivity() {
     }
 
     private var type = 0
+    private var invoiceLocationId = "1"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_product)
@@ -86,6 +87,7 @@ class BuyActivity : BaseActivity() {
             addNewCard?.visibility = View.GONE
         } else if (type == TYPE_INVOICE) {
             val invoice = intent?.getStringExtra("type_data")
+            invoiceLocationId = intent?.getStringExtra("type_location") ?: "1"
             //showPackageAddress()
             textView3?.visibility = View.GONE
             cardPromo?.visibility = View.GONE
@@ -212,14 +214,16 @@ class BuyActivity : BaseActivity() {
                 return
             }
 
+
             val price = cartItem!!.getBillable()
             if (price > 0.0) {
                 cartItem?.locationId = addressItem?.id ?: 0
                 cartItem?.encAmount = "$price"
+                //log("paynow cart $cartItem")
                 //val enc = EncryptedPrefs.AESEncyption()
                 //cartItem?.encAmount = enc.encrypt("$price")
                 //val key = enc.encrypt("cart_item")
-                Prefs.get(this).setJson("cart_item", cartItem)
+                Prefs.get(this).setJson(Prefs.CART_ITEM, cartItem)
                 //Prefs.getTemp(this).setJson("cart_item", cartItem)
 
                 val prefs = Prefs.get(this).member ?: return
@@ -242,7 +246,7 @@ class BuyActivity : BaseActivity() {
                     getAppId(), cartItem?.name
                 )
                 PaymentActivity.payNow(this@BuyActivity, data)
-                //finish()
+                finish()
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -746,6 +750,9 @@ class BuyActivity : BaseActivity() {
                 false
             )
             cartItem?.quantityDisable = true
+            cartItem?.adviceNumber = invoice.bookingAdviceNo ?: ""
+            cartItem?.serviceLocationId = invoiceLocationId
+            // cartItem?.location = invoice.invoiceLocationId ?: ""
             cartList.add(cartItem!!)
             runOnUiThread {
                 recyclerView?.layoutManager = LinearLayoutManager(this)

@@ -142,6 +142,24 @@ class HomeAdapter(var list: ArrayList<Array<HomeItem>>, val size: Int = 0) :
         Logger.e("updateWeather notify $notify")
     }
 
+
+    fun updateSteps(step: Int) {
+        var notify = false
+        for (l in list) {
+            for (i in l) {
+                if (i.type == HomeItem.Type.STEPS) {
+                    //i.title = weight.trim() + 0x00B0.toChar()
+                    i.headerText = "$step"
+                    i.updateHeader = true
+                    notify = true
+                    break
+                }
+            }
+        }
+        if (notify)
+            notifyDataSetChanged()
+    }
+
     class HomeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var item1: DashboardItem? = itemView.findViewById(R.id.item1)
         var item2: DashboardItem? = itemView.findViewById(R.id.item2)

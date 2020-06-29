@@ -71,6 +71,11 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
 
         if (mGoogleApiClient != null) {
             //logout();
+            if (mGoogleApiClient.isConnected()) {
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(status -> {
+                    Logger.e("Google sign out success " + status);
+                });
+            }
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             if (mContext instanceof Activity) {
                 ((Activity) mContext).startActivityForResult(signInIntent, SocialHelper.GOOGLE_REQUEST_CODE);

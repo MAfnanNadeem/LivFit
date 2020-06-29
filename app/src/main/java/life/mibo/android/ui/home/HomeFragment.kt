@@ -2,8 +2,6 @@ package life.mibo.android.ui.home
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.location.Location
 import android.net.Uri
@@ -15,11 +13,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.fitness.Fitness
+import com.google.android.gms.fitness.FitnessOptions
+import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.location.LocationServices
-import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
@@ -100,18 +101,10 @@ class HomeFragment : BaseFragment(), HomeObserver {
         SessionManager.getInstance().userSession.isRxl = false;
         //setBottomView()
         checkIntro()
-        getDashboardApis()
+        loadDashboardData()
         setHasOptionsMenu(true)
         // if (!isMember)
         //    tv_item_fab?.setImageResource(R.drawable.ic_home_black_24dp)
-    }
-
-    fun loadDashboardData() {
-        if (isMember) {
-
-        } else {
-
-        }
     }
 
     fun testAnim() {
@@ -122,29 +115,6 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     private var isMember = false
-    fun setBottomView() {
-//        ib_item_1?.setOnClickListener {
-//            navigateTo(HomeItem(HomeItem.Type.PROFILE))
-//        }
-//        ib_item_2?.setOnClickListener {
-//            navigateTo(HomeItem(HomeItem.Type.MEASURE_NEW))
-//            // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
-//            //drawerItemClicked(R.id.navigation_bio_summary)
-//        }
-//        ib_item_3?.setOnClickListener {
-//            navigateTo(HomeItem(HomeItem.Type.MY_ACCOUNT))
-//            //drawerItemClicked(R.id.navigation_account)
-//        }
-//        ib_item_4?.setOnClickListener {
-//            navigateTo(HomeItem(HomeItem.Type.SERVICES))
-//            //navigate(navigation_search_trainer)
-//        }
-//        tv_item_fab?.setOnClickListener {
-//            // if (isMember)
-//            //testAnim()
-//            navigateTo(HomeItem(HomeItem.Type.CENTER_BUTTON))
-//        }
-    }
 
     private fun checkIntro() {
 
@@ -206,40 +176,91 @@ class HomeFragment : BaseFragment(), HomeObserver {
         }
     }
 
-
-    fun getDashboardApis() {
-        controller.getCalories()
-        log("weather fusedLocationClient--------------")
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
+    private fun loadDashboardData() {
+        if (isMember) {
+            controller.getCalories()
+            getWeather()
+            getDailySteps()
+        } else {
+            getWeather()
+            //getDailySteps()
         }
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                log("weather fusedLocationClient: $location")
-                // YahooWeather.load(location?.latitude, location?.longitude)
-                YahooWeather.OpenApiWeather(
-                    context,
-                    location?.latitude,
-                    location?.longitude,
-                    object : ItemClickListener<String> {
-                        override fun onItemClicked(item: String?, position: Int) {
-                            log("onItemClicked $item")
-                            activity?.runOnUiThread {
-                                adapter?.updateWeather(item)
+    }
+
+    private fun getWeather() {
+        try {
+            log("weather fusedLocationClient--------------")
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            val fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(requireActivity())
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    log("weather fusedLocationClient: $location")
+                    // YahooWeather.load(location?.latitude, location?.longitude)
+                    YahooWeather.OpenApiWeather(
+                        context,
+                        location?.latitude,
+                        location?.longitude,
+                        object : ItemClickListener<String> {
+                            override fun onItemClicked(item: String?, position: Int) {
+                                log("onItemClicked $item")
+                                activity?.runOnUiThread {
+                                    adapter?.updateWeather(item)
+                                }
+                            }
+
+                        })
+
+                }
+        } catch (e: Exception) {
+
+        }
+
+    }
+
+    private fun getDailySteps() {
+        try {
+            val fit = FitnessOptions.builder()
+                .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                .build()
+            val google = GoogleSignIn.getLastSignedInAccount(requireContext())
+            if (GoogleSignIn.hasPermissions(google, fit)) {
+                Fitness.getHistoryClient(requireContext(), google!!)
+                    .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+                    .addOnSuccessListener { dataSet ->
+                        log("getDailySteps addOnSuccessListener dataSet $dataSet")
+                        if (!dataSet.isEmpty) {
+                            val pt = dataSet.dataPoints[0]
+                            log("getDailySteps addOnSuccessListener dataPoints $pt")
+                            val total = pt.getValue(Field.FIELD_STEPS).asInt()
+                            if (total > 0) {
+                                activity?.runOnUiThread {
+                                    adapter?.updateSteps(total)
+                                }
+
                             }
                         }
 
-                    })
-
+                        //Log.i(TAG, "Total steps: $total")
+                    }
+                    .addOnFailureListener { e ->
+                        log("getDailySteps addOnFailureListener $e")
+                    }
             }
+        } catch (e: java.lang.Exception) {
+
+        }
+
     }
 
     private fun loadImage(iv: ImageView?, url: String?, male: Boolean) {
@@ -259,77 +280,6 @@ class HomeFragment : BaseFragment(), HomeObserver {
     override fun onDataReceived(list: ArrayList<HomeItem>) {
         log("onDataReceived $list")
         getDialog()?.dismiss()
-
-//        list.forEachIndexed { i, item ->
-//            when (i) {
-//                0 -> {
-//                    constraintLayout2.visibility = View.VISIBLE
-//                    iv_dashboard_item_1.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_1, this)
-//                }
-//                1 -> {
-//                    log("onDataReceived when 2")
-//                    iv_dashboard_item_2.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_2, this)
-//                    iv_dashboard_item_2.visibility = View.VISIBLE
-//                }
-//                2 -> {
-//                    iv_dashboard_item_3.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_3, this)
-//                }
-//                3 -> {
-//                    constraintLayout3.visibility = View.VISIBLE
-//                    iv_dashboard_item_4.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_4, this)
-//                }
-//                4 -> {
-//                    iv_dashboard_item_5.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_5, this)
-//                }
-//                5 -> {
-//                    constraintLayout4.visibility = View.VISIBLE
-//                    iv_dashboard_item_6.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_6, this)
-//                }
-//                6 -> {
-//                    iv_dashboard_item_7.visibility = View.VISIBLE
-//                    item.bind(iv_dashboard_item_7, this)
-//                }
-//                7 -> {
-//                    constraintLayout5.visibility = View.VISIBLE
-//                    iv_dashboard_item_8.visibility = View.VISIBLE
-//                    iv_dashboard_item_9.visibility = View.INVISIBLE
-//                    iv_dashboard_item_10.visibility = View.INVISIBLE
-//                    item.bind(iv_dashboard_item_8, this)
-//                }
-//                8 -> {
-//                    item.bind(iv_dashboard_item_9, this)
-//                    iv_dashboard_item_9.visibility = View.VISIBLE
-//                }
-//                9 -> {
-//                    item.bind(iv_dashboard_item_10, this)
-//                    iv_dashboard_item_10.visibility = View.VISIBLE
-//                }
-//            }
-//        }
-//        log("onDataReceived when again 2 "+iv_dashboard_item_2.visibility)
-//        log("onDataReceived when again 2 "+iv_dashboard_item_10.visibility)
-//        constraintLayout2.visibility = View.VISIBLE
-//        iv_dashboard_item_2.visibility = View.VISIBLE
-//
-//        val metrics = resources.displayMetrics
-//        val w = metrics.widthPixels
-//
-//        //val m = DisplayMetrics()
-//        //activity!!.windowManager.defaultDisplay.getMetrics(m)
-//
-//        Toasty.info(this@HomeFragment.context!!, "DPI ${metrics.density} - ${metrics.density.times(160f)}  $w ").show()
-//
-//        constraintLayout2.invalidate()
-//        parent_constraint.invalidate()
-//        //(activity as MainActivity).supportFragmentManager!!.beginTransaction().detach(this).attach(this).commit()
-//        //(activity as MainActivity).navController?.
-
         updateData(list)
     }
 
@@ -531,11 +481,11 @@ class HomeFragment : BaseFragment(), HomeObserver {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onPostEvent(event: NotifyEvent) {
         if (event.id == Navigator.HOME) {
+            EventBus.getDefault().removeStickyEvent(event)
             requireView().forceLayout()
             requireView().requestLayout()
             parent_constraint.invalidate()
             log("onPostEvent $event")
-            EventBus.getDefault().removeStickyEvent(event)
         }
     }
 
@@ -574,59 +524,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         // tv_item_fab?.invalidate()
         // videoView?.resume()
         //videoBg()
-        updateFab()
-    }
-
-    fun updateFab() {
-//        log("updateFab start ")
-//        log("updateFab start " + tv_item_fab?.x + " :: " + tv_item_fab.y)
-////        if (tv_item_fab.x > 0)
-////            tv_item_fab?.x = 0f
-//        //tv_item_fab.setImageResource(R.drawable.ic_add_shopping_cart_black_24dp)
-//        bottom_bar?.performHide()
-//
-//        bottom_bar?.performShow()
-//        bottom_bar?.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-//
-//        tv_item_fab.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-//            override fun onHidden(fab: FloatingActionButton?) {
-//                super.onHidden(fab)
-//                log("updateFab hide onHidden ")
-//                // tv_item_fab?.setImageResource(R.drawable.cross_mark)
-//                tv_item_fab?.show(object : FloatingActionButton.OnVisibilityChangedListener() {
-//                    override fun onHidden(fab: FloatingActionButton?) {
-//                        super.onHidden(fab)
-//                        log("updateFab show onHidden ")
-//                    }
-//
-//                    override fun onShown(fab: FloatingActionButton?) {
-//                        super.onShown(fab)
-//                        log("updateFab show onShown ")
-//                    }
-//
-//                })
-//            }
-//
-//            override fun onShown(fab: FloatingActionButton?) {
-//                super.onShown(fab)
-//                log("updateFab hide onShown ")
-//            }
-//
-//        })
-//
-//
-//        //tv_item_fab?.bottom_bar
-//
-//        val p: CoordinatorLayout.LayoutParams =
-//            tv_item_fab.layoutParams as CoordinatorLayout.LayoutParams
-//        //p.behavior = FloatingActionButton.Behavior()
-//        p.anchorId = R.id.bottom_bar
-//        tv_item_fab.layoutParams = p
-//        log("updateFab end $p")
-//
-//
-//        log("updateFab start " + tv_item_fab?.x + " :: " + tv_item_fab.y)
-
+        // updateFab()
     }
 
     override fun onStart() {

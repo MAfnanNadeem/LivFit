@@ -5,57 +5,138 @@
   ~  Mibo Hexa - app
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color_app"
-    android:padding="@dimen/grid_1x">
+    android:background="@color/white">
 
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_invoices"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/profile_edittext"
-        android:padding="@dimen/grid_2x"
-        android:text="@string/my_orders"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_orders"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/profile_edittext"
-        android:padding="@dimen/grid_2x"
-        android:text="@string/my_orders"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/text_size_medium"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_invoices" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="Purchase"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_size_medium" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_payments"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/profile_edittext"
-        android:padding="@dimen/grid_2x"
-        android:text="@string/payment_history"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/text_size_medium"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_orders" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_invoices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/grid_2x"
+            android:text="@string/my_orders"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="@string/shipment_address"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_size_medium" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/grid_2x"
+            android:text="Manage Address"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_add_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/grid_2x"
+            android:text="@string/add_new_address"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_1x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="Connect"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/text_size_medium" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_google_fit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:drawableStart="@drawable/googleg_standard_color_18"
+                android:drawablePadding="@dimen/grid_2x"
+                android:padding="@dimen/grid_2x"
+                android:text="@string/google_fit"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_google_fit_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                android:layout_margin="@dimen/grid_2x"
+                android:text="@string/connected"
+                android:textColor="@color/textColorApp2"
+                android:textSize="@dimen/text_size_small" />
+        </RelativeLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+    </LinearLayout>
+
+</ScrollView>
+

@@ -164,9 +164,9 @@ class LoginActivity : BaseActivity() {
             et_username?.setText(em)
 
         socialHelper?.googleConnect(this)
-        Single.just("").delay(3, TimeUnit.SECONDS).doOnSuccess {
-            socialHelper?.googleLogout()
-        }.subscribe()
+//        Single.just("").delay(3, TimeUnit.SECONDS).doOnSuccess {
+//            socialHelper?.googleLogout()
+//        }.subscribe()
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
         // videoBg()
     }

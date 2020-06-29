@@ -21,14 +21,19 @@ data class CartItem(
     var vat_: Double?,
     var location: String?,
     val isService: Boolean = false,
-    val isPackage: Boolean = false
+    val isPackage: Boolean = false,
+    var locationId: Int = 0,
+    var serviceLocationId: String = "0",
+    var adviceNumber: String = ""
 ) : Parcelable {
 
     var quantityDisable = false
 
-    var locationId = 0
+    // var locationId = 0
+    // var serviceLocationId = "0"
     var transactionId = 0
     var encAmount = "0.0"
+    //var adviceNumber = ""
 
     fun getAmount(): Double {
         return Calculate.round(price.times(quantity))
@@ -75,6 +80,9 @@ data class CartItem(
         parcel.writeString(location)
         parcel.writeInt(if (isService) 1 else 0)
         parcel.writeInt(if (isPackage) 1 else 0)
+        parcel.writeInt(locationId)
+        parcel.writeString(serviceLocationId)
+        parcel.writeString(adviceNumber)
     }
 
     constructor(parcel: Parcel) : this(
@@ -87,13 +95,21 @@ data class CartItem(
         parcel.readDouble(),
         parcel.readString(),
         parcel.readInt() == 1,
-        parcel.readInt() == 1
+        parcel.readInt() == 1,
+        parcel.readInt(),
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
     ) {
 
     }
 
+
     override fun describeContents(): Int {
         return 0
+    }
+
+    override fun toString(): String {
+        return "CartItem(id=$id, name=$name, price=$price, currencyType=$currencyType, image=$image, quantity=$quantity, vat_=$vat_, location=$location, isService=$isService, isPackage=$isPackage, quantityDisable=$quantityDisable, locationId=$locationId, serviceLocationId='$serviceLocationId', transactionId=$transactionId, encAmount='$encAmount', adviceNumber='$adviceNumber')"
     }
 
     companion object CREATOR : Parcelable.Creator<CartItem> {

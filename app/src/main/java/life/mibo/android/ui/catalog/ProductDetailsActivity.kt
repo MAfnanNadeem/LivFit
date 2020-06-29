@@ -253,7 +253,7 @@ class ProductDetailsActivity : BaseActivity() {
                     Calculate.getDouble(product.unitPrice),
                     product.currency ?: "AED",
                     product.image,
-                    1, 0.0, "", false, false
+                    quantity, 0.0, "", false, false
                 )
             )
             val i = Intent(this, BuyActivity::class.java)
@@ -269,16 +269,19 @@ class ProductDetailsActivity : BaseActivity() {
     private fun buyClicked(services: Services.Data) {
         try {
             val list = ArrayList<CartItem>()
-            list.add(
-                CartItem(
-                    services.id!!,
-                    services.name,
-                    services.currency ?: 0.0,
-                    services.currencyType,
-                    "",
-                    1, services.vat, services.location, true, false
-                )
+            val cart = CartItem(
+                services.id!!,
+                services.name,
+                services.currency ?: 0.0,
+                services.currencyType,
+                "",
+                quantity, services.vat, services.location, true, false
             )
+            cart.serviceLocationId = services.locationID ?: ""
+            list.add(cart)
+
+            log("buyClicked $cart")
+
             val i = Intent(this, BuyActivity::class.java)
             i.putExtra("type_type", BuyActivity.TYPE_SERVICE)
             i.putParcelableArrayListExtra("type_list", list)
@@ -292,16 +295,19 @@ class ProductDetailsActivity : BaseActivity() {
     private fun buyClicked(services: Packages.Data) {
         try {
             val list = ArrayList<CartItem>()
-            list.add(
-                CartItem(
-                    services.id!!,
-                    services.name,
-                    services.price ?: 0.0,
-                    services.currencyType,
-                    "",
-                    1, services.vat, services.location, false, true
-                )
+            val cart = CartItem(
+                services.id!!,
+                services.name,
+                services.price ?: 0.0,
+                services.currencyType,
+                "",
+                quantity, services.vat, services.location, false, true
             )
+            cart.serviceLocationId = services.locationID ?: ""
+
+            list.add(cart)
+            log("buyClicked $cart")
+
             val i = Intent(this, BuyActivity::class.java)
             i.putExtra("type_type", BuyActivity.TYPE_PACKAGE)
             i.putParcelableArrayListExtra("type_list", list)

@@ -3,7 +3,7 @@
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="mibo_world">MI.BO. World</string>
-    <string name="app_version">0.1.14</string>
+    <string name="app_version">0.1.18</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="numbers_only">0123456789</string>
@@ -596,7 +596,9 @@
     <string name="shipment_address">Shipment Address</string>
     <string name="google_fit">Google Fit</string>
     <string name="connected">Connected</string>
-
+    <string name="disconnect">Disconnect</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="google_fit_logout">Are You Sure You Want to Disconnect Google Fit?</string>
 
     <!-- customer reviews -->
     <string-array name="names">

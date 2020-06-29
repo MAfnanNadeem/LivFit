@@ -54,6 +54,8 @@ class Packages(data: List<Data?>?) : BaseResponse<List<Packages.Data?>>(data) {
         var updatedAt: String?,
         @SerializedName("location")
         var location: String?,
+        @SerializedName("locationID")
+        var locationID: String?,
         @SerializedName("vat")
         var vat: Double?
     ) : Serializable {

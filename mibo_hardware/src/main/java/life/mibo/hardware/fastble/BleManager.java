@@ -443,7 +443,7 @@ public class BleManager {
                          String uuid_service,
                          String uuid_indicate,
                          BleIndicateCallback callback) {
-        indicate(bleDevice, uuid_service, uuid_indicate, false, callback);
+        indicate(bleDevice, "", uuid_service, uuid_indicate, false, callback);
     }
 
     /**
@@ -456,6 +456,7 @@ public class BleManager {
      * @param callback
      */
     public void indicate(BleDevice bleDevice,
+                         String uuid,
                          String uuid_service,
                          String uuid_indicate,
                          boolean useCharacteristicDescriptor,
@@ -468,7 +469,7 @@ public class BleManager {
         if (bleBluetooth == null) {
             callback.onIndicateFailure(new OtherException("This device not connect!"));
         } else {
-            bleBluetooth.newBleConnector()
+            bleBluetooth.create(uuid)
                     .withUUIDString(uuid_service, uuid_indicate)
                     .enableCharacteristicIndicate(callback, uuid_indicate, useCharacteristicDescriptor);
         }

@@ -68,6 +68,7 @@ import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.*
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 import life.mibo.android.ui.ch6.Channel6Fragment
+import life.mibo.android.ui.devices.DeviceScanFragment
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.Navigator.Companion.CLEAR_HOME
@@ -545,24 +546,24 @@ class MainActivity : BaseActivity(), Navigator {
 
             override fun onConnect(name: String?, status: Int) {
                // Toasty.warning(this@MainActivity, "Device Connected! $name : $status").show()
-                boosterAlarm(200)
+                boosterAlarm(200, name)
             }
 
             override fun onDisconnect(failed: Boolean, name: String?, status: Int, error: String?) {
                 log("onDisconnect $failed :: $status :: $error")
                 if (failed) {
-                    boosterAlarm(status)
+                    boosterAlarm(status, "")
                     if (status > 1000) {
                         // broadcast message
                         if (error?.toLowerCase()?.contains("gatt exception") == true)
-                            boosterAlarm(300)
+                            boosterAlarm(300, "")
                         else if (error?.toLowerCase()?.contains("not connect") == true)
                             Toasty.snackbar(nav_view, "$status : $error")
                     } else {
                         Toasty.error(this@MainActivity, error ?: "Failed to connect $status").show()
                     }
                 } else {
-                    boosterAlarm(100)
+                    boosterAlarm(100, "")
                     //  Toasty.warning(this@MainActivity, "Device disconnected $status").show()
                 }
 
@@ -666,7 +667,7 @@ class MainActivity : BaseActivity(), Navigator {
         log("getScanning finished")
     }
 
-    fun boosterAlarm(code: Int) {
+    fun boosterAlarm(code: Int, name: String?) {
         log("boosterAlarm $code")
         try {
             val frg =
@@ -677,6 +678,11 @@ class MainActivity : BaseActivity(), Navigator {
             if (frg is Channel6Fragment) {
                 log("boosterAlarm frg = Channel6Fragment")
                 return frg.onBoosterAlarm(code)
+            }
+
+            if (frg is DeviceScanFragment) {
+                log("boosterAlarm frg = Channel6Fragment")
+                return frg.onDeviceEvent(DeviceStatusEvent(name))
             }
         } catch (e: java.lang.Exception) {
             runOnUiThread {
@@ -742,6 +748,11 @@ class MainActivity : BaseActivity(), Navigator {
     private fun parseCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseCommands $code : data " + command.contentToString())
         when (code) {
+            INDICATE -> {
+                EventBus.getDefault().postSticky(IndicationEvent("", command))
+                return
+            }
+
             COMMAND_DEVICE_STATUS_RESPONSE -> {
                 // code -126
                 logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE $uid")
@@ -1684,7 +1695,8 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.STEPS -> {
-                comingSoon()
+                navigate(0, R.id.navigation_fit_history)
+                //comingSoon()
                 return
             }
             HomeItem.Type.WEATHER -> {

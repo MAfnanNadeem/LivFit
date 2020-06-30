@@ -13,7 +13,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import life.mibo.hardware.core.DataParser;
-import life.mibo.hardware.core.Logger;
 
 import static life.mibo.hardware.models.ConnectionTypes.BLE;
 import static life.mibo.hardware.models.ConnectionTypes.WIFI;
@@ -25,6 +24,7 @@ import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
 import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
+import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 
@@ -263,6 +263,10 @@ public class Device implements Serializable, BaseModel {
 
     public boolean isBand() {
         return type == HR_MONITOR;
+    }
+
+    public boolean isScale() {
+        return type == SCALE;
     }
 
     public boolean isTile() {

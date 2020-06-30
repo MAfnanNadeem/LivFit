@@ -13,10 +13,10 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import life.mibo.android.R
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
-import life.mibo.android.R
 import java.util.*
 
 
@@ -310,6 +310,8 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
             } else if (item.type == DeviceTypes.HR_MONITOR) {
                 image?.setBackgroundResource(R.drawable.ic_device_hr)
+            } else if (item.type == DeviceTypes.SCALE || item.type == DeviceTypes.MI_SCALE) {
+                image?.setBackgroundResource(R.drawable.ic_dashboard_weight)
             }
 
             view?.background = null

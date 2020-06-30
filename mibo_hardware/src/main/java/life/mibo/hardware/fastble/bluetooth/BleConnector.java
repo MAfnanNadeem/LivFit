@@ -125,7 +125,7 @@ public class BleConnector {
                         Bundle bundle = msg.getData();
                         byte[] value = bundle.getByteArray(BleMsg.KEY_INDICATE_BUNDLE_VALUE);
                         if (indicateCallback != null) {
-                            indicateCallback.onCharacteristicChanged(value);
+                            indicateCallback.onCharacteristicChanged(value, uid);
                         }
                         break;
                     }

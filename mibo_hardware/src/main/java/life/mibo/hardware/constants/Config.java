@@ -45,6 +45,7 @@ public class Config {
     public static final int COMMAND_ASYNC_START = 0xC4;
     public static final int RXL_COMMAND_PROXIMATE = 0x04;
     public static final int RXL_TAP_EVENT = 0xC0;
+    public static final int INDICATE = 0x100;
 
 
     public static final int RXL_COMMAND_COLOR = 0x03;

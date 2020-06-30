@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.fragment_devices2.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.ScanComplete
+import life.mibo.android.ui.TestActivity
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.BaseListener
 import life.mibo.android.ui.base.ItemClickListener
@@ -178,6 +179,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     }
 
     private fun onNextClicked() {
+        log("onNextClicked $isRxl")
         val member = Prefs.get(this.context).member
         if (member != null) {
             SessionManager.getInstance().userSession.user =
@@ -197,13 +199,19 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                 }
             } else {
                 val size = SessionManager.getInstance().userSession.devices.size
+                // log("onNextClicked size :: $size")
                 if (size > 0) {
                     for (i in SessionManager.getInstance().userSession.devices) {
+                        log("onNextClicked dev :: $i")
                         if (size == 1 && i.isBand) {
                             navigate(
                                 Navigator.HOME,
                                 HomeItem(HomeItem.Type.HEART, HeartRateFragment.bundle(1))
                             )
+                            return
+                        }
+                        if (i.isScale) {
+                            startActivity(Intent(context, TestActivity::class.java))
                             return
                         }
                         if (i.isBooster) {
@@ -806,7 +814,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             }
         } else {
             MessageDialog.info(
-                context!!,
+                requireContext(),
                 "Location Required",
                 "Please enable location to scan BLE devices", "enable"
             ) {
@@ -857,7 +865,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     fun blockedByLocationOff(): Boolean {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                context!!.getSystemService(LocationManager::class.java).isLocationEnabled
+                requireContext().getSystemService(LocationManager::class.java).isLocationEnabled
             } else {
                 true
             }
@@ -874,7 +882,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        PermissionHelper.permissionsResult(this@DeviceScanFragment.activity!!,
+        PermissionHelper.permissionsResult(
+            this.requireActivity(),
             permissions as Array<String>, requestCode, grantResults,
             {
                 if (checkScan)

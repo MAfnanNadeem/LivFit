@@ -20,6 +20,7 @@ import java.util.Iterator;
 import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.OnBleCharChanged;
 import life.mibo.hardware.bluetooth.OnBleDeviceDiscovered;
+import life.mibo.hardware.constants.Config;
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.core.Utils;
@@ -69,6 +70,8 @@ import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
+
+//import static life.mibo.hardware.BluetoothManager2.INDICATE;
 
 //import life.mibo.hardware.fastble.callback.BleScanAndConnectCallback;
 //import life.mibo.hardware.fastble.callback.BleScanCallback;
@@ -330,6 +333,11 @@ public class CommunicationManager {
             if (uid.startsWith("HW")) {
                 bleHrConsumer(data, uid, property);
             } else {
+                if (property == Config.INDICATE) {
+                    if (listener != null)
+                        listener.onCommandReceived(Config.INDICATE, data, uid);
+                    return;
+                }
                 receiveCommands(data, Utils.getUid(uid), true);
             }
             //Log.e("commManag","Char booster changed "+data);
@@ -591,7 +599,7 @@ public class CommunicationManager {
     }
 
     private void bleScaleDiscoverConsumer(String uid, String serial) {
-        add(new Device("", uid, serial, SCALE));
+        add(new Device(serial, uid, serial, SCALE));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         //  if (listener != null)
         //     listener.onDeviceDiscoveredEvent("");
@@ -901,7 +909,10 @@ public class CommunicationManager {
 
             case SCALE: {
                 //SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
-                SessionManager.getInstance().getUserSession().addScale(bluetoothManager.getScaleDevice());
+                if (bluetoothManager != null)
+                    bluetoothManager.connectScale(device.getUid());
+                // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
+                SessionManager.getInstance().getUserSession().addDevice(device);
             }
             break;
 

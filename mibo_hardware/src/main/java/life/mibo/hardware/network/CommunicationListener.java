@@ -2,9 +2,14 @@ package life.mibo.hardware.network;
 
 import android.bluetooth.le.ScanResult;
 
+import androidx.annotation.Nullable;
+
+import com.onecoder.devicelib.base.protocol.entity.ScaleStableData;
+
 import java.net.InetAddress;
 
 import life.mibo.hardware.models.Device;
+import life.mibo.hardware.models.ScaleData;
 
 public interface CommunicationListener {
 
@@ -30,6 +35,7 @@ public interface CommunicationListener {
     void GetLevelsEvent(String uid);
 
     void onStatus(int time, int action, int pause, int currentBlock, int currentProgram, String uid);
+
     void onStatus(byte[] command, String uid);
 
     void onConnect(String name, int status);
@@ -37,6 +43,8 @@ public interface CommunicationListener {
     void onDisconnect(boolean failed, String name, int status, String error);
 
     void onCommandReceived(int code, byte[] command, String uid);
+
+    void onScale(float weight, @Nullable ScaleData data, int code, @Nullable Object other);
 
     void DevicePlayPauseEvent(String uid);
 

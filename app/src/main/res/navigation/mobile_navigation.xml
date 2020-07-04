@@ -249,6 +249,11 @@
         android:name="life.mibo.android.ui.fit.GoogleFitFragment"
         android:label="Google Fit"
         />
+    <fragment
+        android:id="@+id/navigation_fit_steps"
+        android:name="life.mibo.android.ui.fit.GoogleFitStepsFragment"
+        android:label="Steps"
+        />
 <!--    <fragment-->
 <!--        android:id="@+id/navigation_quickplay_details_play"-->
 <!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->

@@ -45,6 +45,7 @@ import life.mibo.hardware.events.SendProgramEvent;
 import life.mibo.hardware.fastble.data.BleDevice;
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceColors;
+import life.mibo.hardware.models.ScaleData;
 import life.mibo.hardware.models.program.Circuit;
 import life.mibo.hardware.models.program.Program;
 import life.mibo.hardware.network.CommunicationListener;
@@ -69,6 +70,7 @@ import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
+import static life.mibo.hardware.models.DeviceTypes.SCALE_OLD;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 //import static life.mibo.hardware.BluetoothManager2.INDICATE;
@@ -327,6 +329,12 @@ public class CommunicationManager {
         }
 
         @Override
+        public void bleScale(float weight, ScaleData data, int code, Object other) {
+            if (listener != null)
+                listener.onScale(weight, data, code, other);
+        }
+
+        @Override
         public void bleBoosterChanged(byte[] data, String uid, int property) {
             log("BluetoothManager bleBoosterChanged " + Arrays.toString(data) + " - IP " + uid);
             // bleBoosterConsumer(data, serial);
@@ -454,6 +462,9 @@ public class CommunicationManager {
 
     public void onDestroy() {
         try {
+            if (bluetoothManager != null)
+                bluetoothManager.destroy();
+            pingThread = null;
             tcpClients.clear();
             mDiscoveredDevices.clear();
             commRunning = false;
@@ -522,7 +533,7 @@ public class CommunicationManager {
 
                         logi("broadcastConsumer checkBoosterDevice " + ip + " : " + Arrays.toString(command));
                         checkBoosterDevice(command, ip);
-                        break;
+                        return;
                     }
                 } else if (message[i] == 'M' && message[i + 1] == 'B' && message[i + 2] == 'R' && message[i + 3] == 'X') {
                     if (message[i + 4] == 'L') {
@@ -534,7 +545,7 @@ public class CommunicationManager {
 
                             logi("broadcastConsumer checkRxlDevice " + ip + " : " + Arrays.toString(command));
                             checkRxlDevice(ip, command);
-                            break;
+                            return;
                         }
                     }
                     if (message[i + 4] == 'T') {
@@ -546,7 +557,7 @@ public class CommunicationManager {
 
                             logi("broadcastConsumer checkRxlDevice " + ip + " : " + Arrays.toString(command));
                             checkRxtDevice(ip, command);
-                            break;
+                            return;
                         }
                     }
                 }
@@ -599,7 +610,9 @@ public class CommunicationManager {
     }
 
     private void bleScaleDiscoverConsumer(String uid, String serial) {
-        add(new Device(serial, uid, serial, SCALE));
+        if (serial != null && serial.contains("WS806"))
+            add(new Device(serial, uid, serial, SCALE_OLD));
+        else add(new Device(serial, uid, serial, SCALE));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         //  if (listener != null)
         //     listener.onDeviceDiscoveredEvent("");
@@ -914,6 +927,13 @@ public class CommunicationManager {
                 // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
                 SessionManager.getInstance().getUserSession().addDevice(device);
             }
+            case SCALE_OLD: {
+                //SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+                if (bluetoothManager != null)
+                    bluetoothManager.connectScaleLegacy(device.getUid());
+                // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
+                SessionManager.getInstance().getUserSession().addDevice(device);
+            }
             break;
 
         }
@@ -958,10 +978,24 @@ public class CommunicationManager {
             log("disconnectDevice BLE_STIMULATOR");
             if (bluetoothManager != null) {
                 String id = device.getUid();
-                if(id.contains(":")){
+                if (id.contains(":")) {
                     id = device.getName().substring("MIBO-".length());
                 }
                 pos = bluetoothManager.disconnectMIBOBoosterGattDevice(id);
+            }
+        } else if (device.getType() == SCALE) {
+            log("disconnectDevice BLE_STIMULATOR");
+            if (bluetoothManager != null) {
+                String id = device.getUid();
+                if (id.contains(":")) {
+                    id = device.getName().substring("MIBO-".length());
+                }
+                pos = bluetoothManager.disconnectMIBOBoosterGattDevice(id);
+            }
+        } else if (device.getType() == SCALE_OLD) {
+            log("disconnectDevice BLE_STIMULATOR");
+            if (bluetoothManager != null) {
+                bluetoothManager.disconnectScaleLegacy(device.getUid());
             }
         }
 

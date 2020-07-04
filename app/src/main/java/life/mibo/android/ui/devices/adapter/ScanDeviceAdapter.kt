@@ -185,15 +185,32 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
     }
 
     fun addDevice(item: Device) {
-        Logger.e("ScanDevice addDevice device")
+        //Logger.e("ScanDevice addDevice device")
         for (l in list!!) {
             if (l.uid == item.uid) {
-                Logger.e("ScanDevice addDevice already added")
+                //Logger.e("ScanDevice addDevice already added")
                 return
             }
         }
         list!!.add(item)
         notifyItemInserted(list!!.size)
+    }
+
+    fun addScaleDevice(item: Device?) {
+        if (item == null)
+            return
+        Logger.e("ScanDevice addScaleDevice device")
+        if (item.isScale) {
+            for (l in list!!) {
+                if (l.uid == item.uid) {
+                    Logger.e("addScaleDevice l.uid == item.uid")
+                    return
+                }
+            }
+            list!!.add(item)
+            notifyItemInserted(list!!.size)
+            Logger.e("addScaleDevice notifyItemInserted ")
+        }
     }
 
     fun addDevices(l: ArrayList<Device>) {
@@ -208,9 +225,22 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 if (device.uid == it.uid) {
                     list!![index] = it
                     notifyItemChanged(index, it)
+                    return
                 }
             }
         }
+    }
+
+    fun connectedScale() {
+        list?.forEachIndexed { index, device ->
+            if (device.isScale) {
+                if (device.statusConnected == 1)
+                    return
+                device.statusConnected = 1
+            }
+        }
+
+        notifyDataSetChanged()
     }
 
     class ScanItem(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -272,6 +302,10 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     wifi?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                     bluetooth?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                 }
+                item.type == DeviceTypes.SCALE_OLD -> {
+                    wifi?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+                    bluetooth?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+                }
                 else -> {
                     wifi?.setColorFilter(grey)
                     bluetooth?.setColorFilter(grey)
@@ -310,7 +344,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
             } else if (item.type == DeviceTypes.HR_MONITOR) {
                 image?.setBackgroundResource(R.drawable.ic_device_hr)
-            } else if (item.type == DeviceTypes.SCALE || item.type == DeviceTypes.MI_SCALE) {
+            } else if (item.type == DeviceTypes.SCALE || item.type == DeviceTypes.MI_SCALE || item.type == DeviceTypes.SCALE_OLD) {
                 image?.setBackgroundResource(R.drawable.ic_dashboard_weight)
             }
 

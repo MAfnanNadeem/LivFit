@@ -525,6 +525,7 @@ public class Utils {
     }
 
     public static void loadImage(ImageView imageView, String url, boolean genderMale) {
+        Logger.e("loadImage Glide "+url);
         if (imageView == null)
             return;
         try {

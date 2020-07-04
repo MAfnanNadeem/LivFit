@@ -151,6 +151,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
+        <activity
+            android:name=".ui.base.WebViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
         <provider
             android:name="life.mibo.android.libs.image.code.ImagePickerFileProvider"
             android:authorities="${applicationId}.imagepicker.provider"

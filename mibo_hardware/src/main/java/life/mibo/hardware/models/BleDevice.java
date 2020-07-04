@@ -65,7 +65,7 @@ public class BleDevice implements Serializable, BaseModel {
                 if (name.toLowerCase().startsWith("geonaute"))
                     return DeviceTypes.HR_MONITOR;
                 if (name.toLowerCase().startsWith("ws806"))
-                    return DeviceTypes.SCALE;
+                    return DeviceTypes.SCALE_OLD;
             } catch (Exception e) {
                 e.printStackTrace();
 

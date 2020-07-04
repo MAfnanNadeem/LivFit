@@ -121,6 +121,8 @@ class API {
         const val baseUrl = "https://test.mibolivfit.club/api/consumer/"
         const val trainerUrl = "https://test.mibolivfit.club/api/v1/"
         const val chainUrl = "http://chaintest.mibo.world/api/"
+        const val fitbitApi = "http://chaintest.mibo.world/api/"
+        const val fitbitAuth = "http://chaintest.mibo.world/api/"
     }
 
     fun getApi(): ApiService {

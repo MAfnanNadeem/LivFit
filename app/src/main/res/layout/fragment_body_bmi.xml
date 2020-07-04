@@ -129,11 +129,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/height_text" />
 
+
+    <ImageButton
+        android:id="@+id/weight_scale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:padding="@dimen/grid_2x"
+        android:src="@drawable/ic_dashboard_weight"
+        app:layout_constraintBottom_toTopOf="@id/weight_text"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/weight_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:lines="1"
+        android:paddingEnd="@dimen/grid_1x"
         android:paddingStart="@dimen/grid_1x"
         android:scaleType="center"
         android:text="@string/weight"

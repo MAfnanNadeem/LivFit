@@ -19,6 +19,19 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.onecoder.devicelib.FitBleKit;
+import com.onecoder.devicelib.base.control.interfaces.CheckSystemBleCallback;
+import com.onecoder.devicelib.base.control.interfaces.DeviceStateChangeCallback;
+import com.onecoder.devicelib.base.entity.BaseDevice;
+import com.onecoder.devicelib.base.entity.DeviceType;
+import com.onecoder.devicelib.base.protocol.entity.ScaleStableData;
+import com.onecoder.devicelib.scale.api.ScaleManager;
+import com.onecoder.devicelib.scale.api.interfaces.ScaleInfoCallBack;
+import com.onecoder.devicelib.scale.api.interfaces.ScaleNewProtocolDataListener;
+import com.onecoder.devicelib.scale.api.interfaces.ScaleUserInfoCallBack;
+import com.onecoder.devicelib.scale.protocol.entity.BUserInfo;
+import com.onecoder.devicelib.scale.protocol.entity.ScaleInfo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,6 +58,7 @@ import life.mibo.hardware.fastble.callback.BleWriteCallback;
 import life.mibo.hardware.fastble.data.BleDevice;
 import life.mibo.hardware.fastble.exception.BleException;
 import life.mibo.hardware.models.DeviceTypes;
+import life.mibo.hardware.models.ScaleData;
 
 /**
  * Created by Fer on 08/04/2019.
@@ -132,13 +146,15 @@ public class BluetoothManager2 {
                     // devicesHRBle.add(device);
                     listener.bleHrDeviceDiscovered(device.getMac(), device.getName());
                     deviceHashMap.put(device.getMac(), device);
+                    return;
                 }
 
-                if (device.getName().contains("MI SCALE")) {
+                if (device.getName().contains("MI SCALE") || device.getName().contains("WS806")) {
                     device.setType(DeviceTypes.SCALE);
                     // devicesHRBle.add(device);
                     listener.bleScaleDeviceDiscovered(device.getMac(), device.getName());
                     deviceHashMap.put(device.getMac(), device);
+                    return;
                 }
 
             }
@@ -230,6 +246,103 @@ public class BluetoothManager2 {
 
     public void connectScale(String Id) {
         connectBleFast(Id);
+    }
+
+
+    private ScaleManager scaleManager;
+
+    public void destroy() {
+        try {
+            if (scaleManager != null) {
+                scaleManager.closeDevice();
+            }
+        } catch (Exception ee) {
+
+        }
+    }
+
+    private ScaleManager getScaleManager() {
+        log("ScaleManager getScaleManager");
+        if (scaleManager == null) {
+            FitBleKit.getInstance().initSDK(MIBO.getContext());
+            scaleManager = ScaleManager.getInstance();
+            scaleManager.setUnit(ScaleStableData.UNIT_KG);
+
+            scaleManager.registerStateChangeCallback(new DeviceStateChangeCallback() {
+                @Override
+                public void onStateChange(String s, int i) {
+                   // log("ScaleManager DeviceStateChangeCallback onStateChange " + i);
+                    if(listener != null)
+                        listener.onConnect(s, i);
+                }
+
+                @Override
+                public void onEnableWriteToDevice(String s, boolean b) {
+                    //log("ScaleManager DeviceStateChangeCallback onEnableWriteToDevice " + s + " b="+b);
+                }
+            });
+            scaleManager.setNewScaleDataListener(new ScaleNewProtocolDataListener() {
+                @Override
+                public void onRealTimeData(float v) {
+                    log("ScaleManager setNewScaleDataListener onRealTimeData " + v);
+                    if (onBleCharChanged != null)
+                        onBleCharChanged.bleScale(v, null, Config.SCALE_LEGACY, null);
+                }
+
+                @Override
+                public void onStableWeightData(ScaleStableData scaleStableData) {
+                    log("ScaleManager setNewScaleDataListener onStableWeightData " + scaleStableData);
+                    if (onBleCharChanged != null)
+                        onBleCharChanged.bleScale(0, ScaleData.from(scaleStableData), Config.SCALE_LEGACY, null);
+                }
+
+                @Override
+                public void onHistoryWeightData(List<ScaleStableData> list) {
+                    log("ScaleManager setNewScaleDataListener onHistoryWeightData " + list);
+                }
+            });
+
+            scaleManager.setScaleInfoCallBack(new ScaleInfoCallBack() {
+                @Override
+                public void onSucess(ScaleInfo scaleInfo) {
+                    log("ScaleManager ScaleInfoCallBack onSucess " + scaleInfo);
+                }
+            });
+
+            scaleManager.setScaleUserInfoCallBack(new ScaleUserInfoCallBack() {
+                @Override
+                public void onSucess(List<BUserInfo> list) {
+                    log("ScaleManager getScaleManager ScaleUserInfoCallBack " + list);
+                }
+
+                @Override
+                public void onSuccessGetID(String s, int i) {
+                    log("ScaleManager getScaleManager ScaleUserInfoCallBack onSuccessGetID " + i);
+                }
+            });
+        }
+
+        return scaleManager;
+    }
+
+    public void disconnectScaleLegacy(String Id) {
+        getScaleManager().disconnect(true);
+    }
+
+    public void connectScaleLegacy(String Id) {
+        log("ScaleManager connectScaleLegacy");
+        try {
+            BleDevice device = getBle(Id);
+            if (device != null) {
+                BaseDevice scale = new BaseDevice();
+                scale.setDeviceType(DeviceType.Scale);
+                scale.setMacAddress(device.getMac());
+                scale.setName(device.getName());
+                getScaleManager().connectDevice(scale);
+            }
+        } catch (Exception ee) {
+
+        }
     }
 
     public void connectHrGattDevice(String Id) {
@@ -783,7 +896,7 @@ public class BluetoothManager2 {
                     readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
                     notifyBleFast(device, Utils.getUid(device.getName()), BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(),
                             BleGattManager.MIBO_EMS_BOOSTER_RECEPTION_CHAR_UUID.toString(), false);
-                } else if (device.getDevice().getName().toLowerCase().contains("mi scale")) {
+                } else if (device.getDevice().getName().toLowerCase().contains("mi scale") || device.getDevice().getName().toLowerCase().contains("mi scale")) {
                     // readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
                     indicateBleFast(device, device.getMac(), "0000181d-0000-1000-8000-00805f9b34fb",
                             "00002a9d-0000-1000-8000-00805f9b34fb", false);

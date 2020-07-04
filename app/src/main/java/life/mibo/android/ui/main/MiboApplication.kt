@@ -79,7 +79,7 @@ class MiboApplication : Application() {
             .init(context!!.applicationContext as Application)
         val scanRuleConfig =
             BleScanRuleConfig.Builder()
-                .setDeviceName(true, "MBRXL", "MIBO", "HW", "MI SCALE")
+                .setDeviceName(true, "MBRXL", "MIBO", "HW", "MI SCALE", "WS806")
                 .setAutoConnect(true)
                 .setScanTimeOut(SCAN_TIME)
                 .build()

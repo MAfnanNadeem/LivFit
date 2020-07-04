@@ -815,8 +815,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         } else {
             MessageDialog.info(
                 requireContext(),
-                "Location Required",
-                "Please enable location to scan BLE devices", "enable"
+                getString(R.string.location_required),
+                getString(R.string.location_required_text), getString(R.string.enable)
             ) {
                 locationSettings()
             }

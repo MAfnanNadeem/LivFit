@@ -9,19 +9,19 @@ package life.mibo.android.ui.fit
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessActivities
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.*
 import com.google.android.gms.fitness.request.*
+import com.google.android.gms.fitness.request.DataReadRequest
 import com.google.android.gms.fitness.result.DataReadResponse
 import com.google.android.gms.fitness.result.SessionReadResponse
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.*
 import life.mibo.hardware.core.Logger
 import org.threeten.bp.LocalDate
 import java.text.DateFormat
@@ -81,16 +81,35 @@ class GoogleFit(val fragment: Fragment) {
         fun log(msg: String?) {
             Logger.e("GoogleFit", msg)
         }
+
+        fun getFitOptions(): FitnessOptions {
+            return FitnessOptions.builder()
+                .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                .addDataType(DataType.TYPE_WORKOUT_EXERCISE)
+                .addDataType(DataType.TYPE_ACTIVITY_SEGMENT)
+                .addDataType(DataType.TYPE_HEART_RATE_BPM)
+                .addDataType(DataType.TYPE_MOVE_MINUTES)
+                .addDataType(DataType.TYPE_CALORIES_EXPENDED)
+                .addDataType(DataType.TYPE_HEART_POINTS)
+                .addDataType(DataType.TYPE_DISTANCE_DELTA)
+                .build()
+        }
     }
+
+    private fun this_() = fragment.requireContext()
+    private fun getUser() = GoogleSignIn.getLastSignedInAccount(fragment.requireContext())
+
 
     fun isConnected(): Boolean {
         return try {
             val fit = FitnessOptions.builder()
                 .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                .addDataType(DataType.TYPE_HEART_POINTS)
                 .build()
             GoogleSignIn.hasPermissions(
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext()), fit
+                getUser(), fit
             )
         } catch (e: java.lang.Exception) {
             false
@@ -100,7 +119,7 @@ class GoogleFit(val fragment: Fragment) {
     fun isConnected(type: DataType): Boolean {
         val fit = FitnessOptions.builder().addDataType(type).build()
         return GoogleSignIn.hasPermissions(
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext()),
+            getUser(),
             fit
         )
     }
@@ -111,7 +130,7 @@ class GoogleFit(val fragment: Fragment) {
         GoogleSignIn.requestPermissions(
             fragment,
             FitnessHelper.GOOGLE_REQUEST_CODE,
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext()),
+            getUser(),
             fit
         )
     }
@@ -126,7 +145,7 @@ class GoogleFit(val fragment: Fragment) {
             GoogleSignIn.requestPermissions(
                 fragment,
                 FitnessHelper.GOOGLE_REQUEST_CODE,
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext()),
+                getUser(),
                 fitnessOptions
             )
         }
@@ -151,7 +170,7 @@ class GoogleFit(val fragment: Fragment) {
             GoogleSignIn.requestPermissions(
                 fragment,
                 FitnessHelper.GOOGLE_REQUEST_CODE,
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext()),
+                getUser(),
                 fitnessOptions
             )
         }
@@ -163,7 +182,7 @@ class GoogleFit(val fragment: Fragment) {
     ) {
         Fitness.getRecordingClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).subscribe(type).addOnCompleteListener {
             listener?.onComplete(it.isSuccessful, 0, it?.exception)
         }
@@ -206,7 +225,7 @@ class GoogleFit(val fragment: Fragment) {
 
 
         if (GoogleSignIn.hasPermissions(
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext()), fit
+                getUser(), fit
             )
         ) {
             val dataSource: DataSource = DataSource.Builder()
@@ -223,7 +242,7 @@ class GoogleFit(val fragment: Fragment) {
 
             Fitness.getRecordingClient(
                 fragment.requireContext(),
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+                getUser()!!
             ).subscribe(dataSource).addOnCompleteListener {
                 listener?.onComplete(it.isSuccessful, 0, it?.exception)
                 //val time = System.currentTimeMillis()
@@ -239,7 +258,7 @@ class GoogleFit(val fragment: Fragment) {
 
                 Fitness.getSessionsClient(
                     fragment.requireContext(),
-                    GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+                    getUser()!!
                 ).startSession(session)
             }
         }
@@ -269,7 +288,7 @@ class GoogleFit(val fragment: Fragment) {
 
             Fitness.getRecordingClient(
                 fragment.requireContext(),
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+                getUser()!!
             ).unsubscribe(dataSource).addOnCompleteListener {
                 listener?.onComplete(it.isSuccessful, 0, it?.exception)
             }
@@ -282,26 +301,21 @@ class GoogleFit(val fragment: Fragment) {
         try {
             Fitness.getSessionsClient(
                 fragment.requireContext(),
-                GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+                getUser()!!
             ).stopSession("$time");
         } catch (e: java.lang.Exception) {
 
         }
     }
 
-    fun scanBle() {
-        val bleScanCallbacks: BleScanCallback = object : BleScanCallback() {
-            override fun onScanStopped() {
-
-            }
-
-            override fun onDeviceFound(p0: BleDevice?) {
-            }
-
-        }
-
-        val response = Fitness.getBleClient(this_(), GoogleSignIn.getLastSignedInAccount(this_())!!)
+    fun scanBleClient(bleScanCallbacks: BleScanCallback): Task<Void>? {
+        return Fitness.getBleClient(this_(), GoogleSignIn.getLastSignedInAccount(this_())!!)
             .startBleScan(listOf(DataType.TYPE_STEP_COUNT_DELTA), 1000, bleScanCallbacks)
+    }
+
+    fun scanBle(bleScanCallbacks: BleScanCallback): Task<Void>? {
+        return Fitness.getBleClient(this_(), GoogleSignIn.getLastSignedInAccount(this_())!!)
+            .startBleScan(listOf(DataType.TYPE_STEP_COUNT_DELTA, DataType.TYPE_HEART_RATE_BPM, DataType.TYPE_CALORIES_EXPENDED), 1000, bleScanCallbacks)
     }
 
     fun scanSensors(
@@ -315,6 +329,8 @@ class GoogleFit(val fragment: Fragment) {
             DataSourcesRequest.Builder()
                 .setDataTypes(DataType.TYPE_LOCATION_SAMPLE)
                 .setDataTypes(DataType.TYPE_WEIGHT)
+                .setDataTypes(DataType.TYPE_HEART_POINTS)
+                .setDataTypes(DataType.TYPE_HEART_RATE_BPM)
                 .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
                 .setDataSourceTypes(DataSource.TYPE_RAW)
                 .build()
@@ -337,8 +353,38 @@ class GoogleFit(val fragment: Fragment) {
 //        }
     }
 
+    fun findDataSources(
+        successListener: OnSuccessListener<List<DataSource>>,
+        failureListener: OnFailureListener
+    ) {
+        Fitness.getSensorsClient(this_(), GoogleSignIn.getLastSignedInAccount(this_())!!)
+            .findDataSources(
+                DataSourcesRequest.Builder()
+                    .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
+                    .setDataSourceTypes(DataSource.TYPE_RAW)
+                    .build()
+            ).addOnSuccessListener(successListener).addOnFailureListener(failureListener)
 
-    fun this_() = fragment.requireContext()
+//            .addOnSuccessListener { dataSources ->
+//                for (dataSource in dataSources) {
+//                    log("Data source found: $dataSource")
+//                    log("Data Source type: " + dataSource.dataType.name)
+//
+//                    // Let's register a listener to receive Activity data!
+//                    if (dataSource.dataType.equals(DataType.TYPE_LOCATION_SAMPLE)
+//                        && mListener == null
+//                    ) {
+//                        log("Data source for LOCATION_SAMPLE found!  Registering.")
+//                        registerFitnessDataListener(
+//                            dataSource,
+//                            DataType.TYPE_LOCATION_SAMPLE
+//                        )
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { e -> Log.e(TAG, "failed", e) }
+    }
+
 
     fun unsubscribe(
         type: DataType = DataType.TYPE_STEP_COUNT_CUMULATIVE,
@@ -346,7 +392,7 @@ class GoogleFit(val fragment: Fragment) {
     ) {
         Fitness.getRecordingClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).unsubscribe(type).addOnCompleteListener {
             listener?.onComplete(it.isSuccessful, 0, it?.exception)
         }
@@ -355,10 +401,11 @@ class GoogleFit(val fragment: Fragment) {
     fun readDailySteps(listener: FitnessHelper.Listener<Int>?) {
         Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
-        )
-            .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
+            getUser()!!
+        ).readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
             .addOnSuccessListener { dataSet ->
+                log("addOnSuccessListener readDailySteps $dataSet")
+                log("addOnSuccessListener readDailySteps dataPoints ${dataSet.dataPoints}")
                 val total =
                     if (dataSet.isEmpty) 0 else dataSet.dataPoints[0]
                         .getValue(Field.FIELD_STEPS).asInt()
@@ -370,10 +417,137 @@ class GoogleFit(val fragment: Fragment) {
             }
     }
 
+    fun readDailyPoints(listener: FitnessHelper.Listener<Int>?) {
+        log("readDailyPoints....")
+        Fitness.getHistoryClient(
+            fragment.requireContext(),
+            getUser()!!
+        ).readDailyTotal(DataType.TYPE_HEART_POINTS)
+            .addOnSuccessListener { dataSet ->
+                var total: Int = 0
+                try {
+                    total = if (dataSet.isEmpty) 0 else {
+                        val value = dataSet.dataPoints[0].zzb(0)
+//                        val dp = dataSet.dataPoints[0]
+//                        val dd = dataSet.dataPoints[0].dataType
+//                        val ds = dataSet.dataPoints[0].dataSource
+//                        log("addOnSuccessListener readDailyPoints dataType $dp")
+//                        log("addOnSuccessListener readDailyPoints dataType $value")
+//                        log("addOnSuccessListener readDailyPoints dataType $dp")
+//                        log("addOnSuccessListener readDailyPoints dataType $ds")
+//
+//                        for (f in dd.fields) {
+//                            f.format
+//                            log("addOnSuccessListener readDailyPoints dd.fields $f")
+//                        }
+                        value.asFloat().toInt()
+                    }
+                } catch (e: java.lang.Exception) {
+                    total = 0
+                }
+
+                listener?.onComplete(true, total, null)
+                //Log.i(TAG, "Total steps: $total")
+            }.addOnCompleteListener {
+                // log("addOnCompleteListener readDailyPoints $it")
+            }
+            .addOnFailureListener { e ->
+                log("addOnFailureListener readDailyPoints $e")
+                listener?.onComplete(false, null, e)
+            }
+    }
+
+    fun getStepsGoal(listener: FitnessHelper.Listener<Double>?): Task<MutableList<Goal>> {
+        val fitnessOptions: GoogleSignInOptionsExtension = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .build()
+
+        val googleSignInAccount =
+            GoogleSignIn.getAccountForExtension(this_(), fitnessOptions)
+
+        return Fitness.getGoalsClient(this_(), googleSignInAccount)
+            .readCurrentGoals(
+                GoalsReadRequest.Builder()
+                    .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                    .addDataType(DataType.TYPE_DISTANCE_DELTA)
+                    .build()
+            ).addOnCompleteListener {
+                val result = it.result
+                for (r in result) {
+                    val i = r.metricObjective?.value
+                    listener?.onComplete(true, i, null)
+                    break
+                }
+                //val total =
+                //  if (result.isEmpty()) 0 else result[0]
+                //    .getValue(Field.FIELD_STEPS).asInt() ?: 0
+                //listener?.onComplete(true, 0, null)
+                //  log("addOnCompleteListener getGoal $it")
+                //  log("addOnCompleteListener getGoal result ${it.result}")
+            }
+
+        //val goals = Tasks.await(response)
+        //  log("addOnCompleteListener goals $goals")
+    }
+
+    fun readHeartPointsProgress(goal: Goal): Double {
+        val current = Calendar.getInstance()
+        val request = DataReadRequest.Builder()
+            .read(DataType.TYPE_HEART_POINTS)
+            .setTimeRange(
+                goal.getStartTime(current, TimeUnit.NANOSECONDS),
+                goal.getEndTime(current, TimeUnit.NANOSECONDS),
+                TimeUnit.NANOSECONDS
+            )
+            .build()
+        val task =
+            Fitness.getHistoryClient(
+                this_(),
+                GoogleSignIn.getAccountForExtension(this_(), getFitOptions())
+            )
+                .readData(request)
+        val response = Tasks.await(task)
+        val dataSet = response.dataSets[0]
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            dataSet.dataPoints.stream()
+                .mapToDouble { point ->
+                    point.getValue(Field.FIELD_INTENSITY).asFloat().toDouble()
+                }
+                .sum()
+        } else {
+            0.0
+        }
+    }
+
+    fun getHeartGoal(listener: FitnessHelper.Listener<Double>?): Task<MutableList<Goal>> {
+
+        val fitnessOptions: GoogleSignInOptionsExtension = FitnessOptions.builder()
+            .addDataType(DataType.TYPE_HEART_POINTS, FitnessOptions.ACCESS_READ)
+            .build()
+
+        val googleSignInAccount =
+            GoogleSignIn.getAccountForExtension(this_(), fitnessOptions)
+
+        return Fitness.getGoalsClient(this_(), googleSignInAccount)
+            .readCurrentGoals(
+                GoalsReadRequest.Builder()
+                    .addDataType(DataType.TYPE_HEART_POINTS)
+                    .build()
+            ).addOnCompleteListener {
+                val result = it.result
+                for (r in result) {
+                    val i = r.metricObjective?.value
+                    listener?.onComplete(true, i, null)
+                    break
+                }
+            }
+
+    }
+
     fun readData(listener: FitnessHelper.Listener<Int>?) {
         Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         )
             .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
             .addOnSuccessListener { dataSet ->
@@ -413,7 +587,7 @@ class GoogleFit(val fragment: Fragment) {
         // Invoke the History API to fetch the data with the query
         return Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).readData(readRequest).addOnSuccessListener(completeListener).addOnFailureListener { e ->
             log("There was a problem reading the data. $e")
         }
@@ -436,7 +610,7 @@ class GoogleFit(val fragment: Fragment) {
         // Invoke the History API to fetch the data with the query
         return Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).readData(readRequest).addOnSuccessListener(completeListener).addOnFailureListener { e ->
             log("There was a problem reading the data. $e")
         }
@@ -459,7 +633,7 @@ class GoogleFit(val fragment: Fragment) {
         // Invoke the History API to fetch the data with the query
         return Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).readData(readRequest).addOnSuccessListener(completeListener).addOnFailureListener { e ->
             log("There was a problem reading the data. $e")
         }
@@ -486,7 +660,7 @@ class GoogleFit(val fragment: Fragment) {
 
         return Fitness.getSessionsClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).readSession(readRequest).addOnSuccessListener(completeListener)
             .addOnFailureListener { log("SessionReadResponse getSession Failed to read session " + it.message) }
 
@@ -531,7 +705,7 @@ class GoogleFit(val fragment: Fragment) {
 //
 //        Fitness.getSessionsClient(
 //            fragment.requireContext(),
-//            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+//            getUser()!!
 //        )
 //            .insertSession(insertRequest)
 //            .addOnSuccessListener { // At this point, the session has been inserted and can be read.
@@ -571,7 +745,7 @@ class GoogleFit(val fragment: Fragment) {
 
         return Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).insertData(dataSet).addOnCompleteListener(completeListener)
     }
 
@@ -591,7 +765,7 @@ class GoogleFit(val fragment: Fragment) {
         // specify a callback that will check the result.
         Fitness.getHistoryClient(
             fragment.requireContext(),
-            GoogleSignIn.getLastSignedInAccount(fragment.requireContext())!!
+            getUser()!!
         ).deleteData(request).addOnCompleteListener(completeListener)
     }
 

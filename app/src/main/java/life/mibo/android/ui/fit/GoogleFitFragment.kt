@@ -31,7 +31,7 @@ class GoogleFitFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val list = arrayListOf<Fragment>(
-            FitHistoryFragment.create(0),
+            GoogleFitStepsFragment.create(0),
             FitHistoryFragment.create(1),
             FitHistoryFragment.create(2),
             GoogleFitHistoryFragment()

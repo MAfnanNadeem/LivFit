@@ -9,6 +9,7 @@ package life.mibo.hardware.core;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,6 +46,28 @@ public class Utils {
 
         }
         return name;
+    }
+
+    public static float byteToFloat(byte[] bytes) {
+        try {
+            // int intBits = bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+            //return Float.intBitsToFloat(intBits);
+            return ByteBuffer.wrap(bytes).getFloat();
+        } catch (Exception e) {
+            return 0f;
+        }
+
+    }
+
+    public static byte[] floatToByte(float value) {
+        try {
+            return ByteBuffer.allocate(4).putFloat(value).array();
+            //int intBits = bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+            //return Float.intBitsToFloat(intBits);
+        } catch (Exception e) {
+            return new byte[]{};
+        }
+
     }
 
     public static ArrayList<RxlColor> getColors() {

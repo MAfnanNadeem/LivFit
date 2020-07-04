@@ -25,6 +25,7 @@ import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
+import static life.mibo.hardware.models.DeviceTypes.SCALE_OLD;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 
@@ -266,7 +267,7 @@ public class Device implements Serializable, BaseModel {
     }
 
     public boolean isScale() {
-        return type == SCALE;
+        return type == SCALE || type == SCALE_OLD;
     }
 
     public boolean isTile() {

@@ -7,19 +7,37 @@
 
 package life.mibo.android.ui.body_measure
 
+import android.Manifest
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.fragment_body_bmi.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
+import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.body_measure.adapter.BodyBaseFragment
 import life.mibo.android.ui.body_measure.adapter.Calculate
+import life.mibo.android.ui.devices.ScaleScanDialog
+import life.mibo.android.ui.main.MessageDialog
+import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.events.*
+import life.mibo.hardware.models.Device
 import life.mibo.views.body.picker.RulerValuePickerListener
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
 import org.threeten.bp.format.DateTimeFormatter
@@ -72,9 +90,194 @@ class BMIFragment : BodyBaseFragment() {
         setSpinners()
         setListeners()
 
+        weight_scale?.setOnClickListener {
+            //showWeightScaleDialog()
+            checkAndShowScaleDialog()
+        }
 
     }
 
+    private val permissions = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN
+    )
+    private val REQUEST_BLUETOOTH = 1032
+    private val REQUEST_LOCATION = 1033
+
+    private fun isLocationEnabled(): Boolean {
+        var mode = 0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return context?.getSystemService(LocationManager::class.java)?.isLocationEnabled!!
+        } else {
+            try {
+                mode =
+                    Settings.Secure.getInt(context?.contentResolver, Settings.Secure.LOCATION_MODE)
+
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                return false
+            }
+            return mode != Settings.Secure.LOCATION_MODE_OFF;
+        }
+    }
+
+    private fun checkAndShowScaleDialog() {
+        try {
+            val bl = BluetoothAdapter.getDefaultAdapter()
+            if (bl != null && !bl.isEnabled) {
+                startActivityForResult(
+                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                    REQUEST_BLUETOOTH
+                )
+                return
+            }
+
+            if (isLocationEnabled()) {
+                PermissionHelper.requestPermission(this@BMIFragment, permissions) {
+                    showScaleDialog()
+                }
+            } else {
+                MessageDialog.info(
+                    requireContext(),
+                    getString(R.string.location_required),
+                    getString(R.string.location_required_text), getString(R.string.enable)
+                ) {
+                    startActivityForResult(
+                        Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),
+                        REQUEST_LOCATION
+                    );
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e?.printStackTrace()
+        }
+
+    }
+
+    private fun showWeightScaleDialog() {
+        val builder = AlertDialog.Builder(requireContext(), R.style.AlertDialogPhoto)
+        builder.setTitle("Connect Weighing Scale?")
+        builder.setMessage("Do you want to connect Weighing Scale?")
+        builder.setPositiveButton(R.string.yes_text) { dialog, which ->
+            dialog?.dismiss()
+
+        }
+        builder.setNegativeButton(R.string.no_text) { dialog, which ->
+            dialog?.dismiss()
+        }
+
+        builder.show()
+    }
+
+
+    var isScale = false
+    var scanScaleDialog: ScaleScanDialog? = null
+    private fun showScaleDialog() {
+        isScale = true
+        if (scanScaleDialog == null) {
+            scanScaleDialog = ScaleScanDialog(0, object : ItemClickListener<Double> {
+                override fun onItemClicked(item: Double?, position: Int) {
+                    if (position == 100) {
+                        navigate(Navigator.SCAN, false)
+                    } else if (position == 300) {
+                        CommunicationManager.getInstance().onDestroy()
+                        scanScaleDialog = null
+                    } else if (position == 200) {
+                        scanScaleDialog?.dismiss()
+                        CommunicationManager.getInstance().onDestroy()
+                        val i = item?.toInt()
+                        if (i ?: 0 > 0)
+                            rulerValuePicker?.selectValue(i!!, true)
+                        scanScaleDialog = null
+                    }
+                }
+
+            })
+
+            scanScaleDialog
+        }
+        scanScaleDialog?.show(childFragmentManager, "scanScaleDialog")
+
+    }
+
+    @Subscribe
+    fun onNewDeviceEvent(event: NewDeviceDiscoveredEvent) {
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onDeviceEvent")
+        val d = event.data
+        if (d is Device)
+            scanScaleDialog?.onReceive(d)
+    }
+
+    @Subscribe
+    fun onNewDeviceEvent(event: NewConnectionStatus) {
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onDeviceEvent")
+        scanScaleDialog?.onReceive(event)
+    }
+
+    @Subscribe
+    fun onDeviceEvent(event: DeviceStatusEvent) {
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onDeviceEvent")
+        scanScaleDialog?.onReceive(event)
+    }
+
+
+    @Subscribe
+    fun onIndicatorEvent(event: IndicationEvent) {
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onIndicatorEvent")
+        scanScaleDialog?.onReceive(event)
+    }
+
+    @Subscribe
+    fun onScaleEvent(event: ScaleDataEvent) {
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onScaleEvent")
+        scanScaleDialog?.onReceive(event)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // updateNextButton(false)
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this);
+        try {
+            if (isScale)
+                CommunicationManager.getInstance().onDestroy()
+        } catch (e: java.lang.Exception) {
+
+        }
+        super.onStop()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            REQUEST_BLUETOOTH -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    checkAndShowScaleDialog()
+                }
+            }
+
+            REQUEST_LOCATION -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    checkAndShowScaleDialog()
+                }
+            }
+        }
+    }
 
     override fun isNextClickable(): Boolean {
         log("BMIFragment isNextClickable called")
@@ -116,10 +319,6 @@ class BMIFragment : BodyBaseFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // updateNextButton(false)
-    }
 
     private fun setListeners() {
 

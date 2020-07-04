@@ -85,6 +85,7 @@
     <string name="logged_succes">Successfully logged</string>
     <string name="enter_username">Please enter Email Id</string>
     <string name="no_device_connected">Device Not Connected</string>
+    <string name="no_device_fount">No Device Found!</string>
     <string name="low_battery">Low Battery! Device may be turned off during session</string>
     <string name="session_completed">Session Completed!</string>
     <string name="stop_session">Stop Session?</string>
@@ -248,6 +249,8 @@
     <string name="on_tap">TAP</string>
     <string name="on_sensor">PROXIMITY</string>
     <string name="sensor_enable">Proximity enabled</string>
+    <string name="enable">Enable</string>
+    <string name="enabled">Enabled</string>
     <string name="missed">MISSED</string>
     <string name="hits">HITS</string>
     <string name="calories_burnt">CALORIES BURNT</string>
@@ -595,10 +598,15 @@
     <string name="last_update_on">Last update on\n %s</string>
     <string name="shipment_address">Shipment Address</string>
     <string name="google_fit">Google Fit</string>
+    <string name="fitbit">Fitbit</string>
+    <string name="google_fit_connect">Google Fit is not connected, do you want to connect Google Fit?</string>
     <string name="connected">Connected</string>
     <string name="disconnect">Disconnect</string>
     <string name="disconnected">Disconnected</string>
     <string name="google_fit_logout">Are You Sure You Want to Disconnect Google Fit?</string>
+    <string name="location_required">Location Required</string>
+    <string name="location_required_text">Please enable location to scan BLE devices</string>
+    <string name="samsung">Samsung Health</string>
 
     <!-- customer reviews -->
     <string-array name="names">

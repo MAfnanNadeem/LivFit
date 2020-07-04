@@ -66,6 +66,8 @@ import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.*
+import life.mibo.android.ui.body_measure.BMIFragment
+import life.mibo.android.ui.body_measure.MeasurementFragment
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 import life.mibo.android.ui.ch6.Channel6Fragment
 import life.mibo.android.ui.devices.DeviceScanFragment
@@ -107,6 +109,7 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
+import life.mibo.hardware.models.ScaleData
 import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
 import life.mibo.views.CircleImageView
@@ -539,6 +542,7 @@ class MainActivity : BaseActivity(), Navigator {
 
         manager = CommunicationManager.getInstance(object : CommunicationListener {
 
+
             override fun onDeviceDisconnect(uid: String?) {
                 //Toasty.warning(this@MainActivity, "Device Disconnected by user $uid").show()
                 EventBus.getDefault().post(RemoveConnectionStatus(uid))
@@ -625,6 +629,11 @@ class MainActivity : BaseActivity(), Navigator {
 
             }
 
+            override fun onScale(weight: Float, data: ScaleData?, code: Int, other: Any?) {
+                EventBus.getDefault().postSticky(ScaleDataEvent(data, weight))
+                EventBus.getDefault().postSticky(NewConnectionStatus(""))
+            }
+
             override fun GetLevelsEvent(uid: String?) {
                 log("GetLevelsEvent  $uid")
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid))
@@ -683,6 +692,10 @@ class MainActivity : BaseActivity(), Navigator {
             if (frg is DeviceScanFragment) {
                 log("boosterAlarm frg = Channel6Fragment")
                 return frg.onDeviceEvent(DeviceStatusEvent(name))
+            }
+
+            if (frg is MeasurementFragment) {
+               EventBus.getDefault().postSticky(NewConnectionStatus(""))
             }
         } catch (e: java.lang.Exception) {
             runOnUiThread {
@@ -1695,7 +1708,8 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.STEPS -> {
-                navigate(0, R.id.navigation_fit_history)
+                //navigate(0, R.id.navigation_fit_history)
+                navigate(0, R.id.navigation_fit_steps)
                 //comingSoon()
                 return
             }

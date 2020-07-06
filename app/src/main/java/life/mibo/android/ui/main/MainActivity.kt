@@ -1329,7 +1329,7 @@ class MainActivity : BaseActivity(), Navigator {
                 var bundle: Bundle? = null
                 if (data is Bundle)
                     bundle = data
-                navigate(0, R.id.navigation_fit_history, bundle)
+                navigate(0, R.id.navigation_fitness, bundle)
             }
 
             Navigator.HOME_START -> {
@@ -1708,8 +1708,8 @@ class MainActivity : BaseActivity(), Navigator {
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }
             HomeItem.Type.STEPS -> {
-                //navigate(0, R.id.navigation_fit_history)
-                navigate(0, R.id.navigation_fit_steps)
+                navigate(0, R.id.navigation_fitness)
+                //navigate(0, R.id.navigation_fit_steps)
                 //comingSoon()
                 return
             }

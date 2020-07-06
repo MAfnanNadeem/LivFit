@@ -23,11 +23,14 @@ import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
 import kotlinx.android.synthetic.main.fragment_my_account.*
 import life.mibo.android.R
+import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.catalog.NewAddressActivity
 import life.mibo.android.ui.catalog.OrdersFragment
 import life.mibo.android.ui.fit.FitnessHelper
+import life.mibo.android.ui.fit.GoogleFit
+import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 
@@ -45,42 +48,68 @@ class MyAccountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tv_invoices?.setOnClickListener {
-            navigate(Navigator.INVOICES, OrdersFragment.create(1))
+
+        if (Prefs.get(context).member?.isMember() == true) {
+            view_member?.visibility = View.VISIBLE
+            view_ip?.visibility = View.GONE
+            tv_invoices?.setOnClickListener {
+                navigate(Navigator.INVOICES, OrdersFragment.create(1))
+            }
+
+            tv_address?.setOnClickListener {
+                navigate(Navigator.INVOICES, OrdersFragment.create(2))
+                activity?.title = getString(R.string.address_titles)
+            }
+
+            tv_add_address?.setOnClickListener {
+                startActivity(Intent(requireContext(), NewAddressActivity::class.java))
+                //navigate(Navigator.INVOICES, null)
+            }
+
+
+        } else {
+            view_member?.visibility = View.GONE
+            view_ip?.visibility = View.VISIBLE
+
+            tv_sales?.setOnClickListener {
+                navigate(Navigator.INVOICES, OrdersFragment.create(1))
+            }
         }
 
-        tv_address?.setOnClickListener {
-            navigate(Navigator.INVOICES, OrdersFragment.create(2))
-            activity?.title = getString(R.string.address_titles)
-        }
 
-        tv_add_address?.setOnClickListener {
-            startActivity(Intent(requireContext(), NewAddressActivity::class.java))
-            //navigate(Navigator.INVOICES, null)
-        }
-
-        tv_google_fit?.setOnClickListener {
+        view_google_fit?.setOnClickListener {
             checkPermission()
+        }
+
+        view_fitbit?.setOnClickListener {
+            loginToFitbit()
+        }
+
+        view_samsung?.setOnClickListener {
+            loginToSHealth()
         }
 
 //        tv_orders?.setOnClickListener {
 //            navigate(Navigator.ORDERS, null)
 //        }
         checkGoogleConnected()
+        checkFitbitConnected()
+        checkSamsungConnected()
     }
 
 
+    // TODO Google Fit
     private fun checkGoogleConnected() {
         try {
             if (isGoogleConnected()) {
                 tv_google_fit_status?.visibility = View.VISIBLE
+                // tv_fitbit_status?.visibility = View.VISIBLE
             } else {
                 tv_google_fit_status?.visibility = View.GONE
             }
         } catch (e: Exception) {
 
         }
-
     }
 
     private fun checkPermission() {
@@ -96,34 +125,24 @@ class MyAccountFragment : BaseFragment() {
         }
     }
 
+
     private fun isGoogleConnected(): Boolean {
-       // val fit = FitnessOptions.builder()
+        // val fit = FitnessOptions.builder()
         //    .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
         //    .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
         //    .build()
-        val options = FitnessOptions.builder()
-            .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-            .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
-            .addDataType(DataType.TYPE_WORKOUT_EXERCISE)
-            .addDataType(DataType.TYPE_ACTIVITY_SEGMENT)
-            .addDataType(DataType.TYPE_HEART_RATE_BPM)
-            .addDataType(DataType.TYPE_MOVE_MINUTES)
-            .addDataType(DataType.TYPE_CALORIES_EXPENDED)
-            .build()
         return GoogleSignIn.hasPermissions(
-            GoogleSignIn.getLastSignedInAccount(requireContext()), options
+            GoogleSignIn.getLastSignedInAccount(requireContext()), GoogleFit.getFitOptions()
         )
     }
+
 
     private fun connectFit() {
 
         if (isGoogleConnected()) {
             subscribeGoogleFit(true)
         } else {
-            val fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
-                .build()
+            val fitnessOptions = GoogleFit.getFitOptions()
             GoogleSignIn.requestPermissions(
                 this,
                 FitnessHelper.GOOGLE_REQUEST_CODE,
@@ -167,6 +186,7 @@ class MyAccountFragment : BaseFragment() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     Toasty.grey(requireContext(), "Google Fit Subscribed").show()
+                    checkGoogleConnected()
                 } else {
                     Toasty.grey(requireContext(), "Google Fit " + it.exception?.message).show()
 
@@ -191,6 +211,55 @@ class MyAccountFragment : BaseFragment() {
             }
     }
 
+
+    // TODO FITBIT
+    private fun isFitbitConnected(): Boolean {
+        val token = Prefs.getEncrypted(this@MyAccountFragment.requireContext()).get("fitbit_token")
+        return false
+    }
+
+
+    private fun checkFitbitConnected() {
+        try {
+            if (isFitbitConnected()) {
+                tv_fitbit_status?.visibility = View.VISIBLE
+                // tv_fitbit_status?.visibility = View.VISIBLE
+            } else {
+                tv_fitbit_status?.visibility = View.GONE
+            }
+        } catch (e: Exception) {
+
+        }
+    }
+
+
+    fun loginToFitbit() {
+        Fitbit().loginToFitbit(this)
+    }
+
+    private fun subscribeFitbit(value: Boolean) {
+
+    }
+
+    // TODO Samsung Health
+
+    private fun loginToSHealth() {
+
+    }
+
+    private fun checkSamsungConnected() {
+//        try {
+//            if (isFitbitConnected()) {
+//                tv_fitbit_status?.visibility = View.VISIBLE
+//                // tv_fitbit_status?.visibility = View.VISIBLE
+//            } else {
+//                tv_fitbit_status?.visibility = View.GONE
+//            }
+//        } catch (e: Exception) {
+//
+//        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -198,6 +267,13 @@ class MyAccountFragment : BaseFragment() {
             FitnessHelper.GOOGLE_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     subscribeGoogleFit(false)
+                } else {
+
+                }
+            }
+            Fitbit.REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    subscribeFitbit(false)
                 } else {
 
                 }

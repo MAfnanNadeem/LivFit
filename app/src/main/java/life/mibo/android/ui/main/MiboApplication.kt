@@ -29,6 +29,7 @@ class MiboApplication : Application() {
         //val DEBUG = true
         val DEBUG = BuildConfig.DEBUG
         val RELEASE = false
+        val TEST = false
         val SCAN_TIME: Long = 15000L
 
         fun isRelease() = true

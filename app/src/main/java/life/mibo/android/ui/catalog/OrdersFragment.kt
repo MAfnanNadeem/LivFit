@@ -13,7 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +26,6 @@ import life.mibo.android.models.catalog.GetInvoices
 import life.mibo.android.models.catalog.ShipmentAddress
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
-import life.mibo.android.utils.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -88,7 +87,6 @@ class OrdersFragment : BaseFragment() {
 //        }
         // setHasOptionsMenu(true)
     }
-
 
     fun showProgress() {
         activity?.runOnUiThread {
@@ -196,7 +194,7 @@ class OrdersFragment : BaseFragment() {
                 address,
                 object : ItemClickListener<BuyActivity.AddressItem> {
                     override fun onItemClicked(item: BuyActivity.AddressItem?, position: Int) {
-
+                        showAddressDialog()
                     }
 
                 })
@@ -204,6 +202,31 @@ class OrdersFragment : BaseFragment() {
         recyclerView?.adapter = addressAdapters
 
     }
+
+    private fun showAddressDialog() {
+        val options = arrayOf(
+            getString(R.string.update),
+            getString(R.string.delete)
+        )
+        val builder =
+            AlertDialog.Builder(requireContext())
+        builder.setTitle("")
+        builder.setItems(options) { dialog, which ->
+            when (which) {
+                0 -> {
+                    //update
+                }
+                1 -> {
+                    //delete
+                }
+                2 -> {
+
+                }
+            }
+        }
+        builder.show()
+    }
+
 
     private fun parseProducts(invoices: GetInvoices.Data?) {
         //isRefreshing = false

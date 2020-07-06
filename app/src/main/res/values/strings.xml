@@ -375,6 +375,7 @@
     <string name="scan_hr_btn">Scan your HR sensor device</string>
     <string name="scan_with_camera">Scan with Camera</string>
     <string name="purchase">Purchase</string>
+    <string name="sales">Sales</string>
     <string name="heart_beats_per_minute">HEART BEATS PER MINUTE</string>
     <string name="share_with_friends">Share with friends</string>
     <string name="good_to_see_you_again">It\'s good to see you again</string>
@@ -509,6 +510,7 @@
     <string name="orders">Orders</string>
     <string name="my_invoices">My Invoices</string>
     <string name="my_orders">My Orders</string>
+    <string name="my_sales">My Sales</string>
     <string name="payment_history">Payment History</string>
     <string name="gender_select">Select Gender</string>
     <string name="unpaid">Unpaid</string>
@@ -598,6 +600,8 @@
     <string name="last_update_on">Last update on\n %s</string>
     <string name="shipment_address">Shipment Address</string>
     <string name="google_fit">Google Fit</string>
+    <string name="fitness_account_title">No Fitness Account</string>
+    <string name="fitness_account_msg">No Fitness Account connect yet, Connect Google Fit or Fitbit to synchronize health data?</string>
     <string name="fitbit">Fitbit</string>
     <string name="google_fit_connect">Google Fit is not connected, do you want to connect Google Fit?</string>
     <string name="connected">Connected</string>

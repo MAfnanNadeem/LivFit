@@ -183,7 +183,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
             getDailySteps()
         } else {
             getWeather()
-            //getDailySteps()
+            getDailySteps()
         }
     }
 

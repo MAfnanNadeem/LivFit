@@ -414,7 +414,7 @@ class API {
 
         // Chain APIs
         @Headers("Accept: application/json", "Content-Type: application/json")
-        @GET("productsLiveFit")
+        @GET("productsLivFit")
         fun getChainProducts(): Call<Catalog>
 
 

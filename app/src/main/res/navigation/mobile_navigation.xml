@@ -237,27 +237,24 @@
     <fragment
         android:id="@+id/navigation_reschedule"
         android:name="life.mibo.android.ui.calendar.RescheduleFragment"
-        android:label="@string/reschedule"
-       />
+        android:label="@string/reschedule" />
     <fragment
         android:id="@+id/navigation_webview"
         android:name="life.mibo.android.ui.base.WebViewFragment"
-        android:label="@string/app_name"
-        />
+        android:label="@string/app_name" />
     <fragment
-        android:id="@+id/navigation_fit_history"
-        android:name="life.mibo.android.ui.fit.GoogleFitFragment"
-        android:label="Google Fit"
-        />
+        android:id="@+id/navigation_fitness"
+        android:name="life.mibo.android.ui.fit.FitnessFragment"
+        android:label="My Activity" />
+
     <fragment
         android:id="@+id/navigation_fit_steps"
         android:name="life.mibo.android.ui.fit.GoogleFitStepsFragment"
-        android:label="Steps"
-        />
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_quickplay_details_play"-->
-<!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->
-<!--        android:label="@string/rxl_title"-->
-<!--         />-->
+        android:label="Steps" />
+    <!--    <fragment-->
+    <!--        android:id="@+id/navigation_quickplay_details_play"-->
+    <!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->
+    <!--        android:label="@string/rxl_title"-->
+    <!--         />-->
 
 </navigation>

@@ -83,10 +83,10 @@ class TrainerCalendarActivity : BaseActivity() {
         //button_next?.isEnabled = true
         if (item.completed == 1) {
             // MiboApplication.isRelease()
-//            if (MiboApplication.DEBUG) {
-//                showConfirmDialog()
-//                return
-//            }
+            if (MiboApplication.TEST) {
+                showConfirmDialog()
+                return
+            }
             infoDialog(getString(R.string.session_completed_msg))
             return
         } else if (item.started == 1) {
@@ -206,7 +206,16 @@ class TrainerCalendarActivity : BaseActivity() {
 
         // TODO change date +3 -3
         //MiboApplication.isRelease()
-        val post =
+
+        val post = if (MiboApplication.TEST) {
+            TrainerCalendarSession(
+                TrainerCalendarSession.Data(
+                    "${member.id}",
+                    formatter.format(LocalDate.now().minusDays(15)),
+                    formatter.format(LocalDate.now().plusDays(3))
+                ), member.accessToken
+            )
+        } else {
             TrainerCalendarSession(
                 TrainerCalendarSession.Data(
                     "${member.id}",
@@ -214,6 +223,8 @@ class TrainerCalendarActivity : BaseActivity() {
                     formatter.format(LocalDate.now().plusDays(3))
                 ), member.accessToken
             )
+        }
+
         API.request.getTrainerApi().getTrainerCalendarSession(post)
             .enqueue(object : Callback<TrainerCalendarResponse> {
                 override fun onFailure(call: Call<TrainerCalendarResponse>, t: Throwable) {
@@ -460,6 +471,7 @@ class TrainerCalendarActivity : BaseActivity() {
                 if (item.completed == 1) {
                     viewStarted?.setBackgroundColor(Color.RED)
                     completed?.visibility = View.VISIBLE
+                    completed?.setTextColor(0xFFFF8A73.toInt())
                     completed?.setText(R.string.completed)
                 } else if (item.started == 1) {
                     viewStarted?.setBackgroundColor(
@@ -471,6 +483,7 @@ class TrainerCalendarActivity : BaseActivity() {
                     } else {
                         completed?.setText(R.string.in_progress)
                     }
+                    completed?.setTextColor(0xFFFF8A73.toInt())
                 } else {
                     if (item.duration < -30) {
                         completed?.visibility = View.VISIBLE

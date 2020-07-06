@@ -9,11 +9,10 @@ package life.mibo.android.ui.base
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.synthetic.main.fragment_webview.*
 import life.mibo.android.R
+import life.mibo.android.ui.main.Navigator
 import life.mibo.views.AdvancedWebView
 
 
@@ -46,6 +45,7 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         url = arguments?.getString("url_url", "") ?: ""
         webView?.setListener(this, this)
         webView?.loadUrl(url)
+        setHasOptionsMenu(true)
     }
 
     override fun onPause() {
@@ -108,4 +108,16 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         return super.onNavBackPressed()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater?.inflate(R.menu.menu_webview, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item?.itemId == R.id.action_notifications) {
+            navigate(Navigator.CLEAR_HOME, null)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }

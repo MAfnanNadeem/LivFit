@@ -8,6 +8,7 @@
 package life.mibo.android.ui.fit
 
 import androidx.fragment.app.Fragment
+import life.mibo.android.ui.fit.fitbit.Fitbit
 
 class FitnessHelper(var fragment: Fragment) {
 
@@ -33,12 +34,32 @@ class FitnessHelper(var fragment: Fragment) {
         READ_CUSTOM_DATA
     }
 
+    private var googleFit: GoogleFit? = null
+    private var fitBit: Fitbit? = null
+
     fun getGoogleFit(): GoogleFit {
-        return GoogleFit(fragment)
+        if (googleFit == null)
+            googleFit = GoogleFit(fragment)
+        return googleFit!!
+    }
+
+
+    fun getFitBit(): Fitbit {
+        if (fitBit == null)
+            fitBit = Fitbit(fragment.context)
+        return fitBit!!
     }
 
     fun getAppleHealth(): GoogleFit {
         return GoogleFit(fragment)
+    }
+
+    fun getSamsungHealth(): GoogleFit {
+        return GoogleFit(fragment)
+    }
+
+    fun destroy() {
+
     }
 
 }

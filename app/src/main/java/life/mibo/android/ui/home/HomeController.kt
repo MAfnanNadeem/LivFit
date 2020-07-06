@@ -509,19 +509,28 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 "My Services", "",
                 HomeItem.Type.MY_SERVICES,
                 R.drawable.ic_nfc_black_24dp,
-                R.drawable.dashboard_item_bg_4
+                R.drawable.dashboard_item_bg_2
             )
         )
 
         list.add(
             HomeItem(
-                "My Account",
-                "",
-                HomeItem.Type.MY_ACCOUNT,
-                R.drawable.ic_account_box_24dp,
+                fragment.getString(R.string.steps),
+                "0",
+                HomeItem.Type.STEPS,
+                R.drawable.ic_dashboard_steps,
                 R.drawable.dashboard_item_bg_9
             )
         )
+//        list.add(
+//            HomeItem(
+//                "My Account",
+//                "",
+//                HomeItem.Type.MY_ACCOUNT,
+//                R.drawable.ic_account_box_24dp,
+//                R.drawable.dashboard_item_bg_9
+//            )
+//        )
         list.add(
             HomeItem(
                 date,

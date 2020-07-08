@@ -217,7 +217,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                         if (i.isBooster) {
                             if (member?.isMember()) {
                                 SessionManager.getInstance().userSession.booster = i
-                                navigate(Navigator.SELECT_SUITS, null)
+                                //navigate(Navigator.SELECT_SUITS, null)
+                                startTrainerCalenderResult()
                             } else {
                                 startTrainerCalenderResult()
                             }

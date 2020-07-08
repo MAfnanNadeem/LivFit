@@ -14,13 +14,13 @@
 
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_dob"
+        android:id="@+id/tv_measure"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
         android:background="@drawable/profile_edittext"
         android:padding="@dimen/grid_2x"
-        android:text="Measurement Unit"
+        android:text="@string/height"
         android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,65 +28,70 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/tv_measure_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/grid_2x"
-        android:text="CM"
+        android:text="@string/centimeters"
+        android:textSize="@dimen/text_size_small"
         android:textColor="@color/textColor2"
-        app:layout_constraintBottom_toBottomOf="@id/tv_dob"
+        app:layout_constraintBottom_toBottomOf="@id/tv_measure"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_dob" />
+        app:layout_constraintTop_toTopOf="@id/tv_measure" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_dob1"
+        android:id="@+id/tv_weight"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/grid_2x"
         android:background="@drawable/profile_edittext"
         android:padding="@dimen/grid_2x"
-        android:text="Weight Unit"
+        android:text="@string/weight"
         android:textColor="@color/textColor"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_dob" />
+        app:layout_constraintTop_toBottomOf="@id/tv_measure" />
 
     <TextView
+        android:id="@+id/tv_weight_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/grid_2x"
-        android:text="KG"
+        android:text="@string/kilograms"
         android:textColor="@color/textColor2"
-        app:layout_constraintBottom_toBottomOf="@id/tv_dob1"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintBottom_toBottomOf="@id/tv_weight"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_dob1" />
+        app:layout_constraintTop_toTopOf="@id/tv_weight" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_dob2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/grid_2x"
-        android:background="@drawable/profile_edittext"
-        android:padding="@dimen/grid_2x"
-        android:text="Energy Unit"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_dob1" />
+    <!--    <androidx.appcompat.widget.AppCompatTextView-->
+    <!--        android:id="@+id/tv_energy"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="@dimen/grid_2x"-->
+    <!--        android:background="@drawable/profile_edittext"-->
+    <!--        android:padding="@dimen/grid_2x"-->
+    <!--        android:text="Energy Unit"-->
+    <!--        android:textColor="@color/textColor"-->
+    <!--        android:textSize="@dimen/text_size_medium"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/tv_weight" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/grid_2x"
-        android:text="Cal"
-        android:textColor="@color/textColor2"
-        app:layout_constraintBottom_toBottomOf="@id/tv_dob2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_dob2" />
+    <!--    <TextView-->
+    <!--        android:id="@+id/tv_energy_unit"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="@dimen/grid_2x"-->
+    <!--        android:text="Cal"-->
+    <!--        android:textColor="@color/textColor2"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@id/tv_energy"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@id/tv_energy" />-->
 
     <Button
-        android:id="@+id/btn_invite"
+        android:id="@+id/btn_save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"

@@ -61,7 +61,7 @@
         <activity
             android:name="life.mibo.android.ui.main.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
@@ -123,6 +123,11 @@
 
         <activity
             android:name="life.mibo.android.ui.TestActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Material.FullScreen" />
+
+        <activity
+            android:name="life.mibo.fitbitsdk.authentication.ui.FitbitLoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Material.FullScreen" />
 

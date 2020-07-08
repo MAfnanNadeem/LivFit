@@ -25,6 +25,8 @@ class UpdateMemberDetails(data: Data?, token: String?) :
         @SerializedName("LastName")
         var lastName: String?,
         @SerializedName("MemberID")
-        var memberID: Int?
+        var memberID: Int?,
+        @SerializedName("TrainerID")
+        var trainerID: Int? = null
     )
 }

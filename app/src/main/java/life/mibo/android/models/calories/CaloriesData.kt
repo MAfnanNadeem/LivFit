@@ -30,7 +30,9 @@ data class CaloriesData(
     @SerializedName("trainer_id")
     var trainerId: Int?,
     @SerializedName("trainer_name")
-    var trainerName: String?
+    var trainerName: String?,
+    @SerializedName("duration")
+    var duration: String?
 ) {
 
 

@@ -11,8 +11,8 @@ package life.mibo.android.models.catalog
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BasePost
 
-class SaveShippingAddress(data: Data?, token: String?) :
-    BasePost<SaveShippingAddress.Data?>(data, "SaveMemberShippingAddress", token) {
+class SaveShippingAddress(data: Data?, token: String?, request : String) :
+    BasePost<SaveShippingAddress.Data?>(data, request, token) {
     data class Data(
         @SerializedName("Address")
         var address: String?,
@@ -25,6 +25,8 @@ class SaveShippingAddress(data: Data?, token: String?) :
         @SerializedName("Name")
         var name: String?,
         @SerializedName("Phone")
-        var phone: String?
+        var phone: String?,
+        @SerializedName("ShipmentID")
+        var shipmentID: Int?
     )
 }

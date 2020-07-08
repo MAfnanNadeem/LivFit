@@ -66,6 +66,21 @@
             android:textSize="@dimen/text_size_small" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_quantity"
+            style="@style/textview_item_rxl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_1x"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:fontFamily="@string/font_sans_serif"
+            android:gravity="start"
+            android:lines="2"
+            android:text="Basic Info"
+            android:textColor="@color/textColor2"
+            android:textSize="@dimen/text_size_small"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_info3"
             style="@style/textview_item_rxl"
             android:layout_width="wrap_content"

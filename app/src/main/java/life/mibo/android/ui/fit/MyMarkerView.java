@@ -16,8 +16,6 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 
-import java.text.DecimalFormat;
-
 import life.mibo.android.R;
 
 public class MyMarkerView extends MarkerView {
@@ -25,15 +23,21 @@ public class MyMarkerView extends MarkerView {
     private final TextView tvContent;
     //private final ValueFormatter xAxisValueFormatter;
 
-   // private final DecimalFormat format;
+    // private final DecimalFormat format;
     private String hint = "";
+
+    public MyMarkerView(Context context) {
+        super(context, R.layout.item_bar_chart_marker);
+        tvContent = findViewById(R.id.tvContent);
+        hint = "";
+    }
 
     public MyMarkerView(Context context, ValueFormatter xAxisValueFormatter, String text) {
         super(context, R.layout.item_bar_chart_marker);
 
         //this.xAxisValueFormatter = xAxisValueFormatter;
         tvContent = findViewById(R.id.tvContent);
-       // format = new DecimalFormat("###.0");
+        // format = new DecimalFormat("###.0");
         hint = text;
     }
 

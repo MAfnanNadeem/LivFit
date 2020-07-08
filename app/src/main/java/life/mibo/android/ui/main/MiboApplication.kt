@@ -14,6 +14,7 @@ import android.content.Context
 import com.danikula.videocache.HttpProxyCacheServer
 import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.android.BuildConfig
+import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.fastble.BleManager
@@ -70,6 +71,7 @@ class MiboApplication : Application() {
         Logger.DEBUG = DEBUG
         //AppWatcher.config = AppWatcher.config.copy(watchFragmentViews = false)
         initBle()
+        Fitbit.setup(this)
         //Fresco.initialize(this);
 
     }

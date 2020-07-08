@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.biometric.Biometric
@@ -764,7 +765,8 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
                 calories.data?.forEach {
                     // list.add(it!!)
                     cal += it?.caloriesBurnt ?: 0
-                    hours += 20
+                    //hours += 20
+                    hours += getInt(it?.duration)
                 }
                 Prefs.get(this.fragment.context)
                     .set(Prefs.CALORIES_SESSION, calories?.data?.size ?: 0)
@@ -779,5 +781,13 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun getInt(string: String?): Int {
+        try {
+            return string?.toIntOrZero() ?: 0
+        } catch (e: java.lang.Exception) {
+        }
+        return 0
     }
 }

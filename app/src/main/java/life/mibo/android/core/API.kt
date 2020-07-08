@@ -391,6 +391,10 @@ class API {
         @POST("saveMemberShippingAddress")
         fun saveMemberShippingAddress(@Body data: SaveShippingAddress): Call<ResponseData>
 
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("updateMemberShippingAddress")
+        fun updateMemberShippingAddress(@Body data: SaveShippingAddress): Call<ResponseData>
+
 
         //GetAllInvoices
         @Headers("Accept: application/json", "Content-Type: application/json")
@@ -415,7 +419,7 @@ class API {
         // Chain APIs
         @Headers("Accept: application/json", "Content-Type: application/json")
         @GET("productsLivFit")
-        fun getChainProducts(): Call<Catalog>
+        fun getChainProducts(@Query("country") country: String): Call<Catalog>
 
 
         // TRAINER - INDEPENDENT PROFESSIONAL APIs

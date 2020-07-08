@@ -15,6 +15,7 @@ class SaveOrderDetails(
     data: Data?,
     token: String?
 ) : BasePost<SaveOrderDetails.Data?>(data, "SaveOrderDetails", token) {
+
     data class Data(
         @SerializedName("Device")
         var device: String?,

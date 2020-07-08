@@ -102,10 +102,10 @@
         android:name="life.mibo.android.ui.ch6.ProgramSelectionFragment"
         android:label="@string/select_program"
         tools:layout="@layout/fragment_weight" />
- <fragment
+    <fragment
         android:id="@+id/navigation_select_muscles"
         android:name="life.mibo.android.ui.ch6.MuscleSelectionFragment"
-     android:label="@string/select_channels"
+        android:label="@string/select_channels"
         tools:layout="@layout/fragment_weight" />
     <fragment
         android:id="@+id/navigation_select_suit"
@@ -155,85 +155,81 @@
     <fragment
         android:id="@+id/navigation_profile"
         android:name="life.mibo.android.ui.profile.ProfileFragment"
-        android:label="@string/profile"
-         />
+        android:label="@string/profile" />
     <fragment
         android:id="@+id/navigation_profile_edit"
         android:name="life.mibo.android.ui.profile.ProfileEditFragment"
-        android:label="@string/profile_update"
-         />
+        android:label="@string/profile_update" />
     <fragment
         android:id="@+id/navigation_rxl_tabs"
         android:name="life.mibo.android.ui.rxl.RxlTabFragment"
-        android:label="@string/rxl_title"
-         />
+        android:label="@string/rxl_title" />
     <fragment
         android:id="@+id/navigation_rxl_tabs2"
         android:name="life.mibo.android.ui.rxl.RxlTabFragment2"
-        android:label="@string/rxl_title"
-         />
+        android:label="@string/rxl_title" />
     <fragment
         android:id="@+id/navigation_quickplay_details"
         android:name="life.mibo.android.ui.rxl.RxlProgramDetailsFragment"
-        android:label="@string/rxl_title"
-         />
+        android:label="@string/rxl_title" />
     <fragment
         android:id="@+id/navigation_measurement"
         android:name="life.mibo.android.ui.body_measure.MeasurementFragment"
-        android:label="@string/basic_info"
-         />
+        android:label="@string/basic_info" />
     <fragment
         android:id="@+id/navigation_weight_compare"
         android:name="life.mibo.android.ui.weight.WeightCompareFragment"
-        android:label="@string/weight_compare"
-         />
+        android:label="@string/weight_compare" />
     <fragment
         android:id="@+id/navigation_bmi"
         android:name="life.mibo.android.ui.body_measure.BMIFragment"
-        android:label="Basic Info"
-         />
+        android:label="Basic Info" />
     <fragment
         android:id="@+id/navigation_profile_upload"
         android:name="life.mibo.android.ui.body_measure.ProfilePicFragment"
-        android:label="@string/title_profile_page"
-        />
+        android:label="@string/title_profile_page" />
     <fragment
         android:id="@+id/navigation_bio_summary"
         android:name="life.mibo.android.ui.body_measure.SummaryFragment"
-        android:label="Biometric Summary"
-         />
+        android:label="Biometric Summary" />
     <fragment
         android:id="@+id/navigation_search_trainer"
         android:name="life.mibo.android.ui.trainer.SearchTrainerFragment"
-        android:label="@string/search_professionals"
-        />
+        android:label="@string/search_professionals" />
     <fragment
         android:id="@+id/navigation_catolog"
         android:name="life.mibo.android.ui.catalog.CatalogFragment"
-        android:label="@string/mibo_store"
-   />
+        android:label="@string/mibo_store" />
     <fragment
         android:id="@+id/navigation_settings"
         android:name="life.mibo.android.ui.settings.SettingsFragment"
-        android:label="@string/settings"
-      />
+        android:label="@string/settings" />
     <fragment
         android:id="@+id/navigation_my_account"
         android:name="life.mibo.android.ui.settings.MyAccountFragment"
-        android:label="@string/my_account"
-     />
+        android:label="@string/my_account" />
 
     <fragment
         android:id="@+id/navigation_orders"
-        android:name="life.mibo.android.ui.catalog.OrdersFragment"
-        android:label="@string/orders"
-    />
+        android:name="life.mibo.android.ui.member.OrdersFragment"
+        android:label="@string/my_orders" />
+    <fragment
+        android:id="@+id/navigation_my_sales"
+        android:name="life.mibo.android.ui.trainer.MySalesFragment"
+        android:label="@string/my_sales" />
+    <fragment
+        android:id="@+id/navigation_my_clients"
+        android:name="life.mibo.android.ui.trainer.MyClientsFragment"
+        android:label="@string/my_customers" />
+    <fragment
+        android:id="@+id/navigation_my_services"
+        android:name="life.mibo.android.ui.trainer.MyServicesFragment"
+        android:label="@string/my_services" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="life.mibo.android.ui.trainer.NotificationsFragment"
-        android:label="@string/notifications"
-    />
+        android:label="@string/notifications" />
     <fragment
         android:id="@+id/navigation_reschedule"
         android:name="life.mibo.android.ui.calendar.RescheduleFragment"

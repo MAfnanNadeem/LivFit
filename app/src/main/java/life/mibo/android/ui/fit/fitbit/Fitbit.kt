@@ -15,7 +15,11 @@ import androidx.fragment.app.Fragment
 import life.mibo.android.core.Prefs
 import life.mibo.android.core.security.EncryptedPrefs
 import life.mibo.android.ui.base.WebViewActivity
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.hardware.core.Logger
+import org.threeten.bp.LocalDate
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class Fitbit(var context: Context?) {
 
@@ -41,10 +45,35 @@ class Fitbit(var context: Context?) {
         const val oAuth = "https://www.fitbit.com/oauth2/authorize"
         const val oAuthRefreshToken = "https://api.fitbit.com/oauth2/token"
         private const val token_key = "fitbit_token"
+        private const val refresh_token_key = "fitbit_refresh_token"
         private const val token_type_key = "fitbit_token_type"
         private const val scope_key = "fitbit_scope"
         private const val user_key = "fitbit_user"
         private const val expire_key = "fitbit_expires_in"
+        private const val expire_time_key = "fitbit_expires_time"
+
+        fun setup(context: Context) {
+//            val config = FitbitConfigurationBuilder()
+//                .addRequiredScopes(Scope.activity, Scope.heartrate, Scope.profile, Scope.sleep)
+//                .addOptionalScopes(Scope.location, Scope.nutrition, Scope.settings, Scope.weight)
+//                .setClientCredentials(ClientCredentials(client, secret, callback))
+//                .setTokenExpiresIn(2592000L)
+//                .build()
+            //FitbitManager.configure(context, config)
+        }
+
+        fun isLogged(): Boolean {
+            try {
+                val token: String =
+                    Prefs.getEncrypted(MiboApplication.context).get(token_key, "", true) ?: ""
+                return token.length > 5
+            } catch (e: Exception) {
+
+            }
+            return false
+        }
+
+
     }
 
     fun getPrefs(): EncryptedPrefs {
@@ -109,6 +138,23 @@ class Fitbit(var context: Context?) {
             prefs.set(scope_key, scope, true)
             prefs.set(token_type_key, tokenType, true)
             prefs.set(expire_key, expiresIn, true)
+            try {
+                val cal = Calendar.getInstance()
+                // log("fitbitSuccess Calendar $cal")
+                // log("fitbitSuccess Calendar ${cal.timeInMillis}")
+                //val t = expiresIn?.toLong().div(3600)
+                val l = TimeUnit.SECONDS.toDays(expiresIn?.toLong()!!)
+                cal.add(Calendar.DAY_OF_MONTH, l.toInt())
+                // log("fitbitSuccess Calendar l $l")
+                // log("fitbitSuccess Calendar $cal")
+                // log("fitbitSuccess Calendar ${cal.timeInMillis}")
+
+                val time = cal.timeInMillis
+                prefs.set(expire_time_key, "$time", true)
+            } catch (eE: java.lang.Exception) {
+
+            }
+
             val intent = Intent()
             intent.putExtra("fitbit_result", result)
             activity.setResult(Activity.RESULT_OK, intent)
@@ -123,7 +169,17 @@ class Fitbit(var context: Context?) {
 
     }
 
+    fun getSteps2(date: String, callback: okhttp3.Callback) {
+        //FitbitService()
+    }
+
+    fun refreshToken(tokenOld: String, callback: okhttp3.Callback) {
+
+        //FitbitApi().getSteps(date, getToken() + "n", callback)
+    }
+
     fun getSteps(date: String, callback: okhttp3.Callback) {
+
         FitbitApi().getSteps(date, getToken(), callback)
     }
 
@@ -131,8 +187,57 @@ class Fitbit(var context: Context?) {
         FitbitApi().getSteps(startDate, endDate, getToken(), callback)
     }
 
+    fun needToRefresh() {
+        try {
+            val exp = getPrefs().get(expire_time_key, "", true) ?: ""
+            if (exp.length > 1) {
+                val time = exp.toLong()
+                if (LocalDate.now().isBefore(LocalDate.ofEpochDay(time))) {
+                    // return false
+                    return
+                }
+
+                val list = listOf(
+                    "activity",
+                    "heartrate",
+                    "nutrition",
+                    "profile",
+                    "settings",
+                    "sleep",
+                    "social",
+                    "weight"
+                )
+
+                val response = "token"
+                var scopes = ""
+                var first = false
+                for (scop in list) {
+                    if (first)
+                        scopes += "%20"
+                    scopes += scop
+                    first = true;
+                }
+
+                val url =
+                    "https://www.fitbit.com/oauth2/authorize?response_type=$response&client_id=$client&redirect_uri=$callback&scope=$scopes&expires_in=604800"
+                WebViewActivity.launch(context!!, url, FITBIT)
+
+
+            }
+        } catch (e: Exception) {
+
+        }
+
+    }
+
     fun isConnected(): Boolean {
-        return getToken().length > 5
+        try {
+            // return FitbitManager.isLoggedIn()
+            return getToken().length > 5
+        } catch (e: Exception) {
+
+        }
+        return false
     }
 
     private fun getToken(): String {

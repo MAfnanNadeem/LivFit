@@ -260,7 +260,7 @@ class ProgressWheel : View {
             .setDuration(duration)
         valueAnimator.addUpdateListener { animation ->
             mPercentage = animation.animatedValue as Int
-            Logger.e("startAnimation $mPercentage")
+            //Logger.e("startAnimation $mPercentage")
             invalidate()
         }
         valueAnimator.start()

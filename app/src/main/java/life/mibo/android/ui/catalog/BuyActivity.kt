@@ -551,6 +551,8 @@ class BuyActivity : BaseActivity() {
     ) {
         var selected: Boolean = false
         var isViewMode: Boolean = false
+        var fname: String? = ""
+        var lname: String? = ""
     }
 
     class AddressAdapters(

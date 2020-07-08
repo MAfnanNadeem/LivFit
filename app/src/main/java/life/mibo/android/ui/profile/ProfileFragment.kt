@@ -439,10 +439,19 @@ class ProfileFragment : BaseFragment() {
 
         map.put("token", toRequestBody(member.accessToken))
         map.put("RequestType", toRequestBody("SaveMemberAvatar"))
-        map.put("MemberID", toRequestBody(member.id()))
+        // map.put("MemberID", toRequestBody(member.id()))
+        if (member.isMember()) {
+            map.put("MemberID", toRequestBody(member.id()))
+            map.put("TrainerID", toRequestBody(""))
+        } else {
+            map.put("TrainerID", toRequestBody(member.id()))
+            map.put("MemberID", toRequestBody(""))
+        }
+
         val fileBody: RequestBody = file.asRequestBody("image/*".toMediaType())
         //val fileBody: RequestBody = RequestBody.create("image/png".toMediaType()), file)
         map.put("Avatar\"; filename=\".png\"", fileBody)
+
 
         //.uploadAvatar(filePart, member.accessToken, "SaveMemberAvatar", member.id())
         API.request.getApi().uploadAvatar(map)
@@ -458,23 +467,30 @@ class ProfileFragment : BaseFragment() {
                 ) {
                     getDialog()?.dismiss()
 
-
                     val data = response?.body()
                     if (data != null && data?.isSuccess()) {
                         val memberr = Prefs.get(context).member
                         memberr?.profileImg = data?.data?.profile
                         Prefs.get(context).member = memberr
                         showPicture(file)
-                        navigate(
-                            life.mibo.android.ui.main.Navigator.PIC_UPLOADED,
-                            data?.data?.profile
-                        )
+                        navigate(Navigator.PIC_UPLOADED, data?.data?.profile)
+
+                        log("onResponse data $data")
+                        data?.data?.message?.let {
+                            log("onResponse message $it")
+                            Toasty.snackbar(view, it).show()
+                        }
+                    } else {
+                        try {
+                            data?.errors?.get(0)?.let {
+                                log("onResponse message $it")
+                                Toasty.snackbar(view, it?.message).show()
+                            }
+                        } catch (e: java.lang.Exception) {
+
+                        }
                     }
-                    log("onResponse data $data")
-                    data?.data?.message?.let {
-                        log("onResponse message $it")
-                        Toasty.snackbar(view, it).show()
-                    }
+
                     log("onResponse end....")
                 }
 

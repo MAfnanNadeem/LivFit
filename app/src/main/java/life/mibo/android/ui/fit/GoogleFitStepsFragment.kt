@@ -30,18 +30,18 @@ import kotlinx.android.synthetic.main.fragment_fit_steps.*
 import life.mibo.android.R
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.fit.fitbit.Fitbit
+import life.mibo.android.ui.fit.fitbit.Step
 import life.mibo.android.ui.fit.fitbit.StepsData
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.hardware.core.Logger
 import okhttp3.Call
 import okhttp3.Response
+import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.IOException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class GoogleFitStepsFragment : BaseFragment() {
 
@@ -90,7 +90,7 @@ class GoogleFitStepsFragment : BaseFragment() {
                 circleProgressView?.setPercentage(p)
                 //getProgress(data)
             } else {
-                circleProgressView?.setPercentage(33)
+                circleProgressView?.setPercentage(5)
             }
         }
     }
@@ -427,288 +427,6 @@ class GoogleFitStepsFragment : BaseFragment() {
         }
     }
 
-//    private fun setupLineChart(
-//        chart: LineChart?,
-//        list: ArrayList<Entry>,
-//        dates: ArrayList<String>,
-//        title: String,
-//        color: Int
-//    ) {
-//        Logger.e("setupChart chart $chart size ${list.size}")
-//        if (chart != null) {
-//
-//            //val set1 = LineDataSet
-//            val xFormat: ValueFormatter = MyDateFormatter(dates)
-//
-//            //chart.setOnChartValueSelectedListener(this)
-//
-//            //chart.setDrawGridBackground(false)
-//            //chart.setDrawValueAboveBar(false)
-//            chart.description.isEnabled = false
-//            // chart.setMaxVisibleValueCount(60)
-//            chart.setPinchZoom(false)
-//            chart.setTouchEnabled(false)
-//            chart.setScaleEnabled(false)
-//
-//            chart.setDrawGridBackground(false)
-//            // chart.setDrawYLabels(false);
-//
-//            // chart.setDrawYLabels(false);
-//            //bottom
-//            // val xFormat: ValueFormatter = MyDateFormatter(dates)
-//            val xAxis = chart.xAxis
-//            xAxis.position = XAxis.XAxisPosition.BOTTOM
-//            //xAxis.typeface = tfLight
-//            xAxis.setDrawGridLines(false)
-//            xAxis.granularity = 1f // only intervals of 1 day
-//            xAxis.textColor = Color.GRAY
-//            //xAxis.labelCount = 7
-//            xAxis.valueFormatter = xFormat
-//
-//            //left
-//            val yFormat: ValueFormatter = MyYFormatter()
-//            val leftAxis = chart.axisLeft
-//            //leftAxis.setLabelCount(8, false)
-//            leftAxis.valueFormatter = yFormat
-//            leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-//            leftAxis.spaceTop = 10f
-//            leftAxis.setDrawZeroLine(true)
-//            leftAxis.setDrawAxisLine(true)
-//            leftAxis.setDrawGridLines(false)
-//            leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-//            leftAxis.textColor = Color.GRAY
-//
-//            chart.axisRight.isEnabled = false
-//
-//
-//            chart.legend?.isEnabled = false
-//
-//            //val set1 = LineDataSet()
-//            val set1 = LineDataSet(list, title)
-//            set1.setDrawIcons(false)
-//
-//            set1.color = color
-//            val dataSets = ArrayList<ILineDataSet>()
-//            dataSets.add(set1)
-//            val data = LineData(dataSets)
-//            //data.setValueTextSize(10f)
-//            // data.setValueTextColor(Color.WHITE)
-//            //data.= 0.5f
-//            data.setDrawValues(false)
-//            chart.data = data
-//            chart.animateXY(500, 500)
-//        }
-//    }
-//
-//    private fun setupChart(
-//        chart: LineChart?,
-//        list: ArrayList<Entry>,
-//        dates: ArrayList<String>,
-//        title: String,
-//        color: Int
-//    ) {
-//        Logger.e("setupChart chart $chart size ${list.size}")
-//        if (chart != null) {
-//
-//            val set1: LineDataSet
-//            val xFormat: ValueFormatter = MyDateFormatter(dates)
-//            if (chart.data != null &&
-//                chart.data.dataSetCount > 0
-//            ) {
-//                set1 = chart.data.getDataSetByIndex(0) as LineDataSet
-//                set1.values.clear()
-//                set1.values.addAll(list)
-//                chart.xAxis.valueFormatter = xFormat
-//                //chart.data.notifyDataChanged()
-//                chart.notifyDataSetChanged()
-//                chart.post {
-//                    chart.invalidate()
-//                    //chart.animateXY(500, 500)
-//                }
-//            } else {
-//
-//                //chart.setOnChartValueSelectedListener(this)
-//
-//                //chart.setDrawGridBackground(false)
-//                //chart.setDrawValueAboveBar(false)
-//                chart.description.isEnabled = false
-//                // chart.setMaxVisibleValueCount(60)
-//                chart.setPinchZoom(false)
-//                chart.setTouchEnabled(false)
-//                chart.setScaleEnabled(false)
-//
-//                chart.setDrawGridBackground(false)
-//                // chart.setDrawYLabels(false);
-//
-//                // chart.setDrawYLabels(false);
-//                //bottom
-//                // val xFormat: ValueFormatter = MyDateFormatter(dates)
-//                val xAxis = chart.xAxis
-//                xAxis.position = XAxis.XAxisPosition.BOTTOM
-//                //xAxis.typeface = tfLight
-//                xAxis.setDrawGridLines(false)
-//                xAxis.granularity = 1f // only intervals of 1 day
-//                xAxis.textColor = Color.GRAY
-//                //xAxis.labelCount = 7
-//                xAxis.valueFormatter = xFormat
-//
-//                //left
-//                val yFormat: ValueFormatter = MyYFormatter()
-//                val leftAxis = chart.axisLeft
-//                //leftAxis.setLabelCount(8, false)
-//                leftAxis.valueFormatter = yFormat
-//                leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-//                leftAxis.spaceTop = 10f
-//                leftAxis.setDrawZeroLine(true)
-//                leftAxis.setDrawAxisLine(true)
-//                leftAxis.setDrawGridLines(false)
-//                leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-//                leftAxis.textColor = Color.GRAY
-//
-//                chart.axisRight.isEnabled = false
-////                val rightAxis = chart.axisRight
-////                rightAxis.setDrawGridLines(false)
-////                rightAxis.setLabelCount(8, false)
-////                rightAxis.valueFormatter = custom
-////                rightAxis.spaceTop = 15f
-////                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-//
-//
-//                chart.legend?.isEnabled = false
-////                val l = chart.legend
-////                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-////                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-////                l.orientation = Legend.LegendOrientation.HORIZONTAL
-////                l.setDrawInside(false)
-////                l.form = Legend.LegendForm.CIRCLE
-////                l.formSize = 20f
-////                l.textSize = 18f
-////                l.textColor = Color.GRAY
-////                l.xEntrySpace = 4f
-//
-//
-////                val mv = XYMarkerView(this, xAxisFormatter)
-////                mv.setChartView(chart) // For bounds control
-////                chart.marker = mv // Set the marker to the chart
-//
-//                set1 = LineDataSet(list, title)
-//                set1.setDrawIcons(false)
-//
-//                set1.color = color
-//                val dataSets = ArrayList<ILineDataSet>()
-//                dataSets.add(set1)
-//                val data = LineData(dataSets)
-//                //data.setValueTextSize(10f)
-//                // data.setValueTextColor(Color.WHITE)
-//                //data.= 0.5f
-//                data.setDrawValues(false)
-//                chart.data = data
-//                chart.animateXY(500, 500)
-//                Logger.e("setupChart chart update........")
-//            }
-//
-//        }
-//    }
-//
-//    private fun setupChart(
-//        chart: BarChart?,
-//        list: ArrayList<BarEntry>,
-//        dates: ArrayList<String>,
-//        title: String,
-//        color: Int
-//    ) {
-//        Logger.e("setupChart chart $chart size ${list.size}")
-//        if (chart != null) {
-//
-//            val set1: BarDataSet
-//
-//            if (chart.data != null &&
-//                chart.data.dataSetCount > 0
-//            ) {
-//                set1 = chart.data.getDataSetByIndex(0) as BarDataSet
-//                set1.values = list
-//                chart.data.notifyDataChanged()
-//                chart.notifyDataSetChanged()
-//            } else {
-//
-//                //chart.setOnChartValueSelectedListener(this)
-//
-//                chart.setDrawBarShadow(false)
-//                chart.setDrawValueAboveBar(false)
-//                chart.description.isEnabled = false
-//                // chart.setMaxVisibleValueCount(60)
-//                chart.setPinchZoom(false)
-//                chart.setTouchEnabled(false)
-//                chart.setScaleEnabled(false)
-//
-//                chart.setDrawGridBackground(false)
-//                // chart.setDrawYLabels(false);
-//
-//                // chart.setDrawYLabels(false);
-//                //bottom
-//                val xFormat: ValueFormatter = MyDateFormatter(dates)
-//                val xAxis = chart.xAxis
-//                xAxis.position = XAxis.XAxisPosition.BOTTOM
-//                //xAxis.typeface = tfLight
-//                xAxis.setDrawGridLines(false)
-//                xAxis.granularity = 1f // only intervals of 1 day
-//                xAxis.textColor = Color.WHITE
-//                xAxis.labelCount = 7
-//                xAxis.valueFormatter = xFormat
-//
-//                //left
-//                val yFormat: ValueFormatter = MyYFormatter()
-//                val leftAxis = chart.axisLeft
-//                leftAxis.setLabelCount(8, false)
-//                leftAxis.valueFormatter = yFormat
-//                leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-//                leftAxis.spaceTop = 10f
-//                leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-//                leftAxis.textColor = Color.WHITE
-//
-//                chart.axisRight.isEnabled = false
-////                val rightAxis = chart.axisRight
-////                rightAxis.setDrawGridLines(false)
-////                rightAxis.setLabelCount(8, false)
-////                rightAxis.valueFormatter = custom
-////                rightAxis.spaceTop = 15f
-////                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-//
-//
-//                val l = chart.legend
-//                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-//                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-//                l.orientation = Legend.LegendOrientation.HORIZONTAL
-//                l.setDrawInside(false)
-//                l.form = Legend.LegendForm.CIRCLE
-//                l.formSize = 20f
-//                l.textSize = 18f
-//                l.textColor = Color.WHITE
-//                l.xEntrySpace = 4f
-//
-////                val mv = XYMarkerView(this, xAxisFormatter)
-////                mv.setChartView(chart) // For bounds control
-////                chart.marker = mv // Set the marker to the chart
-//
-//                set1 = BarDataSet(list, title)
-//                set1.setDrawIcons(false)
-//                set1.setColor(color, 200)
-//                val dataSets = ArrayList<IBarDataSet>()
-//                dataSets.add(set1)
-//                val data = BarData(dataSets)
-//                //data.setValueTextSize(10f)
-//                // data.setValueTextColor(Color.WHITE)
-//                data.barWidth = 0.5f
-//                data.setDrawValues(false)
-//                chart.data = data
-//                chart.animateXY(500, 500)
-//                Logger.e("setupChart chart update........")
-//            }
-//
-//        }
-//    }
-
-
     class MyYFormatter() : ValueFormatter() {
 
         override fun getFormattedValue(value: Float): String {
@@ -738,8 +456,86 @@ class GoogleFitStepsFragment : BaseFragment() {
             getFitbitMonthSteps()
         }
 
-        val cal = Calendar.getInstance()
-        val date = SimpleDateFormat("yyyy-MM-dd").format(cal.time)
+        //val cal = Calendar.getInstance()
+        var cal = org.threeten.bp.LocalDate.now()
+
+        val date = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(cal)
+        cal = cal.minusMonths(1)
+        val start = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(cal)
+
+//        val api = FitbitManager.getService()
+//        api?.getActivityService()?.getActivityStepsForDateRange(date, date)
+//            ?.enqueue(object : retrofit2.Callback<ActivitySteps> {
+//                override fun onFailure(call: retrofit2.Call<ActivitySteps>, t: Throwable) {
+//                    log("setupFitbit FitbitManager fail $t")
+//                }
+//
+//                override fun onResponse(
+//                    call: retrofit2.Call<ActivitySteps>,
+//                    response: retrofit2.Response<ActivitySteps>
+//                ) {
+//                    log(
+//                        "setupFitbit FitbitManager onResponse ${response.body()}"
+//                    )
+//                    log(
+//                        "setupFitbit FitbitManager onResponse ${response.body()?.steps}"
+//                    )
+//
+//                    try {
+//                        //val data: StepsData = Gson().fromJson(body, StepsData::class.java)
+//
+//                        val list = response.body()?.steps
+//                        if (list != null && list.isNotEmpty()) {
+//                            val steps = list[0]
+//                            setProgress(steps!!.value?.toInt()!!, 0, "0")
+//                           // log("data >> $data")
+//                        }
+//                        isFitbitConnected = true
+//
+//                    } catch (e: Exception) {
+//
+//                    }
+//                }
+//
+//            })
+//
+//
+//
+//        api?.getActivityService()?.getActivityStepsForDateRange(start, date)
+//            ?.enqueue(object : retrofit2.Callback<ActivitySteps> {
+//                override fun onFailure(call: retrofit2.Call<ActivitySteps>, t: Throwable) {
+//                    log("setupFitbit FitbitManager fail $t")
+//                }
+//
+//                override fun onResponse(
+//                    call: retrofit2.Call<ActivitySteps>,
+//                    response: retrofit2.Response<ActivitySteps>
+//                ) {
+//                    log(
+//                        "setupFitbit FitbitManager onResponse ${response.body()}"
+//                    )
+//                    log(
+//                        "setupFitbit FitbitManager onResponse ${response.body()?.steps}"
+//                    )
+//
+//                    try {
+//                        //val data: StepsData = Gson().fromJson(body, StepsData::class.java)
+//                       // log("data2 >> $data")
+//                        val list = response.body()?.steps
+//                        if(list != null){
+//                            backupSteps.clear()
+//                            for(i in list){
+//                                backupSteps.add(Step(i.date, "${i.value}"))
+//                            }
+//                            getFitbitWeekSteps()
+//                        }
+//                    } catch (e: Exception) {
+//
+//                    }
+//                }
+//
+//            })
+
         getFitbit().getSteps(date, object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 log("onFailure $e")
@@ -750,6 +546,10 @@ class GoogleFitStepsFragment : BaseFragment() {
                 log("onResponse $$call")
                 val body = response.body?.string()
                 log("onResponse string ${body}")
+                if (response.code == 401) {
+
+                    return
+                }
                 if (body?.length ?: 0 > 1) {
                     try {
                         val data: StepsData = Gson().fromJson(body, StepsData::class.java)
@@ -759,6 +559,7 @@ class GoogleFitStepsFragment : BaseFragment() {
                             setProgress(steps!!.value?.toInt()!!, 0, "0")
                             log("data >> $data")
                         }
+                        isFitbitConnected = true
 
                     } catch (e: Exception) {
 
@@ -768,8 +569,7 @@ class GoogleFitStepsFragment : BaseFragment() {
 
         })
 
-        cal.set(Calendar.DAY_OF_MONTH, -30)
-        val start = SimpleDateFormat("yyyy-MM-dd").format(cal.time)
+
         getFitbit().getSteps(start, date, object : okhttp3.Callback {
             override fun onFailure(call: Call, e: IOException) {
                 log("onFailure Month $e")
@@ -796,35 +596,39 @@ class GoogleFitStepsFragment : BaseFragment() {
         })
     }
 
-    val backupSteps = ArrayList<StepsData.Step?>()
+    val backupSteps = ArrayList<Step?>()
 
     private fun getFitbitWeekSteps() {
         if (isWeekMode)
             return
+        log("getFitbitWeekSteps")
         isWeekMode = true
         tv_week?.setTextColor(Color.WHITE)
         tv_week?.setBackgroundResource(R.drawable.button_primary_selector)
         tv_month?.setTextColor(Color.DKGRAY)
         tv_month?.background = null
 
-        val cal = Calendar.getInstance()
-        val format = SimpleDateFormat("yyyy-MM-dd")
+        //val cal = LocalDate.now()
+        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         //val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
-        val dateFormat = SimpleDateFormat("dd/MM")
-        val today = SimpleDateFormat("yyyy-MM-dd").format(cal.time)
-        val end = cal.time
+        val dateFormat = DateTimeFormatter.ofPattern("dd/MM")
+        //val today = SimpleDateFormat("yyyy-MM-dd").format(cal.time)
+        val end = LocalDate.now()
 
-        cal.set(Calendar.WEEK_OF_YEAR, -1)
-        val start = cal.time
+        //cal.set(Calendar.DAY_OF_MONTH, -6)
+        val start = end.minusDays(6)
 
+        log("getFitbitWeekSteps start $start : end $end")
         val list = ArrayList<BarEntry>()
         val dates = ArrayList<String>()
 
         var count = 0f
         for (i in backupSteps) {
             i?.let {
-                val date = format.parse(it.dateTime)
-                if (date.after(start) && date.before(end)) {
+                val date = LocalDate.parse(it.dateTime, format)
+                log("LOOP count $count : ${it.dateTime}")
+                if (date.isAfter(start) && date.isBefore(end)) {
+                    log("LOOP inside $count : $date")
                     list.add(BarEntry(count, it.value?.toFloatOrNull() ?: 0.0f))
                     dates.add(dateFormat.format(date))
                     count++
@@ -832,6 +636,7 @@ class GoogleFitStepsFragment : BaseFragment() {
             }
         }
 
+        log("STEPS SIZE $count")
         setupBarChart(
             lineChart,
             list,
@@ -844,6 +649,7 @@ class GoogleFitStepsFragment : BaseFragment() {
 
     private fun getFitbitMonthSteps() {
         if (isWeekMode) {
+            log("getFitbitMonthSteps")
             isWeekMode = false
             tv_month?.setTextColor(Color.WHITE)
             tv_month?.setBackgroundResource(R.drawable.button_primary_selector)
@@ -864,6 +670,7 @@ class GoogleFitStepsFragment : BaseFragment() {
                 }
             }
 
+            log("STEPS SIZE $count")
             setupBarChart(
                 lineChart,
                 list,

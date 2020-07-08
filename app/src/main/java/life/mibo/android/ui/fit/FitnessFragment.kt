@@ -21,6 +21,7 @@ import life.mibo.android.R
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.android.ui.home.HomeItem
+import life.mibo.android.ui.main.MiboEvent
 
 class FitnessFragment : BaseFragment() {
 
@@ -33,40 +34,31 @@ class FitnessFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-//        val list = arrayListOf<Fragment>(
-//            GoogleFitStepsFragment.create(0)
-//        )
-//
-//        val titles = arrayListOf<String>("Google Fit")
-
-//        val list = arrayListOf<Fragment>(
-//            GoogleFitStepsFragment.create(0),
-//            FitHistoryFragment.create(1),
-//            FitHistoryFragment.create(2),
-//            GoogleFitHistoryFragment()
-//        )
-
         setupAdapters()
+
 
     }
 
     //@Synchronized
     private fun setupAdapters() {
         log("setupAdapters")
+        var header = ""
         val list = ArrayList<Fragment>()
         val titles = ArrayList<String>()
         if (GoogleFit(this).isConnected()) {
             list.add(GoogleFitStepsFragment.create(Fitbit.GOOGLE))
             titles.add("Google Fit")
+            header += "Google Fit"
         }
-        if (Fitbit(context).isConnected()) {
+        if (Fitbit.isLogged()) {
             list.add(GoogleFitStepsFragment.create(Fitbit.FITBIT))
             titles.add("Fitbit")
+            header += " - Fitbit"
         }
         if (SHealth(context).isConnected()) {
             list.add(GoogleFitStepsFragment.create(Fitbit.SAMSUNG))
             titles.add("S Health")
+            header += " - S Health"
         }
         log("setupAdapters list $list")
         log("setupAdapters titles $titles")
@@ -104,6 +96,8 @@ class FitnessFragment : BaseFragment() {
         }
         // viewPager2.adapter?.notifyDataSetChanged()
         viewPager2?.isUserInputEnabled = false
+
+        MiboEvent.event("fitness_fragment", "STEPS Pages $header", header)
 
     }
 

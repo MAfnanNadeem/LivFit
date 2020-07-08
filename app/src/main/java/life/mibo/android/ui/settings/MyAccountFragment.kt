@@ -27,11 +27,11 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.catalog.NewAddressActivity
-import life.mibo.android.ui.catalog.OrdersFragment
 import life.mibo.android.ui.fit.FitnessHelper
 import life.mibo.android.ui.fit.GoogleFit
 import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.ui.member.OrdersFragment
 import life.mibo.android.utils.Toasty
 
 
@@ -54,6 +54,7 @@ class MyAccountFragment : BaseFragment() {
             view_ip?.visibility = View.GONE
             tv_invoices?.setOnClickListener {
                 navigate(Navigator.INVOICES, OrdersFragment.create(1))
+                activity?.title = getString(R.string.orders_titles)
             }
 
             tv_address?.setOnClickListener {
@@ -72,7 +73,13 @@ class MyAccountFragment : BaseFragment() {
             view_ip?.visibility = View.VISIBLE
 
             tv_sales?.setOnClickListener {
-                navigate(Navigator.INVOICES, OrdersFragment.create(1))
+                navigate(Navigator.MY_SALES, OrdersFragment.create(1))
+            }
+            tv_customers?.setOnClickListener {
+                navigate(Navigator.MY_CLIENTS, OrdersFragment.create(1))
+            }
+            tv_services?.setOnClickListener {
+                navigate(Navigator.MY_SERVICES, OrdersFragment.create(1))
             }
         }
 
@@ -85,8 +92,12 @@ class MyAccountFragment : BaseFragment() {
             loginToFitbit()
         }
 
-        view_samsung?.setOnClickListener {
-            loginToSHealth()
+//        view_samsung?.setOnClickListener {
+//           // loginToSHealth()
+//        }
+
+        tv_units?.setOnClickListener {
+            navigate(Navigator.SETTINGS_UNIT, null)
         }
 
 //        tv_orders?.setOnClickListener {
@@ -214,13 +225,14 @@ class MyAccountFragment : BaseFragment() {
 
     // TODO FITBIT
     private fun isFitbitConnected(): Boolean {
-        val token = Prefs.getEncrypted(this@MyAccountFragment.requireContext()).get("fitbit_token")
-        return false
+        // val token = Prefs.getEncrypted(this@MyAccountFragment.requireContext()).get(Fitbit.token_key)
+        return Fitbit.isLogged()
     }
 
 
     private fun checkFitbitConnected() {
         try {
+            //FitbitManager.isLoggedIn()
             if (isFitbitConnected()) {
                 tv_fitbit_status?.visibility = View.VISIBLE
                 // tv_fitbit_status?.visibility = View.VISIBLE
@@ -230,11 +242,22 @@ class MyAccountFragment : BaseFragment() {
         } catch (e: Exception) {
 
         }
+//        try {
+//            if (Fitbit(context).isConnected()) {
+//                tv_fitbit_status?.visibility = View.VISIBLE
+//                // tv_fitbit_status?.visibility = View.VISIBLE
+//            } else {
+//                tv_fitbit_status?.visibility = View.GONE
+//            }
+//        } catch (e: Exception) {
+//
+//        }
     }
 
 
     fun loginToFitbit() {
         Fitbit().loginToFitbit(this)
+        //FitbitManager.login(this)
     }
 
     private fun subscribeFitbit(value: Boolean) {
@@ -262,6 +285,7 @@ class MyAccountFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        log("onActivityResult $requestCode, $resultCode, $data")
 
         when (requestCode) {
             FitnessHelper.GOOGLE_REQUEST_CODE -> {
@@ -277,6 +301,15 @@ class MyAccountFragment : BaseFragment() {
                 } else {
 
                 }
+            }
+            else -> {
+                log("FitbitManager $requestCode, $resultCode, $data")
+
+//                FitbitManager.onActivityResult(
+//                    requestCode, resultCode, data
+//                ) {
+//                    checkFitbitConnected()
+//                };
             }
         }
     }

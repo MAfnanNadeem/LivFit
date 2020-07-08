@@ -3,6 +3,7 @@
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="mibo_world">MI.BO. World</string>
+    <string name="app_name_version">MI.BO. LivFit  v0.1.19</string>
     <string name="app_version">0.1.18</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
@@ -286,6 +287,7 @@
     <string name="welcome">Welcome</string>
     <string name="what_is_your_bmi">What is your age, weight and height ?</string>
     <string name="unit">Unit</string>
+    <string name="units">Units</string>
     <string name="age">Age</string>
     <string name="done">Done</string>
     <string name="choose_your_body_type">Choose your body type</string>
@@ -299,6 +301,8 @@
     <string name="what_is_goal">Fitness Goal ?</string>
     <string name="what_is_physical">Select Your Physical Activity</string>
     <string name="meter_square">m²</string>
+    <string name="cal_unit">Cal</string>
+    <string name="jl_unit">Cal</string>
     <string name="kg_unit">Kg</string>
     <string name="lbs_unit">lbs</string>
     <string name="cm_unit">CM</string>
@@ -310,6 +314,10 @@
     <string name="ffmi_unit">kg/m²</string>
     <string name="summary_format">"<b>%.2f</b> <small>%s</small>"</string>
     <string name="my_bmi_title">My BMI (Body Mass Index)</string>
+    <string name="kilograms">Kilograms</string>
+    <string name="pounds">Pounds</string>
+    <string name="centimeters">Centimeters</string>
+    <string name="feet_inches">Feet and Inches</string>
 
     <string name="bmi_title">BMI (Body Mass Index)</string>
     <string name="bmr_title">BMR (Basal Metabolic Rate)</string>
@@ -345,11 +353,11 @@
     <string name="goal_que_3_title">Gain weight</string>
     <string name="goal_que_4_title">Toning</string>
     <string name="goal_que_5_title">Performance Enhancement</string>
-    <string name="goal_que_1_desc">Eat and Train for optimum health</string>
-    <string name="goal_que_2_desc">Get leaner and increase your stamina</string>
-    <string name="goal_que_3_desc">Build muscle strength and flexibility</string>
-    <string name="goal_que_4_desc">-----</string>
-    <string name="goal_que_5_desc">-----</string>
+    <string name="goal_que_1_desc">Eat and Train for optimum health.</string>
+    <string name="goal_que_2_desc">Get leaner and increase your stamina.</string>
+    <string name="goal_que_3_desc">Build muscle strength and flexibility.</string>
+    <string name="goal_que_4_desc">Lean body with noticeable muscle definition and shape.</string>
+    <string name="goal_que_5_desc">strength and conditioning of body to excel in life and sports.</string>
     <!--    <string name="que_activity_1_title_">Sedentary lifestyle</string>-->
     <string name="que_activity_1_title">LOW</string>
     <string name="que_activity_1_desc">Little or no exercise</string>
@@ -425,8 +433,10 @@
     <string name="invitation_sent">Success! An Invitation has been sent to %s</string>
     <string name="no_service_found">No Service Found.</string>
     <string name="services">Services</string>
+    <string name="my_specializations">My Specializations</string>
     <string name="specializations">Specializations</string>
     <string name="certifications">Certifications</string>
+    <string name="my_certifications">My Certifications</string>
     <string name="settings">Settings</string>
     <string name="search_products">Search Products</string>
     <string name="book">Book</string>
@@ -493,7 +503,9 @@
     <string name="add_new_address">Add New Address</string>
     <string name="promo_code">Promo Code</string>
     <string name="add_new_shipping_address">Add a New Shipping Address</string>
+    <string name="update_shipping_address">Update Shipping Address</string>
     <string name="save_address">Save Address</string>
+    <string name="update_address">Update Address</string>
     <string name="total">Total:</string>
     <string name="vat_tax">VAT:</string>
     <string name="pay_now">Pay Now</string>
@@ -511,9 +523,12 @@
     <string name="my_invoices">My Invoices</string>
     <string name="my_orders">My Orders</string>
     <string name="my_sales">My Sales</string>
+    <string name="my_services">My Services</string>
+    <string name="my_customers">My Customers</string>
     <string name="payment_history">Payment History</string>
     <string name="gender_select">Select Gender</string>
     <string name="unpaid">Unpaid</string>
+    <string name="paid">Paid</string>
     <string name="on_your_address">add your address</string>
     <string name="height">Height</string>
     <string name="chest">Chest</string>
@@ -592,6 +607,7 @@
     <string name="pwd_8_character">* 8 Character</string>
     <string name="pwd_special_char">* Special Char</string>
     <string name="address_titles">Shipment Address</string>
+    <string name="orders_titles">My Orders</string>
     <string name="add_a_new_address">Add a New Address</string>
     <string name="device_disconnected">Device Disconnected!</string>
     <string name="connecting_device">Connecting device…</string>
@@ -611,6 +627,10 @@
     <string name="location_required">Location Required</string>
     <string name="location_required_text">Please enable location to scan BLE devices</string>
     <string name="samsung">Samsung Health</string>
+    <string name="order_">Order#</string>
+    <string name="sub_total_">Sub Total:</string>
+    <string name="status">Status</string>
+    <string name="payment_status">Payment Status:</string>
 
     <!-- customer reviews -->
     <string-array name="names">

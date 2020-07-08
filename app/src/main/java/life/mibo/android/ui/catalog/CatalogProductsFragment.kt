@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_catalog_products.*
 import life.mibo.android.R
 import life.mibo.android.core.API
+import life.mibo.android.core.Prefs
 import life.mibo.android.models.catalog.Catalog
 import life.mibo.android.models.catalog.Product
 import life.mibo.android.ui.base.BaseFragment
@@ -124,19 +125,21 @@ class CatalogProductsFragment : BaseFragment() {
 
 
     private fun getProducts() {
+        val member = Prefs.get(context).member ?: return
         showProgress()
-        API.request.getChainApi().getChainProducts().enqueue(object : Callback<Catalog> {
-            override fun onFailure(call: Call<Catalog>, t: Throwable) {
-                hideProgress()
-            }
+        API.request.getChainApi().getChainProducts(member.countryCode ?: "")
+            .enqueue(object : Callback<Catalog> {
+                override fun onFailure(call: Call<Catalog>, t: Throwable) {
+                    hideProgress()
+                }
 
-            override fun onResponse(call: Call<Catalog>, response: Response<Catalog>) {
-                hideProgress()
-                parseProducts(response?.body()?.products)
+                override fun onResponse(call: Call<Catalog>, response: Response<Catalog>) {
+                    hideProgress()
+                    parseProducts(response?.body()?.products)
 
-            }
+                }
 
-        })
+            })
 
     }
 

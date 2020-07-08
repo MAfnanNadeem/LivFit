@@ -1,11 +1,11 @@
 /*
- *  Created by Sumeet Kumar on 6/4/20 4:06 PM
+ *  Created by Sumeet Kumar on 7/8/20 10:44 AM
  *  Copyright (c) 2020 . MI.BO All rights reserved.
- *  Last modified 6/4/20 2:03 PM
+ *  Last modified 7/7/20 5:48 PM
  *  Mibo Hexa - app
  */
 
-package life.mibo.android.ui.catalog
+package life.mibo.android.ui.member
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,12 +27,18 @@ import life.mibo.android.models.catalog.GetInvoices
 import life.mibo.android.models.catalog.ShipmentAddress
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.catalog.BuyActivity
+import life.mibo.android.ui.catalog.NewAddressActivity
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.TextStyle
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
 
 
-class OrdersFragment : BaseFragment() {
+class ManageAddressFragment : BaseFragment() {
 
     companion object {
         fun create(type: Int): Bundle {
@@ -192,9 +199,13 @@ class OrdersFragment : BaseFragment() {
         val addressAdapters =
             BuyActivity.AddressAdapters(
                 address,
-                object : ItemClickListener<BuyActivity.AddressItem> {
-                    override fun onItemClicked(item: BuyActivity.AddressItem?, position: Int) {
-                        showAddressDialog()
+                object :
+                    ItemClickListener<BuyActivity.AddressItem> {
+                    override fun onItemClicked(
+                        item: BuyActivity.AddressItem?,
+                        position: Int
+                    ) {
+                        showAddressDialog(item)
                     }
 
                 })
@@ -203,7 +214,7 @@ class OrdersFragment : BaseFragment() {
 
     }
 
-    private fun showAddressDialog() {
+    private fun showAddressDialog(item: BuyActivity.AddressItem?) {
         val options = arrayOf(
             getString(R.string.update),
             getString(R.string.delete)
@@ -215,6 +226,10 @@ class OrdersFragment : BaseFragment() {
             when (which) {
                 0 -> {
                     //update
+                    NewAddressActivity.launch(
+                        this.context,
+                        item
+                    )
                 }
                 1 -> {
                     //delete
@@ -242,21 +257,30 @@ class OrdersFragment : BaseFragment() {
                 }
             }
             productAdapters =
-                InvoiceAdapters(0, products, object : ItemClickListener<GetInvoices.Invoice> {
+                InvoiceAdapters(
+                    0,
+                    products,
+                    object : ItemClickListener<GetInvoices.Invoice> {
 
-                    override fun onItemClicked(item: GetInvoices.Invoice?, position: Int) {
-                        if (item != null) {
-                            if (item.packageType?.toLowerCase() == "product")
-                                return
-                            if (item.paidStatus == null || item.paidStatus?.toLowerCase() == "pending") {
-                                val i =
-                                    Intent(this@OrdersFragment.activity, BuyActivity::class.java)
-                                i.putExtra("type_type", BuyActivity.TYPE_INVOICE)
-                                i.putExtra("type_data", item.invoiceNumber)
-                                i.putExtra("type_location", item.locationID)
-                                startActivity(i)
-                                return
-                            }
+                        override fun onItemClicked(item: GetInvoices.Invoice?, position: Int) {
+                            if (item != null) {
+                                if (item.packageType?.toLowerCase() == "product")
+                                    return
+                                if (item.paidStatus == null || item.paidStatus?.toLowerCase() == "pending") {
+                                    val i =
+                                        Intent(
+                                            this@ManageAddressFragment.activity,
+                                            BuyActivity::class.java
+                                        )
+                                    i.putExtra(
+                                        "type_type",
+                                        BuyActivity.TYPE_INVOICE
+                                    )
+                                    i.putExtra("type_data", item.invoiceNumber)
+                                    i.putExtra("type_location", item.locationID)
+                                    startActivity(i)
+                                    return
+                                }
 //                            InvoiceDetailsDialog(item, object : ItemClickListener<String> {
 //                                override fun onItemClicked(item: String?, position: Int) {
 //
@@ -266,10 +290,10 @@ class OrdersFragment : BaseFragment() {
 //                                childFragmentManager,
 //                                "InvoiceDetailsDialog"
 //                            )
+                            }
                         }
-                    }
 
-                })
+                    })
 
             recyclerView?.adapter = productAdapters
 
@@ -293,7 +317,7 @@ class OrdersFragment : BaseFragment() {
             return Holder(
                 LayoutInflater.from(parent.context)
                     .inflate(
-                        R.layout.list_item_invoices,
+                        R.layout.list_item_invoices2,
                         parent,
                         false
                     )
@@ -311,37 +335,59 @@ class OrdersFragment : BaseFragment() {
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val name: TextView? = itemView.findViewById(R.id.tv_info)
-        private val invoice: TextView? = itemView.findViewById(R.id.tv_info1)
-        private val desc: TextView? = itemView.findViewById(R.id.tv_info2)
-        private val price: TextView? = itemView.findViewById(R.id.tv_info3)
+
+        private val name: TextView? = itemView.findViewById(R.id.tv_name)
+        private val invoice: TextView? = itemView.findViewById(R.id.tv_order)
+        private val quantity: TextView? = itemView.findViewById(R.id.tv_quantity)
+        private val price: TextView? = itemView.findViewById(R.id.tv_price)
+        private val vat: TextView? = itemView.findViewById(R.id.tv_vat)
+        private val total: TextView? = itemView.findViewById(R.id.tv_total)
         private val paid: TextView? = itemView.findViewById(R.id.tv_paid)
+        private val year: TextView? = itemView.findViewById(R.id.tv_year)
+        private val month: TextView? = itemView.findViewById(R.id.tv_month)
+        private val date: TextView? = itemView.findViewById(R.id.tv_date)
 
         fun bind(item: GetInvoices.Invoice?, listener: ItemClickListener<GetInvoices.Invoice>?) {
             if (item == null)
                 return
+            invoice?.text = item.invoiceNumber
+            invoice?.visibility = View.VISIBLE
             if (item.name != null && item.name!!.isNotEmpty()) {
                 name?.text = item.name
-                invoice?.text = item.invoiceNumber
-                invoice?.visibility = View.VISIBLE
             } else {
-                name?.text = item.invoiceNumber
-                invoice?.visibility = View.GONE
+                name?.text = item.packageType
             }
             if (item.paidStatus?.toLowerCase() == "pending") {
                 paid?.visibility = View.VISIBLE
                 paid?.setText(R.string.unpaid)
+                paid?.setTextColor(ContextCompat.getColor(paid?.context, R.color.textColorApp2))
             } else {
-                paid?.visibility = View.GONE
+                paid?.visibility = View.VISIBLE
+                //val st = item?.paidStatus
+               // if (st != null && st.length > 1)
+                 //   paid?.text = st
+               // else paid?.setText(R.string.paid)
+                paid?.setText(R.string.paid)
+                paid?.setTextColor(ContextCompat.getColor(paid?.context, R.color.textColor2))
             }
 
-            desc?.text = item.invoiceDate
+            val dates = item.invoiceDate?.split("-")
+            val d = LocalDate.parse(item.invoiceDate)
+
+            month?.text = "${d.year}"
+            date?.text = "${d.dayOfMonth}"
+            year?.text = d.month?.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+
+            quantity?.text = "${item.quantity ?: 1}"
             price?.text = item.currency + " " + item.price
+            vat?.text = item.currency + " " + item.vat
+            total?.text = item.currency + " " + item.totalPrice
 
             itemView?.setOnClickListener {
                 listener?.onItemClicked(item, adapterPosition)
             }
         }
-
     }
+
+
 }

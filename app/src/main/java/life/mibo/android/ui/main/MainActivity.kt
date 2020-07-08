@@ -66,7 +66,6 @@ import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.*
-import life.mibo.android.ui.body_measure.BMIFragment
 import life.mibo.android.ui.body_measure.MeasurementFragment
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
 import life.mibo.android.ui.ch6.Channel6Fragment
@@ -1341,6 +1340,18 @@ class MainActivity : BaseActivity(), Navigator {
                 bottom_fab?.hide()
                 bottom_app_bar?.performHide()
             }
+            Navigator.SETTINGS_UNIT -> {
+                navigate(0, R.id.navigation_settings, null)
+            }
+            Navigator.MY_SERVICES -> {
+                navigate(0, R.id.navigation_my_services, null)
+            }
+            Navigator.MY_CLIENTS -> {
+                navigate(0, R.id.navigation_my_clients, null)
+            }
+            Navigator.MY_SALES -> {
+                navigate(0, R.id.navigation_my_sales, null)
+            }
             else -> {
                 drawerItemClicked(type)
             }
@@ -1517,14 +1528,14 @@ class MainActivity : BaseActivity(), Navigator {
                 return
             }
 
-            R.id.nav_settings -> {
-                navigate(
-                    0,
-                    R.id.navigation_settings
-                )
-                // comingSoon()
-                // return
-            }
+//            R.id.nav_settings -> {
+//                navigate(
+//                    0,
+//                    R.id.navigation_settings
+//                )
+//                // comingSoon()
+//                // return
+//            }
 
             R.id.nav_share -> {
                 lastId = -1

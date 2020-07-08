@@ -7,6 +7,7 @@
 
 package life.mibo.android.ui.base
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -27,6 +28,13 @@ class WebViewActivity : BaseActivity(), AdvancedWebView.Listener {
             intent.putExtra("url_url", url)
             intent.putExtra("url_type", type)
             context.startActivityForResult(intent, Fitbit.REQUEST_CODE)
+        }
+
+        fun launch(context: Context, url: String?, type: Int) {
+            val intent = Intent(context, WebViewActivity::class.java)
+            intent.putExtra("url_url", url)
+            intent.putExtra("url_type", type)
+            context.startActivity(intent)
         }
 
     }

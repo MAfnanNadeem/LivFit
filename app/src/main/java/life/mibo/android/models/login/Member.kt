@@ -46,7 +46,9 @@ data class Member(
     @SerializedName("firstLogin")
     var firstLogin: Int?,
     @SerializedName("LocationID")
-    var locationID: String?
+    var locationID: String?,
+    @SerializedName("countryCode")
+    var countryCode: String?
 ): BaseModel
 {
     fun id() : String{
@@ -54,10 +56,10 @@ data class Member(
     }
 
     fun isMember(): Boolean {
-        return "$type".equals("member", true)
+        return "$type".trim().toLowerCase() == "member"
     }
 
     fun isMale(): Boolean {
-        return "$gender".toLowerCase() == "male"
+        return "$gender".trim().toLowerCase() == "male"
     }
 }

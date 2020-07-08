@@ -36,14 +36,18 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.BufferedSink
+import okio.source
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -314,7 +318,14 @@ class ProfileEditFragment : BaseFragment() {
 
         map.put("token", toRequestBody(member.accessToken))
         map.put("RequestType", toRequestBody("SaveMemberAvatar"))
-        map.put("MemberID", toRequestBody(member.id()))
+        if (member.isMember()) {
+            map.put("MemberID", toRequestBody(member.id()))
+            map.put("TrainerID", toRequestBody(""))
+        } else {
+            map.put("TrainerID", toRequestBody(member.id()))
+            map.put("MemberID", toRequestBody(""))
+        }
+
         val fileBody: RequestBody = file.asRequestBody("image/*".toMediaType())
         //val fileBody: RequestBody = RequestBody.create("image/png".toMediaType()), file)
         map.put("Avatar\"; filename=\".png\"", fileBody)
@@ -358,6 +369,22 @@ class ProfileEditFragment : BaseFragment() {
 
     fun toRequestBody(value: String?): RequestBody? {
         return value?.toRequestBody("text/plain".toMediaType())
+    }
+
+    fun fileToRequestBody(file: File, contentType: MediaType? = null): RequestBody {
+        return object : RequestBody() {
+            override fun contentType() = contentType
+
+            override fun contentLength() = file?.length()
+
+            override fun writeTo(sink: BufferedSink) {
+                val stream = FileInputStream(file)
+                val source = stream.source()
+                source.use { it ->
+                    sink.writeAll(it)
+                }
+            }
+        }
     }
 
     fun showPicture(file: File?) {
@@ -466,14 +493,26 @@ class ProfileEditFragment : BaseFragment() {
             return
         }
         val member = Prefs.get(context).member ?: return
-        val data = UpdateMemberDetails.Data(
-            et_city?.text?.toString(),
-            countryCode,
-            date,
-            et_fname?.text?.toString(),
-            et_lname?.text?.toString(),
-            member.id
-        )
+        val data = if (member.isMember()) {
+            UpdateMemberDetails.Data(
+                et_city?.text?.toString(),
+                countryCode,
+                date,
+                et_fname?.text?.toString(),
+                et_lname?.text?.toString(),
+                member.id, null
+            )
+        } else {
+            UpdateMemberDetails.Data(
+                et_city?.text?.toString(),
+                countryCode,
+                date,
+                et_fname?.text?.toString(),
+                et_lname?.text?.toString(),
+                null, member.id
+            )
+        }
+
         getDialog()?.show()
         API.request.getApi().updateMemberDetails(UpdateMemberDetails(data, member.accessToken))
             .enqueue(object : Callback<ResponseData> {

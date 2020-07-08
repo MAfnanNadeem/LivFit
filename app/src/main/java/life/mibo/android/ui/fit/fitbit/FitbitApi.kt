@@ -12,12 +12,12 @@ import com.google.gson.JsonArray
 import kotlinx.coroutines.Deferred
 import life.mibo.android.core.gson.GsonConverterFactory
 import life.mibo.android.ui.main.MiboApplication
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Path
+import java.io.IOException
 
 class FitbitApi {
 
@@ -27,6 +27,8 @@ class FitbitApi {
         val request: FitbitApi by lazy { FitbitApi() }
         fun get() = lazy { FitbitApi() }
         const val baseUrl = Fitbit.api
+
+
     }
 
     init {
@@ -47,10 +49,44 @@ class FitbitApi {
 
     }
 
+
     fun getApi(): FitbitService {
         return Retrofit.Builder().baseUrl(baseUrl).client(okhttp!!)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(FitbitService::class.java)
+    }
+
+    fun refresh(refresh: String, client: String, secret: String, runnable: Runnable?) {
+        val url = "https://api.fitbit.com/oauth2/token"
+        val body = FormBody.Builder()
+            .add("grant_type", "refresh_token").add("refresh_token", refresh)
+            .add("expires_in", "2592000")
+            .build()
+        val request = Request.Builder()
+            .url(url)
+            .method("POST", body)
+            .header("Authorization", "Basic $client:$secret")
+            .addHeader("Accept-Language", "en_GB")
+            .build()
+
+        val call = getClient().newCall(request)
+        call.enqueue(object : Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: Response) {
+                try {
+                    if (response.isSuccessful) {
+                        runnable?.run()
+                    }
+                } catch (e: Exception) {
+
+                }
+            }
+        })
+
+        //getApi().getSteps(date).enqueue(callback)
     }
 
     fun getSteps(date: String, token: String, callback: okhttp3.Callback) {

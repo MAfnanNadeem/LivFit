@@ -61,7 +61,7 @@
         <activity
             android:name="life.mibo.android.ui.main.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
@@ -111,7 +111,7 @@
         <activity
             android:name="life.mibo.android.ui.trainer.ProfessionalDetailsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Material.FullScreen" />
+            android:theme="@style/Material.TransparentFull" />
         <activity
             android:name="life.mibo.android.ui.body_measure.MeasureBodyActivity"
             android:screenOrientation="portrait"
@@ -229,6 +229,12 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="mibo_channel" />
+
+<!--        <receiver android:name=".receivers.NetworkChangeReceiver">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
         <!-- SOCIAL END -->
 
 

@@ -10,14 +10,14 @@ package life.mibo.android.models.catalog
 
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BaseResponse
-import life.mibo.android.models.biometric.Biometric
+import life.mibo.android.models.biometric.CreatedAt
 import java.io.Serializable
 
 class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
 
     data class Data(
         @SerializedName("created_at")
-        var createdAt: Biometric.CreatedAt?,
+        var createdAt: CreatedAt?,
         @SerializedName("created_by")
         var createdBy: String?,
         @SerializedName("currency")
@@ -41,7 +41,13 @@ class Services(data: List<Data?>?) : BaseResponse<List<Services.Data?>?>(data) {
         @SerializedName("validity")
         var validity: Int?,
         @SerializedName("vat")
-        var vat: Double?
+        var vat: Double?,
+        @SerializedName("service_promo")
+        var promoService: Int?,
+        @SerializedName("start_date")
+        var startDate: String?,
+        @SerializedName("end_date")
+        var endDate: String?
 
     ) : Serializable {
 

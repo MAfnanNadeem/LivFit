@@ -85,7 +85,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         isMember = member?.isMember() ?: true
         // controller.setUpCalendar(calendarView, weeks)
         //controller.getCalories()
-        controller.getCalender()
+        controller.getCalender(member)
         //controller.getTrainerCalender()
         // tv_month.text = monthTitleFormatter.format(it.yearMonth)
 //        iv_user_pic.setImageDrawable(
@@ -140,16 +140,16 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     private var selectedDate: LocalDate? = null
     private var scheduleAdapter: ScheduleAdapter? = null
-    private val scheduleDates = ArrayList<MemberCalendar.Data>()
-    private val sessionDates = ArrayList<TrainerCalendarResponse.Session>()
+    private val memberDates = ArrayList<MemberCalendar.Data>()
+    private val trainerDates = ArrayList<TrainerCalendarResponse.Session>()
 
-    override fun onCalendar(list: List<MemberCalendar.Data?>?) {
+    override fun onMemberCalendar(list: List<MemberCalendar.Data?>?) {
         log("onCalendar $list")
-        scheduleDates.clear()
+        memberDates.clear()
         if (list != null)
             for (l in list) {
                 if (l != null)
-                    scheduleDates.add(l)
+                    memberDates.add(l)
             }
         log("onCalendar $list")
         activity?.runOnUiThread {
@@ -164,7 +164,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
             setUpCalendar(calendarView, weeks, list)
             Single.just("").delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
-                    updateDefault(true, LocalDate.now())
+                    updateDefault(false, LocalDate.now())
                 }.subscribe()
         }
     }
@@ -264,7 +264,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         var count = 0
         var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
         var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
-        for (session in scheduleDates) {
+        for (session in memberDates) {
             try {
                 val date = session.startDateTime?.split(" ")?.get(0) ?: ""
                 // val date = formatter.parse(d.startDateTime)
@@ -295,16 +295,16 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     override fun onTrainerCalendar(data: TrainerCalendarResponse.Data?) {
         log("onTrainerCalendar $data")
-        sessionDates.clear()
+        trainerDates.clear()
         val list = ArrayList<TrainerCalendarResponse.Session>()
         if (data?.sessions != null)
             for (session in data.sessions!!) {
                 if (session != null) {
-                    sessionDates.add(session)
+                    trainerDates.add(session)
                     list.add(session)
                 }
             }
-        log("onCalendar $sessionDates")
+        log("onCalendar $trainerDates")
         activity?.runOnUiThread {
             val weeks = controller.daysOfWeek()
             weeksLayout2?.children?.forEachIndexed { index, view ->
@@ -419,7 +419,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         var count = 0
         var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
         var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
-        for (session in sessionDates) {
+        for (session in trainerDates) {
             try {
                 val date = session.startDatetime?.split(" ")?.get(0) ?: ""
                 // val date = formatter.parse(d.startDateTime)
@@ -455,6 +455,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
     }
 
     fun updateDefault(isTrainer: Boolean, selected: LocalDate) {
+        log("updateDefault $isTrainer :: $selected")
         if (isTrainer) {
             val crypt = Encrypt()
             //selectedDate = item?.date
@@ -463,11 +464,12 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
             var count = 0
             var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
             var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
-            for (session in sessionDates) {
+            for (session in trainerDates) {
                 try {
                     val date = session.startDatetime?.split(" ")?.get(0) ?: ""
                     // val date = formatter.parse(d.startDateTime)
                     if (LocalDate.parse(date) == selected) {
+                        log("updateDefault found")
                         if (session.members != null) {
                             var mmember = session.members?.get(0)
                             list.add(
@@ -502,11 +504,12 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
             var count = 0
             var color1 = ContextCompat.getColor(requireContext(), R.color.textColorApp)
             var color2 = ContextCompat.getColor(requireContext(), R.color.textColorApp2)
-            for (session in scheduleDates) {
+            for (session in memberDates) {
                 try {
                     val date = session.startDateTime?.split(" ")?.get(0) ?: ""
                     // val date = formatter.parse(d.startDateTime)
                     if (LocalDate.parse(date) == selected) {
+                        log("updateDefault found")
                         list.add(
                             Schedule(
                                 session.sessionID,
@@ -575,7 +578,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         }
 
         override fun onBindViewHolder(viewHolder: ScheduleHolder, position: Int) {
-            viewHolder.bind(schedules[position])
+            viewHolder.bind(schedules[position], isMember)
         }
 
         fun update(list: ArrayList<Schedule>) {
@@ -589,7 +592,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
         inner class ScheduleHolder(override val containerView: View) :
             RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-            fun bind(schedule: Schedule) {
+            fun bind(schedule: Schedule, member: Boolean) {
                 containerView.tv_start_time.text =
                     formatter2.format(
                         LocalDateTime.parse(
@@ -600,9 +603,14 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                 containerView.tv_trainer.text = schedule.trainerName
                 containerView.tv_session.text = schedule.session
                 containerView.event1.setBackgroundColor(schedule.color)
-                if (schedule.isCompleted)
+                if (member) {
                     containerView.iv_edit?.visibility = View.INVISIBLE
-                else containerView.iv_edit?.visibility = View.VISIBLE
+                } else {
+                    if (schedule.isCompleted)
+                        containerView.iv_edit?.visibility = View.INVISIBLE
+                    else containerView.iv_edit?.visibility = View.VISIBLE
+                }
+
 //                /if(sess)
                 containerView.iv_edit?.setOnClickListener {
                     if (!schedule.isCompleted)

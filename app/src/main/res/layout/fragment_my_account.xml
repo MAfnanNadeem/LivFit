@@ -93,6 +93,98 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/grid_4dp"
                 android:background="@color/grey" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto_medium"
+                android:text="@string/measurement"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_size_medium" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_measurement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="@dimen/grid_2x"
+                android:text="@string/view_measurement"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/grid_4dp"
+                android:background="@color/grey" />
+
+            <LinearLayout
+                android:id="@+id/view_sessions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:layout_marginBottom="@dimen/grid_1x"
+                    android:fontFamily="@string/font_roboto_medium"
+                    android:text="@string/session_history"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_session"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/grid_2x"
+                    android:text="@string/view_sessions"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/grid_4dp"
+                    android:background="@color/grey" />
+            </LinearLayout>
+
+            <!--            <TextView-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="12dp"-->
+            <!--                android:layout_marginTop="@dimen/grid_2x"-->
+            <!--                android:layout_marginBottom="@dimen/grid_1x"-->
+            <!--                android:fontFamily="@string/font_roboto_medium"-->
+            <!--                android:text="@string/sessions"-->
+            <!--                android:textColor="@color/colorPrimary"-->
+            <!--                android:textSize="@dimen/text_size_medium" />-->
+
+            <!--            <androidx.appcompat.widget.AppCompatTextView-->
+            <!--                android:id="@+id/tv_sessions"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="?android:attr/selectableItemBackground"-->
+            <!--                android:padding="@dimen/grid_2x"-->
+            <!--                android:text="@string/view_sessions"-->
+            <!--                android:textColor="@color/textColor"-->
+            <!--                android:textSize="@dimen/text_size_medium" />-->
+
+            <!--            <View-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="1dp"-->
+            <!--                android:layout_marginTop="@dimen/grid_4dp"-->
+            <!--                android:background="@color/grey" />-->
+
+
         </LinearLayout>
 
         <LinearLayout

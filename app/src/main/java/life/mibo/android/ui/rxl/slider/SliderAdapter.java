@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 import life.mibo.android.R;
 import life.mibo.hardware.core.Logger;
+import life.mibo.views.TouchImageView;
 
-//import com.squareup.picasso.Picasso;
 
 public class SliderAdapter extends PagerAdapter {
     private ArrayList<Integer> IMAGES;
@@ -63,6 +63,7 @@ public class SliderAdapter extends PagerAdapter {
         View imageLayout = inflater.inflate(R.layout.rxl_slider_main, view, false);
 
         assert imageLayout != null;
+        //TouchImageView
         final ImageView imageView = imageLayout
                 .findViewById(R.id.image);
 

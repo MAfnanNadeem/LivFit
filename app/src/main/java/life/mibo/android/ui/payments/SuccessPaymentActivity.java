@@ -152,6 +152,8 @@ public class SuccessPaymentActivity extends BaseActivity {
             }
         }
 
+        logs.append(" (promo==").append(cartItem.getPromo()).append("amount").append(cartItem.getTotalAmount()).append(")");
+
         MiboEvent.INSTANCE.fbPurchase(this, cartItem.getBillable(), cartItem.getCurrencyType());
         String type = "product";
         if (cartItem.isService())
@@ -160,7 +162,7 @@ public class SuccessPaymentActivity extends BaseActivity {
             type = "package";
 
         SaveOrderDetails.Data data = new SaveOrderDetails.Data(logs.toString(), cartItem.getServiceLocationId(), member.getId(),
-                cartItem.getId(), cartItem.getAmount(), cartItem.getQuantity(), cartItem.getLocationId(), transactionId, type, cartItem.getVat(), cartItem.getCurrencyType(), paidStatus, adviceNumber);
+                cartItem.getId(), cartItem.getTotalAmount(), cartItem.getQuantity(), cartItem.getLocationId(), transactionId, type, cartItem.getVat(), cartItem.getCurrencyType(), paidStatus, adviceNumber, cartItem.getStartDate(), cartItem.getEndDate(), cartItem.getPromoCode());
 
         log("SaveOrderDetails " + data);
 

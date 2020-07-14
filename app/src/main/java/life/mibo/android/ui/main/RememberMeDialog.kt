@@ -35,10 +35,10 @@ class RememberMeDialog(var type_: Int = 0) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var save: Button? = view?.findViewById(R.id.btn_remember)
-        var skip: View? = view?.findViewById(R.id.btn_skip)
-        var tv: TextView? = view?.findViewById(R.id.user_name)
-        var text: TextView? = view?.findViewById(R.id.profile_text)
+        val save: Button? = view?.findViewById(R.id.btn_remember)
+        val skip: View? = view?.findViewById(R.id.btn_skip)
+        val tv: TextView? = view?.findViewById(R.id.user_name)
+        val text: TextView? = view?.findViewById(R.id.profile_text)
         isCancelable = false
 
         if (type_ == 200) {

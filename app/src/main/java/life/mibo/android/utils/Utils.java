@@ -372,26 +372,32 @@ public class Utils {
     }
 
     public static void hide(View view) {
-        TranslateAnimation animate = new TranslateAnimation(0, 0, 0, view.getHeight());
-        animate.setDuration(500);
-        animate.setFillAfter(true);
-        animate.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+        try {
+            TranslateAnimation animate = new TranslateAnimation(0, 0, 0, view.getHeight());
+            animate.setDuration(500);
+            animate.setFillAfter(true);
+            animate.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-            }
+                }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    view.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            view.startAnimation(animate);
+        } catch (Exception e) {
+            if (view != null)
                 view.setVisibility(View.GONE);
-            }
+        }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        view.startAnimation(animate);
     }
 
     public static int getInt(String number) {

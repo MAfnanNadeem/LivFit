@@ -42,6 +42,12 @@ class SaveOrderDetails(
         @SerializedName("PaidStatus")
         var paidStatus: String?,
         @SerializedName("BookingAdvice")
-        var bookingAdvice: String?
+        var bookingAdvice: String?,
+        @SerializedName("StartDate")
+        var startDate: String?,
+        @SerializedName("EndDate")
+        var endDate: String?,
+        @SerializedName("Promocode")
+        var promoCode: String?
     )
 }

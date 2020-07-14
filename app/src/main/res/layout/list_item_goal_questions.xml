@@ -17,8 +17,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_item_physical_activity" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +31,7 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Be healthier"
+            android:fontFamily="@string/font_roboto_medium"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/text_size_medium" />
 
@@ -42,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/grid_1x"
-            android:text="Eat and Train for optimum health"
             android:textColor="@color/grey"
             android:textSize="@dimen/text_size_medium" />
     </LinearLayout>

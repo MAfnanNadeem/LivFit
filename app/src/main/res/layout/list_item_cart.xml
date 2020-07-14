@@ -135,6 +135,59 @@
         app:layout_constraintTop_toBottomOf="@+id/ll_quantity" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_promo_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif"
+        android:text="@string/promo_amount"
+        android:textColor="@color/textColor"
+        android:visibility="gone"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintStart_toEndOf="@+id/iv_image"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_price" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_promo_amount_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="0.0"
+        android:textColor="@color/textColorApp"
+        android:visibility="gone"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_price_value" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_promo_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_sans_serif"
+        android:text="@string/sub_total_amount"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/iv_image"
+        app:layout_constraintTop_toBottomOf="@+id/tv_promo_amount" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_promo_total_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="0.0"
+        android:textColor="@color/textColorApp"
+        android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_promo_amount_value" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_product_tax"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -142,10 +195,10 @@
         android:fontFamily="@string/font_sans_serif"
         android:text="@string/vat_tax"
         android:textColor="@color/textColor"
-        android:visibility="gone"
         android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/iv_image"
-        app:layout_constraintTop_toBottomOf="@+id/tv_product_price" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_promo_total" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_product_tax_value"
@@ -155,10 +208,10 @@
         android:fontFamily="@string/font_roboto_medium"
         android:text="@string/price"
         android:textColor="@color/textColorApp"
-        android:visibility="gone"
         android:textSize="@dimen/text_size_medium"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_product_price_value" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_promo_total_value" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_product_total"

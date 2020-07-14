@@ -36,7 +36,7 @@ public class Prefs {
 
     private SharedPreferences preferences;
     private static Prefs instance;
-    public static final String PREFS_NAME = "miboPrefs";
+    //public static final String PREFS_NAME = "miboPrefs";
     public static final String USER = "user_member";
     public static final String MEMBER = "user_member_";
     public static final String SESSION = "user_session_";
@@ -284,4 +284,21 @@ public class Prefs {
     public String getMemberToken() {
         return get("member_token_auth");
     }
+
+    public int getWeightPrefs() {
+        return get("weight_id", 0);
+    }
+
+    public void setWeightPrefs(int id) {
+        set("weight_id", id);
+    }
+
+    public int getHeightPrefs() {
+        return get("height_id", 0);
+    }
+
+    public void setHeightPrefs(int id) {
+        set("height_id", id);
+    }
+
 }

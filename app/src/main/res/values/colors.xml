@@ -8,6 +8,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="white">#FFF</color>
     <color name="white_eee">#eee</color>
+    <color name="transparent20">#10000000</color>
     <color name="transparent">#00000000</color>
     <color name="grey">#aaa</color>
     <color name="grey_888">#888</color>

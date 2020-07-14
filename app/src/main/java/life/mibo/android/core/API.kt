@@ -118,11 +118,14 @@ class API {
         //val baseUrl = "https://os.mibo.world/api/v1/"
         //http://test.mibo.world/api/v1/
         //const val baseUrl = "http://test.mibo.world/api/consumer/"
-        const val baseUrl = "https://test.mibolivfit.club/api/consumer/"
-        const val trainerUrl = "https://test.mibolivfit.club/api/v1/"
+        //private val url = "http://test.mibo.world"
+        private const val url = "https://test.mibolivfit.club"
+        // const val url = "https://mibolivfit.club"
+        const val baseUrl = "$url/api/consumer/"
+        const val trainerUrl = "$url/api/v1/"
         const val chainUrl = "http://chaintest.mibo.world/api/"
-        const val fitbitApi = "http://chaintest.mibo.world/api/"
-        const val fitbitAuth = "http://chaintest.mibo.world/api/"
+        // val fitbitApi = "http://chaintest.mibo.world/api/"
+       // const val fitbitAuth = "http://chaintest.mibo.world/api/"
     }
 
     fun getApi(): ApiService {
@@ -409,6 +412,25 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("saveOrderDetails")
         fun saveOrderDetails(@Body data: SaveOrderDetails): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("checkPromocode")
+        fun checkPromoCode(@Body data: CheckPromo): Call<PromoResponse>
+
+
+        // FOR TRAINER
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getAllTrainerInvoices")
+        fun getTrainerInvoices(@Body data: TrainerID): Call<TrainerInvoices>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getIndependentProfessionalServices")
+        fun getTrainerServices(@Body data: TrainerID): Call<TrainerServices>
+
+        //GetIndependentProfessionalCustomers
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getIndependentProfessionalCustomers")
+        fun getCustomers(@Body data: TrainerID): Call<TrainerClients>
 
 
 //        @Headers("Accept: application/json", "Content-Type: application/json")

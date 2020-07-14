@@ -67,6 +67,26 @@ class MyAccountFragment : BaseFragment() {
                 //navigate(Navigator.INVOICES, null)
             }
 
+            tv_measurement?.setOnClickListener {
+                navigate(Navigator.VIEW_MEASUREMENT, OrdersFragment.create(2))
+            }
+            try {
+                val cal = Prefs.get(this.context).get(Prefs.CALORIES, -1)
+                if (cal > 0) {
+                    view_sessions?.visibility = View.VISIBLE
+                    tv_session?.setOnClickListener {
+                        navigate(Navigator.VIEW_SESSIONS, OrdersFragment.create(2))
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+
+            }
+
+
+//            tv_sessions?.setOnClickListener {
+//                navigate(Navigator.VIEW_MEASUREMENT, OrdersFragment.create(2))
+//            }
+
 
         } else {
             view_member?.visibility = View.GONE
@@ -138,10 +158,6 @@ class MyAccountFragment : BaseFragment() {
 
 
     private fun isGoogleConnected(): Boolean {
-        // val fit = FitnessOptions.builder()
-        //    .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-        //    .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
-        //    .build()
         return GoogleSignIn.hasPermissions(
             GoogleSignIn.getLastSignedInAccount(requireContext()), GoogleFit.getFitOptions()
         )
@@ -161,12 +177,6 @@ class MyAccountFragment : BaseFragment() {
                 fitnessOptions
             )
         }
-
-        //navigate(GOOGLE_FIT, null)
-        //201589375301-6mfkekfog0lhdo3813f0j206g6ti9sn7.apps.googleusercontent.com
-        //201589375301-nmuvhdnos8pets17tb18ju12n1h1hslf.apps.googleusercontent.com
-
-
     }
 
     fun showDisConnectDialog() {

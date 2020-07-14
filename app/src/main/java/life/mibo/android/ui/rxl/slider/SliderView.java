@@ -50,8 +50,8 @@ public class SliderView extends LinearLayout{
         viewPager.setAdapter(sliderAdapter);
     }
 
-    public void setUrls(List<String> URLs) {
-        this.URLs = new ArrayList<>(URLs);
+    public void setUrls(List<String> images) {
+        this.URLs = new ArrayList<>(images);
         sliderAdapter.setUrls(this.URLs);
         viewPager.setAdapter(sliderAdapter);
         type =1;

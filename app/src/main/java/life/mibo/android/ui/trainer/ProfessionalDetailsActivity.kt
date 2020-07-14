@@ -9,6 +9,7 @@ package life.mibo.android.ui.trainer
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -16,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,10 +32,11 @@ import life.mibo.android.models.trainer.GetServicesOfProfessionals
 import life.mibo.android.models.trainer.InviteProfessional
 import life.mibo.android.models.trainer.ProfessionalDetails
 import life.mibo.android.models.trainer.TrainerInviteResponse
-import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,7 +44,7 @@ import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ProfessionalDetailsActivity : BaseActivity() {
+class ProfessionalDetailsActivity : AppCompatActivity() {
 
     companion object {
 
@@ -98,6 +101,9 @@ class ProfessionalDetailsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_ip_profile2)
+        //window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        window?.statusBarColor = Color.WHITE
+
 
         log("onCreate $savedInstanceState")
         //Logger.e("onCreate savedInstanceState", intent?.extras)
@@ -117,6 +123,8 @@ class ProfessionalDetailsActivity : BaseActivity() {
         Utils.loadImage(userImage, data.avatar, data.gender?.toLowerCase() == "male")
         //if (data.avatar != null)
         //  Glide.with(this).load(data.avatar).fitCenter().error(R.drawable.ic_user_test).into(userImage!!)
+        //val height = resources?.displayMetrics?.heightPixels?.times(0.5);
+        //constraintLayout1?.height = height
         professional = data
         tv_name?.text = data.name
         tv_desg?.text = data.designation
@@ -566,5 +574,17 @@ class ProfessionalDetailsActivity : BaseActivity() {
             }
         }
 
+    }
+
+    var mDialog: MyDialog? = null
+
+    fun getDialog(): MyDialog? {
+        if (mDialog == null)
+            mDialog = MyDialog.get(this)
+        return mDialog
+    }
+
+    fun log(msg: String) {
+        Logger.e("${this.javaClass} : $msg")
     }
 }

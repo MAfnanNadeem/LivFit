@@ -567,7 +567,7 @@ class SummaryFragment : BaseFragment() {
                         log("getBioMetric response $body")
                         if (body != null && body.isSuccess()) {
                             val list = body.data
-                            list.let {
+                            list?.let {
                                 Prefs.get(requireContext()).setJson(Prefs.BIOMETRIC, it)
                                 parseBiometric(it)
                             }

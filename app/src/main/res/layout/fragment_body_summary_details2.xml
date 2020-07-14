@@ -49,7 +49,6 @@
                 app:layout_constraintStart_toEndOf="@id/btn_back"
                 app:layout_constraintBottom_toBottomOf="@id/btn_back"
                 app:layout_constraintTop_toTopOf="@id/btn_back"
-
                 />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -152,7 +151,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/grid_2x"
                 android:gravity="center"
-                android:minHeight="200dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -166,6 +164,7 @@
                     android:layout_margin="@dimen/grid_1x"
                     android:gravity="center"
                     android:paddingTop="2dp"
+                    android:visibility="gone"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_large"
                     app:layout_constraintStart_toStartOf="parent"
@@ -177,18 +176,19 @@
                     android:id="@+id/tv_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="end|center_vertical"
-                    android:lines="1"
                     android:autoSizeMaxTextSize="56sp"
                     android:autoSizeMinTextSize="20sp"
                     android:autoSizeStepGranularity="10px"
                     android:autoSizeTextType="uniform"
-                    android:textSize="56sp"
+                    android:gravity="end|center_vertical"
+                    android:lines="1"
                     android:textColor="@color/white"
+                    android:textSize="56sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/view1"
                     app:layout_constraintEnd_toStartOf="@id/tv_value_unit"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="8765.324" />
 
                 <TextView
@@ -196,6 +196,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
                     android:lines="2"
                     android:gravity="center_vertical"
                     android:textColor="@color/white_eee"
@@ -223,12 +224,12 @@
                     android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/grid_1x"
-                    android:paddingEnd="@dimen/grid_2x"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:layout_marginEnd="@dimen/grid_4x"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
                     app:layout_constraintBottom_toTopOf="@id/image_circle"
-                    app:layout_constraintEnd_toEndOf="@id/image_circle"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_value_text"
                     tools:text="Today, 9:29 PM" />
 
@@ -271,7 +272,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/grid_2x"
-                android:minHeight="250dp"
                 android:background="@drawable/bg_body_measure_summary_details2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -317,8 +317,7 @@
                     android:minHeight="250dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

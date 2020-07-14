@@ -205,8 +205,8 @@ class OrdersFragment : BaseFragment() {
                         item: BuyActivity.AddressItem?,
                         position: Int
                     ) {
-                        NewAddressActivity.launch(context, item)
-                        // showAddressDialog(item)
+                        //NewAddressActivity.launch(context, item)
+                         showAddressDialog(item)
                     }
 
                 })

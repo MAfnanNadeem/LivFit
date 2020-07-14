@@ -11,8 +11,7 @@ package life.mibo.android.models.login
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BasePost
 
-class SocialLoginUser(data: SocialLoginUser.Data?) :
-    BasePost<SocialLoginUser.Data?>(data, "SocialLoginUser", "") {
+class SocialLoginUser(data: SocialLoginUser.Data?) : BasePost<SocialLoginUser.Data?>(data, "SocialLoginUser", "") {
 
     constructor(username: String, password: String, social: String) : this(
         SocialLoginUser.Data(

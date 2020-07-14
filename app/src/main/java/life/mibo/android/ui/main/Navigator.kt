@@ -42,6 +42,8 @@ interface Navigator {
         const val MY_SERVICES = 137;
         const val MY_CLIENTS = 138;
         const val MY_SALES = 139;
+        const val VIEW_MEASUREMENT = 140;
+        const val VIEW_SESSIONS = 141;
         const val POST = 201;
         const val LOGOUT = 202;
         const val PIC_UPLOADED = 203;

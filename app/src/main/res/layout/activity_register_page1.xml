@@ -64,59 +64,60 @@
             android:imeOptions="actionNext"
             android:inputType="textPassword" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/pwd_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:minHeight="0dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/tv_upper"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/upper_and_lower"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.5" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_digit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/pwd_number"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintStart_toStartOf="@id/tv_special"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.5" />
+                <TextView
+                    android:id="@+id/tv_upper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/upper_and_lower"
+                    android:textColor="@color/colorAccent" />
 
-            <TextView
-                android:id="@+id/tv_8_char"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/pwd_8_character"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_upper"
-                app:layout_constraintWidth_percent="0.5" />
+                <TextView
+                    android:id="@+id/tv_digit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pwd_number"
+                    android:textColor="@color/colorAccent" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_special"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/grid_1x"
-                android:layout_weight="1"
-                android:text="@string/pwd_special_char"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_upper"
-                app:layout_constraintWidth_percent="0.5" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_8_char"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pwd_8_character"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:id="@+id/tv_special"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/grid_1x"
+                    android:layout_weight="1"
+                    android:text="@string/pwd_special_char"
+                    android:textColor="@color/colorAccent" />
+            </LinearLayout>
+
+        </LinearLayout>
 
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -126,6 +127,16 @@
             android:hint="@string/confirm_password_hint"
             android:imeOptions="actionNext"
             android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/tv_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:lines="2"
+            android:text="@string/confirm_password_not_match"
+            android:textColor="@color/colorAccent"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_gender"

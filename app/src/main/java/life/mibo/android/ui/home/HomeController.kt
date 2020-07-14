@@ -773,6 +773,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
 
                 //hours = hours.div(60)
 
+                //.get(this.fragment.context).set(Prefs.CALORIES, cal)
                 Prefs.get(this.fragment.context).set(Prefs.CALORIES_HOUR, hours)
             }
             Prefs.get(this.fragment.context).set(Prefs.CALORIES, cal)

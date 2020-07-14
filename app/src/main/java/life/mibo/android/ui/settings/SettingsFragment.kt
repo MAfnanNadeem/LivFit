@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.fragment_settings.*
 import life.mibo.android.R
+import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
 
 class SettingsFragment : BaseFragment() {
@@ -34,37 +35,64 @@ class SettingsFragment : BaseFragment() {
         tv_weight?.setOnClickListener {
             showWeightDialog()
         }
+
+        weight = getPref()?.weightPrefs ?: 0
+        height = getPref()?.heightPrefs ?: 0
+
+        if (height > 1)
+            height = 0
+        if (weight > 1)
+            weight = 0
+
+    }
+
+    var prefs: Prefs? = null
+
+    fun getPref(): Prefs? {
+        if (prefs == null)
+            prefs = Prefs.getTemp(context)
+        return prefs
     }
 
 
-    private fun showWeightDialog() {
-        var options = arrayOf(getString(R.string.kilograms), getString(R.string.pounds))
+    var weight = -1
+    var height = -1
 
+    private fun showWeightDialog() {
+        val options = arrayOf(getString(R.string.kilograms), getString(R.string.pounds))
+        if (weight > 1)
+            weight = 0
         val builder =
             AlertDialog.Builder(requireContext())
         builder.setTitle("")
-        builder.setSingleChoiceItems(options, 0) { dialog, which ->
-            val text =
-                if (which == 0) getString(R.string.kilograms) else getString(R.string.pounds)
-            tv_weight_unit?.text = text
+        builder.setSingleChoiceItems(options, weight) { dialog, which ->
+            weight = which
+
         }.setPositiveButton(R.string.ok_button) { dialog, which ->
             // save
+            val text =
+                if (weight == 0) getString(R.string.kilograms) else getString(R.string.pounds)
+            tv_weight_unit?.text = text
+            getPref()?.weightPrefs = weight
         }
         builder.show()
     }
 
     private fun showHeightDialog() {
         var options = arrayOf(getString(R.string.centimeters), getString(R.string.feet_inches))
-
+        if (height > 1)
+            height = 0
         val builder =
             AlertDialog.Builder(requireContext())
         builder.setTitle("")
-        builder.setSingleChoiceItems(options, 0) { dialog, which ->
-            val text =
-                if (which == 0) getString(R.string.centimeters) else getString(R.string.feet_inches)
-            tv_measure_unit?.text = text
+        builder.setSingleChoiceItems(options, height) { dialog, which ->
+            height = which
         }.setPositiveButton(R.string.ok_button) { dialog, which ->
             // save
+            val text =
+                if (height == 0) getString(R.string.centimeters) else getString(R.string.feet_inches)
+            tv_measure_unit?.text = text
+            getPref()?.heightPrefs = height
         }
         builder.show()
     }

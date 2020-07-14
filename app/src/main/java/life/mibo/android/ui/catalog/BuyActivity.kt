@@ -15,21 +15,21 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.activity_buy_product.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.MemberPost
-import life.mibo.android.models.catalog.GetInvoiceDetail
-import life.mibo.android.models.catalog.InvoiceDetails
-import life.mibo.android.models.catalog.Product
-import life.mibo.android.models.catalog.ShipmentAddress
+import life.mibo.android.models.catalog.*
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.body_measure.adapter.Calculate
@@ -75,23 +75,33 @@ class BuyActivity : BaseActivity() {
             textView3?.visibility = View.GONE
             cardPromo?.visibility = View.GONE
             addNewCard?.visibility = View.VISIBLE
+            cardContract?.visibility = View.GONE
+            textView4?.visibility = View.GONE
         } else if (type == TYPE_SERVICE) {
             // showServiceAddress()
-            textView3?.visibility = View.GONE
-            cardPromo?.visibility = View.GONE
+            textView3?.visibility = View.VISIBLE
+            cardPromo?.visibility = View.VISIBLE
+            textView4?.visibility = View.VISIBLE
+            cardContract?.visibility = View.VISIBLE
             addNewCard?.visibility = View.GONE
+            setupPromoAndContract()
         } else if (type == TYPE_PACKAGE) {
             //showPackageAddress()
-            textView3?.visibility = View.GONE
-            cardPromo?.visibility = View.GONE
+            textView3?.visibility = View.VISIBLE
+            textView4?.visibility = View.VISIBLE
+            cardPromo?.visibility = View.VISIBLE
+            cardContract?.visibility = View.VISIBLE
             addNewCard?.visibility = View.GONE
+            setupPromoAndContract()
         } else if (type == TYPE_INVOICE) {
             val invoice = intent?.getStringExtra("type_data")
             invoiceLocationId = intent?.getStringExtra("type_location") ?: "1"
             //showPackageAddress()
             textView3?.visibility = View.GONE
             cardPromo?.visibility = View.GONE
+            cardContract?.visibility = View.GONE
             addNewCard?.visibility = View.GONE
+            textView4?.visibility = View.GONE
             val member = Prefs.get(this).member ?: return
             geInvoicetDetails(member.id, invoice, member.accessToken)
         } else {
@@ -107,6 +117,85 @@ class BuyActivity : BaseActivity() {
             startActivityForResult(Intent(this, NewAddressActivity::class.java), 12345)
         }
         setupCartItems()
+
+    }
+
+    private fun setupPromoAndContract() {
+        promo_apply?.setOnClickListener {
+            applyPromo()
+        }
+
+        et_promo?.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                applyPromo()
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+
+        tv_date_update?.setOnClickListener {
+            datePickerDialog()
+        }
+
+        updateContractDate(cartItem?.startDate, cartItem?.endDate)
+    }
+
+    //var serviceStartDate = ""
+    //var serviceEndDate = ""
+
+    private fun datePickerDialog() {
+        val now = Calendar.getInstance()
+        val dpd = DatePickerDialog.newInstance(
+            { view, year, monthOfYear, dayOfMonth ->
+
+                var date = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear.plus(1), year)
+
+                val cal = Calendar.getInstance()
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, monthOfYear)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                cartItem?.startDate =
+                    "${cal.get(Calendar.YEAR)}-${String.format(
+                        "%02d",
+                        cal.get(Calendar.MONTH).plus(1)
+                    )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+                cal.add(Calendar.MONTH, cartItem?.validity ?: 1)
+                cartItem?.endDate =
+                    "${cal.get(Calendar.YEAR)}-${String.format(
+                        "%02d",
+                        cal.get(Calendar.MONTH).plus(1)
+                    )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+
+                updateContractDate(cartItem?.startDate, cartItem?.endDate)
+            },
+            now.get(Calendar.YEAR),
+            now.get(Calendar.MONTH),
+            now.get(Calendar.DAY_OF_MONTH)
+        )
+        dpd.minDate = now
+        dpd.accentColor = ContextCompat.getColor(this, R.color.colorPrimary)
+        dpd.show(supportFragmentManager, "DatePickerDialog")
+    }
+
+    fun updateContractDate(start: String?, end: String?) {
+        runOnUiThread {
+            tv_date_start?.text = getString(R.string.service_start_date, start)
+            tv_date_end?.text = getString(R.string.service_end_date, end)
+        }
+    }
+
+    private fun applyPromo() {
+        if (et_promo?.text?.isEmpty() == true) {
+            Toasty.snackbar(et_promo, getString(R.string.enter_promo))
+            return
+        }
+
+        applyPromo(
+            type == TYPE_SERVICE,
+            cartItem?.id ?: 0,
+            et_promo?.text?.toString() ?: "NULL"
+        )
     }
 
     private var cartAdapters: CartAdapters? = null
@@ -148,6 +237,10 @@ class BuyActivity : BaseActivity() {
             addressItem?.selected = true
             addressList.add(addressItem!!)
             setupAddresses(addressList)
+            updateContractDate(cartItem?.startDate, cartItem?.endDate)
+            if (cartItem!!.promoService > 0) {
+                tv_date_update?.visibility = View.GONE
+            }
         } else if (type == TYPE_INVOICE) {
         } else {
             textViewAddress?.setText(R.string.shipping_address)
@@ -311,6 +404,17 @@ class BuyActivity : BaseActivity() {
             list.addAll(ipList)
             this.notifyDataSetChanged()
         }
+
+        fun applyPromo(promo: PromoResponse.Promo?, code: String) {
+            if (list.isNotEmpty()) {
+                list[0].promo(promo, code)
+                notifyDataSetChanged()
+
+            } else {
+
+            }
+
+        }
     }
 
 
@@ -322,6 +426,10 @@ class BuyActivity : BaseActivity() {
         val vat: TextView? = itemView.findViewById(R.id.tv_product_tax_value)
         val totalTitle: TextView? = itemView.findViewById(R.id.tv_product_total)
         val total: TextView? = itemView.findViewById(R.id.tv_product_tax_total)
+        val promoHeader: TextView? = itemView.findViewById(R.id.tv_promo_amount)
+        val promoValue: TextView? = itemView.findViewById(R.id.tv_promo_amount_value)
+        val subHeader: TextView? = itemView.findViewById(R.id.tv_promo_total)
+        val subValue: TextView? = itemView.findViewById(R.id.tv_promo_total_value)
         val img: ImageView? = itemView.findViewById(R.id.iv_image)
         val plus: View? = itemView.findViewById(R.id.btn_plus)
         val minus: View? = itemView.findViewById(R.id.btn_minus)
@@ -330,7 +438,7 @@ class BuyActivity : BaseActivity() {
             if (item == null)
                 return
             name?.text = item.name
-            price?.text = getPrice(item.currencyType, item.getAmount())
+            price?.text = getPrice(item.currencyType, item.calculatePrice())
             //price?.text = "${item.currencyType} ${item.getAmount()}"
             quantity?.text = "${item.quantity}"
             if (item.image != null && item.image!!.isNotEmpty()) {
@@ -352,9 +460,26 @@ class BuyActivity : BaseActivity() {
                 total?.text = getPrice(item.currencyType, item.getTotal())
                 vat?.text = getPrice(item.currencyType, item.getVat())
 
-                if(item.quantityDisable){
+                if (item.quantityDisable) {
                     plus?.visibility = View.INVISIBLE
                     minus?.visibility = View.INVISIBLE
+                }
+
+                if (item.havePromo()) {
+                    promoHeader?.visibility = View.VISIBLE
+                    promoValue?.visibility = View.VISIBLE
+                    subHeader?.visibility = View.VISIBLE
+                    subValue?.visibility = View.VISIBLE
+                    promoValue?.text = promoValue?.context?.getString(
+                        R.string.promo_value,
+                        getPrice(item.currencyType, item.getPromo())
+                    )
+                    subValue?.text = getPrice(item.currencyType, item.getTotalAmount())
+                } else {
+                    promoHeader?.visibility = View.GONE
+                    promoValue?.visibility = View.GONE
+                    subHeader?.visibility = View.GONE
+                    subValue?.visibility = View.GONE
                 }
                 // vat?.setText("${item.currencyType} ${item.getVat()}")
 
@@ -367,6 +492,28 @@ class BuyActivity : BaseActivity() {
                 total?.text = getPrice(item.currencyType, item.getTotal())
                 vat?.text = getPrice(item.currencyType, item.getVat())
 
+                if (item.quantityDisable) {
+                    plus?.visibility = View.INVISIBLE
+                    minus?.visibility = View.INVISIBLE
+                }
+
+                if (item.havePromo()) {
+                    promoHeader?.visibility = View.VISIBLE
+                    promoValue?.visibility = View.VISIBLE
+                    subHeader?.visibility = View.VISIBLE
+                    subValue?.visibility = View.VISIBLE
+                    promoValue?.text = promoValue?.context?.getString(
+                        R.string.promo_value,
+                        getPrice(item.currencyType, item.getPromo())
+                    )
+                    subValue?.text = getPrice(item.currencyType, item.getTotalAmount())
+                } else {
+                    promoHeader?.visibility = View.GONE
+                    promoValue?.visibility = View.GONE
+                    subHeader?.visibility = View.GONE
+                    subValue?.visibility = View.GONE
+                }
+
 //                total?.setText("${item.currencyType} ${item.getTotal()}")
 //                vat?.setText("${item.currencyType} ${item.getVat()}")
 
@@ -375,16 +522,29 @@ class BuyActivity : BaseActivity() {
                 vat?.visibility = View.GONE
                 totalTitle?.visibility = View.GONE
                 total?.visibility = View.GONE
+
+                //promo
+                promoHeader?.visibility = View.GONE
+                promoValue?.visibility = View.GONE
+                subHeader?.visibility = View.GONE
+                subValue?.visibility = View.GONE
             }
             plus?.setOnClickListener {
                 if (item.quantity < 10) {
                     item.quantity++
                     //price?.text = "${item.currencyType} ${item.getAmount()}"
-                    price?.text = getPrice(item.currencyType, item.getAmount())
+                    price?.text = getPrice(item.currencyType, item.calculatePrice())
                     quantity?.text = "${item.quantity}"
                     if (item.isService || item.isPackage) {
                         total?.text = getPrice(item.currencyType, item.getTotal())
                         vat?.text = getPrice(item.currencyType, item.getVat())
+                        if (promoValue?.visibility == View.VISIBLE && subValue?.visibility == View.VISIBLE) {
+                            promoValue?.text = promoValue?.context?.getString(
+                                R.string.promo_value,
+                                getPrice(item.currencyType, item.getPromo())
+                            )
+                            subValue?.text = getPrice(item.currencyType, item.getTotalAmount())
+                        }
                     }
                     listener?.onItemClicked(item, adapterPosition)
                 }
@@ -393,11 +553,19 @@ class BuyActivity : BaseActivity() {
             minus?.setOnClickListener {
                 if (item.quantity > 1) {
                     item.quantity--
-                    price?.text = getPrice(item.currencyType, item.getAmount())
+                    price?.text = getPrice(item.currencyType, item.calculatePrice())
                     quantity?.text = "${item.quantity}"
                     if (item.isService || item.isPackage) {
                         total?.text = getPrice(item.currencyType, item.getTotal())
                         vat?.text = getPrice(item.currencyType, item.getVat())
+
+                        if (promoValue?.visibility == View.VISIBLE && subValue?.visibility == View.VISIBLE) {
+                            promoValue?.text = promoValue?.context?.getString(
+                                R.string.promo_value,
+                                getPrice(item.currencyType, item.getPromo())
+                            )
+                            subValue?.text = getPrice(item.currencyType, item.getTotalAmount())
+                        }
                     }
                     listener?.onItemClicked(item, adapterPosition)
                 }
@@ -786,6 +954,57 @@ class BuyActivity : BaseActivity() {
 
         } else {
             Toasty.info(this, getString(R.string.unable_to_process)).show()
+        }
+    }
+
+    private fun applyPromo(isService: Boolean, serviceId: Int, promo: String) {
+        if (promo.isEmpty() || serviceId < 1)
+            return
+        val member = Prefs.get(this).member ?: return
+        getDialog()?.show()
+        //val date = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
+        val data = if (isService)
+            CheckPromo.createService(cartItem?.startDate, member.id, serviceId, promo)
+        else CheckPromo.createPackage(cartItem?.startDate, member.id, serviceId, promo)
+        API.request.getApi().checkPromoCode(CheckPromo(data, member.accessToken))
+            .enqueue(object : Callback<PromoResponse> {
+                override fun onFailure(call: Call<PromoResponse>, t: Throwable) {
+                    getDialog()?.dismiss()
+                }
+
+                override fun onResponse(
+                    call: Call<PromoResponse>,
+                    response: Response<PromoResponse>
+                ) {
+                    getDialog()?.dismiss()
+                    if (response.body()?.isSuccess() == true) {
+                        cartAdapters?.applyPromo(response?.body()?.data, promo)
+                        promoDialog(response?.body()?.data)
+                        // Toasty.snackbar(et_promo, "Promo Code applied!")
+                    } else {
+                        cartAdapters?.applyPromo(null, "")
+                        val err = response.body()?.errors
+                        if (err != null && err.isNotEmpty()) {
+                            Toasty.snackbar(et_promo, err?.get(0)?.message ?: "Invalid promo code")
+                        } else {
+                            Toasty.snackbar(et_promo, "Invalid promo code")
+                        }
+                    }
+
+                }
+
+            })
+    }
+
+    fun promoDialog(data: PromoResponse.Promo?) {
+        if (data != null) {
+            var text = ""
+            if (data.isFLat()) {
+                text = data.currencyType + " " + data.promoValue
+            } else if (data.isPercent()) {
+                text = data.promoValue + " %"
+            }
+            PromoDialog(text).show(supportFragmentManager, "PromoDialog")
         }
     }
 

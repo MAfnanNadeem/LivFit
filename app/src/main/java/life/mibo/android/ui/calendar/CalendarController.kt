@@ -20,6 +20,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.calories.CaloriesData
+import life.mibo.android.models.login.Member
 import life.mibo.android.models.member.MemberCalendar
 import life.mibo.android.models.member.MemberCalendarPost
 import life.mibo.android.models.trainer.TrainerCalendarResponse
@@ -166,10 +167,10 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
     }
 
 
-    fun getCalender() {
-        val member =
-            Prefs.get(this.fragment.context).member
-                ?: return
+    fun getCalender(member: Member?) {
+        if (member == null)
+            return
+        //  val member = Prefs.get(this.fragment.context).member  ?: return
 
         if (!member.isMember()) {
             getTrainerCalender(member)
@@ -204,9 +205,9 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
                 val data = response.body()
                 if (data != null && data.isSuccess()) {
                     //  parseData(data)
-                    observer.onCalendar(data.data)
+                    observer.onMemberCalendar(data.data)
                 } else {
-                    observer.onCalendar(null)
+                    observer.onMemberCalendar(null)
                     val err = data?.errors?.get(0)?.message
                     if (err.isNullOrEmpty())
                         Toasty.error(fragment.requireContext(), R.string.error_occurred).show()

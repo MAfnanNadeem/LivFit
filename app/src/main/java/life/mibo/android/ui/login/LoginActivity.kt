@@ -17,6 +17,7 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.database.Database
 import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
+import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import java.util.concurrent.TimeUnit
@@ -275,6 +276,7 @@ class LoginActivity : BaseActivity() {
         log("clear db")
         Prefs.get(this).clear()
         Database.getInstance(this).clearAll()
+        Calculate.clearBioData()
     }
 
     override fun onPause() {

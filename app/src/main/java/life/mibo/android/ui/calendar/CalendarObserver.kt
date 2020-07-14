@@ -16,7 +16,7 @@ import life.mibo.android.ui.home.HomeItem
 
 interface CalendarObserver {
     fun onDataReceived(list: ArrayList<CaloriesData>)
-    fun onCalendar(list: List<MemberCalendar.Data?>?)
+    fun onMemberCalendar(list: List<MemberCalendar.Data?>?)
     fun onTrainerCalendar(data: TrainerCalendarResponse.Data?)
     fun onItemClicked(item: HomeItem?)
     fun onMonthChanged(calender: CalendarMonth)

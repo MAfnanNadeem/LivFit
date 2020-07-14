@@ -45,6 +45,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@string/font_roboto_regular</item>
     </style>
+
     <style name="Material.FullScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -56,6 +57,21 @@
         <!--        <item name="android:windowLightStatusBar">true</item>-->
 
     </style>
+
+    <style name="Material.TransparentFull" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@string/font_roboto_regular</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--        <item name="android:iconTint">@android:color/white</item>-->
+    </style>
+
     <style name="Register.FullScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/textColorApp</item>
@@ -63,7 +79,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/textColorApp</item>
         <item name="android:fontFamily">@string/font_roboto_regular</item>
-<!--        <item name="android:windowLightStatusBar">true</item>-->
+        <!--        <item name="android:windowLightStatusBar">true</item>-->
 
     </style>
 
@@ -92,6 +108,15 @@
         <item name="colorControlActivated">@color/grey_ddd</item>
     </style>
 
+
+    <style name="PromoCodeHint" parent="TextAppearance.AppCompat">
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:textColorHint">@color/textColor2</item>
+        <item name="colorControlNormal">@color/textColor</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
     <style name="TextLabelAddress" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
         <item name="android:textColorHint">@color/grey</item>
@@ -107,6 +132,7 @@
         <item name="colorControlNormal">@color/transparent</item>
         <item name="colorControlActivated">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="android:textColorHint">@color/textColor2</item>
 
     </style>
 

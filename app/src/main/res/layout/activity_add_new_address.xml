@@ -47,15 +47,17 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/addNewCard"
+        app:layout_constraintBottom_toTopOf="@id/btn_save"
         app:layout_constraintWidth_percent="0.7">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_margin="@dimen/grid_2x"
             android:orientation="vertical">
@@ -172,22 +174,23 @@
                 app:ccp_dialogTextColor="@color/white"
                 android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/btn_save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/grid_2x"
-                android:layout_marginEnd="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_2x"
-                android:background="@drawable/login_button_accent"
-                android:text="@string/save_address"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.7" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:layout_marginEnd="@dimen/grid_2x"
+        android:layout_marginBottom="@dimen/grid_2x"
+        android:background="@drawable/login_button_accent"
+        android:text="@string/save_address"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

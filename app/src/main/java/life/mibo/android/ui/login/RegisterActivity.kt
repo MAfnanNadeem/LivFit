@@ -20,7 +20,6 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.dialog.MyDialog
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.utils.Toasty
-import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
 
 
@@ -171,11 +170,15 @@ class RegisterActivity : AppCompatActivity() {
 
         et_password?.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                // pwd_view?.visibility = View.VISIBLE
-                Utils.show(pwd_view)
+                pwd_view?.visibility = View.VISIBLE
+                // Utils.show(pwd_view)
             } else {
-                Utils.hide(pwd_view)
-                // pwd_view?.visibility = View.GONE
+//                Utils.hide(pwd_view)
+//                Single.just("").delay(700, TimeUnit.MILLISECONDS)
+//                    .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
+//                    pwd_view?.visibility = View.GONE
+//                }.subscribe()
+                pwd_view?.visibility = View.GONE
             }
         }
         et_password?.doOnTextChanged { text, start, before, count ->
@@ -183,6 +186,22 @@ class RegisterActivity : AppCompatActivity() {
                 validatePwd(text?.toString())
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+
+        et_confirm_password?.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                if (et_confirm_password?.text?.isEmpty() == true)
+                    tv_confirm_password?.visibility = View.GONE
+            } else {
+
+            }
+        }
+        et_confirm_password?.doOnTextChanged { text, start, before, count ->
+            try {
+                checkPwd(et_password?.text?.toString() ?: "", text.toString())
+            } catch (e: Exception) {
+
             }
         }
         colorGreen = ContextCompat.getColor(this, R.color.textColorGreen)
@@ -254,8 +273,15 @@ class RegisterActivity : AppCompatActivity() {
             }
             pwdIndicator = result
 
+            tv_confirm_password?.visibility = View.GONE
 
         }
+    }
+
+    fun checkPwd(old: String, new: String) {
+        if (old.isNotEmpty() && old == new)
+            tv_confirm_password?.visibility = View.GONE
+        else tv_confirm_password?.visibility = View.VISIBLE
     }
 
     var pwdIndicator = 0

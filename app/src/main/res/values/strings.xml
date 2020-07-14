@@ -3,7 +3,7 @@
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="mibo_world">MI.BO. World</string>
-    <string name="app_name_version">MI.BO. LivFit  v0.1.19</string>
+    <string name="app_name_version">MI.BO. LivFit  v0.1.21</string>
     <string name="app_version">0.1.18</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
@@ -39,6 +39,7 @@
     <!--  DON NOT TRANSLATE END  -->
 
     <string name="unable_to_connect">Unable to connect</string>
+    <string name="no_internet">No internet connection!</string>
     <string name="error_occurred">An error occurred</string>
 
     <string name="title_home">Home</string>
@@ -74,6 +75,7 @@
     <string name="enter_area_number">Area Code is Mandatory</string>
     <string name="email_not_valid">Enter a valid email address in the format: yourname@example.com</string>
     <string name="confirm_password_not_matched">Password does not match the confirm password</string>
+    <string name="confirm_password_not_match">* Confirm password does not match</string>
     <string name="password_requirement2">Password must be 8 characters, contains at least one upper &amp; lower case, digit and special character.</string>
     <string name="password_requirement">Passwords must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special character.</string>
     <string name="otp_not_sent">Unable to send OTP</string>
@@ -148,6 +150,7 @@
     <string name="logout_message">Are You Sure You Want to Log Out?</string>
     <string name="logout_dialog">Confirm Logout</string>
     <string name="no_data_found">No Data Found</string>
+    <string name="no_client_found">No Client Found</string>
     <string name="no_session_found">No Sessions Found</string>
     <string name="user_has_no_service">This user has not added any services yet</string>
     <string name="no_heart_rate_data">No Heart Rate Data Available</string>
@@ -276,6 +279,7 @@
     <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>
     <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
 
     <string name="calories">Calories</string>
     <string name="all_images">All Images</string>
@@ -491,6 +495,7 @@
     <string name="manufactor_name">Manufactor Name</string>
     <string name="validity">Validity:</string>
     <string name="products">Products</string>
+    <string name="product">Product</string>
     <string name="packages">Packages</string>
     <string name="shipping_address">Delivery Address</string>
     <string name="shipping_service_address">Billing Address</string>
@@ -499,15 +504,18 @@
     <string name="your_cart_place">Place Your Order</string>
     <string name="invalid_amount">Invalid Amount</string>
     <string name="select_shipping_address">Select shipping address</string>
-    <string name="apply_promo_code">Apply promo code</string>
+    <string name="apply_promo_code">Apply Promo Code</string>
     <string name="add_new_address">Add New Address</string>
     <string name="promo_code">Promo Code</string>
-    <string name="add_new_shipping_address">Add a New Shipping Address</string>
-    <string name="update_shipping_address">Update Shipping Address</string>
+    <string name="add_new_shipping_address">Add a new address</string>
+    <string name="update_shipping_address">Update address</string>
     <string name="save_address">Save Address</string>
     <string name="update_address">Update Address</string>
     <string name="total">Total:</string>
     <string name="vat_tax">VAT:</string>
+    <string name="promo_amount">Promo:</string>
+    <string name="promo_value"><b>-</b> %s</string>
+    <string name="sub_total_amount">Sub Total:</string>
     <string name="pay_now">Pay Now</string>
     <string name="customer_information_s">Customer Information\'s</string>
     <string name="package_information_s">Package Information\'s</string>
@@ -625,12 +633,36 @@
     <string name="disconnected">Disconnected</string>
     <string name="google_fit_logout">Are You Sure You Want to Disconnect Google Fit?</string>
     <string name="location_required">Location Required</string>
+    <string name="location">Location</string>
+    <string name="promo_service_ends_on">Promo Service \n end\'s on %s</string>
+    <string name="months">Months</string>
     <string name="location_required_text">Please enable location to scan BLE devices</string>
     <string name="samsung">Samsung Health</string>
     <string name="order_">Order#</string>
     <string name="sub_total_">Sub Total:</string>
     <string name="status">Status</string>
     <string name="payment_status">Payment Status:</string>
+    <string name="purchased_by">Purchased By:</string>
+    <string name="provided_by">Provided By</string>
+    <string name="view_measurement">View Measurement</string>
+    <string name="session_history">Session History</string>
+    <string name="view_sessions">View Sessions</string>
+    <string name="my_summary">My %s</string>
+    <string name="enter_promo">Enter Promo Code to apply</string>
+    <string name="congrats_promo_applied">Promo Code applied \n successfully.</string>
+    <string name="service_start_date">Service Start Date %s</string>
+    <string name="service_end_date">Service End Date %s</string>
+    <string name="contract">Contract</string>
+    <string name="package_details">Package Details</string>
+    <string name="package_includes">Package Includes</string>
+    <string name="remaining">Remaining</string>
+    <string name="expire_on">Expire On</string>
+    <string name="service_name">Service Name</string>
+    <string name="clients">My Clients</string>
+    <string name="add">Add</string>
+    <string name="program_name">Program</string>
+    <string name="service">Service</string>
+    <string name="conducuted_by">Trainer</string>
 
     <!-- customer reviews -->
     <string-array name="names">

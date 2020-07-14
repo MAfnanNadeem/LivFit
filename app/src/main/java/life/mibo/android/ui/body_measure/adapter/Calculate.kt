@@ -47,6 +47,9 @@ object Calculate {
     }
 
     fun getBioData() = bioData
+    fun clearBioData() {
+        bioData = null
+    }
 
     private var bioData: Biometric.Data? = null
 

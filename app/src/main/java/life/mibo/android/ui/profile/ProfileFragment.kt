@@ -132,25 +132,25 @@ class ProfileFragment : BaseFragment() {
         }
 
         try {
-            val mnt = Prefs.get(this.context).get("calories_session_hours", 0)
-            val ses = Prefs.get(this.context).get("calories_session", 0)
-            val cal = Prefs.get(this.context).get("calories_burnt", 0)
+            val sec = Prefs.get(this.context).get(Prefs.CALORIES_HOUR, 0)
+            val ses = Prefs.get(this.context).get(Prefs.CALORIES_SESSION, 0)
+            val cal = Prefs.get(this.context).get(Prefs.CALORIES, 0)
 
 
             when {
-                mnt > 60 -> {
+                sec > 3600 -> {
                     tv_hour_title?.setText(R.string.hours)
-                    tv_hour?.setText("${mnt.div(60)}")
+                    tv_hour?.setText("${sec.div(3600.0)}")
 
                 }
-                mnt > 0 -> {
+                sec > 60 -> {
                     tv_hour_title?.setText(R.string.minutes)
-                    tv_hour?.setText("$mnt")
+                    tv_hour?.setText("${sec.div(60)}")
 
                 }
                 else -> {
                     tv_hour_title?.setText(R.string.hours)
-                    tv_hour?.setText("$mnt")
+                    tv_hour?.setText("$sec")
                 }
             }
 

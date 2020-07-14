@@ -218,6 +218,14 @@
         android:name="life.mibo.android.ui.trainer.MySalesFragment"
         android:label="@string/my_sales" />
     <fragment
+        android:id="@+id/navigation_view_measure"
+        android:name="life.mibo.android.ui.member.ViewMeasureFragment"
+        android:label="@string/measurement" />
+    <fragment
+        android:id="@+id/navigation_view_session"
+        android:name="life.mibo.android.ui.member.ViewSessionsFragment"
+        android:label="@string/session_history" />
+    <fragment
         android:id="@+id/navigation_my_clients"
         android:name="life.mibo.android.ui.trainer.MyClientsFragment"
         android:label="@string/my_customers" />

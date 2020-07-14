@@ -129,34 +129,101 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
+                        android:theme="@style/TextInputLayoutStyle2"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/grid_1x"
                         android:layout_weight="0.25">
 
-                        <com.google.android.material.textfield.TextInputEditText
+                        <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/et_promo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/grid_2x"
-                            android:fontFamily="@string/font_sans_serif"
+                            android:layout_marginStart="@dimen/grid_2x"
+                            android:layout_marginTop="@dimen/grid_2x"
+                            android:fontFamily="@string/font_roboto_medium"
                             android:hint="@string/promo_code"
                             android:inputType="text"
                             android:lines="1"
                             android:textColor="@color/textColor"
-                            android:textColorHint="@color/textColor"
                             android:textSize="@dimen/text_size_medium" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/promo_apply"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:background="@drawable/bg_round_button"
+                        android:layout_gravity="center"
+                        android:minWidth="0dp"
+                        android:src="@drawable/check_mark"
+                        android:tint="@color/white" />
+
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/contract"
+                android:textColor="@color/textColorApp"
+                android:textSize="@dimen/text_size_large" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardContract"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_2x"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/grid_1x">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/grid_2x"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_date_start"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/service_start_date"
+                            android:textColor="@color/textColor" />
+
+                        <TextView
+                            android:id="@+id/tv_date_end"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/service_end_date"
+                            android:textColor="@color/textColor" />
+
+                    </LinearLayout>
 
                     <ImageView
-                        android:id="@+id/promo_apply"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.75"
-                        android:src="@drawable/check_mark" />
+                        android:id="@+id/tv_date_update"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="@dimen/grid_1x"
+                        android:src="@drawable/ic_dashboard_calendar"
+                        android:tint="@color/textColor2" />
+
+
                 </LinearLayout>
 
 

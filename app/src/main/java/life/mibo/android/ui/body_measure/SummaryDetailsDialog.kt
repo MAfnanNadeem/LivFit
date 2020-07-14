@@ -38,7 +38,6 @@ import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 
 class SummaryDetailsDialog(
@@ -60,7 +59,7 @@ class SummaryDetailsDialog(
         super.onViewCreated(view, savedInstanceState)
 
         var header: TextView? = view?.findViewById(R.id.tv_title)
-        var title: TextView? = view?.findViewById(R.id.tv_value_text)
+        //var title: TextView? = view?.findViewById(R.id.tv_value_text)
         var value: TextView? = view?.findViewById(R.id.tv_value)
         var unit: TextView? = view?.findViewById(R.id.tv_value_unit)
         var gender: TextView? = view?.findViewById(R.id.tv_gender)
@@ -84,11 +83,12 @@ class SummaryDetailsDialog(
             return
         }
         val titleText =  getTitle(data?.title?.trim()?.toLowerCase())
-        title?.text = titleText
+        //title?.text = titleText
         value?.text = String.format("%.2f", data?.value)
         unit?.text = "${data?.unit}"
         normal?.text = "${data?.normal}"
-        header?.text = "My $titleText"
+        header?.text = getString(R.string.my_summary, titleText)
+        //header?.text = "My $titleText"
 
         data?.iconRes?.let {
             image?.setImageResource(it)
@@ -197,104 +197,104 @@ class SummaryDetailsDialog(
         return title
     }
 
-    private fun setupChart(chart: BarChart?) {
-        if (chart != null) {
-
-            val list = ArrayList<BarEntry>()
-            list.add(BarEntry(1f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(2f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(3f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(4f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(5f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(6f, Random.nextInt(100).toFloat()))
-            list.add(BarEntry(7f, Random.nextInt(100).toFloat()))
-
-            val set1: BarDataSet
-
-            if (chart.data != null &&
-                chart.data.dataSetCount > 0
-            ) {
-                set1 = chart.data.getDataSetByIndex(0) as BarDataSet
-                set1.values = list
-                chart.data.notifyDataChanged()
-                chart.notifyDataSetChanged()
-            } else {
-
-                //chart.setOnChartValueSelectedListener(this)
-
-                chart.setDrawBarShadow(false)
-                chart.setDrawValueAboveBar(false)
-                chart.description.isEnabled = false
-                // chart.setMaxVisibleValueCount(60)
-                chart.setPinchZoom(false)
-                chart.setTouchEnabled(false)
-                chart.setScaleEnabled(false)
-
-                chart.setDrawGridBackground(false)
-                // chart.setDrawYLabels(false);
-
-                // chart.setDrawYLabels(false);
-                //bottom
-                val xFormat: ValueFormatter = MyXFormatter(ArrayList())
-                val xAxis = chart.xAxis
-                xAxis.position = XAxisPosition.BOTTOM
-                //xAxis.typeface = tfLight
-                xAxis.setDrawGridLines(false)
-                xAxis.granularity = 1f // only intervals of 1 day
-                xAxis.textColor = Color.WHITE
-                xAxis.labelCount = 7
-                xAxis.valueFormatter = xFormat
-
-                //left
-                val yFormat: ValueFormatter = MyYFormatter()
-                val leftAxis = chart.axisLeft
-                leftAxis.setLabelCount(8, false)
-                leftAxis.valueFormatter = yFormat
-                leftAxis.setPosition(YAxisLabelPosition.OUTSIDE_CHART)
-                leftAxis.spaceTop = 10f
-                leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-                leftAxis.textColor = Color.WHITE
-
-                chart.axisRight.isEnabled = false
-//                val rightAxis = chart.axisRight
-//                rightAxis.setDrawGridLines(false)
-//                rightAxis.setLabelCount(8, false)
-//                rightAxis.valueFormatter = custom
-//                rightAxis.spaceTop = 15f
-//                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
-
-
-                val l = chart.legend
-                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-                l.orientation = Legend.LegendOrientation.HORIZONTAL
-                l.setDrawInside(false)
-                l.form = LegendForm.CIRCLE
-                l.formSize = 20f
-                l.textSize = 18f
-                l.textColor = Color.WHITE
-                l.xEntrySpace = 4f
-
-//                val mv = XYMarkerView(this, xAxisFormatter)
-//                mv.setChartView(chart) // For bounds control
-//                chart.marker = mv // Set the marker to the chart
-
-                set1 = BarDataSet(list, data?.title)
-                set1.setDrawIcons(false)
-                set1.setColor(data!!.imageColor, 150)
-                val dataSets = ArrayList<IBarDataSet>()
-                dataSets.add(set1)
-                val data = BarData(dataSets)
-                //data.setValueTextSize(10f)
-                // data.setValueTextColor(Color.WHITE)
-                data.barWidth = 0.5f
-                data.setDrawValues(false)
-                chart.data = data
-                chart.animateXY(500, 500)
-            }
-
-        }
-    }
+//    private fun setupChart(chart: BarChart?) {
+//        if (chart != null) {
+//
+//            val list = ArrayList<BarEntry>()
+//            list.add(BarEntry(1f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(2f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(3f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(4f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(5f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(6f, Random.nextInt(100).toFloat()))
+//            list.add(BarEntry(7f, Random.nextInt(100).toFloat()))
+//
+//            val set1: BarDataSet
+//
+//            if (chart.data != null &&
+//                chart.data.dataSetCount > 0
+//            ) {
+//                set1 = chart.data.getDataSetByIndex(0) as BarDataSet
+//                set1.values = list
+//                chart.data.notifyDataChanged()
+//                chart.notifyDataSetChanged()
+//            } else {
+//
+//                //chart.setOnChartValueSelectedListener(this)
+//
+//                chart.setDrawBarShadow(false)
+//                chart.setDrawValueAboveBar(false)
+//                chart.description.isEnabled = false
+//                // chart.setMaxVisibleValueCount(60)
+//                chart.setPinchZoom(false)
+//                chart.setTouchEnabled(false)
+//                chart.setScaleEnabled(false)
+//
+//                chart.setDrawGridBackground(false)
+//                // chart.setDrawYLabels(false);
+//
+//                // chart.setDrawYLabels(false);
+//                //bottom
+//                val xFormat: ValueFormatter = MyXFormatter(ArrayList())
+//                val xAxis = chart.xAxis
+//                xAxis.position = XAxisPosition.BOTTOM
+//                //xAxis.typeface = tfLight
+//                xAxis.setDrawGridLines(false)
+//                xAxis.granularity = 1f // only intervals of 1 day
+//                xAxis.textColor = Color.WHITE
+//                xAxis.labelCount = 7
+//                xAxis.valueFormatter = xFormat
+//
+//                //left
+//                val yFormat: ValueFormatter = MyYFormatter()
+//                val leftAxis = chart.axisLeft
+//                leftAxis.setLabelCount(8, false)
+//                leftAxis.valueFormatter = yFormat
+//                leftAxis.setPosition(YAxisLabelPosition.OUTSIDE_CHART)
+//                leftAxis.spaceTop = 10f
+//                leftAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
+//                leftAxis.textColor = Color.WHITE
+//
+//                chart.axisRight.isEnabled = false
+////                val rightAxis = chart.axisRight
+////                rightAxis.setDrawGridLines(false)
+////                rightAxis.setLabelCount(8, false)
+////                rightAxis.valueFormatter = custom
+////                rightAxis.spaceTop = 15f
+////                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
+//
+//
+//                val l = chart.legend
+//                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+//                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+//                l.orientation = Legend.LegendOrientation.HORIZONTAL
+//                l.setDrawInside(false)
+//                l.form = LegendForm.CIRCLE
+//                l.formSize = 20f
+//                l.textSize = 18f
+//                l.textColor = Color.WHITE
+//                l.xEntrySpace = 4f
+//
+////                val mv = XYMarkerView(this, xAxisFormatter)
+////                mv.setChartView(chart) // For bounds control
+////                chart.marker = mv // Set the marker to the chart
+//
+//                set1 = BarDataSet(list, data?.title)
+//                set1.setDrawIcons(false)
+//                set1.setColor(data!!.imageColor, 150)
+//                val dataSets = ArrayList<IBarDataSet>()
+//                dataSets.add(set1)
+//                val data = BarData(dataSets)
+//                //data.setValueTextSize(10f)
+//                // data.setValueTextColor(Color.WHITE)
+//                data.barWidth = 0.5f
+//                data.setDrawValues(false)
+//                chart.data = data
+//                chart.animateXY(500, 500)
+//            }
+//
+//        }
+//    }
 
     private fun setupChart(chart: BarChart?, list: ArrayList<BarEntry>, dates: ArrayList<String>) {
         Logger.e("setupChart chart $chart size ${list.size}")
@@ -355,22 +355,23 @@ class SummaryDetailsDialog(
 //                rightAxis.axisMinimum = 0f // this replaces setStartAtZero(true)
 
 
-                val l = chart.legend
-                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
-                l.orientation = Legend.LegendOrientation.HORIZONTAL
-                l.setDrawInside(false)
-                l.form = LegendForm.CIRCLE
-                l.formSize = 20f
-                l.textSize = 18f
-                l.textColor = Color.WHITE
-                l.xEntrySpace = 4f
+//                val l = chart.legend
+//                l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+//                l.horizontalAlignment = Legend.LegendHorizontalAlignment.LEFT
+//                l.orientation = Legend.LegendOrientation.HORIZONTAL
+//                l.setDrawInside(false)
+//                l.form = LegendForm.CIRCLE
+//                l.formSize = 20f
+//                l.textSize = 18f
+//                l.textColor = Color.WHITE
+//                l.xEntrySpace = 4f
+                chart.legend?.isEnabled = false
 
 //                val mv = XYMarkerView(this, xAxisFormatter)
 //                mv.setChartView(chart) // For bounds control
 //                chart.marker = mv // Set the marker to the chart
 
-                set1 = BarDataSet(list, data?.title)
+                set1 = BarDataSet(list, "")
                 set1.setDrawIcons(false)
                 set1.setColor(data!!.imageColor, 200)
                 val dataSets = ArrayList<IBarDataSet>()
@@ -522,7 +523,8 @@ class SummaryDetailsDialog(
     class MyYFormatter() : ValueFormatter() {
 
         override fun getFormattedValue(value: Float): String {
-            return super.getFormattedValue(value)
+            return String.format("%.2f", value)
+            //return super.getFormattedValue(value)
         }
     }
 

@@ -76,13 +76,5 @@ class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data)
         var wrist: Double?
     ) : BaseModel
 
-    data class CreatedAt(
-        @SerializedName("date")
-        var date: String?,
-        @SerializedName("timezone")
-        var timezone: String?,
-        @SerializedName("timezone_type")
-        var timezoneType: String?
-    ) : Serializable
 
 }

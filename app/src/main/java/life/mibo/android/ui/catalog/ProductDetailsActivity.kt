@@ -18,6 +18,8 @@ import life.mibo.android.models.catalog.Product
 import life.mibo.android.models.catalog.Services
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.body_measure.adapter.Calculate
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ProductDetailsActivity : BaseActivity() {
@@ -85,13 +87,15 @@ class ProductDetailsActivity : BaseActivity() {
     var isAvailableForSale = true
     fun setup(data: Product) {
         //if (data?.type == 2)
+        val desc = data.description + "\n" + data.shortForm + "\n" + data.longForm
         tv_product_name?.text = data.productName
-        tv_product_desc?.text = data.description
+        //tv_product_desc?.text = data.description
         //tv_product_desc_full?.text = data.longForm
-        tv_product_long_desc?.text = data.longForm
+        //tv_product_long_desc?.text = data.longForm
+        tv_product_long_desc?.text = desc
         tv_product_location?.text = getString(R.string.on_your_address)
         tv_product_quantity_value?.text = "$quantity"
-        tv_product_price_value?.text = data.unitPrice ?: "0.0"
+        tv_product_price_value?.text = data.currency + " " + data.unitPrice
         tv_product_manf_name?.text = "${data.manufacturerName}"
 
         tv_product_session?.visibility = GONE
@@ -133,10 +137,29 @@ class ProductDetailsActivity : BaseActivity() {
 //        list.add(R.drawable.ic_rxl_pods_icon_200)
 
         //userImage?.setImages(list)
-        if (data.subImages == null || data.subImages.isNullOrEmpty()) {
-            userImage?.setUrls(arrayListOf(""))
-        } else
-            userImage?.setUrls(data.subImages)
+        val images = ArrayList<String>()
+        // if(product.image? != null)
+        product?.image?.let {
+            if (it.isNotEmpty())
+                images.add(it)
+        }
+
+        data.subImages?.let {
+            for (img in data.subImages!!) {
+                if (img != null)
+                    images.add(img)
+            }
+        }
+//        if (data.subImages != null || data.subImages!!.isNotEmpty()) {
+//            for (img in data.subImages!!) {
+//
+//                images.add(img)
+//            }
+//
+//        }
+
+        userImage?.setUrls(images)
+
         log("images >> ${data.subImages}")
         btn_buy_now?.isEnabled = isAvailableForSale
         btn_buy_now?.setOnClickListener {
@@ -151,16 +174,21 @@ class ProductDetailsActivity : BaseActivity() {
     fun setup(data: Services.Data) {
         //if (data?.type == 2)
         tv_product_name?.text = data.name
-        tv_product_desc?.text = data.description
+        //tv_product_desc?.text = data.description
         //tv_product_desc_full?.text = data.longForm
         tv_product_long_desc?.text = data.description
         //tv_product_location?.text = "add your address"
         tv_product_quantity_value?.text = "$quantity"
         tv_product_price_value?.text = "${data?.currencyType} ${data?.currency}"
         tv_product_session_value?.text = "${data?.noOfSession}"
-        tv_product_validity_value?.text = "${data?.validity} Months"
-        tv_product_location?.text = "Location ${data?.locationType}"
-        tv_product_manf?.text = "Professional Name"
+        if (data.promoService == 1) {
+            tv_product_validity_value?.text =
+                getString(R.string.promo_service_ends_on, data.endDate)
+        } else {
+            tv_product_validity_value?.text = "${data?.validity} " + getString(R.string.months)
+        }
+        tv_product_location?.text = "${data?.locationType}"
+        tv_product_manf?.text = getString(R.string.provided_by)
         tv_product_manf_name?.text = "${data.createdBy}"
         // tv_product_review?.setText(R.string.service_review)
 
@@ -191,17 +219,30 @@ class ProductDetailsActivity : BaseActivity() {
     fun setup(data: Packages.Data) {
         //if (data?.type == 2)
         tv_product_name?.text = data.name
-        tv_product_desc?.text = data.description
+        //tv_product_desc?.text = data.description
         //tv_product_desc_full?.text = data.longForm
         tv_product_long_desc?.text = data.description
-        tv_product_location?.text = "add your address"
+        tv_product_location?.text = getString(R.string.on_your_address)
         tv_product_quantity_value?.text = "$quantity"
         tv_product_price_value?.text = "${data?.currencyType} ${data?.price}"
 //        tv_product_session_value?.text = "${data?.noOfSession}"
 //        tv_product_validity_value?.text = "${data?.validity} Months"
 //        tv_product_location?.text = "Location ${data?.locationType}"
-        tv_product_manf?.text = "Created By"
+        tv_product_manf?.text = getString(R.string.provided_by)
         tv_product_manf_name?.text = "${data.createdBy}"
+
+        view_package?.visibility = View.VISIBLE
+
+        tv_pkg_prod_name?.text = data?.products?.productName
+        tv_pkg_prod_desc?.text = data?.products?.productDescription
+
+        val serv = data?.services
+        tv_pkg_serv_name?.text = serv?.name
+        tv_pkg_serv_desc?.text = serv?.serviceDescription
+        tv_pkg_serv_ses_val?.text = "${serv?.noOfSession}"
+        tv_pkg_serv_valid_val?.text = "${serv?.validity} " + getString(R.string.months)
+        tv_pkg_serv_loc?.text = "${data?.location}"
+
         // tv_product_review?.setText(R.string.service_review)
 
 
@@ -269,6 +310,19 @@ class ProductDetailsActivity : BaseActivity() {
     private fun buyClicked(services: Services.Data) {
         try {
             val list = ArrayList<CartItem>()
+            val cal = Calendar.getInstance()
+            val start =
+                "${cal.get(Calendar.YEAR)}-${String.format(
+                    "%02d",
+                    cal.get(Calendar.MONTH).plus(1)
+                )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+            cal.add(Calendar.MONTH, services.validity ?: 1)
+            val end =
+                "${cal.get(Calendar.YEAR)}-${String.format(
+                    "%02d",
+                    cal.get(Calendar.MONTH).plus(1)
+                )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+
             val cart = CartItem(
                 services.id!!,
                 services.name,
@@ -278,6 +332,11 @@ class ProductDetailsActivity : BaseActivity() {
                 quantity, services.vat, services.location, true, false
             )
             cart.serviceLocationId = services.locationID ?: ""
+            cart.validity = services.validity ?: 1
+            cart.startDate = start
+            cart.endDate = end
+            cart.promoService = services?.promoService ?: 0
+
             list.add(cart)
 
             log("buyClicked $cart")
@@ -295,6 +354,20 @@ class ProductDetailsActivity : BaseActivity() {
     private fun buyClicked(services: Packages.Data) {
         try {
             val list = ArrayList<CartItem>()
+
+            val cal = Calendar.getInstance()
+            val start =
+                "${cal.get(Calendar.YEAR)}-${String.format(
+                    "%02d",
+                    cal.get(Calendar.MONTH).plus(1)
+                )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+            cal.add(Calendar.MONTH, services.validity ?: 1)
+            val end =
+                "${cal.get(Calendar.YEAR)}-${String.format(
+                    "%02d",
+                    cal.get(Calendar.MONTH).plus(1)
+                )}-${cal.get(Calendar.DAY_OF_MONTH)}"
+
             val cart = CartItem(
                 services.id!!,
                 services.name,
@@ -304,6 +377,12 @@ class ProductDetailsActivity : BaseActivity() {
                 quantity, services.vat, services.location, false, true
             )
             cart.serviceLocationId = services.locationID ?: ""
+
+            cart.validity = services?.services?.validity ?: 1
+            cart.startDate = start
+            cart.endDate = end
+
+            //cart.promoService = services?.promoService ?: 0
 
             list.add(cart)
             log("buyClicked $cart")

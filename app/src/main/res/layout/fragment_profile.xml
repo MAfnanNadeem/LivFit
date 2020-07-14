@@ -129,9 +129,10 @@
 
                         <TextView
                             android:id="@+id/tv_cal"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="0"
+                            android:gravity="center"
                             android:textColor="@color/textColor"
                             android:textSize="@dimen/text_size_large"
                             android:textStyle="bold"
@@ -152,9 +153,10 @@
 
                         <TextView
                             android:id="@+id/tv_session"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="0"
+                            android:gravity="center"
                             android:textColor="@color/textColor"
                             android:textSize="@dimen/text_size_large"
                             android:textStyle="bold"
@@ -176,11 +178,12 @@
 
                         <TextView
                             android:id="@+id/tv_hour"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/textColor"
                             android:textSize="@dimen/text_size_large"
+                            android:gravity="center"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -238,6 +241,7 @@
                     android:background="@drawable/profile_edittext"
                     android:paddingStart="@dimen/grid_1x"
                     android:paddingTop="@dimen/grid_1x"
+                    app:layout_constraintWidth_percent="0.8"
                     app:layout_constraintEnd_toEndOf="@id/cardview"
                     app:layout_constraintStart_toStartOf="@id/cardview"
                     app:layout_constraintTop_toBottomOf="@id/cardview">

@@ -8,6 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -77,6 +80,22 @@ public class Toasty {
                 if (finalBar != null)
                     finalBar.dismiss();
             }
+        });
+        finalBar.show();
+        return finalBar;
+    }
+
+    public static Snackbar closeSnackbar(View view, @StringRes int message, int gravity) {
+        Snackbar finalBar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
+        final ViewGroup.LayoutParams params = finalBar.getView().getLayoutParams();
+        if (params instanceof CoordinatorLayout.LayoutParams) {
+            ((CoordinatorLayout.LayoutParams) params).gravity = gravity;
+        } else {
+            ((FrameLayout.LayoutParams) params).gravity = gravity;
+        }
+        finalBar.setAction(R.string.close, v -> {
+            if (finalBar != null)
+                finalBar.dismiss();
         });
         finalBar.show();
         return finalBar;

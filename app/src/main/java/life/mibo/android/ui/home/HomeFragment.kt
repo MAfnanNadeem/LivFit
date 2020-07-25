@@ -78,6 +78,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
         isMember = member?.isMember() ?: true
+        isNumberVerified = member?.numberVerify ?: 0 > 0
 //        iv_user_pic.setImageDrawable(
 //            ContextCompat.getDrawable(
 //                this@HomeFragment.context!!,
@@ -115,8 +116,19 @@ class HomeFragment : BaseFragment(), HomeObserver {
     }
 
     private var isMember = false
+    private var isNumberVerified = false
 
     private fun checkIntro() {
+        if (isMember && !isNumberVerified) {
+
+            Single.just("test").delay(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError {
+                }.doOnSuccess {
+                    navigate(Navigator.UPDATE_DATA, null)
+                }.subscribe()
+            return
+        }
 
 //        try {
 //            val pwd = Prefs.get(context).get("skip_pwd_")
@@ -164,8 +176,8 @@ class HomeFragment : BaseFragment(), HomeObserver {
 
     private fun videoBg() {
         try {
-            val uri =
-                Uri.parse("android.resource://" + context?.packageName + "/" + R.raw.login_video)
+           // val uri =
+             //   Uri.parse("android.resource://" + context?.packageName + "/" + R.raw.login_video)
 //            videoView.setVideoURI(uri)
 //            videoView.start()
 //            videoView?.setOnPreparedListener {
@@ -532,6 +544,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         super.onStart()
         EventBus.getDefault().register(this)
         navigate(Navigator.HOME_START, null)
+       // activity?.actionBar?.hide()
     }
 
     override fun onStop() {
@@ -540,6 +553,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         isStoped = true
         super.onStop()
         navigate(Navigator.HOME_STOP, null)
+        //activity?.actionBar?.show()
         //controller.onStop()
         //navigate(HOME_VIEW, false)
         EventBus.getDefault().unregister(this)

@@ -58,31 +58,64 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
 
     // SocialHelper 200 :: {"id":"100833147217416230443","displayName":"Sumit Raj","email":"raj8xm@gmail.com","photoUrl":"https:\/\/lh3.googleusercontent.com\/DialogListener-\/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg","familyName":"Raj","givenName":"Sumit"}
     //SocialHelper 100 :: {"id":"3174109019295426","first_name":"Sumeet","last_name":"Gehi","email":"sumeetgehi@gmail.com"} -- false
+    //SocialHelper 200 :: Bundle[{photoUrl=https://lh3.googleusercontent.com/a-/AOh14GhC3rsNfjspSF2wztpOX5y2TUChj8k5Hb2XxGzKLg, id=100833147217416230443, email=raj8xm@gmail.com, familyName=Raj, givenName=Sumit, idToken=null, displayName=Sumit Raj}] -- false
     fun onSocialLogin(code: Int, bundle: Bundle, autoLogin: Boolean, listner : View.OnClickListener?) {
-        // context.log(" - onSocialLogin $code")
-        val email = bundle.getString("email")
-        val pwd = bundle.getString("id")
-        if (email == null || pwd == null) {
-            Toasty.info(context, R.string.auth_error).show()
+        context.log(" - onSocialLogin $bundle")
+        var email = ""
+        var pwd = ""
+        var socialPhoto = ""
+        var first_name = ""
+        var last_name = ""
+        var socialType = ""
+
+        if (code == 200) {
+            socialType = "google"
+            email = bundle.getString("email", "")
+            pwd = bundle.getString("id", "")
+            socialPhoto = bundle.getString("photoUrl", "")
+            first_name = bundle.getString("givenName", "")
+            last_name = bundle.getString("familyName", "")
+
+            if (last_name.isEmpty()) {
+                val display = bundle.getString("displayName", "")
+                if (display != null && display.isNotEmpty()) {
+                    val name = display.split(" ")
+                    if (name.size > 1)
+                        last_name = name[1]
+                }
+            }
+
+
+        } else if (code == 100) {
+            socialType = "facebook"
+            email = bundle.getString("email", "")
+            pwd = bundle.getString("id", "")
+            socialPhoto = bundle.getString("profile", "")
+            first_name = bundle.getString("first_name", "")
+            last_name = bundle.getString("last_name", "")
+        }
+
+
+        if (email.isEmpty() || pwd.isEmpty()) {
+            Toasty.info(context, R.string.enter_email).show()
             return
         }
-        val socialType = when (code) {
-            100 -> {
-                "facebook"
-            }
-            200 -> {
-                "google"
-            }
-            else -> {
-                ""
-            }
-        }
+
         context.log(" - onSocialLogin socialType $socialType")
         if (socialType.isEmpty())
             return
         if (!autoLogin)
             context.getDialog()?.show()
-        API.request.getApi().socialLoginUser(SocialLoginUser(email, pwd, socialType))
+        API.request.getApi().socialLoginUser(
+            SocialLoginUser(
+                email,
+                pwd,
+                first_name,
+                last_name,
+                socialPhoto,
+                socialType
+            )
+        )
             .enqueue(object : Callback<LoginResponse> {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     context.getDialog()?.dismiss()
@@ -109,20 +142,25 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                             }.subscribe()
                             //Toasty.success(context, context.getString(R.string.logged_succes)).show()
                             isLogin = true
+                            val member = data.data!!
                             Prefs.get(this@LoginController.context).member = data.data
                             Prefs.get(this@LoginController.context).set("user_email", email)
                             MiboEvent.loginSuccess(
                                 "${data.data?.firstName} - ${data.data?.lastName}", "$email"
                             )
 
-
-
                             loginSucceed()
                         } else if (data.status.equals("error", true)) {
                             context?.hideSplashView()
                             listner?.onClick(null)
+                            if (data.errors != null && data.errors!!.isNotEmpty()) {
+                                val cd = data?.errors?.get(0)?.code
+                                if (code == 100 || code == 200) {
+                                    Toasty.error(context, "${data.errors?.get(0)?.message}").show()
+                                    return
+                                }
+                            }
                             onRegister(bundle, code)
-                            // Toasty.error(context, "${data.errors?.get(0)?.message}").show()
                         }
                     } else {
                         Toasty.error(context, R.string.error_occurred).show()

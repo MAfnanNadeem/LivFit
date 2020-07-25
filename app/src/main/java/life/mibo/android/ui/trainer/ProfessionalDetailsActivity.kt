@@ -87,8 +87,10 @@ class ProfessionalDetailsActivity : AppCompatActivity() {
             val s = item.specializations
             if (s != null && s.isNotEmpty()) {
                 for (i in s) {
-                    if (i?.value == "1")
-                        specs.add(i.name ?: "")
+                    i?.let {
+                        specs.add(it)
+                    }
+                   // if (i?.value == "1")
                     //specs[i.name ?: ""] = i.value ?: "1"
                 }
                 data.specializations = specs

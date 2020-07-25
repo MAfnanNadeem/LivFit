@@ -496,19 +496,21 @@ class ProfileEditFragment : BaseFragment() {
         val data = if (member.isMember()) {
             UpdateMemberDetails.Data(
                 et_city?.text?.toString(),
-                countryCode,
+                countryCode?.toUpperCase(),
                 date,
                 et_fname?.text?.toString(),
                 et_lname?.text?.toString(),
+                member.gender, member.countryCode, member.contact,
                 member.id, null
             )
         } else {
             UpdateMemberDetails.Data(
                 et_city?.text?.toString(),
-                countryCode,
+                countryCode?.toUpperCase(),
                 date,
                 et_fname?.text?.toString(),
                 et_lname?.text?.toString(),
+                member.gender, member.countryCode, member.contact,
                 null, member.id
             )
         }

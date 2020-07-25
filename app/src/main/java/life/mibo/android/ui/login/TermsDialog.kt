@@ -77,7 +77,8 @@ class TermsDialog(c: Context, var listener: ItemClickListener<Int>? = null) : Al
 
         web?.setListener(ownerActivity, this)
         //web?.loadUrl("http://test.mibo.life/terms-condition-mobile/")
-        web?.loadUrl("http://test.mibo.life/privacy-policy-mobile/")
+        //web?.loadUrl("http://test.mibo.life/privacy-policy-mobile/")
+        web?.loadUrl("https://docs.google.com/viewerng/viewer?embedded=true&url=https://mibo.life/wp-content/uploads/2020/06/Mibo-livfit-privacy-policy.pdf")
         accept?.isEnabled = false
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
         window?.attributes?.windowAnimations = R.style.DialogBounceAnimation;
@@ -113,8 +114,9 @@ class TermsDialog(c: Context, var listener: ItemClickListener<Int>? = null) : Al
 
     }
 
-    override fun onExternalPageRequest(url: String?) {
+    override fun onExternalPageRequest(url: String?): Boolean {
 
+        return true
     }
 
     override fun onPageStarted(url: String?, favicon: Bitmap?) {

@@ -478,6 +478,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     @Synchronized
     private fun setPlayers() {
+        log("setPlayers ")
         rxlPlayers.clear()
         userPods.clear()
         selectedPlayers.clear()
@@ -488,10 +489,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         var playerSize = 0
         if (players is List<*>)
             playerSize = players.size
-       // log("setPlayers > program?.pods ${program?.pods}  connected ${list.size}")
+        // log("setPlayers > program?.pods ${program?.pods}  connected ${list.size}")
         // userDevices.addAll(SessionManager.getInstance().userSession.devices)
+        log("setPlayers playerSize $playerSize")
+
         if (playerSize == 1) {
             if (program?.pods == list.size) {
+                log("setPlayers pods match with program")
                 list.forEachIndexed { i, it ->
                     if (it.isPod) {
                         it.colorPalet = colors[i].id!!
@@ -499,6 +503,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                     }
                 }
             } else {
+                log("setPlayers pods NOT match with program")
                 if (list.size > program?.pods!!) {
                     for (i in 0 until program?.pods!!) {
                         list[i].let {
@@ -508,10 +513,19 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                             }
                         }
                     }
+                } else if (list.size > 0) {
+                    log("setPlayers pods NOT match, adding all pods")
+                    list.forEachIndexed { i, it ->
+                        if (it.isPod) {
+                            it.colorPalet = colors[i].id!!
+                            userPods.add(it)
+                        }
+                    }
                 }
 
             }
         } else {
+            log("setPlayers multi players")
             if (list.size > 0) {
                 list.forEachIndexed { i, it ->
                     if (it.isPod) {
@@ -1342,6 +1356,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     private var size = 1
     private fun checkStartCondition(action: (ArrayList<Device>) -> Unit) {
+        log("checkStartCondition")
         //val list = SessionManager.getInstance().userSession.devices
         turnOffAll()
 //        if (userPods.size < size) {
@@ -1357,8 +1372,15 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
         if (userPods.size >= size) {
             if (isValidLogic()) {
-                if (checkPlayersPods())
+                if (checkPlayersPods()) {
                     action.invoke(userPods)
+                } else {
+                    log("checkPlayersPods false ")
+                    if (MiboApplication.DEBUG) {
+                        Toasty.info(this, " Pods mis configured DEBUG MODE").show()
+                        action.invoke(userPods)
+                    }
+                }
 //                if (userPods.size != getProgramPods())
 //                    Toasty.info(
 //                        this,
@@ -1367,6 +1389,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //                    ).show()
             } else {
                 Toasty.info(this, getString(R.string.logic_not_supported)).show()
+                log("logic_not_supported ")
 //                MessageDialog.info(
 //                    this, "RXL Requirement",
 //                    "Selected light logic is currently not supported \n\n Choose Random or Sequence"
@@ -1378,6 +1401,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //                .addDevices(pods).sendColor(null)
             return
         } else {
+            log("userPods.size < size ${userPods.size} : $size")
 //            this.let {
 //                MessageDialog.info(
 //                    it,

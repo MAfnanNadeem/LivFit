@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/grid_2x"
-        android:text="Please enter your email address. We will send a mail to the email address you registered to regain your password"
+        android:text="@string/forget_pwd_hint"
         android:textColor="@color/textColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~  Created by Sumeet Kumar on 1/12/20 12:39 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 12/26/19 5:26 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+
+        <ImageView
+            android:id="@+id/imageViewBg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:src="@drawable/bg_list_item_calendar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewBg"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewBg"
+            app:layout_constraintStart_toStartOf="@+id/imageViewBg"
+            app:layout_constraintTop_toTopOf="@id/imageViewBg">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_roboto_medium"
+                android:text="45"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_minutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:text="@string/minutes"
+                android:textColor="@color/grey_888"
+                android:textSize="12sp" />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@string/font_roboto_medium"
+                android:text="275 Cal"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_size_medium" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewBg"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_service"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:text="@string/service"
+                android:textColor="@color/textColor2"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.3" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_service_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_program"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_program"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:text="@string/program_name"
+                android:textColor="@color/textColor2"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_service_name" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_program_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_program"
+                app:layout_constraintTop_toTopOf="@id/tv_program" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_trainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:text="@string/conducuted_by"
+                android:textColor="@color/textColor2"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_program_name" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_trainer_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_program"
+                app:layout_constraintTop_toTopOf="@id/tv_trainer" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:text="@string/date_title"
+                android:textColor="@color/textColor2"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_trainer_name" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_date_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_small"
+                app:fontFamily="@string/font_sans_serif"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_program"
+                app:layout_constraintTop_toTopOf="@id/tv_date" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+
+

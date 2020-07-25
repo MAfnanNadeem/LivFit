@@ -113,6 +113,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Material.TransparentFull" />
         <activity
+            android:name="life.mibo.android.ui.workout.WorkoutDetailsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="sensor"
+            android:theme="@style/Material.TransparentFull" />
+        <activity
             android:name="life.mibo.android.ui.body_measure.MeasureBodyActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Material.FullScreen" />
@@ -161,6 +166,24 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="life.mibo.android.libs.image.code.ImagePickerFileProvider"
             android:authorities="${applicationId}.imagepicker.provider"
@@ -180,33 +203,17 @@
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="life.mibo.android.receiver.MyVerificationReceiver">
-            <intent-filter>
-                <action android:name="com.twilio.verification.current_status" />
-            </intent-filter>
-        </receiver>
+        <!--        <receiver android:name="life.mibo.android.receiver.MyVerificationReceiver">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="com.twilio.verification.current_status" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
 
         <!-- SOCIAL START -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.facebook.CustomTabActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="@string/fb_login_protocol_scheme" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name=".ui.services.FirebaseService"

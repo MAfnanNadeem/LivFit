@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import life.mibo.hardware.MIBO;
 
 public class Logger {
-    public static boolean DEBUG = true;
+    public static boolean DEBUG;
     private static final String TAG = "MIBO-LIFE";
     //Timber Log =  Timber.d();
 

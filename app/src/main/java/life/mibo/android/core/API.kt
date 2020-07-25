@@ -45,6 +45,8 @@ import life.mibo.android.models.weight.CompareMemberWeight
 import life.mibo.android.models.weight.CompareWeightResponse
 import life.mibo.android.models.weight.WeightAll
 import life.mibo.android.models.weight.WeightAllResponse
+import life.mibo.android.models.workout.GetWorkout
+import life.mibo.android.models.workout.Workouts
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
@@ -54,6 +56,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.http.*
 import retrofit2.http.Headers
+import java.util.concurrent.TimeUnit
 
 
 class API {
@@ -77,7 +80,7 @@ class API {
                 .cache(getCache())
                 .build()
         } else {
-            OkHttpClient.Builder().cache(getCache()).build()
+            OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).cache(getCache()).build()
         }
 
     }
@@ -416,6 +419,11 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("checkPromocode")
         fun checkPromoCode(@Body data: CheckPromo): Call<PromoResponse>
+
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchWorkoutVideo")
+        fun getWorkouts(@Body data: GetWorkout): Call<Workouts>
 
 
         // FOR TRAINER

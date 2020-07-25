@@ -18,6 +18,7 @@ import life.mibo.android.database.Database
 import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.body_measure.adapter.Calculate
+import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import java.util.concurrent.TimeUnit
@@ -137,12 +138,18 @@ class LoginActivity : BaseActivity() {
             } else {
 
                 controller?.onSocialLogin(type, response, false,
+
                     View.OnClickListener {
-                        if (type == SocialHelper.FACEBOOK) {
-                           // socialHelper?.facebookLogout()
-                        } else if (type == SocialHelper.GOOGLE) {
-                            socialHelper?.googleLogout()
+                        try {
+                            if (type == SocialHelper.FACEBOOK) {
+                                // socialHelper?.facebookLogout()
+                            } else if (type == SocialHelper.GOOGLE) {
+                                socialHelper?.googleLogout()
+                            }
+                        } catch (e: Exception) {
+                            MiboEvent.log(e)
                         }
+
                     })
             }
             //log("Social toast")

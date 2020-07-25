@@ -17,14 +17,18 @@ import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.media.RingtoneManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -37,6 +41,7 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -48,6 +53,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.Observable
@@ -182,6 +188,10 @@ class MainActivity : BaseActivity(), Navigator {
         if (i != 7) {
             finish()
         }
+
+        checkLocationPermission()
+        registerNetworkMonitor()
+
 
     }
 
@@ -506,6 +516,50 @@ class MainActivity : BaseActivity(), Navigator {
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_ADMIN
     )
+
+
+    private fun checkLocationPermission() {
+        var ask = false
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ask = true
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ask = true
+        }
+
+
+        if (ask) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(getString(R.string.location_permission_title))
+                .setMessage(getString(R.string.location_permission_msg))
+
+            // builder.setNegativeButton(R.string.no_text) { dialog, which -> }
+            builder.setNeutralButton(R.string.no_text) { dialog, which -> }
+            builder.setPositiveButton(R.string.yes_text) { dialog, which ->
+                PermissionHelper.requestPermission(
+                    this@MainActivity, arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                ) {
+
+                }
+            }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+
+    }
 
     private fun startScanningView(isRxl: Boolean) {
 
@@ -1340,8 +1394,12 @@ class MainActivity : BaseActivity(), Navigator {
                 bottom_fab?.hide()
                 bottom_app_bar?.performHide()
             }
+
             Navigator.SETTINGS_UNIT -> {
-                navigate(0, R.id.navigation_settings, null)
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_settings, bundle)
             }
             Navigator.MY_SERVICES -> {
                 navigate(0, R.id.navigation_my_services, null)
@@ -1351,6 +1409,19 @@ class MainActivity : BaseActivity(), Navigator {
             }
             Navigator.MY_SALES -> {
                 navigate(0, R.id.navigation_my_sales, null)
+            }
+            Navigator.VIEW_MEASUREMENT -> {
+                navigate(0, R.id.navigation_view_measure, null)
+            }
+            Navigator.VIEW_SESSIONS -> {
+                navigate(0, R.id.navigation_view_session, null)
+            }
+            Navigator.UPDATE_DATA -> {
+                navigate(0, R.id.navigation_profile_update, null)
+            }
+            Navigator.WEBVIEW -> {
+                if (data is Bundle)
+                    navigate(0, R.id.navigation_webview, data)
             }
             else -> {
                 drawerItemClicked(type)
@@ -1365,6 +1436,10 @@ class MainActivity : BaseActivity(), Navigator {
         ib_item_2?.setOnClickListener {
             if (isMember)
                 navigate(HomeItem.Type.MEASURE_NEW)
+            else {
+                if (getMember()?.isMember() == false)
+                    navigateTo(Navigator.MY_CLIENTS, null)
+            }
             // navigateTo(Navigator.BODY_MEASURE_SUMMARY, null)
             //drawerItemClicked(R.id.navigation_bio_summary)
         }
@@ -1373,6 +1448,7 @@ class MainActivity : BaseActivity(), Navigator {
             //drawerItemClicked(R.id.navigation_account)
         }
         ib_item_4?.setOnClickListener {
+            //if(isMember)
             navigate(HomeItem.Type.SERVICES)
             //navigate(navigation_search_trainer)
         }
@@ -1380,6 +1456,11 @@ class MainActivity : BaseActivity(), Navigator {
             // if (isMember)
             //testAnim()
             navigate(HomeItem.Type.CENTER_BUTTON)
+        }
+
+        if (!isMember) {
+            ib_item_2?.setImageResource(R.drawable.ic_users_24)
+            tv_item_2?.setText(R.string.clients)
         }
     }
 
@@ -1512,18 +1593,25 @@ class MainActivity : BaseActivity(), Navigator {
 //                navigate(0, R.id.navigation_bio_summary)
 //
 //            }
-            R.id.nav_messages -> {
-                comingSoon()
-                return
-            }
-            R.id.nav_groups -> {
-                comingSoon()
-                return
-            }
+//            R.id.nav_messages -> {
+//                comingSoon()
+//                return
+//            }
+//            R.id.nav_groups -> {
+//                comingSoon()
+//                return
+//            }
             R.id.nav_notifications -> {
                 navigate(
                     0,
                     R.id.navigation_notifications
+                )
+                return
+            }
+            R.id.nav_contact -> {
+                navigate(
+                    0,
+                    R.id.navigation_contact
                 )
                 return
             }
@@ -1554,9 +1642,16 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(
                     0,
                     R.id.navigation_webview,
-                    WebViewFragment.bundle("http://test.mibo.life/privacy-policy-mobile/")
+                    WebViewFragment.bundle("https://docs.google.com/viewerng/viewer?embedded=true&url=https://mibo.life/wp-content/uploads/2020/06/Mibo-livfit-privacy-policy.pdf")
                 )
                 title = "Privacy Policy"
+            }
+            R.id.nav_rate -> {
+                lastId = -1
+                rateUs()
+            }
+            R.id.nav_workout -> {
+                navigate(0, R.id.navigation_workout)
             }
             R.id.nav_faq -> {
                 lastId = -1
@@ -1595,6 +1690,24 @@ class MainActivity : BaseActivity(), Navigator {
             else -> {
                 //Snackbar.make(drawer, "item clicked " + it.itemId, Snackbar.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun rateUs() {
+        try {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + this.packageName)
+                )
+            )
+        } catch (e: Exception) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)
+                )
+            )
         }
     }
 
@@ -1638,7 +1751,7 @@ class MainActivity : BaseActivity(), Navigator {
 //                    R.id.action_navigation_home_to_navigation_heart_rate,
 //                    R.id.navigation_heart_rate, bundle
 //                )
-                comingSoon()
+                // comingSoon()
                 return
                 //navigateFragment(R.id.navigation_heart_rate)
             }
@@ -1904,6 +2017,7 @@ class MainActivity : BaseActivity(), Navigator {
             commHandler.unregister()
         manager?.onDestroy()
         CommunicationManager.getInstance().onDestroy()
+        unregisterNetworkMonitor()
         super.onDestroy()
 
     }
@@ -2086,4 +2200,61 @@ class MainActivity : BaseActivity(), Navigator {
         }
         notificationManager?.notify(101, notificationBuilder.build())
     }
+
+    var networkMoniter: BroadcastReceiver? = null
+
+    private fun registerNetworkMonitor() {
+        if (networkMoniter == null) {
+            networkMoniter = object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    networkChange(context)
+                }
+
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(
+                networkMoniter,
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            registerReceiver(
+                networkMoniter,
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
+        }
+    }
+
+    private fun unregisterNetworkMonitor() {
+        try {
+            unregisterReceiver(networkMoniter)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    var internetSnackbar: Snackbar? = null
+    fun networkChange(context: Context?) {
+        try {
+            if (Utils.isConnected(context)) {
+                if (internetSnackbar != null)
+                    internetSnackbar?.dismiss()
+            } else {
+                internetSnackbar = Toasty.closeSnackbar(
+                    window?.decorView?.rootView,
+                    R.string.no_internet, Gravity.CENTER
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+    }
+
 }

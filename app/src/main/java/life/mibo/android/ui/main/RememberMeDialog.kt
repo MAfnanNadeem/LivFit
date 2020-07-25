@@ -42,8 +42,8 @@ class RememberMeDialog(var type_: Int = 0) : DialogFragment() {
         isCancelable = false
 
         if (type_ == 200) {
-            tv?.setText(getString(R.string.coming_soon))
-            text?.setText(getString(R.string.coming_soon))
+            tv?.text = getString(R.string.coming_soon)
+            text?.text = getString(R.string.coming_soon)
             //text?.visibility = View.INVISIBLE
             save?.setText(R.string.close)
             skip?.visibility = View.INVISIBLE

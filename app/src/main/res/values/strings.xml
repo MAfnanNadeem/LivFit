@@ -3,8 +3,8 @@
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="mibo_world">MI.BO. World</string>
-    <string name="app_name_version">MI.BO. LivFit  v0.1.21</string>
-    <string name="app_version">0.1.18</string>
+    <string name="app_name_version"><small>MI.BO. &#032; LivFit \u0020 &#160; v0.1.24</small></string>
+    <string name="app_version">0.1.23</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="numbers_only">0123456789</string>
@@ -141,6 +141,7 @@
     <string name="otp_verification">OTP VERIFICATION</string>
     <string name="send_otp">SEND OTP</string>
     <string name="enter_your_mobile_number">Enter your mobile number</string>
+    <string name="number_not_valid">Mobile number is not valid</string>
     <string name="otp_dialog_text">is this number is correct? we will send you otp</string>
     <string name="pwd_requirement">Password Requirement</string>
     <string name="enter_verification_code">ENTER VERIFICATION CODE</string>
@@ -407,7 +408,9 @@
     <string name="linkedin_request_cancel">LinkedIn request cancel</string>
     <string name="create_your_profile">CREATE YOUR PROFILE</string>
     <string name="update_your_profile">UPDATE YOUR PROFILE</string>
-    <string name="resend_otp">Resend OTP</string>
+    <string name="resend_otp"><u>Resend OTP</u></string>
+    <string name="resend_otp_timer">Resend OTP in %02d</string>
+    <string name="resend_otp_in">in %02d</string>
     <string name="verify">VERIFY</string>
     <string name="upload">Upload</string>
     <!-- SOCIAL END -->
@@ -455,6 +458,7 @@
     <string name="save">Save</string>
     <string name="yes_text">Yes</string>
     <string name="no_text">No</string>
+    <string name="dont_ask">Don\'t ask</string>
     <string name="basic_info">Basic Info</string>
     <string name="weight_compare">Weight Compare</string>
     <string name="select_date">Select Date</string>
@@ -663,6 +667,34 @@
     <string name="program_name">Program</string>
     <string name="service">Service</string>
     <string name="conducuted_by">Trainer</string>
+    <string name="manage_address">Manage Address</string>
+    <string name="about_us">About us</string>
+    <string name="country_language"><![CDATA[Country & Language]]></string>
+    <string name="policies">"Policies "</string>
+    <string name="tell_more_about_issue">Tell us more about your issue:</string>
+    <string name="attachment_a_screenshot">Screenshot Attachment</string>
+    <string name="subject">Subject</string>
+    <string name="contact_option_1">I have general questions</string>
+    <string name="contact_option_2">I have a scheduling session issue</string>
+    <string name="contact_option_3">I have a re-scheduling or cancel session issue</string>
+    <string name="contact_option_4">I have a payment issue</string>
+    <string name="contact_option_5">I have issue with the quality of service</string>
+    <string name="contact_option_6">I need to cancel my order</string>
+    <string name="contact_option_7">I have refund related issue</string>
+    <string name="contact_option_8">Feedback</string>
+    <string name="issue">Issue:</string>
+    <string name="thankyou_feedback">Thank you for you feedback!</string>
+    <string name="location_permission_title">MI.BO. LivFit Would Like to Access Your Location</string>
+    <string name="location_permission_msg">Allow access to your local location, and current weather will be kept up to date at all times.</string>
+    <string name="notifications_hint">Get notified for account alerts</string>
+    <string name="workout">Workout</string>
+    <string name="rate_us">Rate us</string>
+    <string name="please_select">Please Select</string>
+    <string name="select_gender_hint">Select Gender</string>
+    <string name="select_dob_hint">Select DOB</string>
+    <string name="select_country_hint">Select Country</string>
+    <string name="forget_pwd_hint">Please enter your email address. We will send a mail to the email address you registered to regain your password</string>
+
 
     <!-- customer reviews -->
     <string-array name="names">

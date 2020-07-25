@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/20/20 10:15 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/20/20 9:12 AM
+  ~  Mibo Hexa - app
+  -->
+
+<!--
+  ~ $Created by $Sumeet $Kumar 2020.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/grid_1x">
+
+
+    <View
+        android:id="@+id/viewStarted"
+        android:layout_width="8dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:background="@color/colorDeviceColorGreen"
+        app:layout_constraintBottom_toBottomOf="@id/tv_expire"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_service"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="@string/service_name"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toTopOf="@id/viewStarted"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_service_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="Cardio Service"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_service"
+        app:layout_constraintTop_toTopOf="@id/viewStarted" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_completed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="@string/completed"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_name"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_completed_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="0"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/tv_completed"
+        app:layout_constraintTop_toTopOf="@id/tv_completed" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_remaining"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="@string/remaining"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toBottomOf="@id/tv_completed"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_remaining_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="0"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/tv_remaining"
+        app:layout_constraintTop_toTopOf="@id/tv_remaining" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_expire"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="@string/expire_on"
+        android:textColor="@color/textColor2"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/viewStarted"
+        app:layout_constraintTop_toBottomOf="@id/tv_remaining"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_expire_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="0"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:fontFamily="@string/font_sans_serif"
+        app:layout_constraintStart_toEndOf="@id/tv_remaining"
+        app:layout_constraintTop_toTopOf="@id/tv_expire" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_ddd"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

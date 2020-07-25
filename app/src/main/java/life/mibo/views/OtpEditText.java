@@ -13,8 +13,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -22,6 +20,9 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.content.ContextCompat;
 
 import life.mibo.android.R;
 
@@ -304,7 +305,8 @@ public class OtpEditText extends AppCompatEditText implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
         if (s.length() == mNumChars) {
-            completeListener.onComplete(String.valueOf(s));
+            if (completeListener != null)
+                completeListener.onComplete(String.valueOf(s));
         }
     }
 }

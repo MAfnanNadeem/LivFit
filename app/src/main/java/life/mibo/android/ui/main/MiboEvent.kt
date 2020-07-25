@@ -14,17 +14,19 @@ import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import life.mibo.android.core.Prefs
-import java.util.*
+import life.mibo.hardware.core.Logger
 
 object MiboEvent {
 
     private lateinit var firebase: FirebaseAnalytics
 
+    // val INSTANCE = MiboEvent.getInstance()
+
     fun init(context: Context) {
         firebase = FirebaseAnalytics.getInstance(context)
         try {
             firebase.setUserId(Prefs.get(context).memberId)
-           // firebase.setUserProperty(FirebaseAnalytics.UserProperty.SIGN_UP_METHOD)
+            // firebase.setUserProperty(FirebaseAnalytics.UserProperty.SIGN_UP_METHOD)
         } catch (e: java.lang.Exception) {
         }
     }
@@ -114,9 +116,10 @@ object MiboEvent {
 
     fun log(throwable: Throwable) {
         try {
+            Logger.e("MiboEvent LOG $throwable")
             FirebaseCrashlytics.getInstance().recordException(throwable)
         } catch (e: Exception) {
-
+            Logger.e("MiboEvent LOG-ERROR $e")
         }
     }
 

@@ -24,6 +24,12 @@ class UpdateMemberDetails(data: Data?, token: String?) :
         var firstName: String?,
         @SerializedName("LastName")
         var lastName: String?,
+        @SerializedName("Gender")
+        var gender: String?,
+        @SerializedName("CountryCode")
+        var countryCode: String?,
+        @SerializedName("Phone")
+        var number: String?,
         @SerializedName("MemberID")
         var memberID: Int?,
         @SerializedName("TrainerID")

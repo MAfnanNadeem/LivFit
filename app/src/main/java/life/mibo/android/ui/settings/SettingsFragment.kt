@@ -16,8 +16,18 @@ import kotlinx.android.synthetic.main.fragment_settings.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.base.WebViewFragment
+import life.mibo.android.ui.main.Navigator
 
 class SettingsFragment : BaseFragment() {
+
+    companion object {
+        fun create(type: Int): Bundle {
+            val bundle = Bundle()
+            bundle.putInt("type_", type)
+            return bundle
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,22 +37,80 @@ class SettingsFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
+    var type: Int = 0
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tv_measure?.setOnClickListener {
-            showHeightDialog()
-        }
-        tv_weight?.setOnClickListener {
-            showWeightDialog()
+
+        type = arguments?.getInt("type_", 0) ?: 0
+
+        if (type == 1) {
+            view_units?.visibility = View.VISIBLE
+            view_notify?.visibility = View.GONE
+            view_policies?.visibility = View.GONE
+
+            tv_measure?.setOnClickListener {
+                showHeightDialog()
+            }
+            tv_weight?.setOnClickListener {
+                showWeightDialog()
+            }
+
+            weight = getPref()?.weightPrefs ?: 0
+            height = getPref()?.heightPrefs ?: 0
+
+            if (height > 1)
+                height = 0
+            if (weight > 1)
+                weight = 0
+        } else if (type == 2) {
+            view_units?.visibility = View.GONE
+            view_policies?.visibility = View.GONE
+            view_notify?.visibility = View.VISIBLE
+
+            view_notify?.setOnClickListener {
+                switch_notify?.isChecked = !switch_notify.isChecked
+
+            }
+
+            switch_notify?.isChecked = true
+            switch_notify?.isClickable = false
+        } else if (type == 3) {
+            view_units?.visibility = View.GONE
+            view_notify?.visibility = View.GONE
+            view_policies?.visibility = View.VISIBLE
+
+            tv_privacy?.setOnClickListener {
+                navigate(
+                    Navigator.WEBVIEW,
+                    WebViewFragment.bundle("https://docs.google.com/viewerng/viewer?embedded=true&url=https://mibo.life/wp-content/uploads/2020/06/Mibo-livfit-privacy-policy.pdf", getString(R.string.privacy_policy))
+                )
+            }
+
+            tv_terms?.setOnClickListener {
+                navigate(
+                    Navigator.WEBVIEW,
+                    WebViewFragment.bundle("https://docs.google.com/viewerng/viewer?embedded=true&url=https://mibo.life/wp-content/uploads/2020/06/Mibo-livfit-privacy-policy.pdf", getString(R.string.terms_of_agreement))
+                )
+            }
+
+            tv_legal?.setOnClickListener {
+                navigate(
+                    Navigator.WEBVIEW,
+                    WebViewFragment.bundle("https://docs.google.com/viewerng/viewer?embedded=true&url=https://mibo.life/wp-content/uploads/2020/06/Mibo-livfit-privacy-policy.pdf")
+                )
+            }
+
+            tv_faq?.setOnClickListener {
+                navigate(
+                    Navigator.WEBVIEW,
+                    WebViewFragment.bundle("http://test.mibo.life/faq-mobile-application/",getString(R.string.faq))
+                )
+            }
+
         }
 
-        weight = getPref()?.weightPrefs ?: 0
-        height = getPref()?.heightPrefs ?: 0
-
-        if (height > 1)
-            height = 0
-        if (weight > 1)
-            weight = 0
 
     }
 

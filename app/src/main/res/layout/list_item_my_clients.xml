@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/20/20 10:15 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/20/20 9:12 AM
+  ~  Mibo Hexa - app
+  -->
+
+<!--
+  ~ $Created by $Sumeet $Kumar 2020.
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_1x"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/rl_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <life.mibo.views.CircleImageView
+                android:id="@+id/imageView"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_centerVertical="true"
+                tools:src="@drawable/ic_user_female" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:layout_marginEnd="@dimen/grid_1x"
+                android:layout_toEndOf="@id/imageView"
+                android:fontFamily="@string/font_roboto_medium"
+                android:padding="2dp"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="visible"
+                tools:text="Trainer" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_services"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
+

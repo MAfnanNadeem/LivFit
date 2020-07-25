@@ -27,9 +27,10 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
             return frg
         }
 
-        fun bundle(url: String?): Bundle {
+        fun bundle(url: String?, title: String = ""): Bundle {
             val arg = Bundle()
             arg.putString("url_url", url)
+            arg.putString("url_title", title)
             return arg
         }
     }
@@ -43,8 +44,12 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         url = arguments?.getString("url_url", "") ?: ""
+        val title = arguments?.getString("url_title", "") ?: ""
+        if (title.isNotEmpty())
+            activity?.title = title
         webView?.setListener(this, this)
         webView?.loadUrl(url)
+        //webView?.addPermittedHostname("https://accounts.google.com")
         setHasOptionsMenu(true)
     }
 
@@ -63,13 +68,15 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         super.onDestroy()
     }
 
+
     override fun onPageFinished(url: String?) {
         progressBar?.visibility = View.GONE
-
+        log("onPageFinished url $url")
     }
 
     override fun onPageError(errorCode: Int, description: String?, failingUrl: String?) {
         progressBar?.visibility = View.GONE
+        log("onPageError url $url  : $errorCode")
 
     }
 
@@ -81,15 +88,21 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         contentDisposition: String?,
         userAgent: String?
     ) {
-
+        log("onDownloadRequested url $url")
     }
 
-    override fun onExternalPageRequest(url: String?) {
-
+    override fun onExternalPageRequest(url: String?): Boolean {
+        log("onExternalPageRequest url $url")
+        if (url?.startsWith("https://accounts.google.com") == true) {
+            log("onExternalPageRequest startsWith https://accounts.google.com")
+            return false
+        }
+        return true
     }
 
     override fun onPageStarted(url: String?, favicon: Bitmap?) {
         progressBar?.visibility = View.VISIBLE
+        log("onPageStarted url $url")
     }
 
     override fun onBackPressed(): Boolean {

@@ -16,10 +16,65 @@
         android:textColor="@color/textColorApp"
         android:textSize="@dimen/text_size_medium" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.rilixtech.widget.countrycodepicker.CountryCodePicker
+            android:id="@+id/otp_ccp_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:ccp_clickable="false"
+            android:enabled="false"
+            app:ccp_defaultCode="971"
+            app:ccp_dialogTextColor="@color/textColor"
+            app:ccp_showFullName="false"
+            app:ccp_textColor="@color/textColor" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/otp_et_phone_number"
+            style="@style/login_edittext"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:digits="@string/numbers_only"
+            android:enabled="false"
+            android:ems="7"
+            android:hint="@string/phone_number_hint"
+            android:imeOptions="actionSend"
+            android:inputType="number"
+            android:maxLength="14" />
+
+        <ImageView
+            android:id="@+id/otp_edit_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/grid_1x"
+            android:visibility="invisible"
+            android:src="@drawable/ic_edit_black_24dp"
+            android:tint="@color/textColor" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/otp_btn_otp_send"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/grid_3x"
+        android:background="@drawable/login_button_primary"
+        android:ems="13"
+        android:text="@string/send_otp"
+        android:textColor="@color/white" />
+
     <ImageView
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:layout_marginTop="@dimen/grid_4x"
+        android:layout_marginTop="@dimen/grid_2x"
         android:src="@drawable/ic_register_otp_sent" />
 
     <TextView
@@ -87,6 +142,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginTop="@dimen/grid_3x"
+        android:layout_marginBottom="@dimen/grid_2x"
         android:background="@drawable/login_button_primary"
         android:ems="13"
         android:text="@string/verify"

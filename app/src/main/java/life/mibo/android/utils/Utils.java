@@ -57,6 +57,14 @@ public class Utils {
         }
     }
 
+    public static void log(Throwable t) {
+        try {
+            MiboEvent.INSTANCE.log(t);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static int getColor(@NonNull Bitmap bitmap) {
         long red = 0;

@@ -17,7 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -48,12 +50,18 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestProfile()
                 .build();
+
+
+        //GoogleSignInClient client = GoogleSignIn.getClient(mContext, gso);
+        //mGoogleApiClient = client.asGoogleApiClient();
 
         mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                 .enableAutoManage(((FragmentActivity) mContext), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
 
     }
 
@@ -90,12 +98,14 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
 
     public void onPause(FragmentActivity activity) {
         if (mGoogleApiClient != null) {
+            //mGoogleApiClient.stopAutoManage(activity);
             mGoogleApiClient.stopAutoManage(activity);
             mGoogleApiClient.disconnect();
         }
     }
 
     public void onResume(FragmentActivity activity) {
+        //createClient(activity);
         if (mGoogleApiClient == null) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
@@ -104,6 +114,18 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
                     .enableAutoManage(activity, this)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build();
+        }
+    }
+
+
+    private void createClient(FragmentActivity context) {
+        if (mGoogleApiClient == null) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestProfile()
+                    .build();
+            GoogleSignInClient client = GoogleSignIn.getClient(context, gso);
+            mGoogleApiClient = client.asGoogleApiClient();
         }
     }
 
@@ -150,9 +172,11 @@ public class Google implements GoogleApiClient.OnConnectionFailedListener {
     }
 
     public void activityResult(int requestCode, int resultCode, Intent data) {
-        Logger.e("Google activityResult ");
+        Logger.e("Google activityResult " + data);
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-        handleSignInResult(result);
+        Logger.e("Google activityResult result=" + result);
+        if (result != null)
+            handleSignInResult(result);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {

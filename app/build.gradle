@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 21
-        versionName "0.1.21"
+        versionCode 24
+        versionName "0.1.24"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -129,6 +129,8 @@ dependencies {
     //implementation 'com.google.firebase:firebase-auth:19.3.1'
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0'
     implementation 'com.google.firebase:firebase-analytics:17.4.2'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
+
     //implementation "androidx.security:security-crypto:1.0.0-rc02"
 //    implementation('androidx.security:security-crypto:1.0.0-rc02', {
 //        exclude group: 'com.google.protobuf', module: 'protobuf-lite'

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/28/20 9:14 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/28/20 9:14 AM
+  ~  Mibo Hexa - app
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_weight"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/weight"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_height"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/height"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_chest"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_chest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/chest"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_waist"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_waist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:hint="@string/waist"
+                android:inputType="phone|numberDecimal"
+                android:padding="@dimen/grid_2x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_hips"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_hips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:hint="@string/hips"
+                android:padding="@dimen/grid_2x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ti_hhips"
+            style="@style/TextInputLayoutStyle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="@dimen/grid_1x">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_hhips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:hint="@string/high_hips"
+                android:padding="@dimen/grid_2x"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/grid_4dp"
+            android:background="@color/grey" />
+
+
+        <LinearLayout
+            android:id="@+id/view_female"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ti_forearm"
+                style="@style/TextInputLayoutStyle2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="@dimen/grid_1x">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_forearm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:hint="@string/forearm"
+                    android:padding="@dimen/grid_2x"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/view_forearm"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/grid_4dp"
+                android:background="@color/grey" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ti_wrist"
+                style="@style/TextInputLayoutStyle2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="@dimen/grid_1x">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_wrist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:hint="@string/wrist"
+                    android:padding="@dimen/grid_2x"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/view_wrist"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/grid_4dp"
+                android:background="@color/grey" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/button_primary_selector"
+            android:text="@string/update"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
+
+</ScrollView>

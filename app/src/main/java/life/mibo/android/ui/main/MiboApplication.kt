@@ -27,8 +27,8 @@ class MiboApplication : Application() {
     companion object {
         var context: Context? = null
 
-        //val DEBUG = true
         val DEBUG = BuildConfig.DEBUG
+        //val DEBUG = false
         val RELEASE = false
         val TEST = false
         val SCAN_TIME: Long = 15000L

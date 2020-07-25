@@ -15,16 +15,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
 import kotlinx.android.synthetic.main.fragment_my_account.*
+import kotlinx.android.synthetic.main.fragment_recycler.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.base.PermissionHelper
 import life.mibo.android.ui.catalog.NewAddressActivity
 import life.mibo.android.ui.fit.FitnessHelper
@@ -42,13 +47,17 @@ class MyAccountFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_my_account, container, false)
+        return inflater.inflate(R.layout.fragment_recycler, container, false)
+        //return inflater.inflate(R.layout.fragment_my_account, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setAdapters(Prefs.get(context).member?.isMember() ?: false)
+        //initViews()
+    }
 
-
+    fun initViews() {
         if (Prefs.get(context).member?.isMember() == true) {
             view_member?.visibility = View.VISIBLE
             view_ip?.visibility = View.GONE
@@ -127,7 +136,6 @@ class MyAccountFragment : BaseFragment() {
         checkFitbitConnected()
         checkSamsungConnected()
     }
-
 
     // TODO Google Fit
     private fun checkGoogleConnected() {
@@ -322,6 +330,266 @@ class MyAccountFragment : BaseFragment() {
 //                };
             }
         }
+    }
+
+    private fun setAdapters(isMember: Boolean) {
+        swipeToRefresh?.isEnabled = false
+
+        val list = ArrayList<Item>()
+        if (isMember) {
+
+            list.add(Item(TYPE.PURCHASES_HEADER, isHeader = true))
+            list.add(Item(TYPE.MY_ORDERS, isSingle = true))
+
+            list.add(Item(TYPE.SHIPMENT_HEADER, isHeader = true))
+            list.add(Item(TYPE.MANAGE_ADDRESS, isTop = true))
+            list.add(Item(TYPE.ADD_ADDRESS, isBottom = true))
+
+
+            list.add(Item(TYPE.MEASUREMENT_HEADER, isHeader = true))
+            list.add(Item(TYPE.VIEW_MEASURE, isSingle = true))
+
+
+            try {
+                val cal = Prefs.get(this.context).get(Prefs.CALORIES, -1)
+                if (cal > 0) {
+                    list.add(Item(TYPE.SESSIONS_HEADER, isHeader = true))
+                    list.add(Item(TYPE.VIEW_SESSION, isSingle = true))
+                }
+            } catch (e: java.lang.Exception) {
+
+            }
+
+
+        } else {
+
+            list.add(Item(TYPE.SALES_HEADER, isHeader = true))
+            list.add(Item(TYPE.MY_SALES, isTop = true))
+            list.add(Item(TYPE.MY_SERVICES, isMiddle = true))
+            list.add(Item(TYPE.MY_CLIENTS, isBottom = true))
+
+
+        }
+
+        list.add(Item(TYPE.CONNECT_HEADER, isHeader = true))
+        list.add(Item(TYPE.GOOGLE_FIT, isTop = true))
+        list.add(Item(TYPE.FITBIT, isBottom = true))
+
+        list.add(Item(TYPE.SETTINGS_HEADER, isHeader = true))
+        list.add(Item(TYPE.COUNTRY_LANGUAGE, isTop = true))
+        list.add(Item(TYPE.NOTIFICATIONS, isMiddle = true))
+        list.add(Item(TYPE.POLICIES, isMiddle = true))
+        list.add(Item(TYPE.UNITS, isBottom = true))
+
+        list.add(Item(TYPE.ABOUT_HEADER, isHeader = true))
+        list.add(Item(TYPE.ABOUT_APP, isSingle = true, arrow = false))
+
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        val adapters =
+            AccountAdapters(
+                list,
+                object : ItemClickListener<Item> {
+                    override fun onItemClicked(item: Item?, position: Int) {
+                        if (item != null)
+                            onClick(item)
+                    }
+                })
+
+        recyclerView?.adapter = adapters
+    }
+
+    fun onClick(item: Item) {
+        when (item.id) {
+            TYPE.MY_SALES -> {
+                navigate(Navigator.MY_SALES, null)
+            }
+            TYPE.MY_SERVICES -> {
+                navigate(Navigator.MY_SERVICES, null)
+            }
+            TYPE.MY_CLIENTS -> {
+                navigate(Navigator.MY_CLIENTS, null)
+            }
+            TYPE.MY_ORDERS -> {
+                navigate(Navigator.INVOICES, OrdersFragment.create(1))
+                activity?.title = getString(R.string.orders_titles)
+            }
+            TYPE.ADD_ADDRESS -> {
+                startActivity(Intent(requireContext(), NewAddressActivity::class.java))
+            }
+            TYPE.MANAGE_ADDRESS -> {
+                navigate(Navigator.INVOICES, OrdersFragment.create(2))
+                activity?.title = getString(R.string.address_titles)
+            }
+            TYPE.VIEW_MEASURE -> {
+                navigate(Navigator.VIEW_MEASUREMENT, null)
+            }
+            TYPE.VIEW_SESSION -> {
+                navigate(Navigator.VIEW_SESSIONS, null)
+            }
+            TYPE.GOOGLE_FIT -> {
+                checkPermission()
+            }
+            TYPE.FITBIT -> {
+                loginToFitbit()
+            }
+
+            TYPE.UNITS -> {
+                navigate(Navigator.SETTINGS_UNIT, SettingsFragment.create(1))
+            }
+
+            TYPE.NOTIFICATIONS -> {
+                navigate(Navigator.SETTINGS_UNIT, SettingsFragment.create(2))
+                activity?.title = getString(R.string.notifications)
+            }
+            TYPE.POLICIES -> {
+                navigate(Navigator.SETTINGS_UNIT, SettingsFragment.create(3))
+                activity?.title = getString(R.string.policies)
+            }
+
+            else -> {
+//                Toasty.snackbar(
+//                    recyclerView,
+//                    item?.id?.resId ?: R.string.error_occurred
+//                )
+            }
+        }
+    }
+
+
+    // Dynamic View
+
+    enum class TYPE(var resId: Int) {
+        SALES_HEADER(R.string.sales),
+        PURCHASES_HEADER(R.string.purchase),
+        SHIPMENT_HEADER(R.string.shipment_address),
+        MEASUREMENT_HEADER(R.string.measurement),
+        SESSIONS_HEADER(R.string.sessions),
+        CONNECT_HEADER(R.string.connect),
+        SETTINGS_HEADER(R.string.settings),
+        ABOUT_HEADER(R.string.about_us),
+        MY_SALES(R.string.my_sales),
+        MY_SERVICES(R.string.my_services),
+        MY_CLIENTS(R.string.my_customers),
+        MY_ORDERS(R.string.my_orders),
+        ADD_ADDRESS(R.string.add_a_new_address),
+        MANAGE_ADDRESS(R.string.manage_address),
+        GOOGLE_FIT(R.string.google_fit),
+        FITBIT(R.string.fitbit),
+        VIEW_SESSION(R.string.view_sessions),
+        VIEW_MEASURE(R.string.view_measurement),
+        ABOUT(R.string.about_us),
+        CONTACT(R.string.contact_us),
+        UNITS(R.string.unit),
+        COUNTRY_LANGUAGE(R.string.country_language),
+        NOTIFICATIONS(R.string.notifications),
+        POLICIES(R.string.policies),
+        ABOUT_APP(R.string.app_name_version),
+        //SESSION(R.string.view_sessions),
+    }
+
+    data class Item(
+        val id: TYPE,
+        val arrow: Boolean = true,
+        var isSelected: Boolean = false,
+        val isHeader: Boolean = false,
+        val isSingle: Boolean = false,
+        val isTop: Boolean = false,
+        val isMiddle: Boolean = false,
+        val isBottom: Boolean = false
+    )
+
+    class AccountAdapters(
+        val list: ArrayList<Item>,
+        val listener: ItemClickListener<Item>?
+    ) : RecyclerView.Adapter<Holder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+
+            return Holder(
+                LayoutInflater.from(parent.context)
+                    .inflate(
+                        R.layout.list_item_account_header,
+                        parent,
+                        false
+                    )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return list.size
+        }
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            holder.bind(list[position], listener)
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            //if (list[position].isHeader)
+            //     return 1
+            return super.getItemViewType(position)
+        }
+
+    }
+
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        private val header: TextView? = itemView.findViewById(R.id.tv_header)
+        private val singleView: TextView? = itemView.findViewById(R.id.tv_single)
+        private val topView: TextView? = itemView.findViewById(R.id.tv_top)
+        private val middleView: TextView? = itemView.findViewById(R.id.tv_middle)
+        private val bottomView: TextView? = itemView.findViewById(R.id.tv_bottom)
+        //private val arrow: ImageView? = itemView.findViewById(R.id.imageView)
+
+        fun bind(
+            item: Item?,
+            listener: ItemClickListener<Item>?
+        ) {
+            if (item == null)
+                return
+            header?.visibility = View.GONE
+            singleView?.visibility = View.GONE
+            topView?.visibility = View.GONE
+            middleView?.visibility = View.GONE
+            bottomView?.visibility = View.GONE
+
+            when {
+                item.isHeader -> {
+                    header?.visibility = View.VISIBLE
+                    header?.setText(item.id?.resId)
+                }
+                item.isSingle -> {
+                    singleView?.visibility = View.VISIBLE
+                    singleView?.setText(item.id?.resId)
+                    if (item.arrow) {
+
+                    } else {
+                        singleView?.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                    }
+                }
+                item.isTop -> {
+                    topView?.visibility = View.VISIBLE
+                    topView?.setText(item.id?.resId)
+                }
+                item.isMiddle -> {
+                    middleView?.visibility = View.VISIBLE
+                    middleView?.setText(item.id?.resId)
+                }
+                item.isBottom -> {
+                    bottomView?.visibility = View.VISIBLE
+                    bottomView?.setText(item.id?.resId)
+                }
+            }
+
+            if (item.arrow) {
+
+            } else {
+
+            }
+
+            itemView?.setOnClickListener {
+                listener?.onItemClicked(item, adapterPosition)
+            }
+        }
+
     }
 
 

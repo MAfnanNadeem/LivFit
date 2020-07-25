@@ -51,7 +51,7 @@ class GiffVideoSlider(
     var tabs: TabLayout? = null
 
     init {
-        inflate(getContext(), R.layout.rxl_slider_view, this)
+        inflate(getContext(), R.layout.rxl_slider_giff_view, this)
         viewPager = findViewById(R.id.viewPager)
         tabs = findViewById(R.id.tabDots)
 

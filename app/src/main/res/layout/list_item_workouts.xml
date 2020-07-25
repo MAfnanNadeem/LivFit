@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~  Created by Sumeet Kumar on 6/4/20 10:39 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 6/1/20 11:31 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:gravity="center_horizontal"
+    app:cardCornerRadius="@dimen/grid_1x">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="150dp"
+            android:src="@drawable/ic_broken_image_black_24dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/grid_1x">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_name"
+                style="@style/textview_item_rxl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto_medium"
+                android:gravity="start"
+                android:text="Name"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintEnd_toStartOf="@id/tv_dur"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_desc"
+                style="@style/textview_item_rxl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_name"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto"
+                android:gravity="start"
+                android:lines="2"
+                android:singleLine="false"
+                android:textColor="@color/textColor2"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toStartOf="@id/tv_dur"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_name" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_dur"
+                style="@style/textview_item_rxl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:layout_marginStart="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto"
+                android:text="05:35"
+                android:textColor="@color/textColorApp2"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
+

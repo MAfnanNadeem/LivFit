@@ -2,12 +2,14 @@ package life.mibo.android.ui.login
 
 //import com.twilio.verification.TwilioVerification
 //import com.twilio.verification.external.Via
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register_page1.*
@@ -15,12 +17,16 @@ import kotlinx.android.synthetic.main.activity_register_page2.*
 import kotlinx.android.synthetic.main.activity_register_page3.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
-import life.mibo.android.receiver.SMSBroadcastReceiver
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.dialog.MyDialog
+import life.mibo.android.ui.login.RegisterController.Companion.NUMBER_VIEW
+import life.mibo.android.ui.login.RegisterController.Companion.OTP_VIEW
+import life.mibo.android.ui.login.RegisterController.Companion.REGISTER_VIEW
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.core.Logger
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class RegisterActivity : AppCompatActivity() {
@@ -206,6 +212,11 @@ class RegisterActivity : AppCompatActivity() {
         }
         colorGreen = ContextCompat.getColor(this, R.color.textColorGreen)
         colorRed = ContextCompat.getColor(this, R.color.colorAccent)
+
+        otp_edit_number?.setOnClickListener {
+            //otp_ccp_?.isEnabled = true
+            // otp_et_phone_number?.isEnabled = true
+        }
     }
 
     var colorRed = 0
@@ -375,16 +386,24 @@ class RegisterActivity : AppCompatActivity() {
 
     fun registerOtpListener() {
 
-        controller.sendOtp(object : SMSBroadcastReceiver.OTPReceiveListener {
-            override fun onOTPReceived(otp: String?) {
-                log("OTPReceiveListener onOTPReceived $otp")
-            }
+//        controller.sendOtp(object : SMSBroadcastReceiver.OTPReceiveListener {
+//            override fun onOTPReceived(otp: String?) {
+//                log("OTPReceiveListener onOTPReceived $otp")
+//            }
+//
+//            override fun onOTPTimeOut() {
+//                log("OTPReceiveListener timeout")
+//            }
+//
+//        })
+    }
 
-            override fun onOTPTimeOut() {
-                log("OTPReceiveListener timeout")
-            }
-
-        })
+    private var resendFormatter = ""
+    fun getResendFormat(): String {
+        if (resendFormatter.isEmpty()) {
+            resendFormatter = getString(R.string.resend_otp_timer)
+        }
+        return resendFormatter
     }
 
     val observer = object : RegisterController.RegisterObserver {
@@ -400,19 +419,22 @@ class RegisterActivity : AppCompatActivity() {
             log("startTimer $time")
             if (time == 0L) {
                 isResend = true
-                tv_resend?.text = "Resend OTP"
+                tv_resend?.text = getString(R.string.resend_otp)
                 disposable?.dispose()
             } else {
-                tv_resend?.text = String.format("Resend OTP in %02d", time / 1000)
+                tv_resend?.text = String.format(getResendFormat(), time / 1000)
             }
         }
 
-        override fun otpReceived(otp: String?) {
-            et_otp.setText(otp)
+        override fun otpReceived(otp: Intent?) {
+            if (otp != null)
+                startActivityForResult(otp, controller.OTP_HINT)
+            // et_otp?.setText(otp)
         }
 
-        override fun updateNumber(id: Int) {
-            this@RegisterActivity.updateNumberView(id)
+
+        override fun updateView(id: Int) {
+            updateNumberView(id)
         }
 
         override fun onDobSelect(dob: String?) {
@@ -504,6 +526,11 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
+    fun otpReceived(otp: String?) {
+        et_otp?.setText(otp)
+    }
+
+
     private fun showError(type: Int) {
 //        controller.onRegisterClicked(
 //            et_first_name.text?.toString(),
@@ -548,10 +575,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun updateNumberView(id: Int) {
         when (id) {
-            0 -> {
+            REGISTER_VIEW -> {
 
             }
-            1 -> {
+            NUMBER_VIEW -> {
                 viewAnimator.showNext()
                 et_number.text = et_phone_number.text
                 et_number.isEnabled = false
@@ -559,11 +586,19 @@ class RegisterActivity : AppCompatActivity() {
                 ccp_otp.isEnabled = false
                 ccp_otp.isClickable = false
             }
-            2 -> {
+            OTP_VIEW -> {
+                // registerOtpListener()
+
                 viewAnimator.showNext()
+                otp_ccp_?.setCountryForNameCode(ccp_otp?.defaultCountryNameCode)
+                var num = et_phone_number.text?.toString()
+                if (num != null && num.startsWith("0"))
+                    num = num.substring(1)
+                otp_et_phone_number?.setText(num)
                 //tv_resend?.visibility = View.INVISIBLE
                 //startResend(60)
                 controller.startCountDown(60)
+
 //                GlobalScope.async {
 //                    startTicker(60)
 //                }
@@ -581,32 +616,15 @@ class RegisterActivity : AppCompatActivity() {
     var disposable: Disposable? = null
     private var isResend = false
 
-
-    //var isOtp = false
-    // private val ringCaptchaController = RingcaptchaAPIController("i2ucy2y2y3any8u5i8uz")
-
-
-//    fun sendOtpTwilio(jwt: String?) {
-//        if (jwt != null) {
-//            if (!::twilio.isInitialized)
-//                twilio = TwilioVerification(this);
-//            twilio.startVerification(jwt, Via.SMS)
-//        }
-//    }
-//
-//    fun checkOtpTwilio(otp: String?) {
-//        if (otp != null) {
-//            if (!::twilio.isInitialized)
-//                twilio = TwilioVerification(this);
-//            twilio.checkVerificationPin(otp)
-//        }
-//    }
-
     override fun onStop() {
         super.onStop()
         controller.onStop()
         disposable?.dispose()
         //cancelTimer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -621,7 +639,20 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        controller.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == controller.OTP_HINT && resultCode == Activity.RESULT_OK) {
+            try {
+                val message = data!!.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE) ?: ""
+                val pattern = Pattern.compile("(|^)\\d{4}")
+                val matcher: Matcher = pattern.matcher(message)
+                if (matcher.find()) {
+                    otpReceived(matcher.group(0))
+                    //otpText.setText(matcher.group(0))
+                }
+            } catch (e: Exception) {
+
+            }
+        } else
+            controller.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onBackPressed() {

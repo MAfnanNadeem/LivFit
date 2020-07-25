@@ -25,7 +25,7 @@ data class Professional(
     @SerializedName("description")
     var description: String?,
     @SerializedName("Specializations")
-    var specializations: List<Specializations?>?,
+    var specializations: List<String?>?,
     @SerializedName("Certifications")
     var certifications: List<Certifications?>?,
     @SerializedName("Phone")

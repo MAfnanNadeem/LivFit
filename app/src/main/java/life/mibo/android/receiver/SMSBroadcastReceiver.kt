@@ -23,39 +23,53 @@ public class SMSBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Logger.e("SMSBroadcastReceiver onReceive : $intent")
-        Logger.e("SMSBroadcastReceiver Extras : ${intent.extras?.toString()}")
+        Logger.e("SMSBroadcastReceiver otp onReceive : $intent")
+        Logger.e("SMSBroadcastReceiver  otp Extras : ${intent.extras?.toString()}")
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
 
             val extras = intent.extras
+            Logger.e("SMSBroadcastReceiver  otp extras : $extras", extras)
             val status = extras?.get(SmsRetriever.EXTRA_STATUS) as Status? ?: return
-
+            Logger.e("SMSBroadcastReceiver  otp status.statusCode : ${status.statusCode}")
             when (status.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
 
-                    // Get SMS message contents
-                    val otp: String = extras!!.get(SmsRetriever.EXTRA_SMS_MESSAGE) as String
+                    try {
+                        // Get SMS message contents
+                        val messageIntent: Intent? = extras?.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT)
+                        Logger.e("SMSBroadcastReceiver otp messageIntent ", messageIntent?.extras)
 
-                    val pattern = Pattern.compile("(\\d{4})")
-                    val matcher = pattern.matcher(otp)
+                       // val otp: String? = messageIntent?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
+                     //   Logger.e("SMSBroadcastReceiver otp EXTRA_SMS_MESSAGE  $otp" )
+                     //  // com.google.android.gms.auth.api.phone.extra.verification_token
+                   //     Logger.e("SMSBroadcastReceiver otp EXTRA_SMS_MESSAGE  $otp" )
+//                        val pattern = Pattern.compile("(\\d{4})")
+//                        val matcher = pattern.matcher(otp)
+//
+//                        // Extract one-time code from the message and complete verification
+//                        var value = ""
+//                        if (matcher.find()) {
+//                            Logger.e("SMSBroadcastReceiver otp  "+matcher.group(1))
+//                            value = matcher.group(1)
+//                        }
 
-                    // Extract one-time code from the message and complete verification
-                    var value = ""
-                    if (matcher.find()) {
-                        Logger.e("SMSBroadcastReceiver "+matcher.group(1))
-                        value = matcher.group(1)
+                     //   Logger.e("SMSBroadcastReceiver  otp : $value  :: $otp")
+                        otpReceiver?.onOTPReceived(messageIntent)
+                    }
+                    catch (e: Exception){
+                        Logger.e("SMSBroadcastReceiver  otp  error  :: $e")
+                        e.printStackTrace()
                     }
 
-                    Logger.e("SMSBroadcastReceiver : $value  :: $otp")
-                    otpReceiver?.onOTPReceived(value)
                 }
 
                 CommonStatusCodes.TIMEOUT ->{
                     // Waiting for SMS timed out (5 minutes)
+                    Logger.e("SMSBroadcastReceiver otp  TIMEOUT0 ")
                     otpReceiver?.onOTPTimeOut()
                 }
                 else -> {
-                    Logger.e("SMSBroadcastReceiver : $status")
+                    Logger.e("SMSBroadcastReceiver  otp : $status")
                 }
             }
         }
@@ -63,7 +77,7 @@ public class SMSBroadcastReceiver : BroadcastReceiver() {
 
     interface OTPReceiveListener {
 
-        fun onOTPReceived(otp: String?)
+        fun onOTPReceived(otp: Intent?)
 
         fun onOTPTimeOut()
     }

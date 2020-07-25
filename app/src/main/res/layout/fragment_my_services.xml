@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/16/20 12:43 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/14/20 2:32 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeToRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/grid_1x"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@id/constraintLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="@dimen/grid_1x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/userImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_broken_image_black_24dp"
+                    app:civ_border_color="@color/grey"
+                    app:civ_border_width="1dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent="0.4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                app:cardBackgroundColor="@color/dialog_ip_bg_color"
+                app:cardCornerRadius="@dimen/grid_1x"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_service"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:lines="1"
+                        android:paddingStart="@dimen/grid_1x"
+                        android:paddingEnd="@dimen/grid_1x"
+                        android:text="@string/my_services"
+                        android:textColor="@color/textColorApp"
+                        android:textSize="@dimen/text_size_large" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_service_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="@string/user_has_no_service"
+                        android:textColor="@color/grey"
+                        android:textSize="@dimen/text_size_small"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/dialog_ip_bg_color"
+                app:cardCornerRadius="@dimen/grid_1x"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_specialization"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:lines="1"
+                        android:text="@string/my_specializations"
+                        android:textColor="@color/textColorApp"
+                        android:textSize="@dimen/text_size_large" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewSp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:paddingStart="@dimen/grid_1x"
+                        android:paddingEnd="@dimen/grid_1x"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_specialization_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="@string/no_specialization_yet"
+                        android:textColor="@color/grey"
+                        android:textSize="@dimen/text_size_small"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/grid_2x"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:layout_marginEnd="@dimen/grid_2x"
+                android:layout_marginBottom="@dimen/grid_2x"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/dialog_ip_bg_color"
+                app:cardCornerRadius="@dimen/grid_1x"
+                app:cardElevation="4dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_certificate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:lines="1"
+                        android:text="@string/my_certifications"
+                        android:textColor="@color/textColorApp"
+                        android:textSize="@dimen/text_size_large" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewCr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:paddingStart="@dimen/grid_1x"
+                        android:paddingEnd="@dimen/grid_1x" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_certificate_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/grid_1x"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="@string/no_certifications"
+                        android:textColor="@color/grey"
+                        android:textSize="@dimen/text_size_small"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

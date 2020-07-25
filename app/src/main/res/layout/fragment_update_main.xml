@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 4/14/20 9:59 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 4/14/20 9:59 AM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!--    <com.google.android.material.tabs.TabLayout-->
+    <!--        android:id="@+id/tabs"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="16dp"-->
+    <!--        android:layout_margin="@dimen/grid_2x"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:tabBackground="@drawable/tab_selector_update_user"-->
+    <!--        app:tabGravity="fill"-->
+    <!--        app:tabIndicatorHeight="0dp" />-->
+
+    <!--    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator-->
+    <!--        android:id="@+id/worm_dots_indicator"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="@dimen/grid_2x"-->
+    <!--        android:clickable="false"-->
+    <!--        app:dotsColor="@color/colorPrimary"-->
+    <!--        app:dotsCornerRadius="4dp"-->
+    <!--        app:dotsSize="16dp"-->
+    <!--        app:dotsSpacing="8dp"-->
+    <!--        app:dotsStrokeColor="@color/colorAccent"-->
+    <!--        app:dotsStrokeWidth="2dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+        android:id="@+id/worm_dots_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        app:dotsColor="@color/colorAccent"
+        app:dotsCornerRadius="8dp"
+        android:clickable="false"
+        app:dotsSize="16dp"
+        app:dotsSpacing="8dp"
+        app:dotsWidthFactor="2.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:progressMode="false"
+        app:selectedDotColor="@color/colorPrimary" />
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:layout_marginBottom="@dimen/grid_2x"
+        app:layout_constraintBottom_toTopOf="@id/btn_next"
+        app:layout_constraintTop_toBottomOf="@id/worm_dots_indicator" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:layout_marginTop="@dimen/grid_4x"
+        android:background="@drawable/login_button_primary"
+        android:text="@string/next"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

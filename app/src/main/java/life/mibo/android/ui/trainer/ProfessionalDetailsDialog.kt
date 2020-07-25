@@ -198,10 +198,10 @@ class ProfessionalDetailsDialog(var data: Professional) :
 
             //val certList = ArrayList<ServiceItem>()
             for (c in spec) {
-                if (c?.value == "1") {
-                    Logger.e("parseData  Specializations $c")
+                c?.let {
+                    //Logger.e("parseData  Specializations $c")
                     val chip = Chip(chip_group.context)
-                    chip.text = "${c.name}"
+                    chip.text = "$c"
                     chip.setChipBackgroundColorResource(R.color.white)
                     chip.isClickable = true
                     chip.isCheckable = false

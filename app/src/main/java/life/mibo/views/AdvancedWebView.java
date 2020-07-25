@@ -7,59 +7,58 @@
 
 package life.mibo.views;
 
-import android.content.ActivityNotFoundException;
-import android.view.ViewGroup;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.os.Environment;
-import android.webkit.CookieManager;
-import java.util.Arrays;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import java.util.HashMap;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
-import android.view.InputEvent;
-import android.view.KeyEvent;
-import android.webkit.ClientCertRequest;
-import android.webkit.HttpAuthHandler;
-import android.webkit.SslErrorHandler;
-import android.webkit.URLUtil;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Message;
+import android.util.AttributeSet;
+import android.util.Base64;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.ClientCertRequest;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions.Callback;
+import android.webkit.HttpAuthHandler;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
-import android.webkit.WebStorage.QuotaUpdater;
-import android.util.Base64;
-import android.os.Build;
-import android.webkit.DownloadListener;
-import android.graphics.Bitmap;
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.webkit.SslErrorHandler;
+import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebViewClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.AttributeSet;
+import android.webkit.WebStorage.QuotaUpdater;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.MissingResourceException;
-import java.util.Locale;
-import java.util.LinkedList;
-import java.util.Collection;
-import java.util.List;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /** Advanced WebView component for Android that works as intended out of the box */
 @SuppressWarnings("deprecation")
@@ -67,10 +66,14 @@ public class AdvancedWebView extends WebView {
 
 	public interface Listener {
 		void onPageStarted(String url, Bitmap favicon);
+
 		void onPageFinished(String url);
+
 		void onPageError(int errorCode, String description, String failingUrl);
+
 		void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent);
-		void onExternalPageRequest(String url);
+
+		boolean onExternalPageRequest(String url);
 	}
 
 	public static final String PACKAGE_NAME_DOWNLOAD_MANAGER = "com.android.providers.downloads";
@@ -499,14 +502,12 @@ public class AdvancedWebView extends WebView {
 
 			@Override
 			public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
-				if (!isPermittedUrl(url)) {
-					// if DialogListener listener is available
-					if (mListener != null) {
-						// inform the listener about the request
-						mListener.onExternalPageRequest(url);
-					}
+				if (mListener != null) {
+					if (!mListener.onExternalPageRequest(url))
+						return true;
+				}
 
-					// cancel the original request
+				if (!isPermittedUrl(url)) {
 					return true;
 				}
 

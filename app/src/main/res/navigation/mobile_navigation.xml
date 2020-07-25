@@ -184,14 +184,21 @@
         android:id="@+id/navigation_bmi"
         android:name="life.mibo.android.ui.body_measure.BMIFragment"
         android:label="Basic Info" />
+        <fragment
+        android:id="@+id/navigation_bio_summary"
+        android:name="life.mibo.android.ui.body_measure.SummaryFragment"
+        android:label="Biometric Summary" />
+
     <fragment
         android:id="@+id/navigation_profile_upload"
         android:name="life.mibo.android.ui.body_measure.ProfilePicFragment"
         android:label="@string/title_profile_page" />
+
     <fragment
-        android:id="@+id/navigation_bio_summary"
-        android:name="life.mibo.android.ui.body_measure.SummaryFragment"
-        android:label="Biometric Summary" />
+        android:id="@+id/navigation_profile_update"
+        android:name="life.mibo.android.ui.profile.ProfileUpdateFragment"
+        android:label="@string/update_your_profile" />
+
     <fragment
         android:id="@+id/navigation_search_trainer"
         android:name="life.mibo.android.ui.trainer.SearchTrainerFragment"
@@ -204,6 +211,14 @@
         android:id="@+id/navigation_settings"
         android:name="life.mibo.android.ui.settings.SettingsFragment"
         android:label="@string/settings" />
+    <fragment
+        android:id="@+id/navigation_workout"
+        android:name="life.mibo.android.ui.workout.WorkoutFragment"
+        android:label="@string/workout" />
+    <fragment
+        android:id="@+id/navigation_contact"
+        android:name="life.mibo.android.ui.settings.ContactUsFragment"
+        android:label="@string/contact_us" />
     <fragment
         android:id="@+id/navigation_my_account"
         android:name="life.mibo.android.ui.settings.MyAccountFragment"

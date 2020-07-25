@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
                 android:padding="@dimen/grid_2x"
-                android:text="Manage Address"
+                android:text="@string/manage_address"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium" />
 
@@ -127,7 +127,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"

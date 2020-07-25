@@ -114,8 +114,9 @@ class WebViewActivity : BaseActivity(), AdvancedWebView.Listener {
         log("onDownloadRequested $url :: $suggestedFilename")
     }
 
-    override fun onExternalPageRequest(url: String?) {
+    override fun onExternalPageRequest(url: String?): Boolean {
         log("onExternalPageRequest $url")
+        return true
     }
 
 

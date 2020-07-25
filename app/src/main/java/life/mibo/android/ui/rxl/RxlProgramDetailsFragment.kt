@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
 import life.mibo.android.R
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Constants
 import life.mibo.hardware.SessionManager
@@ -115,6 +116,8 @@ class RxlProgramDetailsFragment : BaseFragment() {
         }
 
         btn_next?.isEnabled = pods.size >= program?.pods ?: 0
+        if(MiboApplication.DEBUG)
+            btn_next?.isEnabled = true
 
         if (program?.pods == pods.size) {
             tv_required_pods.visibility = View.GONE

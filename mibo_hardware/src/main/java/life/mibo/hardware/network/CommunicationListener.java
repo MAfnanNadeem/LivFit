@@ -42,7 +42,7 @@ public interface CommunicationListener {
 
     void onDisconnect(boolean failed, String name, int status, String error);
 
-    void onCommandReceived(int code, byte[] command, String uid);
+    void onCommandReceived(int code, byte[] command, String uid, int type);
 
     void onScale(float weight, @Nullable ScaleData data, int code, @Nullable Object other);
 

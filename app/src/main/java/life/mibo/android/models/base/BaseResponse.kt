@@ -14,7 +14,7 @@ import life.mibo.android.core.gson.AlwaysListTypeAdapterFactory
 abstract class BaseResponse<T>(@SerializedName(value = "data", alternate = ["Data"]) var data: T?) : BaseModel {
     @SerializedName("error")
     @JsonAdapter(AlwaysListTypeAdapterFactory::class)
-    var errors: List<Error?>? = null
+    var errors: List<BaseError?>? = null
     @SerializedName("status")
     var status: String? = null
 

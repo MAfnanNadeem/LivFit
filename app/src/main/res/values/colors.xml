@@ -23,7 +23,7 @@
     <color name="button_color_app">#FF8A73</color>
     <color name="button_color_app_disable">#9FFF7373</color>
     <color name="textColor_weight">#F7FF03</color>
-
+    <color name="ic_launcher_background">#15A695</color>
     <!--toast-->
     <color name="defaultTextColor">#FFFFFF</color>
     <color name="errorColor">#D50000</color>

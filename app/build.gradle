@@ -26,8 +26,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 24
-        versionName "0.1.24"
+        versionCode 25
+        versionName "0.1.25"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -100,6 +100,7 @@ dependencies {
 
     implementation 'com.kroegerama:barcode-kaiteki:1.1.1'
     implementation 'com.danikula:videocache:2.7.1'
+    implementation 'com.github.halilozercan:BetterVideoPlayer:kotlin-SNAPSHOT'
 
     //implementation 'com.kevalpatel2106:ruler-picker:1.1'
     //implementation 'ke.tang:ruler:1.0.4'4'
@@ -194,6 +195,8 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':mibo_hardware')
     implementation project(path: ':ShapeImageView')
@@ -207,6 +210,7 @@ dependencies {
     //implementation 'com.ringcaptcha.android:ringcaptcha:1.2.0'
 
     // later will be removed in final build
+
     implementation 'com.github.ihsanbal:LoggingInterceptor:3.0.0'
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"
     releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:3.0.1"

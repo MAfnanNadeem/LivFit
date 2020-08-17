@@ -34,7 +34,7 @@
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_config"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme"
@@ -133,6 +133,11 @@
 
         <activity
             android:name="life.mibo.fitbitsdk.authentication.ui.FitbitLoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Material.FullScreen" />
+
+        <activity
+            android:name=".ui.rxt.ConfigureIslandActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Material.FullScreen" />
 

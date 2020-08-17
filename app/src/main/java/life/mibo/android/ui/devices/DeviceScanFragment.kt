@@ -68,12 +68,19 @@ import java.util.concurrent.TimeUnit
 class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     companion object {
+
+        const val ANY = 1
+        const val BOOSTER = 2
+        const val RXL = 3
+        const val RXT = 4
+
         fun bundle(isRxl: Boolean, type: Int): Bundle {
             val arg = Bundle()
             arg.putBoolean("is_rxl", isRxl)
-            arg.putInt("is_type", type)
+            arg.putInt("is_search_type", type)
             return arg
         }
+
     }
 
     interface Listener : BaseListener {
@@ -86,6 +93,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     //private var viewModel: ScanDeviceViewModel? = null
     lateinit var controller: ScanController
     var isRxl = false
+    private var searchType = 0
 
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
@@ -156,6 +164,7 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
         checkAndScan()
         isRxl = arguments?.getBoolean("is_rxl") ?: false
+        searchType = arguments?.getInt("is_search_type", 0) ?: 0
         //if (isRxl)
         button_next?.text = getString(R.string.next)
 
@@ -182,6 +191,10 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         log("onNextClicked $isRxl")
         val member = Prefs.get(this.context).member
         if (member != null) {
+            if (searchType == RXT) {
+                navigate(Navigator.RXT_SELECT_WORKOUT, null)
+                return
+            }
             SessionManager.getInstance().userSession.user =
                 User("${member.firstName}", "${member.lastName}", "${member.id}")
 
@@ -222,6 +235,11 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                             } else {
                                 startTrainerCalenderResult()
                             }
+                            return
+                        }
+
+                        if (searchType == RXT) {
+                            navigate(Navigator.RXT_SELECT_WORKOUT, null)
                             return
                         }
                     }
@@ -690,6 +708,10 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
     }
 
     private fun connectAllDevices(rxl: Boolean = false) {
+        if (searchType == RXT) {
+            connectAllRxts()
+            return
+        }
         if (availabeAdapter!!.list!!.size > 0) {
             Observable.fromIterable(availabeAdapter!!.list!!).doOnError { }
                 .subscribeOn(Schedulers.io())
@@ -717,6 +739,46 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                                 Thread.sleep(100)
                             }
 
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        log("iv_plus onError", e)
+                        e.printStackTrace()
+                    }
+
+                    override fun onComplete() {
+                        //adapter?.notifyDataSetChanged()
+                        Single.timer(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess {
+                                revertNextButton()
+
+                            }.subscribe()
+
+                    }
+                })
+
+        }
+
+    }
+
+    private fun connectAllRxts() {
+        if (availabeAdapter!!.list!!.size > 0) {
+            Observable.fromIterable(availabeAdapter!!.list!!).doOnError { }
+                .subscribeOn(Schedulers.io())
+                .subscribe(object : io.reactivex.Observer<Device> {
+                    override fun onSubscribe(d: Disposable) {
+                        button_connect_all?.startAnimation {
+
+                        }
+                    }
+
+                    override fun onNext(t: Device) {
+                        log("connectAllDevices onNext")
+                        if (t.isRxt) {
+                            connectionListener?.onConnectClicked(t)
+                            isConnectTrigger = true
+                            Thread.sleep(100)
                         }
                     }
 

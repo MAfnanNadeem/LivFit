@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 5/11/20 11:22 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 5/10/20 4:17 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/tv_subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_4x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="@string/issue"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinner_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/bg_contact_us_spinner"
+            android:padding="4dp"
+            android:spinnerMode="dropdown"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_subject" />
+
+        <TextView
+            android:id="@+id/tv_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_4x"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="@string/tell_more_about_issue"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_subject" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_4x"
+            android:background="@drawable/bg_my_account"
+            android:hint="@string/tell_more_about_issue"
+            android:inputType="textMultiLine"
+            android:maxLines="20"
+            android:minLines="5"
+            android:padding="@dimen/grid_1x"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_msg" />
+
+        <TextView
+            android:id="@+id/tv_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:fontFamily="@string/font_roboto"
+            android:text="@string/attachment_a_screenshot"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_message" />
+
+
+        <ImageView
+            android:id="@+id/img_upload"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/grid_2x"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:src="@drawable/ic_image_black_24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_img" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@drawable/button_shape_primary"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/img_upload" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+

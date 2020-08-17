@@ -123,6 +123,19 @@ public class Session  implements BaseModel {
         return new Device();
     }
 
+
+    public void updateRegisteredDevice(String uid, int status, int battery, int signal) {
+        for (Device d : registeredDevices) {
+            if (d.getUid().equals(uid)) {
+                d.setTiles(battery);
+                d.setBatteryLevel(battery);
+                d.setSignalLevel(signal);
+                d.setStatusConnected(status);
+                break;
+            }
+        }
+    }
+
     public void setRegisteredDevices(ArrayList<Device> registeredDevices) {
         this.registeredDevices = registeredDevices;
     }

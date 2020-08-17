@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Created by Sumeet Kumar on 8/9/20 9:59 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 8/9/20 9:59 AM
+  ~  Mibo Hexa - app
+  -->
+
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>

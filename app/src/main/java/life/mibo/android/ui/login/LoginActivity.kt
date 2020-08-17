@@ -116,7 +116,8 @@ class LoginActivity : BaseActivity() {
             log("DEBUG MODE")
             btn_login?.setOnLongClickListener {
                //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")
-                controller.onLogin("sumeet.kumar@mibo.life", "123Qwe@@", false)
+                //controller.onLogin("sumeet.kumar@mibo.life", "123Qwe@@", false)
+                controller.onLogin("ronny@fitnes.com", "123456", false)
                 //controller.onLogin("alisher@mibo.life", "123456")
                 return@setOnLongClickListener true
             }

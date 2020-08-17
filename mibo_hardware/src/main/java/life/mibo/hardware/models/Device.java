@@ -262,6 +262,20 @@ public class Device implements Serializable, BaseModel {
         return type == RXL_BLE || type == RXL_WIFI;
     }
 
+    public boolean isRxt() {
+        return type == RXT_WIFI;
+    }
+
+    private int tiles = 0;
+
+    public void setTiles(int count) {
+        this.tiles = count;
+    }
+
+    public int getTiles() {
+        return tiles;
+    }
+
     public boolean isBand() {
         return type == HR_MONITOR;
     }

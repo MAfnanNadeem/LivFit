@@ -12,7 +12,7 @@ package life.mibo.android.models.base
 import com.google.gson.annotations.SerializedName
 
 //@JsonAdapter(AlwaysListTypeAdapterFactory::class)
-public data class Error(
+public data class BaseError(
     @SerializedName("code")
     var code: Int?,
     @SerializedName("message")

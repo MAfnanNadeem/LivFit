@@ -37,6 +37,7 @@
 
     <dimen name="radio_button_conner_radius">5dp</dimen>
     <dimen name="radio_button_stroke_border">1dp</dimen>
+    <dimen name="rxt_child_item">48dp</dimen>
 
 
     <integer name="anim_duration_medium">300</integer>

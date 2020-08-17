@@ -28,9 +28,9 @@
     <init>(java.lang.Throwable);
 }
 
--keep public class * extends life.mibo.hexa.models.base.BaseModel
--keep public class * implements life.mibo.hexa.models.base.BaseModel
--keepclassmembers class * extends life.mibo.hexa.models.base.BaseModel {
+-keep public class * extends life.mibo.android.models.base.BaseModel
+-keep public class * implements life.mibo.android.models.base.BaseModel
+-keepclassmembers class * extends life.mibo.android.models.base.BaseModel {
     <fields>;
 }
 -keep public class * extends android.app.Activity

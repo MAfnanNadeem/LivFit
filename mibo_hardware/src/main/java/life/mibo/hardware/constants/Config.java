@@ -22,6 +22,7 @@ public class Config {
     public static final int COMMAND_GET_DEVICE_STATUS = 0x02;
     public static final int COMMAND_DEVICE_STATUS_RESPONSE = 0x82;
     public static final int COMMAND_SET_DEVICE_COLOR = 0x03;
+    public static final int COMMAND_SET_DEVICE_COLOR_ALL = 0x05;
     public static final int COMMAND_SET_DEVICE_COLOR_RESPONSE = 0x83;
     public static final int COMMAND_SET_COMMON_STIMULATION_PARAMETERS = 0x10;
     public static final int COMMAND_SET_COMMON_STIMULATION_PARAMETERS_RESPONSE = 0x90;
@@ -46,6 +47,9 @@ public class Config {
     public static final int RXL_COMMAND_PROXIMATE = 0x04;
     public static final int RXL_TAP_EVENT = 0xC0;
 
+    public static final int RXT_ID_CONFIG_RESPONSE = 0x84;
+    public static final int COMMAND_RXT_TILE_CONFIG = 193;
+    public static final int RXT_TILE_CONFIG = 0xC1;
     public static final int INDICATE = 0x100;
     public static final int SCALE_LEGACY = 0x200;
     public static final int SCALE = 0x200;

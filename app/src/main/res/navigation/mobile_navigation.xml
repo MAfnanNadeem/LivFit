@@ -270,6 +270,21 @@
         android:id="@+id/navigation_fit_steps"
         android:name="life.mibo.android.ui.fit.GoogleFitStepsFragment"
         android:label="Steps" />
+
+    <fragment
+        android:id="@+id/navigation_rxt_config_id"
+        android:name="life.mibo.android.ui.rxt.RxtIDConfigurationsFragment"
+        android:label="RXT Config" />
+
+    <fragment
+        android:id="@+id/navigation_rxt_select"
+        android:name="life.mibo.android.ui.rxt.RXTSessionConfigureFragment"
+        android:label="RXT Workout Select" />
+
+    <fragment
+        android:id="@+id/navigation_rxt_play"
+        android:name="life.mibo.android.ui.rxt.RXTStartSingleSessionFragment"
+        android:label="RXT Workout" />
     <!--    <fragment-->
     <!--        android:id="@+id/navigation_quickplay_details_play"-->
     <!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->

@@ -9,14 +9,14 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.core.gson.AlwaysListTypeAdapterFactory
 import life.mibo.android.models.base.BaseModel
-import life.mibo.android.models.base.Error
+import life.mibo.android.models.base.BaseError
 
 data class SessionReport(
     @SerializedName("data")
     var report: Report?,
     @SerializedName("error")
     @JsonAdapter(AlwaysListTypeAdapterFactory::class)
-    var error: List<Error?>?,
+    var error: List<BaseError?>?,
     @SerializedName("status")
     var status: String?
 ): BaseModel

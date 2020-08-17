@@ -18,7 +18,7 @@ class RxlExercises(
     var `data`: List<RxlProgram>?,
     @JsonAdapter(AlwaysListTypeAdapterFactory::class)
     @SerializedName("error")
-    var error: List<life.mibo.android.models.base.Error?>?,
+    var error: List<life.mibo.android.models.base.BaseError?>?,
     @SerializedName("status")
     var status: String?
 ) : BaseModel {

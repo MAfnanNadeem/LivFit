@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.locks.ReentrantLock;
 
 import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.OnBleCharChanged;
@@ -343,7 +344,7 @@ public class CommunicationManager {
             } else {
                 if (property == Config.INDICATE) {
                     if (listener != null)
-                        listener.onCommandReceived(Config.INDICATE, data, uid);
+                        listener.onCommandReceived(Config.INDICATE, data, uid, DataParser.BOOSTER);
                     return;
                 }
                 receiveCommands(data, Utils.getUid(uid), true);
@@ -1033,8 +1034,9 @@ public class CommunicationManager {
     }
 
     private void connectTCPDevice(String ip, String port, String Uid, int rxl) {
+        log("connectTCPDevice " + ip);
         //create a TCPClient object
-        // Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port);
+        // log("TCPConnect ip " + ip + " , port " + port);
         boolean newDevice = true;
         for (TCPClient t : tcpClients) {
             if (t.getServerIp().equals(ip)) {
@@ -1057,7 +1059,7 @@ public class CommunicationManager {
                 }
             }
         }
-        Logger.e("CommunicationManager TCPConnect ip " + ip + " , port " + port + " newDevice " + newDevice);
+        log("TCPConnect ip " + ip + " , port " + port + " newDevice " + newDevice);
 
 
     }
@@ -1122,7 +1124,7 @@ public class CommunicationManager {
     private void parseCommandsBooster(byte[] command, String uid) {
         log("parseCommands2 msg " + Arrays.toString(command) + " : UID " + uid);
         if (listener != null)
-            listener.onCommandReceived(DataParser.getCommand(command), command, uid);
+            listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.BOOSTER);
     }
 
     private void parseCommandsRxl(byte[] command, String uid) {
@@ -1134,14 +1136,14 @@ public class CommunicationManager {
         }
 
         if (listener != null)
-            listener.onCommandReceived(DataParser.getCommand(command), command, uid);
+            listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.RXL);
     }
 
     private void parseCommandsRxt(byte[] command, String uid) {
         log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + uid);
         log("parseCommandsRXT msg " + Utils.getBytes(command) + " : UID " + uid);
         if (listener != null)
-            listener.onCommandReceived(DataParser.getCommand(command), command, uid);
+            listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.RXT);
     }
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
@@ -1537,6 +1539,50 @@ public class CommunicationManager {
     public void sendBleMessage(String uid, byte[] msg) {
         if (bluetoothManager != null)
             bluetoothManager.sendMessage(uid, msg, "sendBleMessage");
+    }
+
+
+    // @Subscribe(threadMode = ThreadMode.ASYNC)
+    private final Object lock = new Object();
+    //Sync object for non-fair locks
+    private final ReentrantLock locks = new ReentrantLock();
+
+    public void onChangeRxtColorEvent(ChangeColorEvent event) {
+        log("onChangeRxtColorEvent call");
+        //EventBus.getDefault().removeStickyEvent(event);
+        synchronized (lock) {
+            log("onChangeRxtColorEvent execute");
+            for (TCPClient t : tcpClients) {
+                if (t.getUid().equals(event.getUid())) {
+                    t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()));
+                    return;
+                }
+            }
+        }
+
+
+    }
+
+    // @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onRxtIdConfigurations(ChangeColorEvent event) {
+        log("onRxtIdConfigurations");
+        // EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendRxtIdConfig());
+                return;
+            }
+        }
+    }
+
+    public void onRxtBlinkAll(ChangeColorEvent event) {
+        log("onRxtBlinkAll");
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendRxtBlinkColor(event.getColor(), event.getTileIdInt(), event.getTime(), event.getData()));
+                return;
+            }
+        }
     }
 
 

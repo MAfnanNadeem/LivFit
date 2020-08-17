@@ -123,6 +123,7 @@ class UpdateDataFragment : BaseFragment() {
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             //dobUpdate = member.dob ?: ""
+            //dobUpdate = ""
         }
 
         tv_dob2?.setText(dobUpdate)
@@ -141,7 +142,12 @@ class UpdateDataFragment : BaseFragment() {
                 toastNotEditable()
             }
         }
+        gender = member.gender ?: ""
 
+        if(gender.length > 1){
+            tv_gender2?.text = gender
+            isGender = true
+        }
         // et_dob?.isClickable = false
         //et_country?.isClickable = false
 

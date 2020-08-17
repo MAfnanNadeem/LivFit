@@ -2,6 +2,7 @@ package life.mibo.hardware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import life.mibo.hardware.models.Device;
 import life.mibo.hardware.models.DeviceTypes;
@@ -57,6 +58,8 @@ public class SessionManager {
     }
 
     public Session getSession() {
+        if(session == null)
+            session = new Session();
         return session;
     }
 
@@ -483,5 +486,13 @@ public class SessionManager {
         this.loginStatus = loginStatus;
     }
 
+    List<?> workouts;
 
+    public void addWorkouts(List<Object> list) {
+        this.workouts = list;
+    }
+
+    public List<?> getWorkouts() {
+        return workouts;
+    }
 }

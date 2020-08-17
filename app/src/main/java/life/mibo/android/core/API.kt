@@ -29,6 +29,9 @@ import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
 import life.mibo.android.models.register.RegisterResponse
 import life.mibo.android.models.rxl.*
+import life.mibo.android.models.rxt.GetIslandPost
+import life.mibo.android.models.rxt.GetIslandTiles
+import life.mibo.android.models.rxt.SaveIslandPost
 import life.mibo.android.models.send_otp.SendOTP
 import life.mibo.android.models.send_otp.SendOtpResponse
 import life.mibo.android.models.session.RequestRescheduleMemberSession
@@ -46,6 +49,8 @@ import life.mibo.android.models.weight.CompareWeightResponse
 import life.mibo.android.models.weight.WeightAll
 import life.mibo.android.models.weight.WeightAllResponse
 import life.mibo.android.models.workout.GetWorkout
+import life.mibo.android.models.workout.SearchWorkout
+import life.mibo.android.models.workout.SearchWorkoutPost
 import life.mibo.android.models.workout.Workouts
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.utils.Utils
@@ -122,13 +127,16 @@ class API {
         //http://test.mibo.world/api/v1/
         //const val baseUrl = "http://test.mibo.world/api/consumer/"
         //private val url = "http://test.mibo.world"
-        private const val url = "https://test.mibolivfit.club"
+        private val url =
+            if (MiboApplication.DEBUG) "https://dev.mibolivfit.club" else "https://mibolivfit.club"
+        //private const val productionUrl = "https://demo.mibolivfit.club"
+
         // const val url = "https://mibolivfit.club"
-        const val baseUrl = "$url/api/consumer/"
-        const val trainerUrl = "$url/api/v1/"
-        const val chainUrl = "http://chaintest.mibo.world/api/"
+        val baseUrl = "$url/api/consumer/"
+        val trainerUrl = "$url/api/v1/"
+        val chainUrl = "http://chaintest.mibo.world/api/"
         // val fitbitApi = "http://chaintest.mibo.world/api/"
-       // const val fitbitAuth = "http://chaintest.mibo.world/api/"
+        // const val fitbitAuth = "http://chaintest.mibo.world/api/"
     }
 
     fun getApi(): ApiService {
@@ -472,6 +480,20 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("searchPrograms")
         fun trainerSearchPrograms(@Body data: ProgramPost): Call<SearchPrograms>
+
+        // RXT
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("searchWorkout")
+        fun searchWorkout(@Body data: SearchWorkoutPost): Call<SearchWorkout>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveIslandTiles")
+        fun saveIslandTiles(@Body data: SaveIslandPost): Call<ResponseStatus>
+
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getIslandTiles")
+        fun getIslandTiles(@Body data: GetIslandPost): Call<GetIslandTiles>
 
 
     }

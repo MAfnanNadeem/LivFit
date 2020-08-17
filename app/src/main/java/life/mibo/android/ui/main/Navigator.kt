@@ -45,12 +45,19 @@ interface Navigator {
         const val VIEW_MEASUREMENT = 140;
         const val VIEW_SESSIONS = 141;
         const val UPDATE_DATA = 142;
+        const val RXT_START_WORKOUT = 144;
+        const val RXT_SELECT_WORKOUT = 145;
+        const val RXT_CONFIGURE = 146;
+
+
         const val POST = 201;
         const val LOGOUT = 202;
         const val PIC_UPLOADED = 203;
         const val DRAWER_LOCK = 301;
         const val DRAWER_UNLOCK = 302;
         const val FAB_UPDATE = 303;
+
+
         const val WEBVIEW = 400;
 
         //var SELECT_REFLEX = 106;

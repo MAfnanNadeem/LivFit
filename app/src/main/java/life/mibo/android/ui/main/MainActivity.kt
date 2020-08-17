@@ -123,7 +123,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -561,12 +560,13 @@ class MainActivity : BaseActivity(), Navigator {
 
     }
 
-    private fun startScanningView(isRxl: Boolean) {
+    private fun startScanningView(isRxl: Boolean, type: Int) {
 
         PermissionHelper.requestPermission(this@MainActivity, permissions) {
             startManager()
             val bundle = Bundle()
             bundle.putBoolean("is_rxl", isRxl)
+            bundle.putInt("is_search_type", type)
             navigate(
                 R.id.action_navigation_home_to_navigation_scan,
                 R.id.navigation_devices, bundle
@@ -625,8 +625,13 @@ class MainActivity : BaseActivity(), Navigator {
                 }
 
             }
-            override fun onCommandReceived(code: Int, command: ByteArray, uid: String?) {
-                parseCommands(code, command, uid)
+
+            override fun onCommandReceived(code: Int, command: ByteArray, uid: String?, type: Int) {
+                if (type == 2) {
+                    parseRxtCommands(code, command, uid)
+                } else {
+                    parseCommands(code, command, uid)
+                }
             }
 
             override fun onDeviceDiscoveredEvent(device: Device?) {
@@ -967,7 +972,6 @@ class MainActivity : BaseActivity(), Navigator {
                 }
             }
         }
-
     }
 
     private fun parseCommandsExtra(code: Int, command: ByteArray, uid: String?) {
@@ -996,6 +1000,87 @@ class MainActivity : BaseActivity(), Navigator {
             }
             else -> {
                 logw("parseCommandsExtra DEFAULTS ${command?.contentToString()}")
+            }
+        }
+    }
+
+
+    private fun parseRxtCommands(code: Int, command: ByteArray, uid: String?) {
+        logw("parseRxtCommands $code : data " + command.contentToString())
+        when (code) {
+            INDICATE -> {
+                EventBus.getDefault().postSticky(IndicationEvent("", command))
+                return
+            }
+            COMMAND_PING_RESPONSE -> {
+                return
+            }
+
+            COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
+                EventBus.getDefault().postSticky(RxtStatusEvent(1, command, uid))
+                return
+            }
+            RXL_TAP_EVENT -> {
+                logw("parseCommandsRxt... TAP_EVENT")
+                EventBus.getDefault().postSticky(RxtStatusEvent(2, command, uid))
+                return
+            }
+            RXT_ID_CONFIG_RESPONSE -> {
+                logw("parseCommandsRxt... TAP_EVENT")
+                EventBus.getDefault().postSticky(RxtStatusEvent(3, command, uid))
+                return
+            }
+            RXT_TILE_CONFIG -> {
+                logw("parseCommandsRxt... TAP_EVENT")
+                EventBus.getDefault().postSticky(RxtTileConfigEvent(command, uid))
+                return
+            }
+            COMMAND_DEVICE_STATUS_RESPONSE -> {
+                logw("parseCommandsRxt... TAP_EVENT")
+
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    if (d.uid == uid) {
+                        if (d.tiles == 0) {
+                            CommunicationManager.log("parseCommandsRxt... DEVICE_STATUS_RESPONSE Tiles were zero")
+
+                            var statusConnected = 0
+
+                            if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
+                                if (d.statusConnected == DEVICE_DISCONNECTED) {
+                                    //EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
+                                }
+                                d.statusConnected = DEVICE_CONNECTED
+                                statusConnected = DEVICE_CONNECTED
+                                //EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+                            } else {
+                                d.statusConnected = DEVICE_CONNECTED
+                                statusConnected = DEVICE_CONNECTED
+                                //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).statusConnected = DEVICE_CONNECTED
+                            }
+
+                            SessionManager.getInstance().session.updateRegisteredDevice(
+                                uid,
+                                statusConnected,
+                                DataParser.getStatusBattery(command),
+                                DataParser.getStatusSignal(command)
+                            )
+
+                            //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).tiles = DataParser.getStatusBattery(command)
+                            d.tiles = DataParser.getStatusBattery(command)
+                            d.signalLevel = DataParser.getStatusSignal(command)
+                            //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).signalLevel = DataParser.getStatusSignal(command)
+                            EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
+                        }
+                        return
+                    }
+
+                }
+
+                return
+            }
+            else -> {
+                logw("parseRxtCommands UNKNOWN $code : data " + command.contentToString())
             }
         }
     }
@@ -1423,6 +1508,18 @@ class MainActivity : BaseActivity(), Navigator {
                 if (data is Bundle)
                     navigate(0, R.id.navigation_webview, data)
             }
+            Navigator.RXT_SELECT_WORKOUT -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_rxt_select, bundle)
+            }
+            Navigator.RXT_START_WORKOUT -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_rxt_play, bundle)
+            }
             else -> {
                 drawerItemClicked(type)
             }
@@ -1563,7 +1660,33 @@ class MainActivity : BaseActivity(), Navigator {
 
             R.id.nav_test3 -> {
                 lastId = -1
-                startScanningView(true)
+                startScanningView(true, DeviceScanFragment.RXL)
+                // SessionManager.getInstance().userSession.createDummy()
+                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+                //Payments.testPayment(this@MainActivity)
+                //startScanning(false)
+                //updateMenu()
+                // test
+                //navigate(0, R.id.navigation_rxl_home)
+
+                //navigate(0, R.id.navigation_select_suit)
+                // navigate(0, R.id.navigation_bmi)
+                // navigate(0, R.id.navigation_measurement)
+
+            }
+
+            R.id.nav_test4 -> {
+
+                val list = ArrayList(SessionManager.getInstance().userSession.devices)
+                if (list.size > 0)
+                    for (d in list) {
+                        if (d.isRxt) {
+                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+                            return
+                        }
+                    }
+                lastId = -1
+                startScanningView(true, DeviceScanFragment.RXT)
                 // SessionManager.getInstance().userSession.createDummy()
                 //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
                 //Payments.testPayment(this@MainActivity)
@@ -1788,7 +1911,7 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.BOOSTER_SCAN -> {
                 //navController.navigate(R.id.action_navigation_home_pop)
                 //navController.navigate(R.id.navigation_home)
-                startScanningView(false)
+                startScanningView(false, DeviceScanFragment.BOOSTER)
                 // navigate(0, R.id.navigation_devices)
                 //navigateFragment(R.id.navigation_calories)
             }
@@ -1816,7 +1939,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             HomeItem.Type.RXL_SCAN -> {
-                startScanningView(true)
+                startScanningView(true, DeviceScanFragment.RXL)
                 // navigate(0, R.id.navigation_rxl_home)
                 // drawerItemClicked(R.id.navigation_rxl_test)
             }

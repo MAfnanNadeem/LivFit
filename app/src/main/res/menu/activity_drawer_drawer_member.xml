@@ -42,10 +42,14 @@
         <!--            android:id="@+id/nav_settings"-->
         <!--            android:icon="@drawable/ic_settings_black"-->
         <!--            android:title="@string/action_settings" />-->
-<!--        <item-->
-<!--            android:id="@+id/nav_test3"-->
-<!--            android:icon="@drawable/ic_settings_black"-->
-<!--            android:title="RXL" />-->
+        <item
+            android:id="@+id/nav_test3"
+            android:icon="@drawable/ic_settings_black"
+            android:title="React Pods" />
+        <item
+            android:id="@+id/nav_test4"
+            android:icon="@drawable/ic_settings_black"
+            android:title="React Light" />
 
 
     </group>

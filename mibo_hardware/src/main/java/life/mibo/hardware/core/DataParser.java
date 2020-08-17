@@ -18,6 +18,7 @@ import static life.mibo.hardware.constants.Config.COMMAND_SET_CHANNELS_LEVELS;
 import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS;
 import static life.mibo.hardware.constants.Config.COMMAND_SET_COMMON_STIMULATION_PARAMETERS_ON_HOT;
 import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR_ALL;
 import static life.mibo.hardware.constants.Config.COMMAND_SET_MAIN_LEVEL;
 import static life.mibo.hardware.constants.Config.COMMAND_START_CURRENT_CYCLE;
 import static life.mibo.hardware.constants.Config.COMMAND_STOP_CURRENT_CYCLE;
@@ -313,6 +314,54 @@ public class DataParser {
         return new byte[0];
 
     }
+
+    public static byte[] sendRxtColor(int tileId, int color, int time, int data, int zone) {
+        try {
+            int id = (tileId) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (time >> 8) & 0xFF;
+            int t2 = (time) & 0xFF;
+            int z = (zone) & 0xFF;
+            int d = (data) & 0xFF;
+            //CommunicationManager.log("sendRxtColor tile:"+tileId+", " + color + " : r" + r + " g" + g + " b " + b +" t:"+ time + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{8}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) z, (byte) d}, RXT);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            Logger.e("sendRXTColor " + color + " : " + time, e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
+    public static byte[] sendRxtIdConfig() {
+        byte[] aux = new byte[0];
+        return fullMessage(new byte[]{0x04}, new byte[]{0}, aux, RXT);
+    }
+
+    public static byte[] sendRxtBlinkColor(int color, int cycle, int timeOn, int timeOFF) {
+        try {
+            int id = (cycle) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8) & 0xFF;
+            int b = (color) & 0xFF;
+            int t1 = (timeOn >> 8) & 0xFF;
+            int t2 = (timeOn) & 0xFF;
+            int t3 = (timeOFF >> 8) & 0xFF;
+            int t4 = (timeOFF) & 0xFF;
+            //Logger.e("sendRxtBlinkColor " + color + " : r" + r + " g" + g + " b " + b + timeOn + " : " + t1 + "  " + t2);
+            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR_ALL}, new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) id, (byte) t2, (byte) t1, (byte) t4, (byte) t3}, RXT);
+        } catch (Exception e) {
+            // Color c = Color.valueOf(color);
+            // Logger.e("sendRXTColor " + color + " : " + time, e);
+            e.printStackTrace();
+        }
+        return new byte[0];
+
+    }
+
 
     public static byte[] sendRxlColor(byte[] color, int type) {
         return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, color, type);

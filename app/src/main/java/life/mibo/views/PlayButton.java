@@ -148,6 +148,12 @@ public class PlayButton extends AppCompatImageButton {
     public void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
     }
+
+    public void setPlay(boolean b) {
+        checked = !b;
+        updateDrawables();
+    }
+
     static class SavedState extends View.BaseSavedState {
         boolean checked;
 

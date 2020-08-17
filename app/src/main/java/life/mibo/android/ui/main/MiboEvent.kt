@@ -26,7 +26,7 @@ object MiboEvent {
         firebase = FirebaseAnalytics.getInstance(context)
         try {
             firebase.setUserId(Prefs.get(context).memberId)
-            // firebase.setUserProperty(FirebaseAnalytics.UserProperty.SIGN_UP_METHOD)
+            // firebase.setUserProperty(FirebaseAnalytics.UserProperty.SIGN_UP_METHOD)initializeApp
         } catch (e: java.lang.Exception) {
         }
     }

@@ -84,16 +84,26 @@ class ProfessionalDetailsActivity : AppCompatActivity() {
                 data.certifications = certs
             }
 
-            val s = item.specializations
-            if (s != null && s.isNotEmpty()) {
-                for (i in s) {
-                    i?.let {
-                        specs.add(it)
+            try {
+                val s = item.specializations
+                if (s is Collections || s is List<*>) {
+                    val ss = s as List<*>
+                    if (ss != null && ss.isNotEmpty()) {
+                        for (i in s) {
+                            i?.let {
+                                if (it is String)
+                                    specs.add(it)
+                            }
+                            // if (i?.value == "1")
+                            //specs[i.name ?: ""] = i.value ?: "1"
+                        }
+                        data.specializations = specs
                     }
-                   // if (i?.value == "1")
-                    //specs[i.name ?: ""] = i.value ?: "1"
                 }
-                data.specializations = specs
+
+
+            } catch (e: java.lang.Exception) {
+
             }
             return data
         }

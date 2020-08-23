@@ -283,7 +283,7 @@ class IslandParser(val island: RxtIsland) {
         isTwice = true;
         secondTile = d.tileId
         if (observe)
-            delayObserver(d, action, id.plus(1))
+            delayObserver(d, action, id.plus(1)) // TODO remove plus 1 later
         Single.fromCallable {
             CommunicationManager.getInstance().onChangeRxtColorEvent(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
             return@fromCallable ""

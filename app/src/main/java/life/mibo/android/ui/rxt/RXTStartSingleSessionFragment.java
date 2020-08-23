@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,7 +46,6 @@ import life.mibo.android.models.workout.RXT;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
-import life.mibo.android.ui.main.Navigator;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
 import life.mibo.android.ui.rxt.parser.RXTManager;
@@ -104,13 +104,13 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         tvBlocks = view.findViewById(R.id.tv_blocks);
         chipGroup = view.findViewById(R.id.chip_group);
 
-        View back = view.findViewById(R.id.btn_back);
+        // View back = view.findViewById(R.id.btn_back);
         playButton = view.findViewById(R.id.btn_play);
-        View stop = view.findViewById(R.id.btn_stop);
+        // View stop = view.findViewById(R.id.btn_stop);
         View plus = view.findViewById(R.id.btn_plus);
         View minus = view.findViewById(R.id.btn_minus);
 
-        back.setOnClickListener(v -> navigate(Navigator.CLEAR_HOME, null));
+        // back.setOnClickListener(v -> navigate(Navigator.CLEAR_HOME, null));
         plus.setOnClickListener(v -> plusClicked());
         minus.setOnClickListener(v -> minusClicked());
         playButton.setOnClickListener(v -> {
@@ -123,6 +123,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         if (workout != null) {
             setupWorkout(workout);
         }
+        playButton.setPlay(false);
     }
 
     void plusClicked() {
@@ -411,7 +412,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     private void showScoreDialog() {
         try {
             ArrayList<ScoreItem> list = RXTManager.Companion.getInstance().getScore();
-            requireActivity().runOnUiThread(() -> new ScoreDialog(requireActivity(), "Test Program...", list).show());
+            log("ScoreItem list " + list);
+            String name = "Test Program...";
+            if (workout != null)
+                name = workout.getName();
+            String finalName = name;
+            requireActivity().runOnUiThread(() -> new ScoreDialog(requireActivity(), finalName, list).show());
         } catch (Exception ee) {
             ee.printStackTrace();
             if (isAdded())
@@ -556,12 +562,32 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         super.onStart();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+        onBoosterScreen(true);
     }
 
     @Override
     public void onDestroy() {
+        onBoosterScreen(false);
         EventBus.getDefault().unregister(this);
         RXTManager.Companion.getInstance().unregister();
         super.onDestroy();
+    }
+
+    void onBoosterScreen(boolean on) {
+        try {
+            if (on)
+                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            else
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (isProgramStarted)
+            return false;
+        return super.onBackPressed();
     }
 }

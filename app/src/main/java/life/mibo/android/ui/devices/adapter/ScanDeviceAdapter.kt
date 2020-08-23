@@ -342,6 +342,7 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 image?.setBackgroundResource(R.drawable.ic_dashboard_booster)
             } else if (item.type == DeviceTypes.RXT_WIFI) {
                 image?.setBackgroundResource(R.drawable.ic_logo_floor_wall)
+                name?.text = item.name + " ("+item.tiles+")"
             } else if (item.type == DeviceTypes.HR_MONITOR) {
                 image?.setBackgroundResource(R.drawable.ic_device_hr)
             } else if (item.type == DeviceTypes.SCALE || item.type == DeviceTypes.MI_SCALE || item.type == DeviceTypes.SCALE_OLD) {

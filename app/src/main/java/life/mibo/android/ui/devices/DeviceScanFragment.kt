@@ -611,8 +611,11 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public fun onDeviceEvent(event: DeviceStatusEvent) {
-        log("DeviceStatusEvent Device ${event.device?.uid}")
+        EventBus.getDefault().removeStickyEvent(event)
 
+        log("DeviceStatusEvent Device ${event.device?.uid}")
+        if (event.device == null)
+            return
         availabeAdapter?.updateDevice(event.device)
         if (!isConnected || button_next?.visibility != View.VISIBLE) {
             isConnected = true
@@ -650,7 +653,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public fun onDeviceEvent(event: NewConnectionStatus) {
-        log("onDeviceEvent NewConnectionStatus $event")
+        EventBus.getDefault().removeStickyEvent(event)
+        log("onDeviceEvent NewConnectionStatus ${event.uid}")
         isConnected = false
         var pos = -1
         availabeAdapter?.list?.forEachIndexed { i, d ->

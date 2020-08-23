@@ -1004,7 +1004,7 @@ class MainActivity : BaseActivity(), Navigator {
         }
     }
 
-
+    @Synchronized
     private fun parseRxtCommands(code: Int, command: ByteArray, uid: String?) {
         logw("parseRxtCommands $code : data " + command.contentToString())
         when (code) {
@@ -1036,7 +1036,7 @@ class MainActivity : BaseActivity(), Navigator {
                 return
             }
             COMMAND_DEVICE_STATUS_RESPONSE -> {
-                logw("parseCommandsRxt... TAP_EVENT")
+                logw("parseCommandsRxt... DEVICE_STATUS_RESPONSE $uid")
 
                 val list = SessionManager.getInstance().userSession.devices
                 for (d in list) {
@@ -1044,37 +1044,43 @@ class MainActivity : BaseActivity(), Navigator {
                         if (d.tiles == 0) {
                             CommunicationManager.log("parseCommandsRxt... DEVICE_STATUS_RESPONSE Tiles were zero")
 
-                            var statusConnected = 0
+                            //var statusConnected = 0
 
-                            if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
-                                if (d.statusConnected == DEVICE_DISCONNECTED) {
-                                    //EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
-                                }
-                                d.statusConnected = DEVICE_CONNECTED
-                                statusConnected = DEVICE_CONNECTED
-                                //EventBus.getDefault().postSticky(NewConnectionStatus(uid))
-                            } else {
-                                d.statusConnected = DEVICE_CONNECTED
-                                statusConnected = DEVICE_CONNECTED
-                                //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).statusConnected = DEVICE_CONNECTED
-                            }
-
-                            SessionManager.getInstance().session.updateRegisteredDevice(
-                                uid,
-                                statusConnected,
-                                DataParser.getStatusBattery(command),
-                                DataParser.getStatusSignal(command)
-                            )
-
-                            //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).tiles = DataParser.getStatusBattery(command)
+//                            if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
+//                               // if (d.statusConnected == DEVICE_DISCONNECTED) {
+//                                    //EventBus.getDefault().postSticky(new ChangeColorEvent(d, d.getUid()));
+//                             //   }
+//                                d.statusConnected = DEVICE_CONNECTED
+//                                statusConnected = DEVICE_CONNECTED
+//                                EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+//                            } else {
+//                                d.statusConnected = DEVICE_CONNECTED
+//                                statusConnected = DEVICE_CONNECTED
+//                                //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).statusConnected = DEVICE_CONNECTED
+//                                EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+//                            }
+                            // var statusConnected = DEVICE_CONNECTED
+                            d.statusConnected = DEVICE_CONNECTED
                             d.tiles = DataParser.getStatusBattery(command)
                             d.signalLevel = DataParser.getStatusSignal(command)
+
+//                            SessionManager.getInstance().userSession.updateRegisteredDevice(
+//                                uid,
+//                                DEVICE_CONNECTED,
+//                                DataParser.getStatusBattery(command),
+//                                DataParser.getStatusSignal(command)
+//                            )
+
+
+                            EventBus.getDefault().postSticky(NewConnectionStatus(d.uid))
+
+                            //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).tiles = DataParser.getStatusBattery(command)
+
                             //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).signalLevel = DataParser.getStatusSignal(command)
-                            EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
+                            //EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
                         }
                         return
                     }
-
                 }
 
                 return
@@ -1567,7 +1573,7 @@ class MainActivity : BaseActivity(), Navigator {
         navigate(
             0,
             R.id.navigation_webview,
-            WebViewFragment.bundle("https://test.mibolivfit.club")
+            WebViewFragment.bundle("https://mibolivfit.club")
         )
         title = "MI.BO. World"
 //        navigate(
@@ -1658,6 +1664,10 @@ class MainActivity : BaseActivity(), Navigator {
 
             }
 
+//            R.id.nav_workout -> {
+//                navigate(0, R.id.navigation_workout)
+//            }
+//
             R.id.nav_test3 -> {
                 lastId = -1
                 startScanningView(true, DeviceScanFragment.RXL)
@@ -1698,8 +1708,8 @@ class MainActivity : BaseActivity(), Navigator {
                 //navigate(0, R.id.navigation_select_suit)
                 // navigate(0, R.id.navigation_bmi)
                 // navigate(0, R.id.navigation_measurement)
-
             }
+
             R.id.navigation_add_product -> {
                 navigate(0, R.id.navigation_add_product)
 
@@ -1773,9 +1783,7 @@ class MainActivity : BaseActivity(), Navigator {
                 lastId = -1
                 rateUs()
             }
-            R.id.nav_workout -> {
-                navigate(0, R.id.navigation_workout)
-            }
+
             R.id.nav_faq -> {
                 lastId = -1
                 navigate(

@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
@@ -57,27 +58,37 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     View emptyView, next;
     SwitchCompat emsSwitch;
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeToRefresh;
+    boolean isRefreshing = false;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        swipeToRefresh = view.findViewById(R.id.swipeToRefresh);
         recyclerView = view.findViewById(R.id.recyclerView);
         emptyView = view.findViewById(R.id.tv_empty);
-        View back = view.findViewById(R.id.btn_back);
+        //View back = view.findViewById(R.id.btn_back);
         next = view.findViewById(R.id.btn_next);
         emsSwitch = view.findViewById(R.id.switch_ems);
 
+        setSwipeRefreshColors(swipeToRefresh);
+
         //setupViews();
 
-        back.setOnClickListener(v -> navigate(Navigator.CLEAR_HOME, null));
+        //back.setOnClickListener(v -> navigate(Navigator.CLEAR_HOME, null));
         next.setOnClickListener(v -> nextClicked());
         emsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             getWorkouts(isChecked);
         });
 
+        swipeToRefresh.setOnRefreshListener(() -> {
+            getWorkouts(emsSwitch.isChecked());
+        });
+
         getWorkouts(emsSwitch.isChecked());
     }
+
 
     private void getWorkouts(Boolean ems) {
         String type = ems ? "ems,rxt" : "rxt";
@@ -93,6 +104,8 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         api.enqueue(new Callback<SearchWorkout>() {
             @Override
             public void onResponse(@NonNull Call<SearchWorkout> call, @NonNull Response<SearchWorkout> response) {
+                isRefreshing = false;
+                updateRefresh();
                 try {
                     getDialog().dismiss();
                     SearchWorkout workout = response.body();
@@ -113,11 +126,18 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
             @Override
             public void onFailure(@NonNull Call<SearchWorkout> call, @NonNull Throwable t) {
+                isRefreshing = false;
                 t.printStackTrace();
+                updateRefresh();
                 getDialog().dismiss();
                 Toasty.info(getContext(), R.string.error_occurred).show();
             }
         });
+    }
+
+    void updateRefresh() {
+        if (swipeToRefresh != null)
+            swipeToRefresh.setRefreshing(isRefreshing);
     }
 
     private void nextClicked() {
@@ -157,8 +177,8 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             return;
         }
 
-        islandAdapter = new WorkoutAdapter(list, this::onItemClick);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        islandAdapter = new WorkoutAdapter(list, this::onItemClick, emsSwitch.isChecked());
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(islandAdapter);
     }
 
@@ -187,7 +207,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             } else {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("workout_data", island);
-                navigate(Navigator.CLEAR_HOME, bundle);
+                navigate(Navigator.RXT_START_WORKOUT, bundle);
                 //getCompositionRoot().getScreensNavigator().toRxtSingleSession(bundle);
                 //deleteIsland(island, position);
             }
@@ -239,7 +259,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 //
 //        colorDialog.showColors();
 
-        new ProgramDialog(requireContext(), null, (program, position) -> {
+        new ProgramDialog(requireContext(), new ArrayList<>(), (program, position) -> {
             if (program != null)
                 updateColor(island, program.getId(), position);
         }, 2).showColors();
@@ -267,11 +287,12 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     }
 
     private void showProgramDialog(Workout island) {
-//        ArrayList<RxtProgram> list = RXTUtils.getPrograms(getContext());
-//        new ProgramDialog(getContext(), list, (item, position) -> {
-//            if (item != null)
-//                updateProgram(island, item);
-//        }, 1).show();
+        List<Program> programs = new ArrayList<>();
+
+        new ProgramDialog(requireContext(), new ArrayList<>(), (program, position) -> {
+            if (program != null)
+                updateColor(island, program.getId(), position);
+        }, 1).showColors();
 
     }
 
@@ -302,10 +323,12 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
         List<Workout> islands = new ArrayList<>();
         ItemClickListener<Workout> listener;
+        private boolean isEms = false;
 
-        public WorkoutAdapter(List<Workout> list, ItemClickListener<Workout> listener) {
+        public WorkoutAdapter(List<Workout> list, ItemClickListener<Workout> listener, boolean isEms) {
             islands.addAll(list);
             this.listener = listener;
+            this.isEms = isEms;
         }
 
         @NonNull
@@ -316,7 +339,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(@NonNull WorkoutHolder holder, int position) {
-            holder.bind(islands.get(position), listener);
+            holder.bind(islands.get(position), listener, isEms);
         }
 
         @Override
@@ -400,19 +423,23 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                 dur = view.findViewById(R.id.tv_duration);
                 imageView = view.findViewById(R.id.imageView);
                 chips = view.findViewById(R.id.chip_group);
-                //program = view.findViewById(R.id.btn_program);
+                program = view.findViewById(R.id.btn_program);
                 play = view.findViewById(R.id.btn_test);
                 color = view.findViewById(R.id.btn_color);
                 check = view.findViewById(R.id.btn_check);
                 checkBox = view.findViewById(R.id.btn_checkbox);
             }
 
-            void bind(Workout island, ItemClickListener<Workout> listener) {
+            void bind(Workout island, ItemClickListener<Workout> listener, boolean isEms) {
                 if (island == null)
                     return;
                 title.setText(island.getName());
                 tiles.setText(island.getDescription());
                 dur.setText(island.getDuration());
+
+                if (isEms)
+                    program.setVisibility(View.VISIBLE);
+                else program.setVisibility(View.GONE);
 
                 if (island.getIcon() != null) {
                     Glide.with(imageView).load(island.getIcon()).fitCenter()
@@ -434,10 +461,11 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                         listener.onItemClicked(island, IslandAdapter.COLOR);
                 });
 
-//                program.setOnClickListener(v -> {
-//                    if (listener != null)
-//                        listener.onItemClicked(island, IslandAdapter.PROGRAM);
-//                });
+                if (program != null)
+                    program.setOnClickListener(v -> {
+                        if (listener != null)
+                            listener.onItemClicked(island, IslandAdapter.PROGRAM);
+                    });
 
                 check.setOnClickListener(v -> {
                     if (listener != null)

@@ -105,6 +105,12 @@ class ConfigureIslandActivity : BaseActivity() {
         islandY = intent?.getIntExtra("island_y", 0) ?: 0
         totalTiles = intent?.getIntExtra("island_total", 0) ?: 0
 
+        if (islandId == 0 || islandX == 0 || islandY == 0) {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+            return
+        }
+
         et_island?.text = islandName
         btn_back.setOnClickListener { v: View? -> onBackPressed() }
         tv_empty?.visibility = View.GONE
@@ -182,7 +188,7 @@ class ConfigureIslandActivity : BaseActivity() {
     }
 
     private fun setupMainAdapter() {
-        val devices = SessionManager.getInstance().session.connectedDevices
+        val devices = SessionManager.getInstance().userSession.devices
         //ArrayList<String> list = new ArrayList<>();
         val controllers = ArrayList<Controller>()
         var controllerId = 0
@@ -323,10 +329,10 @@ class ConfigureIslandActivity : BaseActivity() {
         if (playNeedUpdate == empty) return
         playNeedUpdate = empty
         if (empty) {
-            btn_play?.setColorFilter(Color.GRAY)
+           // btn_play?.setColorFilter(Color.GRAY)
             tv_empty?.visibility = View.VISIBLE
         } else {
-            btn_play?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
+            //btn_play?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
             tv_empty?.visibility = View.GONE
         }
     }
@@ -413,7 +419,8 @@ class ConfigureIslandActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this)
     }
 
     override fun onStop() {

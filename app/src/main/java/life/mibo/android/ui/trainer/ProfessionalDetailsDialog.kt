@@ -189,7 +189,7 @@ class ProfessionalDetailsDialog(var data: Professional) :
 
         }
 
-        val spec = data?.specializations
+        val spec = data?.specializations as List<String?>
         val certs = data?.certifications
         Logger.e("parseData  :: $list")
         Logger.e("parseData ?? $spec")

@@ -10,11 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import life.mibo.android.R
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.core.Logger
 
 class ScoreAdapter(var list: ArrayList<ScoreItem>) : RecyclerView.Adapter<ScoreAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(
-                LayoutInflater.from(parent.context).inflate(R.layout.list_item_rxl_score, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.list_item_rxt_score, parent, false)
         )
     }
 
@@ -55,6 +56,7 @@ class ScoreAdapter(var list: ArrayList<ScoreItem>) : RecyclerView.Adapter<ScoreA
 
 
         fun bind(item: ScoreItem?) {
+            Logger.e("ScoreItem $item")
             if (item == null)
                 return
             // data = item

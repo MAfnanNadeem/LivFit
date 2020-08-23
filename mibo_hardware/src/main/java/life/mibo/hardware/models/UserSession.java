@@ -202,6 +202,15 @@ public class UserSession implements BaseModel {
         return connectedDevices;
     }
 
+    public void addRxt(Device device) {
+        for (Device d : connectedDevices) {
+            if (d.getUid().equals(device.getUid())) {
+                return;
+            }
+        }
+        this.connectedDevices.add(device);
+    }
+
     public void addDevice(Device device) {
         addConnectedDevice(device);
     }
@@ -609,6 +618,17 @@ public class UserSession implements BaseModel {
 //        deviceChannelAlarms = newalarms;
     }
 
+    public void updateRegisteredDevice(String uid, int status, int battery, int signal) {
+        for (Device d : connectedDevices) {
+            if (d.getUid().equals(uid)) {
+                d.setTiles(battery);
+                d.setBatteryLevel(battery);
+                d.setSignalLevel(signal);
+                d.setStatusConnected(status);
+                break;
+            }
+        }
+    }
     public SessionReport getSessionReport() {
         SessionReport report = new SessionReport();
         report.setSessionID(Integer.parseInt(currentSessionId));

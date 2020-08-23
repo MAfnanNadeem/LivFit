@@ -14,10 +14,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_search_trainers.*
 import life.mibo.android.R
 import life.mibo.android.core.API
@@ -62,8 +60,10 @@ class SearchTrainerFragment : BaseFragment() {
             .searchProfessionals(SearchTrainers(token = Prefs.get(context).member?.accessToken))
             .enqueue(object : Callback<IndependentProfessionals> {
                 override fun onFailure(call: Call<IndependentProfessionals>, t: Throwable) {
+                   // log("searchProfessionals failed $t")
                     getDialog()?.dismiss()
-
+                   // t?.printStackTrace()
+                    Toasty.info(requireContext(), R.string.error_occurred).show()
                 }
 
                 override fun onResponse(
@@ -71,8 +71,8 @@ class SearchTrainerFragment : BaseFragment() {
                     response: Response<IndependentProfessionals>
                 ) {
                     getDialog()?.dismiss()
-
                     val data = response?.body();
+                    //log("searchProfessionals onResponse $data")
                     if (data != null && data.isSuccess()) {
                         parseData(data.data?.professionals)
                     } else {
@@ -93,6 +93,7 @@ class SearchTrainerFragment : BaseFragment() {
     private val backupList = ArrayList<Professional>()
     private var adapters: SearchAdapters? = null
     private fun parseData(professionals: List<Professional?>?) {
+        log("parseData professionals $professionals")
         if (professionals != null) {
             ipList.clear()
             backupList.clear()
@@ -103,7 +104,7 @@ class SearchTrainerFragment : BaseFragment() {
                 }
             }
 
-
+            log("parseData professionals ${ipList.size}")
             adapters = SearchAdapters(1, ipList, object : ItemClickListener<Professional> {
                 override fun onItemClicked(item: Professional?, position: Int) {
                     log("onItemClicked item $item")

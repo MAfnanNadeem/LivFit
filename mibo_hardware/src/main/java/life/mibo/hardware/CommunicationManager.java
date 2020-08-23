@@ -721,7 +721,7 @@ public class CommunicationManager {
                 return;
             }
         }
-        add(new Device("RXT", DataParser.getUIDRxl(ip.getAddress(), cmd), ip, RXT_WIFI));
+        add(new Device("RXT ", DataParser.getUIDRxl(ip.getAddress(), cmd), ip, RXT_WIFI));
     }
 
     private void checkNewDevice(byte[] command, InetAddress ip) {
@@ -907,7 +907,7 @@ public class CommunicationManager {
             case RXT_WIFI: {
                 log("RXT_WIFI connect " + device.getIp());
                 connectTCPDevice(device.getIp().getHostAddress(), TCP_PORT, device.getUid(), DataParser.RXT);
-                SessionManager.getInstance().getUserSession().addDevice(device);
+                SessionManager.getInstance().getUserSession().addRxt(device);
                 device.setStatusConnected(DEVICE_CONNECTING);
             }
             break;

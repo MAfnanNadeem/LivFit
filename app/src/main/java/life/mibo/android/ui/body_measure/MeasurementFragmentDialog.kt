@@ -479,59 +479,59 @@ class MeasurementFragmentDialog(val listener: ItemClickListener<Any?>?) : Dialog
         wHeightRatio: Double, wHipRatio: Double, weightLoss: Double
     ) {
 
-        getmDialog()?.show()
-        //val data = Calculate.getMeasureData();
-        // Math.round()
-        val post = PostBiometric.Data(
-            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, data.chest,
-            data.elbow, energy, ffmi, data.forearm, data.height, "cm",
-            data.highHips, data.hips, data.waist, data.wrist, data.weight,
-            wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
-            leanBodyMass, "${data.activityType}", "${data.goalType}", "${data.shapeType}", memberId
-        )
-
-        API.request.getApi().saveMemberBiometrics(PostBiometric(post, token))
-            .enqueue(object : retrofit2.Callback<ResponseData> {
-                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
-                    getmDialog()?.dismiss()
-                    Toasty.snackbar(view, R.string.unable_to_connect)
-                }
-
-                override fun onResponse(
-                    call: Call<ResponseData>, response: Response<ResponseData>
-                ) {
-                    // getDialog()?.dismiss()
-                    try {
-                        val body = response?.body()
-                        log("saveData response $body")
-                        if (body != null && body.isSuccess()) {
-                            val msg = body.data?.message
-                            msg?.let {
-                                Toasty.snackbar(view, msg)
-                            }
-                            getmDialog()?.dismiss()
-                            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE_SUMMARY, 200)
-                            return
-                        } else if (body != null && body.isError()) {
-                            val msg = body.errors?.get(0)?.message
-                            msg?.let {
-                                Toasty.snackbar(view, msg)
-                            }
-
-
-                        } else {
-                            Toasty.snackbar(view, R.string.unable_to_connect)
-                        }
-                    } catch (e: Exception) {
-                        MiboEvent.log(e)
-                    }
-
-                    getmDialog()?.dismiss()
-
-
-                }
-
-            })
+//        getmDialog()?.show()
+//        //val data = Calculate.getMeasureData();
+//        // Math.round()
+//        val post = PostBiometric.Data(
+//            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, data.chest,
+//            data.elbow, energy, ffmi, data.forearm, data.height, "cm",
+//            data.highHips, data.hips, data.waist, data.wrist, data.weight,
+//            wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
+//            leanBodyMass, "${data.activityType}", "${data.goalType}", "${data.shapeType}", memberId
+//        )
+//
+//        API.request.getApi().saveMemberBiometrics(PostBiometric(post, token))
+//            .enqueue(object : retrofit2.Callback<ResponseData> {
+//                override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+//                    getmDialog()?.dismiss()
+//                    Toasty.snackbar(view, R.string.unable_to_connect)
+//                }
+//
+//                override fun onResponse(
+//                    call: Call<ResponseData>, response: Response<ResponseData>
+//                ) {
+//                    // getDialog()?.dismiss()
+//                    try {
+//                        val body = response?.body()
+//                        log("saveData response $body")
+//                        if (body != null && body.isSuccess()) {
+//                            val msg = body.data?.message
+//                            msg?.let {
+//                                Toasty.snackbar(view, msg)
+//                            }
+//                            getmDialog()?.dismiss()
+//                            navigate(life.mibo.android.ui.main.Navigator.BODY_MEASURE_SUMMARY, 200)
+//                            return
+//                        } else if (body != null && body.isError()) {
+//                            val msg = body.errors?.get(0)?.message
+//                            msg?.let {
+//                                Toasty.snackbar(view, msg)
+//                            }
+//
+//
+//                        } else {
+//                            Toasty.snackbar(view, R.string.unable_to_connect)
+//                        }
+//                    } catch (e: Exception) {
+//                        MiboEvent.log(e)
+//                    }
+//
+//                    getmDialog()?.dismiss()
+//
+//
+//                }
+//
+//            })
 
         //getBioMetric(memberId, token)
     }

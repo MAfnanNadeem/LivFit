@@ -29,6 +29,7 @@ import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
 import life.mibo.android.models.register.RegisterResponse
 import life.mibo.android.models.rxl.*
+import life.mibo.android.models.rxt.GetAllIslands
 import life.mibo.android.models.rxt.GetIslandPost
 import life.mibo.android.models.rxt.GetIslandTiles
 import life.mibo.android.models.rxt.SaveIslandPost
@@ -128,7 +129,7 @@ class API {
         //const val baseUrl = "http://test.mibo.world/api/consumer/"
         //private val url = "http://test.mibo.world"
         private val url =
-            if (MiboApplication.DEBUG) "https://dev.mibolivfit.club" else "https://mibolivfit.club"
+            if (MiboApplication.DEV_SERVER) "https://dev.mibolivfit.club" else "https://mibolivfit.club"
         //private const val productionUrl = "https://demo.mibolivfit.club"
 
         // const val url = "https://mibolivfit.club"
@@ -494,6 +495,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getIslandTiles")
         fun getIslandTiles(@Body data: GetIslandPost): Call<GetIslandTiles>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getAllIsland")
+        fun getAllIsland(@Body data: MemberPost): Call<GetAllIslands>
 
 
     }

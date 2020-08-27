@@ -163,6 +163,7 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
         fragment.log("parseData onDataReceived $report")
         val list = ArrayList<HomeItem>()
         val data = report?.sessionMemberReports
+
         list.add(
             HomeItem(
                 fragment.getString(R.string.weight), "" + (report.weight ?: 0) + " Kg",
@@ -715,14 +716,26 @@ class HomeController(val fragment: BaseFragment, val observer: HomeObserver) :
     fun parseBiometric(bio: List<Biometric.Data?>?) {
         if (bio != null) {
             try {
-                val data = bio[bio.size - 1]
-                var kg = fragment.getString(R.string.kg_unit)?.toUpperCase()
-                var cm = fragment.getString(R.string.cm_unit)?.toUpperCase()
-                Prefs.get(fragment.context)["user_weight"] = "${Calculate.round(data!!.weight)} $kg"
-                Prefs.get(fragment.context)["user_height"] = "${data!!.height} $cm"
-                Prefs.get(fragment.context)["user_date"] =
-                    "${data.createdAt?.date?.split(" ")?.get(0)}"
-                observer.onNotify(30, "${Calculate.round(data.weight)} $kg")
+                val item = bio[bio.size - 1]
+                if (item != null) {
+                    val data = Biometric.Decrypted.from(item)
+                    var kg = fragment.getString(R.string.kg_unit)?.toUpperCase()
+                    var cm = fragment.getString(R.string.cm_unit)?.toUpperCase()
+                    Prefs.get(fragment.context)["user_weight"] =
+                        "${Calculate.round(data!!.weight)} $kg"
+                    Prefs.get(fragment.context)["user_height"] = "${data!!.height} $cm"
+                    Prefs.get(fragment.context)["user_date"] =
+                        "${data.createdAt?.date?.split(" ")?.get(0)}"
+                    observer.onNotify(30, "${Calculate.round(data.weight)} $kg")
+                } else {
+                    var kg = fragment.getString(R.string.kg_unit)?.toUpperCase()
+                    var cm = fragment.getString(R.string.cm_unit)?.toUpperCase()
+                    Prefs.get(fragment.context)["user_weight"] = "0 $kg"
+                    Prefs.get(fragment.context)["user_height"] = "0 $cm"
+                    Prefs.get(fragment.context)["user_date"] = ""
+                    observer.onNotify(30, "0 $kg")
+                }
+
             } catch (e: Exception) {
                 // Prefs.get(fragment.context)["user_date"] = "${data.createdAt?.date}"
             }

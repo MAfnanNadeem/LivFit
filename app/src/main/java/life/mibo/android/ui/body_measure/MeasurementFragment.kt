@@ -32,6 +32,7 @@ import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.encryption.MCrypt
 import retrofit2.Call
 import retrofit2.Response
 import java.math.BigDecimal
@@ -642,17 +643,50 @@ class MeasurementFragment : BaseFragment() {
         getDialog()?.show()
         //val data = Calculate.getMeasureData();
         var shape = data.shapeType
-        if(shape.isEmpty())
+        if (shape.isEmpty())
             shape = Calculate.getShapeType(Calculate.bodyShapePage)
         // Math.round()
+        val crypt = MCrypt()
+//        val post = PostBiometric.Data(
+//            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, chest,
+//            data.elbow, energy, ffmi, forearm, data.height, "cm",
+//            highHips, hip, waist, wrist, data.weight,
+//            wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
+//            leanBodyMass, "${data.activityType}", "${data.goalType}", "$shape", memberId
+//        )
+
         val post = PostBiometric.Data(
-            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, chest,
-            data.elbow, energy, ffmi, forearm, data.height, "cm",
-            highHips, hip, waist, wrist, data.weight,
-            wHeightRatio, wHipRatio, weightLoss, "kg", ibw,
-            leanBodyMass, "${data.activityType}", "${data.goalType}", "$shape", memberId
+            crypt.encrypt("" + data.bmi),
+            crypt.encrypt("" + bmr),
+            crypt.encrypt("" + bsa),
+            crypt.encrypt("" + bodyFat),
+            crypt.encrypt("cm"),
+            crypt.encrypt("" + bodyWater),
+            crypt.encrypt("" + chest),
+            crypt.encrypt("" + data.elbow),
+            crypt.encrypt("" + energy),
+            crypt.encrypt("" + ffmi),
+            crypt.encrypt("" + forearm),
+            crypt.encrypt("" + data.height),
+            crypt.encrypt("cm"),
+            crypt.encrypt("" + highHips),
+            crypt.encrypt("" + hip),
+            crypt.encrypt("" + waist),
+            crypt.encrypt("" + wrist),
+            crypt.encrypt("" + data.weight),
+            crypt.encrypt("" + wHeightRatio),
+            crypt.encrypt("" + wHipRatio),
+            crypt.encrypt("" + weightLoss),
+            crypt.encrypt("kg"),
+            crypt.encrypt("" + ibw),
+            crypt.encrypt("" + leanBodyMass),
+            crypt.encrypt("${data.activityType}"),
+            crypt.encrypt("${data.goalType}"),
+            crypt.encrypt("$shape"),
+            memberId
         )
 
+        //log("saveMemberBiometrics post $post")
         API.request.getApi().saveMemberBiometrics(PostBiometric(post, token))
             .enqueue(object : retrofit2.Callback<ResponseData> {
                 override fun onFailure(call: Call<ResponseData>, t: Throwable) {

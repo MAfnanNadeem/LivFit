@@ -81,6 +81,13 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
             return arg
         }
 
+        fun rxtBundle(): Bundle {
+            val arg = Bundle()
+            arg.putBoolean("is_rxl", true)
+            arg.putInt("is_search_type", RXT)
+            return arg
+        }
+
     }
 
     interface Listener : BaseListener {
@@ -614,8 +621,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         EventBus.getDefault().removeStickyEvent(event)
 
         log("DeviceStatusEvent Device ${event.device?.uid}")
-        if (event.device == null)
-            return
+       // if (event.device == null)
+       //     return
         availabeAdapter?.updateDevice(event.device)
         if (!isConnected || button_next?.visibility != View.VISIBLE) {
             isConnected = true

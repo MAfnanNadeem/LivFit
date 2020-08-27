@@ -33,7 +33,7 @@ data class RXT(
             var rXTType: String?,
             @SerializedName("VideoLink")
             var videoLink: Any?,
-            @SerializedName("Pattern")
+            @SerializedName("RXTPattern")
             var pattern: String?
     ) : Serializable {
         fun isRandom() = rXTType?.toLowerCase()?.contains("random")

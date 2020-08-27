@@ -51,10 +51,10 @@ object Calculate {
         bioData = null
     }
 
-    private var bioData: Biometric.Data? = null
+    private var bioData: Biometric.Decrypted? = null
 
     fun addBioData(data: Biometric.Data) {
-        bioData = data
+        bioData = Biometric.Decrypted.from(data)
         //bundle.putParcelable("bio_data", data)
     }
 
@@ -327,6 +327,15 @@ object Calculate {
         }
     }
 
+    fun round(value: String?): Double {
+        if (value == null)
+            return 0.0
+        return try {
+            BigDecimal(value.toDouble()).setScale(2, RoundingMode.HALF_UP).toDouble()
+        } catch (e: java.lang.Exception) {
+            0.0
+        }
+    }
 
     data class MeasureData(var type: Int) {
         var age = 0.0

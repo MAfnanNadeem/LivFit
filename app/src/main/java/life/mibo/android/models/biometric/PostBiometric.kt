@@ -15,53 +15,53 @@ class PostBiometric(data: Data?, token: String?) :
     BasePost<PostBiometric.Data?>(data, "SaveMemberBiometrics", token) {
     data class Data(
         @SerializedName("BMI")
-        var bMI: Double?,
+        var bMI: String?,
         @SerializedName("BMR")
-        var bMR: Double?,
+        var bMR: String?,
         @SerializedName("BSA")
-        var bSA: Double?,
+        var bSA: String?,
         @SerializedName("BodyFat")
-        var bodyFat: Double?,
+        var bodyFat: String?,
         @SerializedName("BodyUnit")
         var bodyUnit: String?,
         @SerializedName("BodyWater")
-        var bodyWater: Double?,
+        var bodyWater: String?,
         @SerializedName("Chest")
-        var chest: Double?,
+        var chest: String?,
         @SerializedName("Elbow")
-        var elbow: Double?,
+        var elbow: String?,
         @SerializedName("Energy")
-        var energy: Double?,
+        var energy: String?,
         @SerializedName("FatFreeMassIndex")
-        var fatFreeMassIndex: Double?,
+        var fatFreeMassIndex: String?,
         @SerializedName("Forearm")
-        var forearm: Double?,
+        var forearm: String?,
         @SerializedName("Height")
-        var height: Double?,
+        var height: String?,
         @SerializedName("HeightUnit")
         var heightUnit: String?,
         @SerializedName("HighHips")
-        var highHips: Double?,
+        var highHips: String?,
         @SerializedName("Hips")
-        var hips: Double?,
+        var hips: String?,
         @SerializedName("Waist")
-        var waist: Double?,
+        var waist: String?,
         @SerializedName("Wrist")
-        var wrist: Double?,
+        var wrist: String?,
         @SerializedName("Weight")
-        var weight: Double?,
+        var weight: String?,
         @SerializedName("WaistHeightRatio")
-        var waistHeightRatio: Double?,
+        var waistHeightRatio: String?,
         @SerializedName("WaistHipRatio")
-        var waistHipRatio: Double?,
+        var waistHipRatio: String?,
         @SerializedName("WeightLoss")
-        var weightLoss: Double?,
+        var weightLoss: String?,
         @SerializedName("WeightUnit")
         var weightUnit: String?,
         @SerializedName("IBW")
-        var iBW: Double?,
+        var iBW: String?,
         @SerializedName("LeanBodyMass")
-        var leanBodyMass: Double?,
+        var leanBodyMass: String?,
         @SerializedName("ActivityType")
         var activityType: String?,
         @SerializedName("GoalType")

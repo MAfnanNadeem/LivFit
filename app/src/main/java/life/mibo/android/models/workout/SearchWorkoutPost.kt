@@ -15,6 +15,12 @@ class SearchWorkoutPost(data: Data?, token: String?) : BasePost<SearchWorkoutPos
             var pageNo: String?,
             @SerializedName("PageSize")
             var pageSize: String?,
+            @SerializedName("UserType")
+            var userType: String?,
+            @SerializedName("LocationID")
+            var locationID: String?,
+            @SerializedName("IslandID")
+            var islandID: String?,
             @SerializedName("Search")
             var search: String?
     )

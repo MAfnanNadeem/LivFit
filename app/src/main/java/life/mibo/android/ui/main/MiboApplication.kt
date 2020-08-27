@@ -16,6 +16,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.hardware.MIBO
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.encryption.MCrypt
 import life.mibo.hardware.fastble.BleManager
 import life.mibo.hardware.fastble.scan.BleScanRuleConfig
 import okhttp3.Cache
@@ -26,15 +27,21 @@ class MiboApplication : Application() {
     companion object {
         var context: Context? = null
 
-        val DEBUG = life.mibo.android.BuildConfig.DEBUG
+        //val DEBUG = life.mibo.android.BuildConfig.DEBUG
+        val DEBUG = false
+        val DEV_SERVER = true
+
         //val DEBUG = false
         val RELEASE = false
-        val TEST = true
+        val TEST = false
         val SCAN_TIME: Long = 15000L
 
         fun isRelease() = true
 
         private var proxy: HttpProxyCacheServer? = null
+
+        // todO
+        // check fitbit key/email owner for final release
 
 
         fun getProxy(context: Context?): HttpProxyCacheServer? {
@@ -73,6 +80,7 @@ class MiboApplication : Application() {
         Fitbit.setup(this)
         //Fresco.initialize(this);
 
+        test()
     }
 
 
@@ -88,10 +96,31 @@ class MiboApplication : Application() {
         BleManager.getInstance().initScanRule(scanRuleConfig)
     }
 
-    fun setHandler(){
+    fun setHandler() {
         Thread.setDefaultUncaughtExceptionHandler { thread, e ->
             Logger.save(e)
         }
+    }
+
+    fun test() {
+        Logger.e("encrypt ---------------------------------")
+        val crypt = MCrypt()
+//        val temp1 = crypt.encrypt("sumeet")
+//        //val temp2 = crypt.encrypt2("sumeet")
+//        //Logger.e("encrypt :: ${temp2?.contentToString()}")
+//        Logger.e("encrypt :: $temp1")
+//        val temp2 = crypt.decrypt(temp1)
+//        Logger.e("decrypt :: ${temp2?.contentToString()}")
+//        Logger.e("decrypt :: " + String(temp2))
+
+       // val dec = "f60cbba5479ca4ffdec34dc504cab62c"
+        val dec = "7824605c2f4f4a2838ee9210b48895be"
+        val n = String(crypt.decrypt(dec))
+        Logger.e("decrypt1 :: $dec")
+        Logger.e("decrypt2 :: $n")
+        val n2 = crypt.encrypt(n)
+        Logger.e("decrypt3 :: $n2")
+        Logger.e("decrypt4 :: ${String(crypt.decrypt(n2))}")
     }
 
 //    fun pageEvent(userName: String, userId: String, pageName: String) {

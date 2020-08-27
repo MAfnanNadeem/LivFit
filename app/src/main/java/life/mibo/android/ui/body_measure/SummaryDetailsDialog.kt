@@ -17,8 +17,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.components.Legend.LegendForm
 import com.github.mikephil.charting.components.XAxis.XAxisPosition
 import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition
 import com.github.mikephil.charting.data.BarData
@@ -398,7 +396,7 @@ class SummaryDetailsDialog(
 
     fun getFloat(f: String?): Float {
         f?.let {
-            return it.toFloat()
+            return it.toFloatOrNull() ?: 0.0f
         }
         return 0f
     }
@@ -419,7 +417,10 @@ class SummaryDetailsDialog(
             val parser = SimpleDateFormat("yyyy-mm-dd")
             val formater = SimpleDateFormat("dd/mm")
             var count = 1.0f
-            for (data in list) {
+            for (i in list) {
+                if (i == null)
+                    break
+                val data = Biometric.Decrypted.from(i)
                 try {
                     dates.add(formater.format(parser.parse(data?.createdAt?.date)))
                 } catch (e: Exception) {

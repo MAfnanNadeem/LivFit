@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Single
 import kotlinx.android.synthetic.main.fragment_scan_scale.*
 import life.mibo.android.R
 import life.mibo.android.ui.base.ItemClickListener
@@ -38,6 +39,7 @@ import life.mibo.hardware.events.NewConnectionStatus
 import life.mibo.hardware.events.ScaleDataEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.ScaleData
+import java.util.concurrent.TimeUnit
 
 
 class ScaleScanDialog(var type_: Int = 0, val listener: ItemClickListener<Double>?) :
@@ -108,6 +110,10 @@ class ScaleScanDialog(var type_: Int = 0, val listener: ItemClickListener<Double
 
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = adapters
+    }
+
+    fun timer() {
+       // Single.just("").delay(15000L, TimeUnit.MILLISECONDS)
     }
 
     private fun enableRequired() {

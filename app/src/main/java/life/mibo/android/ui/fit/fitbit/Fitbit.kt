@@ -38,9 +38,10 @@ class Fitbit(var context: Context?) {
         var REQUEST_CODE = 4744
 
 
-        private const val client = "22BNJ6"
-        private const val secret = "71d2a02224ed51d39aef3a478186aa70"
-        private const val callback = "https://test.mibolivfit.club/androidappcallback"
+        //private const val client = "22BNJ6"
+        private const val client = "22BWRJ"
+        private const val secret = "36aa6e40d555b5035fd0026748926c9a"
+        private const val callback = "https://dev.mibolivfit.club/androidappcallback"
         const val api = "https://api.fitbit.com/1/user/"
         const val oAuth = "https://www.fitbit.com/oauth2/authorize"
         const val oAuthRefreshToken = "https://api.fitbit.com/oauth2/token"

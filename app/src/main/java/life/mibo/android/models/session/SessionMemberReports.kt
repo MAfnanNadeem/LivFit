@@ -33,7 +33,7 @@ data class SessionMemberReports(
     @SerializedName("user_rating")
     var userRating: Int?,
     @SerializedName("weight")
-    var weight: Int?,
+    var weight: String?,
     @SerializedName("variable_hr")
     var variableHr: String?
 )

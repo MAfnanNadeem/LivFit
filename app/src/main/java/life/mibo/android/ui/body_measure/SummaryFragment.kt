@@ -27,6 +27,7 @@ import life.mibo.android.ui.body_measure.adapter.SummaryAdapter
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.encryption.MCrypt
 import retrofit2.Call
 import retrofit2.Response
 import java.math.BigDecimal
@@ -551,11 +552,13 @@ class SummaryFragment : BaseFragment() {
         val memberId = member?.id() ?: ""
         val token = member?.accessToken ?: ""
         getDialog()?.show()
+        //crypt.encrypt(memberId)
         API.request.getApi().getMemberBiometrics(MemberPost(memberId, token, "GetMemberBiometrics"))
             .enqueue(object : retrofit2.Callback<Biometric> {
                 override fun onFailure(call: Call<Biometric>, t: Throwable) {
                     getDialog()?.dismiss()
                     Toasty.info(requireContext(), R.string.unable_to_connect).show()
+                    t.printStackTrace()
                 }
 
                 override fun onResponse(
@@ -589,10 +592,11 @@ class SummaryFragment : BaseFragment() {
                             return
 
                         } else {
-                            Toasty.info(requireContext(), R.string.unable_to_connect).show()
+                            Toasty.info(requireContext(), R.string.error_occurred).show()
                         }
                     } catch (e: Exception) {
                         MiboEvent.log(e)
+                       e.printStackTrace()
                     }
 
 
@@ -607,12 +611,13 @@ class SummaryFragment : BaseFragment() {
         if (bio != null) {
 
             val list = ArrayList<SummaryAdapter.Item>()
-            val data = bio[bio.size - 1]
-            if (data == null) {
+            val item = bio[bio.size - 1]
+            if (item == null) {
                 Toasty.info(requireContext(), R.string.error_occurred).show()
                 navigate(life.mibo.android.ui.main.Navigator.CLEAR_HOME, null)
                 return
             }
+            val data = Biometric.Decrypted.from(item)
 
             //Prefs.get(context)["user_age"] = "$data"
             //Prefs.get(context)["user_gender"] = "${data?.gender}"

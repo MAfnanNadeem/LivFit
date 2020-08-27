@@ -1078,6 +1078,13 @@ class MainActivity : BaseActivity(), Navigator {
 
                             //SessionManager.getInstance().session.getRegisteredDevicebyUid(uid).signalLevel = DataParser.getStatusSignal(command)
                             //EventBus.getDefault().postSticky(DeviceStatusEvent(d.uid))
+                        } else {
+                            try {
+                                if (SessionManager.getInstance().userSession.isScanning) {
+                                    EventBus.getDefault().postSticky(DeviceStatusEvent(d))
+                                }
+                            } catch (e: Exception) {
+                            }
                         }
                         return
                     }
@@ -1575,7 +1582,7 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.navigation_webview,
             WebViewFragment.bundle("https://mibolivfit.club")
         )
-        title = "MI.BO. World"
+        title = getString(R.string.mibo_world)
 //        navigate(
 //            R.id.action_navigation_home_to_schedule,
 //            R.id.navigation_schedule
@@ -1668,47 +1675,48 @@ class MainActivity : BaseActivity(), Navigator {
 //                navigate(0, R.id.navigation_workout)
 //            }
 //
-            R.id.nav_test3 -> {
-                lastId = -1
-                startScanningView(true, DeviceScanFragment.RXL)
-                // SessionManager.getInstance().userSession.createDummy()
-                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
-                //Payments.testPayment(this@MainActivity)
-                //startScanning(false)
-                //updateMenu()
-                // test
-                //navigate(0, R.id.navigation_rxl_home)
-
-                //navigate(0, R.id.navigation_select_suit)
-                // navigate(0, R.id.navigation_bmi)
-                // navigate(0, R.id.navigation_measurement)
-
-            }
-
-            R.id.nav_test4 -> {
-
-                val list = ArrayList(SessionManager.getInstance().userSession.devices)
-                if (list.size > 0)
-                    for (d in list) {
-                        if (d.isRxt) {
-                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-                            return
-                        }
-                    }
-                lastId = -1
-                startScanningView(true, DeviceScanFragment.RXT)
-                // SessionManager.getInstance().userSession.createDummy()
-                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
-                //Payments.testPayment(this@MainActivity)
-                //startScanning(false)
-                //updateMenu()
-                // test
-                //navigate(0, R.id.navigation_rxl_home)
-
-                //navigate(0, R.id.navigation_select_suit)
-                // navigate(0, R.id.navigation_bmi)
-                // navigate(0, R.id.navigation_measurement)
-            }
+            // TODO NAV_TEST
+//            R.id.nav_test3 -> {
+//                lastId = -1
+//                startScanningView(true, DeviceScanFragment.RXL)
+//                // SessionManager.getInstance().userSession.createDummy()
+//                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+//                //Payments.testPayment(this@MainActivity)
+//                //startScanning(false)
+//                //updateMenu()
+//                // test
+//                //navigate(0, R.id.navigation_rxl_home)
+//
+//                //navigate(0, R.id.navigation_select_suit)
+//                // navigate(0, R.id.navigation_bmi)
+//                // navigate(0, R.id.navigation_measurement)
+//
+//            }
+//
+//            R.id.nav_test4 -> {
+//
+//                val list = ArrayList(SessionManager.getInstance().userSession.devices)
+//                if (list.size > 0)
+//                    for (d in list) {
+//                        if (d.isRxt) {
+//                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+//                            return
+//                        }
+//                    }
+//                lastId = -1
+//                startScanningView(true, DeviceScanFragment.RXT)
+//                // SessionManager.getInstance().userSession.createDummy()
+//                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+//                //Payments.testPayment(this@MainActivity)
+//                //startScanning(false)
+//                //updateMenu()
+//                // test
+//                //navigate(0, R.id.navigation_rxl_home)
+//
+//                //navigate(0, R.id.navigation_select_suit)
+//                // navigate(0, R.id.navigation_bmi)
+//                // navigate(0, R.id.navigation_measurement)
+//            }
 
             R.id.navigation_add_product -> {
                 navigate(0, R.id.navigation_add_product)

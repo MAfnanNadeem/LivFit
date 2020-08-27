@@ -1998,13 +1998,21 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
         if (bio != null) {
             try {
                 val data = bio[bio.size - 1]
-                if (data?.weight != null) {
-                    userWeight = data.weight!!.toInt()
+                if (data != null) {
+                    val decrypt = Biometric.Decrypted.from(data)
+                    if (decrypt.weight != null) {
+                        userWeight = decrypt.weight!!.toInt()
+                    }
+                    Prefs.get(fragment.context)["user_weight"] = "${decrypt.weight} KG"
+                    Prefs.get(fragment.context)["user_height"] = "${decrypt.height} CM"
+                    Prefs.get(fragment.context)["user_date"] =
+                        "${decrypt.createdAt?.date?.split(" ")?.get(0)}"
+                } else {
+                    Prefs.get(fragment.context)["user_weight"] = "0 KG"
+                    Prefs.get(fragment.context)["user_height"] = "0 CM"
+                    Prefs.get(fragment.context)["user_date"] = ""
                 }
-                Prefs.get(fragment.context)["user_weight"] = "${data!!.weight} KG"
-                Prefs.get(fragment.context)["user_height"] = "${data!!.height} CM"
-                Prefs.get(fragment.context)["user_date"] =
-                    "${data.createdAt?.date?.split(" ")?.get(0)}"
+
             } catch (e: Exception) {
                 // Prefs.get(fragment.context)["user_date"] = "${data.createdAt?.date}"
             }

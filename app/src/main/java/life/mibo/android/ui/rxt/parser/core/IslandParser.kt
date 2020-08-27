@@ -5,14 +5,14 @@ import android.util.SparseArray
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import life.mibo.hardware.CommunicationManager
-import life.mibo.hardware.core.Logger
-import life.mibo.hardware.events.ChangeColorEvent
-import life.mibo.hardware.events.RxtStatusEvent
 import life.mibo.android.ui.rxt.parser.RxtBlock
 import life.mibo.android.ui.rxt.parser.RxtIsland
 import life.mibo.android.ui.rxt.parser.RxtTile
 import life.mibo.android.ui.rxt.score.ScoreItem
+import life.mibo.hardware.CommunicationManager
+import life.mibo.hardware.core.Logger
+import life.mibo.hardware.events.ChangeColorEvent
+import life.mibo.hardware.events.RxtStatusEvent
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -161,30 +161,51 @@ class IslandParser(val island: RxtIsland) {
     var delayDisposable: Disposable? = null
     private fun startBlockObservers(block: RxtBlock) {
         log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic")
-        blockDisposable = Single.timer(block.duration.toLong(), TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).doOnSuccess {
-            log("blockDisposable doOnSuccess")
-            onBlockEnd(block)
-        }.doAfterSuccess {
-            log("blockDisposable doAfterSuccess")
-        }.doOnError {
-            log("blockDisposable doOnError $it")
-        }.doOnSubscribe {
-            log("blockDisposable doOnSubscribe $it")
-            onBlockStart(block)
-        }.subscribe()
+        if (block.duration == 0) {
+            startAutoBlockObservers(block)
+            return
+        }
+        blockDisposable = Single.timer(block.duration.toLong(), TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+                log("blockDisposable doOnSuccess")
+                onBlockEnd(block)
+            }.doAfterSuccess {
+                log("blockDisposable doAfterSuccess")
+            }.doOnError {
+                log("blockDisposable doOnError $it")
+            }.doOnSubscribe {
+                log("blockDisposable doOnSubscribe $it")
+                onBlockStart(block)
+            }.subscribe()
+    }
+
+    private fun startAutoBlockObservers(block: RxtBlock) {
+        blockDisposable = Single.timer(block.duration.toLong(), TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+                log("blockDisposable doOnSuccess")
+                onBlockEnd(block)
+            }.doAfterSuccess {
+                log("blockDisposable doAfterSuccess")
+            }.doOnError {
+                log("blockDisposable doOnError $it")
+            }.doOnSubscribe {
+                log("blockDisposable doOnSubscribe $it")
+                onBlockStart(block)
+            }.subscribe()
     }
 
     private fun startDelayObservers(delay: Long) {
-        delayDisposable = Single.timer(delay, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).doOnSuccess {
-            log("delayDisposable doOnSuccess")
-            onDelayEnd()
-        }.doOnError {
-            log("delayDisposable doOnError $it")
-        }.doOnSubscribe {
-            log("delayDisposable doOnSubscribe $it")
-            onDelayStart()
-            blinkDelay(delay)
-        }.subscribe()
+        delayDisposable =
+            Single.timer(delay, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).doOnSuccess {
+                log("delayDisposable doOnSuccess")
+                onDelayEnd()
+            }.doOnError {
+                log("delayDisposable doOnError $it")
+            }.doOnSubscribe {
+                log("delayDisposable doOnSubscribe $it")
+                onDelayStart()
+                blinkDelay(delay)
+            }.subscribe()
     }
 
     private fun blinkAll(delay: Long) {

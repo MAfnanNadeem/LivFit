@@ -7,13 +7,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,6 +60,7 @@ import life.mibo.android.ui.rxt.parser.core.RxtListener;
 import life.mibo.android.ui.rxt.score.ScoreDialog;
 import life.mibo.android.ui.rxt.score.ScoreItem;
 import life.mibo.android.utils.Toasty;
+import life.mibo.android.utils.Utils;
 import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.events.RxlStatusEvent;
 import life.mibo.hardware.events.RxlTapEvent;
@@ -80,7 +85,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     ChipGroup chipGroup;
     int totalTime = 60;
     PlayButton playButton;
+    CheckBox checkVoicePrompt;
     BetterVideoPlayer videoPlayer;
+    ProgressBar mediaPlayerProgress;
     private Workout workout;
     private RXT rxtProgram;
     private EMS emsProgram;
@@ -103,6 +110,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         tvSpeed = view.findViewById(R.id.tv_plus_minus);
         tvBlocks = view.findViewById(R.id.tv_blocks);
         chipGroup = view.findViewById(R.id.chip_group);
+        checkVoicePrompt = view.findViewById(R.id.check_voice_prompt);
+        mediaPlayerProgress = view.findViewById(R.id.mediaPlayer_progress);
 
         // View back = view.findViewById(R.id.btn_back);
         playButton = view.findViewById(R.id.btn_play);
@@ -118,8 +127,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 getTilesApi(rxtProgram.getRXTIsland());
         });
         //stop.setOnClickListener(v -> onStopProgram());
-        if (getArguments() != null)
+        if (getArguments() != null) {
             workout = (Workout) getArguments().getSerializable("workout_data");
+            int color = getArguments().getInt("selected_color", 0);
+            if (color != 0)
+                selectedColor = color;
+        }
         if (workout != null) {
             setupWorkout(workout);
         }
@@ -127,6 +140,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     void plusClicked() {
+        if (isProgramStarted)
+            return;
         if (speed < 3.0) {
             speed += interval;
             tvSpeed.setText(String.format("%.01f", speed));
@@ -134,11 +149,16 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     void minusClicked() {
+        if (isProgramStarted)
+            return;
         if (speed > 0.1) {
             speed -= interval;
             tvSpeed.setText(String.format("%.01f", speed));
         }
     }
+
+    private boolean isVoicePrompt = false;
+    //private boolean isVoiceEnabled = false;
 
     void setupWorkout(Workout workout) {
         String url = workout.getVideoLink();
@@ -150,6 +170,14 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         totalTime = workout.getDurationSec();
         if (rxtProgram != null) {
             RXT.RXTIsland island = rxtProgram.getRXTIsland();
+            if (Utils.isEmpty(rxtProgram.getVoicePrompt())) {
+                checkVoicePrompt.setVisibility(View.INVISIBLE);
+                isVoicePrompt = false;
+            } else {
+                checkVoicePrompt.setVisibility(View.VISIBLE);
+                isVoicePrompt = true;
+            }
+
             if (island != null) {
                 List<RXT.RXTBlock> blocks = rxtProgram.getBlocks();
                 islandId = island.getID();
@@ -366,7 +394,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
         @Override
         public void onTime(int id, long t) {
-            log("onTime " + t);
+            log("RxtListener onTime " + t);
             try {
                 int time = (int) (totalTime - t);
                 String txt = String.format("%02d : %02d", ((int) time / 60), ((int) time % 60));
@@ -380,34 +408,125 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
         @Override
         public void onDispose() {
-
+            log("RxtListener onDispose ");
         }
 
         @Override
         public void startProgram(int cycle, int duration) {
-
+            log("RxtListener startProgram " + cycle);
+            try {
+                playVoicePrompt();
+            } catch (Exception ee) {
+                log("RxtListener playVoicePrompt error " + ee);
+                ee.printStackTrace();
+            }
         }
 
         @Override
         public void nextCycle(int cycle, int pause, int duration) {
-
+            log("RxtListener nextCycle " + cycle);
         }
 
         @Override
         public void sendColorEvent(@NotNull RxtTile device, int color, int action, int playerId, boolean observe) {
-
+            log("RxtListener sendColorEvent " + device);
         }
 
         @Override
         public void sendDelayColorEvent(@NotNull RxtTile device, int color, int action, int playerId, int delay, boolean observe) {
-
+            log("RxtListener sendDelayColorEvent " + device);
         }
 
         @Override
         public void endProgram(int cycle, int duration) {
-            showScoreDialog();
+            log("RxtListener endProgram " + cycle);
+            //onStopProgram();
+            try {
+                isProgramStarted = false;
+                showScoreDialog();
+                stopVoicePrompt();
+                playButton.setPlay(false);
+            } catch (Exception ee) {
+
+            }
         }
     };
+
+    private MediaPlayer mediaPlayer;
+    private int mediaFileDuration;
+
+    private void playVoicePrompt() {
+        log("playVoicePrompt isVoicePrompt " + isVoicePrompt);
+        if (isVoicePrompt) {
+            getActivity().runOnUiThread(() -> {
+                if (checkVoicePrompt.isChecked()) {
+                    log("playVoicePrompt checkVoicePrompt enable");
+                    if (mediaPlayer == null) {
+                        mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
+                            log("setOnBufferingUpdateListener mediaPlayer " + percent);
+                            isMediaPlaying = true;
+                            mediaPlayerProgress.setSecondaryProgress(percent);
+
+                        });
+                        mediaPlayer.setOnCompletionListener(mp -> {
+                            log("setOnCompletionListener mediaPlayer ");
+                            mediaPlayerProgress.setProgress(100);
+                            isMediaPlaying = false;
+                        });
+                    } else {
+                        // TODO Later
+                        mediaPlayer.reset();
+                    }
+
+                    try {
+                        mediaPlayer.setDataSource(rxtProgram.getVoicePrompt());
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
+                        mediaFileDuration = mediaPlayer.getDuration();
+                        log("playVoicePrompt mediaPlayer starting....");
+                        mediaPlayerProgress.setVisibility(View.VISIBLE);
+                        isMediaPlaying = true;
+                        mediaProgressUpdater();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    }
+
+    private void stopVoicePrompt() {
+        try {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                isMediaPlaying = false;
+                mediaPlayer.stop();
+                mediaPlayerProgress.setProgress(1);
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    private final Handler handler = new Handler();
+    private boolean isMediaPlaying = false;
+
+    private void mediaProgressUpdater() {
+        if (!isMediaPlaying)
+            return;
+        try {
+            if (mediaFileDuration > 0)
+                mediaPlayerProgress.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaFileDuration) * 100));
+            else
+                mediaPlayerProgress.setProgress(5);
+            if (mediaPlayer.isPlaying()) {
+                Runnable notification = this::mediaProgressUpdater;
+                handler.postDelayed(notification, 1000);
+            }
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+    }
 
     private void showScoreDialog() {
         try {
@@ -563,6 +682,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         onBoosterScreen(true);
+        if (mediaPlayer != null)
+            mediaPlayer.release();
     }
 
     @Override

@@ -3,6 +3,9 @@ package life.mibo.android.ui.rxt;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -34,6 +37,7 @@ import life.mibo.android.models.workout.SearchWorkoutPost;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
+import life.mibo.android.ui.devices.DeviceScanFragment;
 import life.mibo.android.ui.main.Navigator;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
@@ -56,10 +60,11 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
     WorkoutAdapter islandAdapter;
     View emptyView, next;
-    SwitchCompat emsSwitch;
+    //SwitchCompat emsSwitch;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeToRefresh;
     boolean isRefreshing = false;
+    boolean isEmsChecked = false;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -70,7 +75,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         emptyView = view.findViewById(R.id.tv_empty);
         //View back = view.findViewById(R.id.btn_back);
         next = view.findViewById(R.id.btn_next);
-        emsSwitch = view.findViewById(R.id.switch_ems);
+        //emsSwitch = view.findViewById(R.id.switch_ems);
 
         setSwipeRefreshColors(swipeToRefresh);
 
@@ -78,15 +83,17 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
         //back.setOnClickListener(v -> navigate(Navigator.CLEAR_HOME, null));
         next.setOnClickListener(v -> nextClicked());
-        emsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            getWorkouts(isChecked);
-        });
+//        emsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            isEmsChecked = isChecked;
+//            getWorkouts(isEmsChecked);
+//        });
 
         swipeToRefresh.setOnRefreshListener(() -> {
-            getWorkouts(emsSwitch.isChecked());
+            getWorkouts(isEmsChecked);
         });
 
-        getWorkouts(emsSwitch.isChecked());
+        getWorkouts(isEmsChecked);
+        setHasOptionsMenu(true);
     }
 
 
@@ -97,8 +104,10 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             Toasty.info(getContext(), "Trainer is Null, please login again").show();
             return;
         }
+        String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
-        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", ""), trainer.getAccessToken());
+
+        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "", ""), trainer.getAccessToken());
         getDialog().show();
         Call<SearchWorkout> api = API.Companion.getRequest().getApi().searchWorkout(data);
         api.enqueue(new Callback<SearchWorkout>() {
@@ -177,7 +186,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             return;
         }
 
-        islandAdapter = new WorkoutAdapter(list, this::onItemClick, emsSwitch.isChecked());
+        islandAdapter = new WorkoutAdapter(list, this::onItemClick, isEmsChecked);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(islandAdapter);
     }
@@ -201,12 +210,13 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             } else if (position == IslandAdapter.COLOR) {
                 showColorDialog(island);
             } else if (position == IslandAdapter.PROGRAM) {
-                showProgramDialog(island);
+                // showProgramDialog(island);
             } else if (position == IslandAdapter.CHECK) {
                 updateCheck(island);
             } else {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("workout_data", island);
+                bundle.putInt("selected_color", island.getColor());
                 navigate(Navigator.RXT_START_WORKOUT, bundle);
                 //getCompositionRoot().getScreensNavigator().toRxtSingleSession(bundle);
                 //deleteIsland(island, position);
@@ -640,5 +650,41 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                     listener.onItemClicked(island, getAdapterPosition());
             });
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_rxt_ems, menu);
+
+        try {
+            SwitchCompat mySwitch = menu.findItem(R.id.action_ems).getActionView().findViewById(R.id.switch_ems_menu);
+            mySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isEmsChecked = isChecked;
+                getWorkouts(isEmsChecked);
+            });
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        log("onOptionsItemSelected " + item.getItemId());
+        if (item.getItemId() == R.id.action_ems) {
+            log("action ems " + item.isChecked());
+
+            return true;
+        }
+        if (item.getItemId() == R.id.switch_ems_menu) {
+            log("action switch ems " + item.isChecked());
+            return true;
+        }
+//        if (item.getItemId() == R.id.action_devices) {
+//            navigate(R.id.navigation_devices, DeviceScanFragment.Companion.rxtBundle());
+//            return true;
+//        }
+        return super.onOptionsItemSelected(item);
     }
 }

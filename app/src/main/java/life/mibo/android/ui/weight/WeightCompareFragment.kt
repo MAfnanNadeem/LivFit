@@ -34,6 +34,7 @@ import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.encryption.MCrypt
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -130,13 +131,14 @@ class WeightCompareFragment() : BaseFragment() {
         val list = data.data
 
         if (list != null) {
+            val crypt = MCrypt()
             val entries = ArrayList<BarEntry>()
             val dates = ArrayList<String>()
             val parser = SimpleDateFormat("yyyy-mm-dd")
             val formater = SimpleDateFormat("dd/mm")
             var count = 1.0f
             for (weight in list) {
-                entries.add(BarEntry(count, weight?.weight?.toFloat() ?: 0f))
+                entries.add(BarEntry(count, String(crypt.decrypt(weight?.weight)).toFloat()))
                 try {
                     dates.add(formater.format(parser.parse(weight?.createdAt?.date)))
                 } catch (e: Exception) {

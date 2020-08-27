@@ -61,9 +61,10 @@ class ViewMeasureFragment : BaseFragment() {
                 .getJsonList(Prefs.BIOMETRIC, Biometric.Data::class.java)
 
             if (biometrics != null && biometrics.isNotEmpty()) {
-                biometric = biometrics[biometrics.size - 1]
-                if (biometric != null) {
-                    Calculate.addBioData(biometric)
+                val bmc = biometrics[biometrics.size - 1]
+                if (bmc != null) {
+                    Calculate.addBioData(bmc)
+                    biometric = Biometric.Decrypted.from(bmc)
                     update(biometric)
                     return
                 }
@@ -110,7 +111,7 @@ class ViewMeasureFragment : BaseFragment() {
     }
 
 
-    fun update(data: Biometric.Data?) {
+    fun update(data: Biometric.Decrypted?) {
         if (data == null)
             return
         val member = Prefs.get(context).member ?: return
@@ -172,7 +173,9 @@ class ViewMeasureFragment : BaseFragment() {
                                 Prefs.get(requireContext()).setJson(Prefs.BIOMETRIC, it)
                                 if (it.isNotEmpty()) {
                                     val data = it[0]
-                                    update(data)
+                                    if (data != null)
+                                        update(Biometric.Decrypted.from(data))
+                                    else update(null)
                                 }
                             }
 

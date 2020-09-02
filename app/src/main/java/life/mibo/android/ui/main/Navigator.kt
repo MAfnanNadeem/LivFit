@@ -2,8 +2,7 @@ package life.mibo.android.ui.main
 
 interface Navigator {
     companion object {
-        const val HOME_POPUP = 200
-        const val CONNECT = 101;
+         const val CONNECT = 101;
         const val DISCONNECT = 102;
         const val SCAN = 103;
         const val HOME = 104;
@@ -13,6 +12,7 @@ interface Navigator {
         const  val SESSION = 107;
         const val SESSION_POP = 207;
         const val CLEAR_HOME = 108;
+        const val HOME_POPUP = 108
 
         const val RXL_HOME = 110;
         const val RXL_EXERCISE = 111;

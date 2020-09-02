@@ -24,7 +24,7 @@ import com.bumptech.glide.Glide
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
-import life.mibo.android.models.base.MemberPost
+import life.mibo.android.models.rxt.GetAllIslandPost
 import life.mibo.android.models.rxt.GetAllIslands
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.utils.Toasty
@@ -33,11 +33,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SelectIslandDialog(c: Context) : AlertDialog(c) {
+class SelectIslandDialog(c: Context, var listner: ItemClickListener<GetAllIslands.Island?>?) :
+    AlertDialog(c) {
 
     private var recyclerView: RecyclerView? = null
     private var progressBar: ProgressBar? = null
     var listener: ItemClickListener<GetAllIslands.Island>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_rxt_island)
@@ -53,7 +55,6 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
         recyclerView?.layoutManager = LinearLayoutManager(context)
         // dialogAdapter = IslandAdapter(list)
         //program?.text = programName
-        setCancelable(false)
         val height = context.resources.displayMetrics.heightPixels
 //            if (dialogHeight > height.times(0.7)) {
 //                window?.setLayout(dialogWidth, height.times(0.7).toInt())
@@ -85,7 +86,7 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
 
         if (recyclerView?.layoutParams?.height!! > height.times(0.6).toInt())
             recyclerView?.layoutParams?.height = height.times(0.6).toInt()
-        setCancelable(false)
+        setCancelable(true)
         getIslands()
     }
 
@@ -93,30 +94,31 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
         //GetAllIsland
         val member = Prefs.get(context).member ?: return
         progressBar?.visibility = View.VISIBLE
-        API.request.getApi().getAllIsland(MemberPost("", member.accessToken!!, "GetAllIsland"))
-            .enqueue(object : Callback<GetAllIslands> {
-                override fun onFailure(call: Call<GetAllIslands>, t: Throwable) {
-                    progressBar?.visibility = View.GONE
-                }
+        API.request.getApi().getAllIsland(
+            GetAllIslandPost(GetAllIslandPost.Data(""), member.accessToken!!)
+        ).enqueue(object : Callback<GetAllIslands> {
+            override fun onFailure(call: Call<GetAllIslands>, t: Throwable) {
+                progressBar?.visibility = View.GONE
+            }
 
-                override fun onResponse(
-                    call: Call<GetAllIslands>,
-                    response: Response<GetAllIslands>
-                ) {
-                    progressBar?.visibility = View.GONE
-                    val list = ArrayList<GetAllIslands.Island>()
-                    val data = response?.body()?.data
-                    if (data != null && data.isNotEmpty()) {
-                        for (d in data) {
-                            d?.let {
-                                list.add(it)
-                            }
+            override fun onResponse(
+                call: Call<GetAllIslands>,
+                response: Response<GetAllIslands>
+            ) {
+                progressBar?.visibility = View.GONE
+                val list = ArrayList<GetAllIslands.Island>()
+                val data = response?.body()?.data
+                if (data != null && data.isNotEmpty()) {
+                    for (d in data) {
+                        d?.let {
+                            list.add(it)
                         }
                     }
-
-                    parseData(list)
                 }
-            })
+
+                parseData(list)
+            }
+        })
 
     }
 
@@ -126,13 +128,17 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
             return
         }
 
-        val adapter = IslandAdapter(list)
+        val adapter = IslandAdapter(list, listner)
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = adapter
 
+        setCancelable(false)
     }
 
-    class IslandAdapter(var list: ArrayList<GetAllIslands.Island>) :
+    class IslandAdapter(
+        var list: ArrayList<GetAllIslands.Island>,
+        var listener: ItemClickListener<GetAllIslands.Island?>?
+    ) :
         RecyclerView.Adapter<IslandAdapter.Holder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return Holder(
@@ -146,7 +152,7 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.bind(getItem(position))
+            holder.bind(getItem(position), listener)
         }
 
         private fun getItem(position: Int): GetAllIslands.Island {
@@ -167,13 +173,19 @@ class SelectIslandDialog(c: Context) : AlertDialog(c) {
             var tiles: TextView? = view.findViewById(R.id.tv_island_tiles)
 
 
-            fun bind(item: GetAllIslands.Island?) {
+            fun bind(
+                item: GetAllIslands.Island?,
+                listner: ItemClickListener<GetAllIslands.Island?>?
+            ) {
                 if (item != null) {
                     Glide.with(imageView!!.context).load(item.islandImage)
                         .error(R.drawable.ic_broken_image_black_24dp)
                         .fallback(R.drawable.ic_broken_image_black_24dp).into(imageView!!)
                     island?.text = item.name
                     tiles?.text = "${item.islandHeight} x ${item.islandWidth}"
+                    itemView?.setOnClickListener {
+                        listner?.onItemClicked(item, 0)
+                    }
                 }
 
 

@@ -28,8 +28,9 @@ class MiboApplication : Application() {
         var context: Context? = null
 
         //val DEBUG = life.mibo.android.BuildConfig.DEBUG
+
         val DEBUG = false
-        val DEV_SERVER = true
+        val DEV_SERVER = false
 
         //val DEBUG = false
         val RELEASE = false
@@ -89,7 +90,7 @@ class MiboApplication : Application() {
             .init(context!!.applicationContext as Application)
         val scanRuleConfig =
             BleScanRuleConfig.Builder()
-                .setDeviceName(true, "MBRXL", "MIBO", "HW", "MI SCALE", "WS806")
+                .setDeviceName(true, "MBRXL", "MIBO", "HW", "MI SCALE", "WS806", "")
                 .setAutoConnect(true)
                 .setScanTimeOut(SCAN_TIME)
                 .build()

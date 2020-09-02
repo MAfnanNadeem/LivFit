@@ -28,7 +28,6 @@ import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -53,7 +52,6 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.Observable
@@ -114,6 +112,7 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceConstants.*
+import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hardware.models.ScaleData
 import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
@@ -192,6 +191,18 @@ class MainActivity : BaseActivity(), Navigator {
         registerNetworkMonitor()
 
 
+        no_internet_close?.setOnClickListener {
+            frame_no_internet?.visibility = View.GONE
+        }
+        //test()
+    }
+
+    fun test() {
+        val d = Device()
+        d.uid = "123456"
+        d.tiles = 18
+        d.type = DeviceTypes.RXT_WIFI
+        SessionManager.getInstance().userSession.devices.add(d)
     }
 
 
@@ -1512,7 +1523,9 @@ class MainActivity : BaseActivity(), Navigator {
                 navigate(0, R.id.navigation_view_measure, null)
             }
             Navigator.VIEW_SESSIONS -> {
-                navigate(0, R.id.navigation_view_session, null)
+                if (data is Bundle)
+                    navigate(0, R.id.navigation_view_session, data)
+                else navigate(0, R.id.navigation_view_session, null)
             }
             Navigator.UPDATE_DATA -> {
                 navigate(0, R.id.navigation_profile_update, null)
@@ -1676,47 +1689,49 @@ class MainActivity : BaseActivity(), Navigator {
 //            }
 //
             // TODO NAV_TEST
-//            R.id.nav_test3 -> {
-//                lastId = -1
-//                startScanningView(true, DeviceScanFragment.RXL)
-//                // SessionManager.getInstance().userSession.createDummy()
-//                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
-//                //Payments.testPayment(this@MainActivity)
-//                //startScanning(false)
-//                //updateMenu()
-//                // test
-//                //navigate(0, R.id.navigation_rxl_home)
+            R.id.nav_test3 -> {
+                lastId = -1
+                //startScanningView(true, DeviceScanFragment.RXL)
+                startScanningView(true, DeviceScanFragment.RXL)
+                // SessionManager.getInstance().userSession.createDummy()
+                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+                //Payments.testPayment(this@MainActivity)
+                //startScanning(false)
+                //updateMenu()
+                // test
+                //navigate(0, R.id.navigation_rxl_home)
+
+                //navigate(0, R.id.navigation_select_suit)
+                // navigate(0, R.id.navigation_bmi)
+                // navigate(0, R.id.navigation_measurement)
+
+            }
 //
-//                //navigate(0, R.id.navigation_select_suit)
-//                // navigate(0, R.id.navigation_bmi)
-//                // navigate(0, R.id.navigation_measurement)
-//
-//            }
-//
-//            R.id.nav_test4 -> {
-//
-//                val list = ArrayList(SessionManager.getInstance().userSession.devices)
-//                if (list.size > 0)
-//                    for (d in list) {
-//                        if (d.isRxt) {
-//                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-//                            return
-//                        }
-//                    }
-//                lastId = -1
-//                startScanningView(true, DeviceScanFragment.RXT)
-//                // SessionManager.getInstance().userSession.createDummy()
-//                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
-//                //Payments.testPayment(this@MainActivity)
-//                //startScanning(false)
-//                //updateMenu()
-//                // test
-//                //navigate(0, R.id.navigation_rxl_home)
-//
-//                //navigate(0, R.id.navigation_select_suit)
-//                // navigate(0, R.id.navigation_bmi)
-//                // navigate(0, R.id.navigation_measurement)
-//            }
+            R.id.nav_test4 -> {
+
+                val list = ArrayList(SessionManager.getInstance().userSession.devices)
+                if (list.size > 0)
+                    for (d in list) {
+                        if (d.isRxt) {
+                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+                            return
+                        }
+                    }
+                lastId = -1
+                startScanningView(true, DeviceScanFragment.RXT)
+                // SessionManager.getInstance().userSession.createDummy()
+                //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
+                //Payments.testPayment(this@MainActivity)
+                //startScanning(false)
+                //updateMenu()
+                // test
+                //navigate(0, R.id.navigation_rxl_home)
+
+                //navigate(0, R.id.navigation_select_suit)
+                // navigate(0, R.id.navigation_bmi)
+                // navigate(0, R.id.navigation_measurement)
+
+            }
 
             R.id.navigation_add_product -> {
                 navigate(0, R.id.navigation_add_product)
@@ -2375,17 +2390,19 @@ class MainActivity : BaseActivity(), Navigator {
     }
 
 
-    var internetSnackbar: Snackbar? = null
+    //var internetSnackbar: Snackbar? = null
     fun networkChange(context: Context?) {
         try {
             if (Utils.isConnected(context)) {
-                if (internetSnackbar != null)
-                    internetSnackbar?.dismiss()
+                frame_no_internet?.visibility = View.GONE
+                // if (internetSnackbar != null)
+                //        internetSnackbar?.dismiss()
             } else {
-                internetSnackbar = Toasty.closeSnackbar(
-                    window?.decorView?.rootView,
-                    R.string.no_internet, Gravity.CENTER
-                )
+                frame_no_internet?.visibility = View.VISIBLE
+//                internetSnackbar = Toasty.closeSnackbar(
+//                    window?.decorView?.rootView,
+//                    R.string.no_internet, Gravity.CENTER
+//                )
             }
         } catch (e: Exception) {
             e.printStackTrace()

@@ -193,6 +193,7 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
                 fragment.getDialog()?.dismiss()
                 t.printStackTrace()
                 Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
+                observer.onMemberCalendar(null)
                 // Toasty.error(fragment.context!!, "Unable to connect").show()
             }
 
@@ -242,6 +243,7 @@ class CalendarController(val fragment: CalendarFragment, val observer: CalendarO
                     t.printStackTrace()
                     Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
                     // Toasty.error(fragment.context!!, "Unable to connect").show()
+                    observer.onTrainerCalendar(null)
                 }
 
                 override fun onResponse(

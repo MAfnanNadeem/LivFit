@@ -14,3 +14,10 @@
 .cxx
 /app/debug/
 /app/release/
+/app/src/main/java/life/mibo/android/ui/rxt/RXTSessionStartFragment.java
+/app/src/main/java/life/mibo/android/ui/rxt/RXTIslandViewFragment.java
+/app/src/main/java/life/mibo/android/ui/rxt/RxtInstallationFragment.java
+/app/src/main/java/life/mibo/android/ui/rxt/RxtExerciseFragment.java
+/app/src/main/java/life/mibo/android/ui/rxt/RXTDashboard.java
+/app/src/main/java/life/mibo/android/ui/rxt/RXTCreateProgramsFragment.java
+z

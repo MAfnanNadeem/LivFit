@@ -56,12 +56,12 @@ class NewAddressActivity : BaseActivity() {
 
         tv_country?.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                ccp?.showCountryCodePickerDialog()
+                ccp_reg?.showCountryCodePickerDialog()
             }
             return@setOnTouchListener true
         }
 
-        ccp?.setOnCountryChangeListener {
+        ccp_reg?.setOnCountryChangeListener {
             tv_country?.setText(it.name)
         }
         loadData()

@@ -54,6 +54,7 @@ class RegisterActivity : AppCompatActivity() {
         fun onSendOtpClicked(number: String?)
         fun onResendOtpClicked(number: String?)
         fun onVerifyOtpClicked(code: String?)
+        fun onSaveAndSendOtp(country: String?, number: String?)
         fun onStop()
         fun onCreate(view: View)
     }
@@ -95,17 +96,18 @@ class RegisterActivity : AppCompatActivity() {
         tv_dob?.setOnClickListener {
             controller.showDobPicker()
         }
+
         tv_country?.setOnClickListener {
             controller.showCountry()
         }
         //ccp.registerPhoneNumberTextView(tv_country)
-        controller.ccp = ccp
+        controller.ccp = ccp_reg
         controller.otpCcp = ccp_otp
 
 
-        ccp.setDefaultCountryUsingPhoneCodeAndApply(971)
-        ccp.registerPhoneNumberTextView(et_phone_number)
-        ccp.setOnCountryChangeListener { country ->
+        ccp_reg.setDefaultCountryUsingPhoneCodeAndApply(971)
+        ccp_reg.registerPhoneNumberTextView(et_phone_number)
+        ccp_reg.setOnCountryChangeListener { country ->
             tv_country.text = country.name
             controller.selectedCountry = country
             controller.isCountry = true
@@ -164,7 +166,7 @@ class RegisterActivity : AppCompatActivity() {
                 socialPhoto = social.getString("photoUrl", "")
                 socialKey = social.getString("id", "")
                 val name = social.getString("displayName", "").split(" ")
-                if (name.size > 0)
+                if (name.isNotEmpty())
                     et_first_name?.setText(name[0])
                 if (name.size > 1)
                     et_last_name?.setText(name[1])
@@ -213,10 +215,45 @@ class RegisterActivity : AppCompatActivity() {
         colorGreen = ContextCompat.getColor(this, R.color.textColorGreen)
         colorRed = ContextCompat.getColor(this, R.color.colorAccent)
 
+        // for number update in OTP
         otp_edit_number?.setOnClickListener {
-            //otp_ccp_?.isEnabled = true
-            // otp_et_phone_number?.isEnabled = true
+            enableNumberEdit(true)
         }
+
+        otp_btn_otp_send?.setOnClickListener {
+            saveAndSendOtp(
+                otp_ccp_?.selectedCountryCodeWithPlus,
+                otp_et_phone_number.text?.toString()
+            )
+        }
+
+        otp_ccp_?.setOnClickListener {
+            otp_ccp_.showCountryCodePickerDialog()
+        }
+        otp_ccp_?.registerPhoneNumberTextView(otp_et_phone_number)
+    }
+
+    private fun enableNumberEdit(enable: Boolean) {
+        otp_ccp_?.isClickable = enable
+        otp_ccp_?.isEnabled = enable
+        otp_et_phone_number?.isEnabled = enable
+        otp_btn_otp_send?.visibility = if (enable) View.VISIBLE else View.GONE
+    }
+
+    // TODO later.....
+    private fun saveAndSendOtp(code: String?, number: String?) {
+        if (code.isNullOrEmpty()) {
+            Toasty.info(this, R.string.enter_number).show();
+            return
+        }
+
+        if (number.isNullOrEmpty()) {
+            Toasty.info(this, R.string.enter_number).show();
+            return
+        }
+        controller.onSaveAndSendOtp(code, number)
+        enableNumberEdit(false)
+
     }
 
     var colorRed = 0
@@ -504,7 +541,7 @@ class RegisterActivity : AppCompatActivity() {
                 et_password.text?.toString(),
                 et_confirm_password.text?.toString(),
                 et_city.text?.toString(),
-                ccp?.defaultCountryNameCode,
+                ccp_reg?.defaultCountryNameCode,
                 tv_dob.text?.toString(),
                 checkbox_terms.isChecked,
                 et_phone_number.text?.toString(), socialType, socialKey, updateMemberId, "0"
@@ -518,7 +555,7 @@ class RegisterActivity : AppCompatActivity() {
             et_password.text?.toString(),
             et_confirm_password.text?.toString(),
             et_city.text?.toString(),
-            ccp?.defaultCountryNameCode,
+            ccp_reg?.defaultCountryNameCode,
             tv_dob.text?.toString(),
             checkbox_terms.isChecked,
             et_phone_number.text?.toString(), socialType, socialKey, socialPhoto, "0"
@@ -582,7 +619,7 @@ class RegisterActivity : AppCompatActivity() {
                 viewAnimator.showNext()
                 et_number.text = et_phone_number.text
                 et_number.isEnabled = false
-                ccp_otp.fullNumber = ccp.fullNumber
+                ccp_otp.fullNumber = ccp_reg.fullNumber
                 ccp_otp.isEnabled = false
                 ccp_otp.isClickable = false
             }
@@ -590,11 +627,16 @@ class RegisterActivity : AppCompatActivity() {
                 // registerOtpListener()
 
                 viewAnimator.showNext()
-                otp_ccp_?.setCountryForNameCode(ccp_otp?.defaultCountryNameCode)
+                log("OTP_VIEW " + ccp_reg?.selectedCountryNameCode + " :: " + otp_ccp_?.selectedCountryNameCode)
+                otp_ccp_?.setCountryForNameCode(ccp_reg?.selectedCountryNameCode)
                 var num = et_phone_number.text?.toString()
                 if (num != null && num.startsWith("0"))
                     num = num.substring(1)
                 otp_et_phone_number?.setText(num)
+                enableNumberEdit(false)
+                otp_ccp_?.forceLayout()
+                otp_ccp_?.invalidate()
+                log("OTP_VIEW " + ccp_reg?.selectedCountryNameCode + " :: " + otp_ccp_?.selectedCountryNameCode)
                 //tv_resend?.visibility = View.INVISIBLE
                 //startResend(60)
                 controller.startCountDown(60)

@@ -15,9 +15,16 @@
         app:actionLayout="@layout/toolbar_switch_ems"
         app:showAsAction="always" />
 
-<!--    <item-->
-<!--        android:id="@+id/action_devices"-->
-<!--        android:title="@string/devices"-->
-<!--        app:showAsAction="ifRoom|collapseActionView" />-->
+    <item
+        android:id="@+id/action_ems_check"
+        android:actionLayout="@layout/toolbar_checkbox_ems"
+        android:title=""
+        app:actionLayout="@layout/toolbar_checkbox_ems"
+        app:showAsAction="always" />
+
+    <!--    <item-->
+    <!--        android:id="@+id/action_devices"-->
+    <!--        android:title="@string/devices"-->
+    <!--        app:showAsAction="ifRoom|collapseActionView" />-->
 
 </menu>

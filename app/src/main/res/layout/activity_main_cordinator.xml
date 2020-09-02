@@ -44,6 +44,35 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
+            <FrameLayout
+                android:id="@+id/frame_no_internet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:fontFamily="@string/font_roboto"
+                    android:padding="@dimen/grid_1x"
+                    android:text="@string/no_internet"
+                    android:textColor="@color/textColor2" />
+
+                <TextView
+                    android:id="@+id/no_internet_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:fontFamily="@string/font_roboto_medium"
+                    android:padding="@dimen/grid_1x"
+                    android:text="CLOSE"
+                    android:textColor="@color/textColorGreen" />
+            </FrameLayout>
+
             <fragment
                 android:id="@+id/nav_host_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"
@@ -55,7 +84,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+                app:layout_constraintTop_toBottomOf="@+id/frame_no_internet"
                 app:navGraph="@navigation/mobile_navigation" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

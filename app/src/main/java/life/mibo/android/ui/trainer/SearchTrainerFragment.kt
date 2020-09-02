@@ -63,7 +63,7 @@ class SearchTrainerFragment : BaseFragment() {
                    // log("searchProfessionals failed $t")
                     getDialog()?.dismiss()
                    // t?.printStackTrace()
-                    Toasty.info(requireContext(), R.string.error_occurred).show()
+                    Toasty.info(requireContext(), R.string.unable_to_connect).show()
                 }
 
                 override fun onResponse(

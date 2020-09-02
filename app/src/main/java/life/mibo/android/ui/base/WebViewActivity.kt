@@ -15,6 +15,8 @@ import android.view.View
 import kotlinx.android.synthetic.main.fragment_webview.*
 import life.mibo.android.R
 import life.mibo.android.ui.fit.fitbit.Fitbit
+import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import life.mibo.views.AdvancedWebView
 
 
@@ -45,8 +47,13 @@ class WebViewActivity : BaseActivity(), AdvancedWebView.Listener {
         baseUrl = intent?.getStringExtra("url_url") ?: ""
         baseType = intent?.getIntExtra("url_type", Fitbit.ANY) ?: Fitbit.ANY
         log("onCreate baseUrl $baseUrl")
-        webView?.setListener(this, this)
-        webView?.loadUrl(baseUrl)
+        if (Utils.isConnected(this)) {
+            webView?.setListener(this, this)
+            webView?.loadUrl(baseUrl)
+        } else {
+            Toasty.info(this, R.string.unable_to_connect).show()
+            finish()
+        }
     }
 
     private var baseUrl = ""

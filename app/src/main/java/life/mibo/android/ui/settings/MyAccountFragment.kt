@@ -37,6 +37,7 @@ import life.mibo.android.ui.fit.GoogleFit
 import life.mibo.android.ui.fit.fitbit.Fitbit
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.member.OrdersFragment
+import life.mibo.android.ui.member.ViewSessionsFragment
 import life.mibo.android.utils.Toasty
 
 
@@ -332,6 +333,8 @@ class MyAccountFragment : BaseFragment() {
         }
     }
 
+    var isRxt = false
+
     private fun setAdapters(isMember: Boolean) {
         swipeToRefresh?.isEnabled = false
 
@@ -374,6 +377,11 @@ class MyAccountFragment : BaseFragment() {
         list.add(Item(TYPE.CONNECT_HEADER, isHeader = true))
         list.add(Item(TYPE.GOOGLE_FIT, isTop = true))
         list.add(Item(TYPE.FITBIT, isBottom = true))
+
+        if (isRxt) {
+            list.add(Item(TYPE.RXT_HEADER, isHeader = true))
+            list.add(Item(TYPE.REACT_SESSION, isSingle = true))
+        }
 
         list.add(Item(TYPE.SETTINGS_HEADER, isHeader = true))
         list.add(Item(TYPE.COUNTRY_LANGUAGE, isTop = true))
@@ -424,7 +432,10 @@ class MyAccountFragment : BaseFragment() {
                 navigate(Navigator.VIEW_MEASUREMENT, null)
             }
             TYPE.VIEW_SESSION -> {
-                navigate(Navigator.VIEW_SESSIONS, null)
+                navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(1))
+            }
+            TYPE.REACT_SESSION -> {
+                navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(2))
             }
             TYPE.GOOGLE_FIT -> {
                 checkPermission()
@@ -467,6 +478,7 @@ class MyAccountFragment : BaseFragment() {
         CONNECT_HEADER(R.string.connect),
         SETTINGS_HEADER(R.string.settings),
         ABOUT_HEADER(R.string.about_us),
+        RXT_HEADER(R.string.rxt_sessions),
         MY_SALES(R.string.my_sales),
         MY_SERVICES(R.string.my_services),
         MY_CLIENTS(R.string.my_customers),
@@ -484,6 +496,7 @@ class MyAccountFragment : BaseFragment() {
         NOTIFICATIONS(R.string.notifications),
         POLICIES(R.string.policies),
         ABOUT_APP(R.string.app_name_version),
+        REACT_SESSION(R.string.rxt_sessions),
         //SESSION(R.string.view_sessions),
     }
 

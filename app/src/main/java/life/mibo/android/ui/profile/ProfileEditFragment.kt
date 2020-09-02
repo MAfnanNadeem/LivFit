@@ -130,10 +130,10 @@ class ProfileEditFragment : BaseFragment() {
         }
 
         tv_country1?.setOnClickListener {
-            ccp?.showCountryCodePickerDialog()
+            ccp_reg?.showCountryCodePickerDialog()
         }
         tv_country2?.setOnClickListener {
-            ccp?.showCountryCodePickerDialog()
+            ccp_reg?.showCountryCodePickerDialog()
         }
 
         profile_pic_uploaded?.setOnClickListener {
@@ -142,7 +142,7 @@ class ProfileEditFragment : BaseFragment() {
             //openPicker()
         }
 
-        ccp?.setOnCountryChangeListener {
+        ccp_reg?.setOnCountryChangeListener {
             tv_country2?.setText(it.name)
             countryCode = it.iso
         }

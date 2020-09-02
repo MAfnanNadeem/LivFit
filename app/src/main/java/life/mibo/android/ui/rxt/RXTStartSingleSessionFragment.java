@@ -34,6 +34,8 @@ import com.halilibo.bvpkotlin.VideoProgressCallback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,11 +44,13 @@ import java.util.List;
 import life.mibo.android.R;
 import life.mibo.android.core.API;
 import life.mibo.android.core.Prefs;
+import life.mibo.android.models.base.ResponseStatus;
 import life.mibo.android.models.login.Member;
 import life.mibo.android.models.rxt.GetIslandPost;
 import life.mibo.android.models.rxt.GetIslandTiles;
 import life.mibo.android.models.workout.EMS;
 import life.mibo.android.models.workout.RXT;
+import life.mibo.android.models.workout.SaveMemberScores;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
@@ -331,9 +335,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         Member trainer = Prefs.get(getContext()).getMember();
         if (trainer == null)
             return;
-       getDialog().show();
+        getDialog().show();
+        String loc = trainer.getLocationID();
+        if (loc == null)
+            loc = "0";
 
-        GetIslandPost post = new GetIslandPost(new GetIslandPost.Data(islandId, trainer.getId(), trainer.getLocationID()), trainer.getAccessToken());
+        GetIslandPost post = new GetIslandPost(new GetIslandPost.Data(islandId, trainer.getId(), loc), trainer.getAccessToken());
         API.Companion.getRequest().getApi().getIslandTiles(post).enqueue(new Callback<GetIslandTiles>() {
             @Override
             public void onResponse(@NonNull Call<GetIslandTiles> call, @NonNull Response<GetIslandTiles> response) {
@@ -349,11 +356,51 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 }
 
                 //log("total " + island.getTotal());
+                playButton.setPlay(false);
                 ConfigureIslandActivity.Companion.launch(RXTStartSingleSessionFragment.this, island.getName(), island.getID(), island.getX(), island.getY(), island.getTotal());
             }
 
             @Override
             public void onFailure(@NonNull Call<GetIslandTiles> call, @NonNull Throwable t) {
+                getDialog().dismiss();
+                Toasty.info(getContext(), "Error " + t.getMessage()).show();
+            }
+        });
+    }
+
+    void saveScore(List<ScoreItem> list) {
+        Member trainer = Prefs.get(getContext()).getMember();
+        if (trainer == null)
+            return;
+        //getDialog().show();
+        String loc = trainer.getLocationID();
+        if (loc == null)
+            loc = "0";
+
+        String date = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now());
+        List<SaveMemberScores.Score> scores = new ArrayList<>();
+        if (list != null) {
+            for (ScoreItem item : list) {
+                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), ""+item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId()));
+            }
+        }
+        if (scores.isEmpty())
+            return;
+        SaveMemberScores post = new SaveMemberScores(new SaveMemberScores.Data(scores), trainer.getAccessToken());
+        API.Companion.getRequest().getApi().saveScore(post).enqueue(new Callback<ResponseStatus>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseStatus> call, @NonNull Response<ResponseStatus> response) {
+                getDialog().dismiss();
+                //Toasty.info(getContext(), "Response " + response.body()).show();
+                ResponseStatus body = response.body();
+                if (body != null && body.isSuccess()) {
+                    Toasty.info(getContext(), "Session Saved!").show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseStatus> call, @NonNull Throwable t) {
                 getDialog().dismiss();
                 Toasty.info(getContext(), "Error " + t.getMessage()).show();
             }
@@ -537,6 +584,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 name = workout.getName();
             String finalName = name;
             requireActivity().runOnUiThread(() -> new ScoreDialog(requireActivity(), finalName, list).show());
+            saveScore(list);
         } catch (Exception ee) {
             ee.printStackTrace();
             if (isAdded())

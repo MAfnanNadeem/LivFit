@@ -180,7 +180,7 @@
             android:orientation="horizontal">
 
             <com.rilixtech.widget.countrycodepicker.CountryCodePicker xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/ccp"
+                android:id="@+id/ccp_reg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

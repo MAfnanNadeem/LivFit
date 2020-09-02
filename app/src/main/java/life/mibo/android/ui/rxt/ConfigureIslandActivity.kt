@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,8 +48,8 @@ class ConfigureIslandActivity : BaseActivity() {
             val intent = Intent(context.context, ConfigureIslandActivity::class.java)
             intent.putExtra("island_name", name)
             intent.putExtra("island_id", id)
-            intent.putExtra("island_x", width)
-            intent.putExtra("island_y", height)
+            intent.putExtra("island_x", height)
+            intent.putExtra("island_y", width)
             intent.putExtra("island_total", total)
             context.startActivityForResult(intent, REQUEST_CODE)
         }
@@ -112,7 +111,7 @@ class ConfigureIslandActivity : BaseActivity() {
         }
 
         et_island?.text = islandName
-        btn_back.setOnClickListener { v: View? -> onBackPressed() }
+        //btn_back.setOnClickListener { v: View? -> onBackPressed() }
         tv_empty?.visibility = View.GONE
 
         setupMainAdapter()
@@ -135,11 +134,11 @@ class ConfigureIslandActivity : BaseActivity() {
         }
         val list = islandAdapter!!.selectedCopy
         if (list == null || list.isEmpty()) {
-            Toasty.snackbar(btn_back, "Please add tiles to save")
+            Toasty.snackbar(btn_save_island, "Please add tiles to save")
             return
         }
         if (et_island.text.toString().isEmpty()) {
-            Toasty.snackbar(btn_back, "Island Name can not be empty")
+            Toasty.snackbar(btn_save_island, "Island Name can not be empty")
             return
         }
         AlertDialog.Builder(this).setTitle("Save Island?")
@@ -153,6 +152,12 @@ class ConfigureIslandActivity : BaseActivity() {
         // API
         log("islands : $list")
         val trainer = Prefs.get(this).member ?: return
+        val locId = trainer.locationID
+        if (locId.isNullOrEmpty()) {
+            Toasty.info(this, getString(R.string.invalid_locationid)).show()
+            return
+        }
+
         getDialog()?.show()
         var first = true
         val builder = StringBuilder()
@@ -167,19 +172,35 @@ class ConfigureIslandActivity : BaseActivity() {
         val tiles = builder.toString()
         log("builder : $builder")
         log("tiles : $tiles")
-        val post = SaveIslandPost(SaveIslandPost.Data(islandId, trainer.id, trainer.locationID, tiles), trainer.accessToken)
+
+        val post = SaveIslandPost(
+            SaveIslandPost.Data(
+                islandId,
+                trainer.id,
+                locId,
+                tiles
+            ), trainer.accessToken
+        )
         API.request.getApi().saveIslandTiles(post).enqueue(object : Callback<ResponseStatus> {
             override fun onFailure(call: Call<ResponseStatus>, t: Throwable) {
                 getDialog()?.dismiss()
             }
 
-            override fun onResponse(call: Call<ResponseStatus>, response: Response<ResponseStatus>) {
+            override fun onResponse(
+                call: Call<ResponseStatus>,
+                response: Response<ResponseStatus>
+            ) {
                 getDialog()?.dismiss()
                 if (response.body()?.isSuccess() == true) {
                     Toasty.info(this@ConfigureIslandActivity, "Island saved successfully").show()
                     intent?.putExtra("tiles_config", tiles)
                     setResult(Activity.RESULT_OK, intent)
                     finish()
+                } else {
+                    Toasty.info(
+                        this@ConfigureIslandActivity,
+                        response.body()?.errors?.get(0)?.message ?: "Error Occurred"
+                    ).show()
                 }
             }
 
@@ -208,7 +229,7 @@ class ConfigureIslandActivity : BaseActivity() {
                 controllers.add(Controller(uid, controllerId, tileCount, tiles))
             }
         }
-        Toasty.info(this, "Controllers Connected " + controllers.size).show()
+        //Toasty.info(this, "Controllers Connected " + controllers.size).show()
         recyclerView.layoutManager = LinearLayoutManager(this)
         mainAdapter = InstallAdapter(controllers, object : ItemClickListener<Any> {
             override fun onItemClicked(item: Any?, position: Int) {

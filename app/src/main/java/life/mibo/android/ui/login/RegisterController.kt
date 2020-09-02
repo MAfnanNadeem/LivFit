@@ -29,8 +29,10 @@ import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.libs.datepicker.SpinnerDatePickerDialogBuilder
+import life.mibo.android.models.base.ResponseStatus
 import life.mibo.android.models.login.LoginResponse
 import life.mibo.android.models.login.LoginUser
+import life.mibo.android.models.login.UpdateNumber
 import life.mibo.android.models.register.Data
 import life.mibo.android.models.register.RegisterMember
 import life.mibo.android.models.register.RegisterResponse
@@ -49,7 +51,6 @@ import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 //import kotlinx.android.synthetic.main.activity_register.*
@@ -139,6 +140,53 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
 
     override fun onVerifyOtpClicked(code: String?) {
         validateOtp(code)
+    }
+
+    override fun onSaveAndSendOtp(country: String?, number: String?) {
+        context.log("onSaveAndSendOtp country $country : $number")
+        if (testDebug) {
+            Toasty.info(context, "Number Updated $country - $number").show()
+            sendOtp(memberData?.data?.phone)
+            return
+        }
+        context.getDialog()?.show()
+        API.request.getApi()
+            .updateNumber(UpdateNumber(UpdateNumber.Data(country, number, userId)))
+            .enqueue(object : Callback<ResponseStatus> {
+                override fun onFailure(call: Call<ResponseStatus>, t: Throwable) {
+                    context.getDialog()?.dismiss()
+                    Toasty.info(context, R.string.unable_to_connect).show();
+                }
+
+                override fun onResponse(
+                    call: Call<ResponseStatus>,
+                    response: Response<ResponseStatus>
+                ) {
+                    context.getDialog()?.dismiss()
+                    if (response.body()?.isSuccess() == true) {
+                        sendOtp(memberData?.data?.phone)
+                        return
+                    } else {
+                        try {
+                            val msg = response.body()?.errors?.get(0)?.message
+                            if (!msg.isNullOrEmpty()) {
+                                Toasty.info(context, msg).show();
+                                return
+                            }
+                        } catch (ee: Exception) {
+
+                        }
+                        Toasty.info(context, context.getString(R.string.unable_update_number))
+                            .show();
+                    }
+
+                }
+
+            })
+    }
+
+    fun updatePhoneNumberApi() {
+
     }
 
     private var smsBroadcast: SMSBroadcastReceiver? = null
@@ -381,6 +429,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
     private var userId: String = ""
     private var memberData: RegisterMember? = null
 
+    // TODO APIs
+
     private fun register(registerData: RegisterMember) {
         MiboEvent.registerEvent(
             "${registerData.data?.firstName} - ${registerData.data?.lastName}",
@@ -389,6 +439,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
         if (testDebug) {
             error("Test Mode Registered")
             userId = "1236"
+            updateNumber(OTP_VIEW)
             sendOtp(registerData.data!!.phone)
             isOtp = true
             isBack = false
@@ -422,6 +473,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                         userId = data.data?.userId!!
                         //success(R.string.regestered)
                         //updateNumber(1)
+                        updateNumber(OTP_VIEW)
                         sendOtp(registerData.data!!.phone)
                         isOtp = true
                         //Prefs.get(this@RegisterController.context).member = Member(data)
@@ -605,6 +657,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                             userId = memberId
                             //success(R.string.regestered)
                             //updateNumber(1)
+                            updateNumber(OTP_VIEW)
                             sendOtp(registerData.data!!.phone)
                             isOtp = true
                             //Prefs.get(this@RegisterController.context).member = Member(data)
@@ -674,7 +727,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 resend = false
                 return
             }
-            updateNumber(OTP_VIEW)
+            //updateNumber(OTP_VIEW)
             return
         }
 
@@ -707,7 +760,7 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                             resend = false
                             return
                         }
-                        updateNumber(OTP_VIEW)
+                        //updateNumber(OTP_VIEW)
                     }
                     data.status?.toLowerCase() == "error" -> {
                         error("${data.errors?.get(0)?.message}")

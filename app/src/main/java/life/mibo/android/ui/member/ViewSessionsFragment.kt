@@ -22,6 +22,8 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.calories.CaloriesData
+import life.mibo.android.models.rxt.GetMemberScores
+import life.mibo.android.models.rxt.GetMemberScoresReport
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.hardware.core.Logger
@@ -32,6 +34,15 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ViewSessionsFragment : BaseFragment() {
+
+
+    companion object {
+        fun create(type: Int): Bundle {
+            val bundle = Bundle()
+            bundle.putInt("session_type", type)
+            return bundle
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,13 +64,13 @@ class ViewSessionsFragment : BaseFragment() {
         swipeToRefresh?.setOnRefreshListener {
             log("swipeToRefresh?.setOnRefreshListener $isRefreshing")
             isRefreshing = true
-            getClients()
+            getApis()
         }
         recyclerView?.layoutManager = GridLayoutManager(context, 1)
 
-        type_ = arguments?.getInt("type_", 0) ?: 0
+        type_ = arguments?.getInt("session_type", 0) ?: 0
 
-        getClients()
+        getApis()
     }
 
     fun showProgress() {
@@ -80,8 +91,35 @@ class ViewSessionsFragment : BaseFragment() {
         }
     }
 
+    fun getApis() {
+        if (type_ == 2) {
+            getReactSession()
+        } else {
+            getSessions()
+        }
+    }
 
-    private fun getClients() {
+    private fun getReactSession() {
+        val member = Prefs.get(context).member ?: return
+        showProgress()
+
+        val post = GetMemberScores(GetMemberScores.Data("", "${member.id}"), member.accessToken)
+        API.request.getApi().getScore(post).enqueue(object : Callback<GetMemberScoresReport> {
+            override fun onFailure(call: Call<GetMemberScoresReport>, t: Throwable) {
+                hideProgress()
+            }
+
+            override fun onResponse(call: Call<GetMemberScoresReport>, response: Response<GetMemberScoresReport>) {
+                hideProgress()
+                // fragment.getDialog()?.dismiss()
+                //val data = response.body()
+                //parseData(response?.body()?.data)
+            }
+        })
+
+    }
+
+    private fun getSessions() {
         val member = Prefs.get(context).member ?: return
         showProgress()
 

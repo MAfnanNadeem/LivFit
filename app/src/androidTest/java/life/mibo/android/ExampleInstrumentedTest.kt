@@ -2,8 +2,7 @@ package life.mibo.android
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -38,7 +37,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun register_activity_rules() {
-        Espresso.onView(withId(R.id.et_first_name)).perform(typeText("Sumeet"))
+        Espresso.onView(withId(R.id.et_first_name)).perform(typeText("Sumeet"), closeSoftKeyboard())
 
         Espresso.onView(withId(R.id.et_last_name)).perform(typeText("Kumar"))
 

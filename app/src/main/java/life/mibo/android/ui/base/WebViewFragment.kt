@@ -13,6 +13,8 @@ import android.view.*
 import kotlinx.android.synthetic.main.fragment_webview.*
 import life.mibo.android.R
 import life.mibo.android.ui.main.Navigator
+import life.mibo.android.utils.Toasty
+import life.mibo.android.utils.Utils
 import life.mibo.views.AdvancedWebView
 
 
@@ -47,8 +49,16 @@ class WebViewFragment : BaseFragment(), AdvancedWebView.Listener {
         val title = arguments?.getString("url_title", "") ?: ""
         if (title.isNotEmpty())
             activity?.title = title
-        webView?.setListener(this, this)
-        webView?.loadUrl(url)
+
+        if (Utils.isConnected(context)) {
+            webView?.setListener(this, this)
+            webView?.loadUrl(url)
+        } else {
+            Toasty.info(requireContext(), R.string.unable_to_connect).show()
+            navigate(Navigator.CLEAR_HOME, null)
+            return
+        }
+
         //webView?.addPermittedHostname("https://accounts.google.com")
         setHasOptionsMenu(true)
     }

@@ -306,6 +306,10 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                     wifi?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                     bluetooth?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
                 }
+                item.type == DeviceTypes.WGNBPA960BT -> {
+                    wifi?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
+                    bluetooth?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+                }
                 else -> {
                     wifi?.setColorFilter(grey)
                     bluetooth?.setColorFilter(grey)
@@ -345,6 +349,14 @@ class ScanDeviceAdapter(var list: ArrayList<Device>?, val type: Int = 0) :
                 name?.text = item.name + " ("+item.tiles+")"
             } else if (item.type == DeviceTypes.HR_MONITOR) {
                 image?.setBackgroundResource(R.drawable.ic_device_hr)
+            } else if (item.type == DeviceTypes.WGNBPA960BT) {
+                image?.setBackgroundResource(R.drawable.ic_device_hr)
+                wifi?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
+                bluetooth?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+            } else if (item.type == DeviceTypes.Contour7801H6669461) {
+                image?.setBackgroundResource(R.drawable.ic_device_hr)
+                wifi?.setColorFilter(grey, PorterDuff.Mode.SRC_IN)
+                bluetooth?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
             } else if (item.type == DeviceTypes.SCALE || item.type == DeviceTypes.MI_SCALE || item.type == DeviceTypes.SCALE_OLD) {
                 image?.setBackgroundResource(R.drawable.ic_dashboard_weight)
             }

@@ -276,6 +276,7 @@
     <string name="confirm_password_error">Password does not match the confirm password</string>
     <string name="change_password">Change Password</string>
     <string name="reset_password">Reset Password</string>
+    <string name="rxt_sessions">React Sessions</string>
     <string name="sessions">Sessions</string>
     <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>
@@ -698,6 +699,9 @@
     <string name="tap_tile_to_add">Tap on TILE to add here</string>
     <string name="voice_prompt">Voice Prompt</string>
     <string name="devices">Devices</string>
+    <string name="update_number">Update Number</string>
+    <string name="unable_update_number">Unable to update mobile number</string>
+    <string name="invalid_locationid">Invalid LocationId</string>
 
 
     <!-- customer reviews -->

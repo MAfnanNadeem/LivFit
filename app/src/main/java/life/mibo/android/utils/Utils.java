@@ -198,7 +198,7 @@ public class Utils {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (cm == null) return false;
             NetworkInfo ni = cm.getActiveNetworkInfo();
-            return ni != null && ni.getType() == ConnectivityManager.TYPE_WIFI;
+            return ni != null && (ni.getType() == ConnectivityManager.TYPE_WIFI || ni.getType() == ConnectivityManager.TYPE_MOBILE);
         } catch (Exception e) {
             return false;
         }

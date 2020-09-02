@@ -20,7 +20,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.onecoder.devicelib.FitBleKit;
-import com.onecoder.devicelib.base.control.interfaces.CheckSystemBleCallback;
 import com.onecoder.devicelib.base.control.interfaces.DeviceStateChangeCallback;
 import com.onecoder.devicelib.base.entity.BaseDevice;
 import com.onecoder.devicelib.base.entity.DeviceType;
@@ -44,6 +43,9 @@ import life.mibo.hardware.bluetooth.BleGattManager;
 import life.mibo.hardware.bluetooth.BleScanCallback;
 import life.mibo.hardware.bluetooth.OnBleCharChanged;
 import life.mibo.hardware.bluetooth.OnBleDeviceDiscovered;
+import life.mibo.hardware.bluetooth.gatt.AllGattCharacteristics;
+import life.mibo.hardware.bluetooth.gatt.AllGattDescriptors;
+import life.mibo.hardware.bluetooth.gatt.AllGattServices;
 import life.mibo.hardware.constants.Config;
 import life.mibo.hardware.core.DataParser;
 import life.mibo.hardware.core.Utils;
@@ -151,6 +153,21 @@ public class BluetoothManager2 {
 
                 if (device.getName().contains("MI SCALE") || device.getName().contains("WS806")) {
                     device.setType(DeviceTypes.SCALE);
+                    // devicesHRBle.add(device);
+                    listener.bleScaleDeviceDiscovered(device.getMac(), device.getName());
+                    deviceHashMap.put(device.getMac(), device);
+                    return;
+                }
+
+                if (device.getName().contains("WGNBPA960BT")) {
+                    device.setType(DeviceTypes.WGNBPA960BT);
+                    // devicesHRBle.add(device);
+                    listener.bleScaleDeviceDiscovered(device.getMac(), device.getName());
+                    deviceHashMap.put(device.getMac(), device);
+                    return;
+                }
+                if (device.getName().contains("Contour7801H6669461")) {
+                    device.setType(DeviceTypes.Contour7801H6669461);
                     // devicesHRBle.add(device);
                     listener.bleScaleDeviceDiscovered(device.getMac(), device.getName());
                     deviceHashMap.put(device.getMac(), device);
@@ -900,6 +917,15 @@ public class BluetoothManager2 {
                     // readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
                     indicateBleFast(device, device.getMac(), "0000181d-0000-1000-8000-00805f9b34fb",
                             "00002a9d-0000-1000-8000-00805f9b34fb", false);
+                } else if (device.getDevice().getName().contains("WGNBPA960BT")) {
+                    // readBleFast(device, BleGattManager.MIBO_EMS_BOOSTER_SERVICE_UUID.toString(), BleGattManager.MIBO_EMS_BOOSTER_TRANSMISSION_CHAR_UUID.toString());
+                    indicateBleFast(device, device.getMac(), "0000181d-0000-1000-8000-00805f9b34fb",
+                            "00002a9d-0000-1000-8000-00805f9b34fb", false);
+                    log("onConnectSuccess WGNBPA960BT  Blood Pressure ");
+                    print(gatt, UUID.randomUUID(), UUID.randomUUID());
+                } else if (device.getDevice().getName().contains("Contour7801H6669461")) {
+                    log("onConnectSuccess Contour7801H6669461  Blood Pressure ");
+                    print(gatt, UUID.randomUUID(), UUID.randomUUID());
                 } else {
                     print(gatt, UUID.randomUUID(), UUID.randomUUID());
                 }
@@ -1101,6 +1127,10 @@ public class BluetoothManager2 {
     }
 
 
+    public synchronized void print(BluetoothGatt mBluetoothGatt) {
+        print(mBluetoothGatt, UUID.randomUUID(), UUID.randomUUID());
+    }
+
     public synchronized void print(BluetoothGatt mBluetoothGatt, UUID serviceUUID, UUID characteristicUUID) {
         log("print serviceUUID " + serviceUUID);
         log("print characteristicUUID " + characteristicUUID);
@@ -1111,16 +1141,19 @@ public class BluetoothManager2 {
             for (BluetoothGattService service : mBluetoothGatt.getServices()) {
                 log(count + " SERVICE ----- " + service);
                 if (service != null) {
+                    log(count + " service NAME " + AllGattServices.lookup(service.getUuid()));
                     log(count + " service uid " + service.getUuid());
                     log(count + " service type " + service.getType());
                     for (BluetoothGattCharacteristic chr : service.getCharacteristics()) {
                         log(count + " Characteristic ----- " + chr);
                         if (chr != null) {
+                            log(count + " Characteristic  NAME ----- " + AllGattCharacteristics.lookup(chr.getUuid()));
                             log("Characteristic uid " + chr.getUuid());
                             log("Characteristic property " + chr.getProperties());
                             for (BluetoothGattDescriptor desc : chr.getDescriptors()) {
                                 log(count + " Descriptors ------ " + desc);
                                 if (desc != null) {
+                                    log(count + " Descriptors NAME " + AllGattDescriptors.lookup(desc.getUuid()));
                                     log(count + " Descriptors uid " + desc.getUuid());
                                     log(count + " Descriptors value " + Arrays.toString(desc.getValue()));
                                 }
@@ -1138,45 +1171,6 @@ public class BluetoothManager2 {
         }
 
         log("print End--------------------------------- ");
-    }
-
-
-    public static synchronized void read(BluetoothGatt mBluetoothGatt) {
-        CommunicationManager.log("read BluetoothGatt " + mBluetoothGatt);
-        CommunicationManager.log("read start--------------------------------- ");
-        int count = 1;
-        if (mBluetoothGatt != null) {
-            // mBluetoothGatt.discoverServices();
-            for (BluetoothGattService service : mBluetoothGatt.getServices()) {
-                CommunicationManager.log(count + " print service " + service);
-                if (service != null) {
-                    CommunicationManager.log("read service uid " + service.getUuid());
-                    CommunicationManager.log("read service type " + service.getType());
-                    for (BluetoothGattCharacteristic chr : service.getCharacteristics()) {
-                        CommunicationManager.log(count + " print Characteristic " + chr);
-                        if (chr != null) {
-                            CommunicationManager.log("read Characteristic uid " + chr.getUuid());
-                            CommunicationManager.log("read Characteristic property " + chr.getProperties());
-                            for (BluetoothGattDescriptor desc : chr.getDescriptors()) {
-                                CommunicationManager.log(count + " print Descriptors " + desc);
-                                if (desc != null) {
-                                    CommunicationManager.log("read Descriptors uid " + desc.getUuid());
-                                    CommunicationManager.log("read Descriptors value " + Arrays.toString(desc.getValue()));
-                                }
-
-                            }
-                        }
-                    }
-                } else {
-                    CommunicationManager.log("readservice is NULL ");
-                }
-                count++;
-            }
-        } else {
-            CommunicationManager.log("read mBluetoothGatt is NULL ");
-        }
-
-        CommunicationManager.log("read End--------------------------------- ");
     }
 
 }

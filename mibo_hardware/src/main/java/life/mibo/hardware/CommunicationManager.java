@@ -66,12 +66,14 @@ import static life.mibo.hardware.models.DeviceConstants.DEVICE_FAILED;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_NEUTRAL;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_WARNING;
 import static life.mibo.hardware.models.DeviceTypes.BLE_STIMULATOR;
+import static life.mibo.hardware.models.DeviceTypes.Contour7801H6669461;
 import static life.mibo.hardware.models.DeviceTypes.HR_MONITOR;
 import static life.mibo.hardware.models.DeviceTypes.RXL_BLE;
 import static life.mibo.hardware.models.DeviceTypes.RXL_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.RXT_WIFI;
 import static life.mibo.hardware.models.DeviceTypes.SCALE;
 import static life.mibo.hardware.models.DeviceTypes.SCALE_OLD;
+import static life.mibo.hardware.models.DeviceTypes.WGNBPA960BT;
 import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 
 //import static life.mibo.hardware.BluetoothManager2.INDICATE;
@@ -611,7 +613,13 @@ public class CommunicationManager {
     }
 
     private void bleScaleDiscoverConsumer(String uid, String serial) {
-        if (serial != null && serial.contains("WS806"))
+        if (serial == null)
+            return;
+        if (serial.contains("WGNBPA960BT"))
+            add(new Device(serial, uid, serial, WGNBPA960BT));
+        else if (serial.contains("Contour"))
+            add(new Device(serial, uid, serial, Contour7801H6669461));
+        else if (serial.contains("WS806"))
             add(new Device(serial, uid, serial, SCALE_OLD));
         else add(new Device(serial, uid, serial, SCALE));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
@@ -932,6 +940,20 @@ public class CommunicationManager {
                 //SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
                 if (bluetoothManager != null)
                     bluetoothManager.connectScaleLegacy(device.getUid());
+                // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
+                SessionManager.getInstance().getUserSession().addDevice(device);
+            }
+            case WGNBPA960BT: {
+                //SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+                if (bluetoothManager != null)
+                    bluetoothManager.connectScale(device.getUid());
+                // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
+                SessionManager.getInstance().getUserSession().addDevice(device);
+            }
+            case Contour7801H6669461: {
+                //SessionManager.getInstance().getUserSession().addScale(bluetoothManager.devicesScaleBle.get(0));
+                if (bluetoothManager != null)
+                    bluetoothManager.connectScale(device.getUid());
                 // SessionManager.getInstance().getUserSession().addDevice(bluetoothManager.getScaleDevice());
                 SessionManager.getInstance().getUserSession().addDevice(device);
             }

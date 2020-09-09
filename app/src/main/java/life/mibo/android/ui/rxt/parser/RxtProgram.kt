@@ -13,7 +13,8 @@ data class RxtProgram(var name: String, var color: Int, var delay: Int = 0, var 
                 for (i in blocks) {
                     if (i != null) {
                         //i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
-                        i.rXTAction = 2
+                        //i.rXTAction = 2
+                        //i.rXTAction = i.rXTAction
                         val b = RxtBlock(i.getAction(), i.getDuration(), i.getLogicType(), 0, i.pattern
                                 ?: "")
                         b.delay = i.getDelay()

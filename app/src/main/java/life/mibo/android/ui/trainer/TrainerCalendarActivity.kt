@@ -329,6 +329,27 @@ class TrainerCalendarActivity : BaseActivity() {
 
                     }
                 }
+
+                if (MiboApplication.DEBUG) {
+                    dayList.add(
+                        TrainerSession(
+                            100,
+                            100,
+                            formatter.format(LocalDate.now()),
+                            parser.format(LocalDateTime.now()),
+                            parser.format(LocalDateTime.now().plusMinutes(30)),
+                            "Sumeet",
+                            "",
+                            "Test Session",
+                            "28",
+                            "178",
+                            "68",
+                            "kg",
+                            0,
+                            0
+                        )
+                    )
+                }
                 runOnUiThread {
                     progressBar?.visibility = View.GONE
                     recyclerView?.adapter?.notifyDataSetChanged()

@@ -69,6 +69,7 @@ import life.mibo.android.models.base.FirebaseTokenPost
 import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
 import life.mibo.android.ui.base.*
 import life.mibo.android.ui.body_measure.MeasurementFragment
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
@@ -995,6 +996,25 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_FIRMWARE_REVISION_RESPONSE -> {
                 logw("parseCommandsExtra COMMAND_FIRMWARE_REVISION_RESPONSE")
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    if (d.uid == uid) {
+                        d.firmware = DataParser.getFirmwareFromCommand(command)
+//                        if (!d.checkCompatibleFirmwareVersion(
+//                                BuildConfig.MIN_FIRMWARE_VERSION,
+//                                d.getDeviceFirmwareVersion()
+//                            )
+//                        ) {
+//                            CommunicationManager.log("Incompatible FIRMWARE")
+//                            SessionManager.getInstance().session.getRegisteredDevicebyUid(uid)
+//                                .setFirmwareUpdated(false)
+//                            EventBus.getDefault()
+//                                .postSticky(NewFirmwareAlarmEvent(uid))
+//                        } else {
+//                            CommunicationManager.log("Compatible FIRMWARE")
+//                        }
+                    }
+                }
             }
             COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
                 logw("parseCommandsExtra COMMAND_SET_DEVICE_COLOR_RESPONSE")
@@ -1376,7 +1396,15 @@ class MainActivity : BaseActivity(), Navigator {
             }
             RXL_QUICKPLAY_DETAILS -> {
                 val args = Bundle()
-                if (data is RxlProgram) {
+                if (data is RXL) {
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(
+                        0,
+                        R.id.navigation_quickplay_details,
+                        args,
+                        getNavOptions()
+                    )
+                } else if (data is RxlProgram) {
                     args.putSerializable(ReflexCourseCreateFragment.DATA, data)
                     navigate(
                         0,

@@ -27,14 +27,14 @@ class MiboApplication : Application() {
     companion object {
         var context: Context? = null
 
-        //val DEBUG = life.mibo.android.BuildConfig.DEBUG
+        val DEBUG = life.mibo.android.BuildConfig.DEBUG
 
-        val DEBUG = false
-        val DEV_SERVER = false
+        //val DEBUG = false
+        val DEV_SERVER = true
 
         //val DEBUG = false
         val RELEASE = false
-        val TEST = false
+        val TEST = true
         val SCAN_TIME: Long = 15000L
 
         fun isRelease() = true

@@ -39,6 +39,13 @@ public class DataParser {
         }
     }
 
+    public static String getFirmwareFromCommand(byte[] command) {
+        String aux = "0.0";
+        if (command.length > 3)
+            aux = ("" + (command[2] & 0xFF) + "." + (command[3] & 0xFF) + "." + (command[4] & 0xFF));
+        return aux;
+    }
+
     public static int getCommand(byte[] command) {
         int aux;
         aux = command[0] & 0xFF;

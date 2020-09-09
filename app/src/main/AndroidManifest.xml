@@ -73,6 +73,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name="life.mibo.android.ui.rxl.QuickPlayDetailsActivity2"
+            android:keepScreenOn="true"
+            android:label="@string/title_activity_quick_play_details"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <activity
             android:name="life.mibo.android.ui.login.RegisterActivity"

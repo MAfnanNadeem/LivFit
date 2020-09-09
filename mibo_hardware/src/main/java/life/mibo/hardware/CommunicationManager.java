@@ -53,6 +53,7 @@ import life.mibo.hardware.network.CommunicationListener;
 import life.mibo.hardware.network.TCPClient;
 import life.mibo.hardware.network.UDPServer;
 import life.mibo.hardware.rxl.RXLManager;
+import life.mibo.hardware.rxl.core.RXLHelper;
 
 import static java.lang.Thread.sleep;
 import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
@@ -629,6 +630,11 @@ public class CommunicationManager {
     }
 
     private void bleBoosterDiscoverConsumer(String uid, String serial) {
+        if (serial.equals("MIBO-3437510A4744")) {
+            add(new Device("", uid, serial.replace("MIBO-", ""), RXL_BLE));
+            SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
+            return;
+        }
         add(new Device("", uid, serial.replace("MIBO-", ""), BLE_STIMULATOR));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         // if (listener != null)
@@ -701,6 +707,7 @@ public class CommunicationManager {
                 return;
             }
         }
+
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
     }
 
@@ -1153,7 +1160,8 @@ public class CommunicationManager {
         log("parseCommandsRxl msg " + Utils.getBytes(command) + " : UID " + uid);
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
             // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
-            RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            //RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            RXLHelper.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             return;
         }
 

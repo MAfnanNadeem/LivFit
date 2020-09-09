@@ -34,7 +34,7 @@ import com.halilibo.bvpkotlin.VideoProgressCallback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
-import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -377,7 +377,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         if (loc == null)
             loc = "0";
 
-        String date = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now());
+        //ateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now());
+        String date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
         List<SaveMemberScores.Score> scores = new ArrayList<>();
         if (list != null) {
             for (ScoreItem item : list) {

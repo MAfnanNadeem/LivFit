@@ -40,6 +40,7 @@ import life.mibo.android.ui.ch6.adapter.ChannelAdapter
 import life.mibo.android.ui.fit.GoogleFit
 import life.mibo.android.ui.login.LoginActivity
 import life.mibo.android.ui.main.MessageDialog
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.rxl.adapter.ScoreAdapter
@@ -1510,6 +1511,11 @@ class Channel6Controller(val fragment: Channel6Fragment, val observer: ChannelOb
     }
 
     private fun startTrainerSession(programId: Int, member: Member) {
+        if (MiboApplication.DEBUG && trainerSessionId == 100) {
+            startMemberSession()
+            isBooked = true
+            return
+        }
 
         fragment.getDialog()?.show()
         SimpleDateFormat.getDateInstance()

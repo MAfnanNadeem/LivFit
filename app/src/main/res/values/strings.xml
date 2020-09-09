@@ -702,6 +702,7 @@
     <string name="update_number">Update Number</string>
     <string name="unable_update_number">Unable to update mobile number</string>
     <string name="invalid_locationid">Invalid LocationId</string>
+    <string name="apply">Apply</string>
 
 
     <!-- customer reviews -->

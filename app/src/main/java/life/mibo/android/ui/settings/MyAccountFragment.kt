@@ -333,7 +333,7 @@ class MyAccountFragment : BaseFragment() {
         }
     }
 
-    var isRxt = false
+    var isRxt = true
 
     private fun setAdapters(isMember: Boolean) {
         swipeToRefresh?.isEnabled = false

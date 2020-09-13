@@ -33,7 +33,7 @@ class ReactionLightFragment2 : BaseFragment(),
     private lateinit var backdropBehavior: BackdropBehavior
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
-        return i.inflate(R.layout.fragment_rxl_backdrop, c, false)
+        return i.inflate(R.layout.fragment_rxl_backdrop2, c, false)
     }
 
     override fun onViewCreated(root: View, savedInstanceState: Bundle?) {

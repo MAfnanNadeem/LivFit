@@ -381,6 +381,7 @@ class MyAccountFragment : BaseFragment() {
         if (isRxt) {
             list.add(Item(TYPE.RXT_HEADER, isHeader = true))
             list.add(Item(TYPE.REACT_SESSION, isSingle = true))
+           // list.add(Item(TYPE.REACT_SESSION2, isSingle = true))
         }
 
         list.add(Item(TYPE.SETTINGS_HEADER, isHeader = true))
@@ -497,6 +498,7 @@ class MyAccountFragment : BaseFragment() {
         POLICIES(R.string.policies),
         ABOUT_APP(R.string.app_name_version),
         REACT_SESSION(R.string.rxt_sessions),
+        REACT_SESSION2(R.string.rxl_sessions),
         //SESSION(R.string.view_sessions),
     }
 

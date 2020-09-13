@@ -33,6 +33,7 @@ class RxlProgram() {
     // don't change / final
     private val currentCycle: Int = 0
     private var currentPlayer: Int = 0
+    var totalDuration = 0
 
     private fun reset(): RxlProgram {
         repeat = 0
@@ -106,6 +107,11 @@ class RxlProgram() {
         if (currentCycle < cycles.size)
             return cycles[currentCycle]
         return RxlCycle.empty()
+
+    }
+
+    fun getCycles(): ArrayList<RxlCycle> {
+        return cycles
     }
 
     fun getNext(): RxlCycle {
@@ -174,30 +180,10 @@ class RxlProgram() {
         return 0
     }
 
-    fun getAction(): Int {
-        if (isDiffCycle) {
-            cycles?.let {
-                if (lastCycle >= 0 && lastCycle < it.size)
-                    return it[lastCycle].cycleAction
-            }
-        }
 
-        if (currentCycle < cycles.size)
-            return cycles[currentCycle].cycleAction
-        return 0
-    }
 
     fun getDuration(): Int {
-        if (isDiffCycle) {
-            cycles?.let {
-                if (lastCycle >= 0 && lastCycle < it.size)
-                    return it[lastCycle].cycleDuration
-            }
-        }
-        if (currentCycle < cycles.size)
-            return cycles[currentCycle].cycleDuration
-
-        return 0
+        return totalDuration
     }
 
     // if cycle is one
@@ -205,17 +191,6 @@ class RxlProgram() {
         return cycles[currentCycle].cyclePause
     }
 
-    fun delay(): Int {
-        return cycles[currentCycle].actionDelay
-    }
-
-    fun action(): Int {
-        return cycles[currentCycle].cycleAction
-    }
-
-    fun duration(): Int {
-        return cycles[currentCycle].cycleDuration
-    }
 
     fun color(): Int {
         return players[currentPlayer].color
@@ -349,15 +324,15 @@ class RxlProgram() {
         ): RxlProgram {
             // val station = RxlStation().add()
             return RxlProgram().addCycle(
-                    RxlCycle(
-                        duration,
-                        action,
-                        pause,
-                        delay,
-                        sequence,
-                        logic
-                    )
+                RxlCycle(
+                    duration,
+                    action,
+                    pause,
+                    delay,
+                    sequence,
+                    logic
                 )
+            )
                 .addPlayers(players)
                 .repeat(cycle)
         }
@@ -375,5 +350,10 @@ class RxlProgram() {
 
         return this
     }
+
+    override fun toString(): String {
+        return "RxlProgram(cycles=$cycles, players=$players, stations=$stations, playerType=$playerType, devices=$devices, isDiffCycle=$isDiffCycle, lastCycle=$lastCycle, repeat=$repeat, count=$count, sequence=${sequence?.contentToString()}, currentCycle=$currentCycle, currentPlayer=$currentPlayer)"
+    }
+
 
 }

@@ -129,7 +129,9 @@ class UpdateNumberFragment : BaseFragment() {
         return false
     }
 
+    private var isDebug = true
     fun saveDateApi() {
+
         val member = Prefs.get(context).member
 
         val update =

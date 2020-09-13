@@ -93,13 +93,15 @@ class ViewSessionsFragment : BaseFragment() {
 
     fun getApis() {
         if (type_ == 2) {
-            getReactSession()
+            getReactSession(false)
+        } else if (type_ == 3) {
+            getReactSession(true)
         } else {
             getSessions()
         }
     }
 
-    private fun getReactSession() {
+    private fun getReactSession(isRxl: Boolean) {
         val member = Prefs.get(context).member ?: return
         showProgress()
 
@@ -113,11 +115,12 @@ class ViewSessionsFragment : BaseFragment() {
                 hideProgress()
                 // fragment.getDialog()?.dismiss()
                 //val data = response.body()
-                //parseData(response?.body()?.data)
+                parseRXTScores(response?.body()?.data)
             }
         })
 
     }
+
 
     private fun getSessions() {
         val member = Prefs.get(context).member ?: return
@@ -137,6 +140,32 @@ class ViewSessionsFragment : BaseFragment() {
             }
         })
 
+    }
+
+
+    private fun parseRXTScores(list: List<GetMemberScoresReport.Data?>?) {
+
+        if (list == null || list.isEmpty()) {
+            tv_empty?.setText(R.string.no_data_found)
+            tv_empty?.visibility = View.VISIBLE
+            return
+        }
+
+        val sessions = ArrayList<GetMemberScoresReport.Data>()
+        for (c in list) {
+            if (c != null)
+                sessions.add(c)
+        }
+
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        val addressAdapters =
+            RxtScoreAdapters(sessions, object : ItemClickListener<GetMemberScoresReport.Data> {
+                override fun onItemClicked(item: GetMemberScoresReport.Data?, position: Int) {
+
+                }
+            })
+
+        recyclerView?.adapter = addressAdapters
     }
 
     private fun parseData(list: List<CaloriesData?>?) {
@@ -188,6 +217,31 @@ class ViewSessionsFragment : BaseFragment() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             holder.bind(list[position])
+        }
+    }
+
+    class RxtScoreAdapters(
+        val list: ArrayList<GetMemberScoresReport.Data>,
+        val listener: ItemClickListener<GetMemberScoresReport.Data>?
+    ) : RecyclerView.Adapter<Holder>() {
+        var grid = false
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+            return Holder(
+                LayoutInflater.from(parent.context)
+                    .inflate(
+                        R.layout.list_item_session_history,
+                        parent,
+                        false
+                    )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return list.size
+        }
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            holder.bind(list[position])
 
         }
     }
@@ -198,6 +252,9 @@ class ViewSessionsFragment : BaseFragment() {
         var minutes: TextView? = itemView.findViewById(R.id.tv_minutes)
         var calories: TextView? = itemView.findViewById(R.id.tv_calories)
         var date: TextView? = itemView.findViewById(R.id.tv_date_name)
+        var service_header: TextView? = itemView.findViewById(R.id.tv_service)
+        var program_header: TextView? = itemView.findViewById(R.id.tv_program)
+        var trainer_header: TextView? = itemView.findViewById(R.id.tv_trainer)
         var service: TextView? = itemView.findViewById(R.id.tv_service_name)
         var program: TextView? = itemView.findViewById(R.id.tv_program_name)
         var trainer: TextView? = itemView.findViewById(R.id.tv_trainer_name)
@@ -233,6 +290,24 @@ class ViewSessionsFragment : BaseFragment() {
             service?.text = item.serviceName
             program?.text = item.programCircuitName
             trainer?.text = item.trainerName
+
+        }
+
+        fun bind(item: GetMemberScoresReport.Data?) {
+            Logger.e("CaloriesAdapter bind item $item")
+            if (item == null)
+                return
+
+            minutes?.text = "----"
+            time?.text = "0"
+            calories?.text = "${item.exerciseType?.toUpperCase()}"
+            service_header?.text = "Hits: "
+            program_header?.text = "Missed: "
+            trainer_header?.text = "Total: "
+            service?.text = "${item.hits}"
+            program?.text = "${item.missed}"
+            trainer?.text = "${item.total}"
+            date?.text = "${item.exerciseDate}"
 
         }
 

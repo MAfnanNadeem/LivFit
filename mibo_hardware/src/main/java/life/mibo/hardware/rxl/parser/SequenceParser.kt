@@ -70,13 +70,13 @@ class SequenceParser(program: RxlProgram, listener: Listener) :
 
     }
 
-    fun hasNextCycle(): Boolean {
-        if (cycles > currentCycle) {
-            currentCycle++
-            return true
-        }
-        return false
-    }
+//    fun hasNextCycle(): Boolean {
+//        if (cycles > currentCycle) {
+//            currentCycle++
+//            return true
+//        }
+//        return false
+//    }
 
 //    override fun startExercise() {
 //        startInternal()

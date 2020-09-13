@@ -10,6 +10,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
+    android:background="@color/background_color_app"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
@@ -100,7 +101,6 @@
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_gradient"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -116,6 +116,7 @@
                 android:layout_margin="@dimen/grid_1x"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
+                android:visibility="gone"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@id/tv_cycle_heading"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -126,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/grid_1x"
                 android:text="@string/cycle"
-                android:textColor="@color/white"
+                android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 android:textStyle="bold"
                 android:visibility="invisible"
@@ -140,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/grid_1x"
                 tools:text="59:09"
-                android:textColor="@color/white"
+                android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_large"
                 android:textStyle="bold"
                 android:typeface="serif"
@@ -178,6 +179,7 @@
                     android:layout_width="40dp"
                     android:src="@drawable/ic_reflex_user"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:tint="@color/textColor2"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.3" />
 
@@ -187,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_2x"
                     android:text="@string/players"
-                    android:textColor="@color/white"
+                    android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_large"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/iv_players_"
@@ -210,7 +212,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_2x"
                     android:text="Player 1"
-                    android:textColor="@color/white"
+                    android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@+id/players_1_color"
                     app:layout_constraintStart_toEndOf="@+id/players_1_color"
@@ -259,7 +261,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_2x"
                     android:text="Player 2"
-                    android:textColor="@color/white"
+                    android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@+id/players_2_color"
                     app:layout_constraintStart_toEndOf="@+id/players_2_color"
@@ -308,7 +310,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_2x"
                     android:text="Player 3"
-                    android:textColor="@color/white"
+                    android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@+id/players_3_color"
                     app:layout_constraintStart_toEndOf="@+id/players_3_color"
@@ -356,7 +358,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/grid_2x"
                     android:text="Player 4"
-                    android:textColor="@color/white"
+                    android:textColor="@color/textColor"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintBottom_toBottomOf="@+id/players_4_color"
                     app:layout_constraintStart_toEndOf="@+id/players_4_color"
@@ -447,7 +449,7 @@
                 android:layout_marginStart="@dimen/grid_2x"
                 android:layout_marginTop="@dimen/grid_2x"
                 android:text="@string/activity_settings"
-                android:textColor="@color/white"
+                android:textColor="@color/textColor"
                 android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/constraintPlayer"
@@ -467,228 +469,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_activity" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="@dimen/grid_1x"
-                android:paddingBottom="@dimen/grid_2x"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
-                app:layout_constraintWidth_percent="0.48">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_2x"
-                    android:text="@string/duration"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_duration"
-                    app:layout_constraintStart_toStartOf="@+id/iv_duration"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_duration"
-                    style="@style/rxl_create_icon"
-                    android:paddingEnd="@dimen/grid_2x"
-                    android:src="@drawable/ic_reflex_time"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_select_duration"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_duration" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_edittext"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
-                    android:gravity="center"
-                    android:minWidth="64dp"
-                    android:padding="@dimen/grid_1x"
-                    android:singleLine="true"
-                    android:text="@string/_1_sec"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_duration"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_duration" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_cycles"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_2x"
-                    android:text="@string/cycles"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_lights"
-                    app:layout_constraintStart_toStartOf="@+id/iv_lights"
-                    app:layout_constraintTop_toBottomOf="@id/iv_duration" />
-
-                <ImageView
-                    android:id="@+id/iv_lights"
-                    style="@style/rxl_create_icon"
-                    android:paddingEnd="@dimen/grid_2x"
-                    android:src="@drawable/ic_reflex_cycles"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_duration"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_cycles"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_edittext"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
-                    android:gravity="center"
-                    android:minWidth="64dp"
-                    android:padding="@dimen/grid_1x"
-                    android:text="1"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_lights"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_lights" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/grid_2x"
-                android:layout_marginBottom="@dimen/grid_1x"
-                android:paddingBottom="@dimen/grid_2x"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
-                app:layout_constraintWidth_percent="0.5">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_2x"
-                    android:text="@string/pause"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_pause"
-                    app:layout_constraintStart_toStartOf="@+id/iv_pause"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_pause"
-                    style="@style/rxl_create_icon"
-                    android:src="@drawable/ic_rxl_pause"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_select_pause"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_pause" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_edittext"
-                    android:gravity="center"
-                    android:minWidth="76dp"
-                    android:padding="@dimen/grid_1x"
-                    android:singleLine="true"
-                    android:text="1"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_pause"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_pause" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_2x"
-                    android:text="@string/action"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
-                    app:layout_constraintStart_toStartOf="@+id/iv_action"
-                    app:layout_constraintTop_toBottomOf="@id/iv_pause" />
-
-                <ImageView
-                    android:id="@+id/iv_action"
-                    style="@style/rxl_create_icon"
-                    android:layout_marginEnd="1dp"
-                    android:src="@drawable/ic_access_time_black_24dp"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_select_action"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_action" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_edittext"
-                    android:gravity="center"
-                    android:minWidth="76dp"
-                    android:padding="@dimen/grid_1x"
-                    android:singleLine="true"
-                    android:text="1 sec"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_action"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_action" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/grid_2x"
-                    android:text="@string/delay"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_small"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/iv_delay"
-                    app:layout_constraintStart_toStartOf="@+id/iv_delay"
-                    app:layout_constraintTop_toBottomOf="@id/iv_action" />
-
-                <ImageView
-                    android:id="@+id/iv_delay"
-                    style="@style/rxl_create_icon"
-                    android:src="@drawable/ic_reflex_delay"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_select_delay"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_delay" />
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_select_delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_edittext"
-                    android:gravity="center"
-                    android:minWidth="76dp"
-                    android:padding="@dimen/grid_1x"
-                    android:singleLine="true"
-                    android:text="1"
-                    android:textColor="@color/textColor"
-                    android:textSize="@dimen/text_size_medium"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_delay"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/iv_delay" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_activity" />
 
             <LinearLayout
                 android:id="@+id/constraint_bottom"
@@ -699,7 +486,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayout6"
+                app:layout_constraintTop_toBottomOf="@id/recyclerView"
                 app:layout_constraintWidth_percent="0.8">
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -732,7 +519,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayout6"
+                app:layout_constraintTop_toBottomOf="@id/recyclerView"
                 app:layout_constraintWidth_percent="0.8">
 
                 <androidx.appcompat.widget.AppCompatButton

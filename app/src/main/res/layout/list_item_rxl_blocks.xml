@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 9/9/20 2:15 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 9/9/20 2:15 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@drawable/round_corner_border"
+    android:layout_marginTop="2dp"
+    android:layout_marginStart="@dimen/grid_4dp"
+    android:layout_marginEnd="@dimen/grid_4dp"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_1x"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:text="Block Name"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:paddingBottom="@dimen/grid_1x"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        app:layout_constraintWidth_percent="0.48">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="@string/duration"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_duration"
+            app:layout_constraintStart_toStartOf="@+id/iv_duration"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_duration"
+            style="@style/rxl_create_icon"
+            android:src="@drawable/ic_reflex_time"
+            android:tint="@color/textColorGreen"
+            app:layout_constraintEnd_toStartOf="@+id/tv_select_duration"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_duration" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_edittext"
+            android:gravity="center"
+            android:minWidth="64dp"
+            android:padding="@dimen/grid_1x"
+            android:singleLine="true"
+            android:text="@string/_1_sec"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@id/iv_duration"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_duration" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_cycles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/cycles"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_lights"
+            app:layout_constraintStart_toStartOf="@+id/iv_lights"
+            app:layout_constraintTop_toBottomOf="@id/iv_duration" />
+
+        <ImageView
+            android:id="@+id/iv_lights"
+            style="@style/rxl_create_icon"
+            android:src="@drawable/ic_reflex_cycles"
+            android:tint="@color/textColorGreen"
+            app:layout_constraintEnd_toEndOf="@+id/iv_duration"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_cycles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_edittext"
+            android:gravity="center"
+            android:minWidth="64dp"
+            android:padding="@dimen/grid_1x"
+            android:text="1"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@id/iv_lights"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_lights" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/grid_2x"
+        android:paddingBottom="@dimen/grid_1x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        app:layout_constraintWidth_percent="0.5">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_1x"
+            android:text="@string/pause"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_pause"
+            app:layout_constraintStart_toStartOf="@+id/iv_pause"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_pause"
+            style="@style/rxl_create_icon"
+            android:src="@drawable/ic_rxl_pause"
+            android:tint="@color/textColorGreen"
+            app:layout_constraintEnd_toStartOf="@+id/tv_select_pause"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_pause" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_edittext"
+            android:gravity="center"
+            android:minWidth="76dp"
+            android:padding="@dimen/grid_1x"
+            android:singleLine="true"
+            android:text="1"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@id/iv_pause"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_pause" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text="@string/action"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintEnd_toEndOf="@+id/iv_action"
+            app:layout_constraintStart_toStartOf="@+id/iv_action"
+            app:layout_constraintTop_toBottomOf="@id/iv_pause" />
+
+        <ImageView
+            android:id="@+id/iv_action"
+            style="@style/rxl_create_icon"
+            android:layout_marginEnd="1dp"
+            android:src="@drawable/ic_access_time_black_24dp"
+            android:tint="@color/textColorGreen"
+            app:layout_constraintEnd_toStartOf="@+id/tv_select_action"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_action" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_select_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_edittext"
+            android:gravity="center"
+            android:minWidth="76dp"
+            android:padding="@dimen/grid_1x"
+            android:singleLine="true"
+            android:text="1 sec"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@id/iv_action"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_action" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

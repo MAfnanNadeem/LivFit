@@ -28,6 +28,7 @@ import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
 import life.mibo.android.pods.rxl.program.RxlLight
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.views.like.AndroidLikeButton
@@ -110,6 +111,82 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         likeed?.setOnLikeEventListener {
             listener?.onItemClicked(item, if (it) 1001 else 1002)
         }
+
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            image?.transitionName = item.getTransitionIcon()
+//            title!!.transitionName = item.getTransitionTitle()
+//        }
+
+        //setBg(imageBg, image)
+        itemView?.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 21) {
+//                item.extras =
+//                    FragmentNavigator.Extras.Builder()
+//                        .addSharedElement(image!!, image!!.transitionName)
+//                        .addSharedElement(title!!, title!!.transitionName).build()
+            }
+            listener?.onItemClicked(item, adapterPosition)
+        }
+        itemView?.setOnLongClickListener {
+            listener?.onItemClicked(item, 2001)
+            return@setOnLongClickListener true
+        }
+
+    }
+
+    fun bind(item: RXL?, listener: ItemClickListener<RXL>?) {
+        Logger.e("ReflexHolder $item")
+        if (item == null)
+            return
+        title?.text = item.name
+        type?.text = ""
+        users?.text = "${item.players()}"
+        devices?.text = "${item.pods()}"
+        time?.text = "${item.total}"
+        ivType?.background = null
+        ivType?.setImageDrawable(null)
+        ivType?.visibility = View.INVISIBLE
+
+//        when (item.lightLogic()) {
+//            RxlLight.SEQUENCE -> {
+//                ivType?.setBackgroundResource(R.drawable.ic_reflex_sequence)
+//            }
+//            RxlLight.RANDOM -> {
+//                ivType?.setBackgroundResource(R.drawable.ic_reflex_random_icon)
+//            }
+//            RxlLight.FOCUS -> {
+//                ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_only)
+//            }
+//            RxlLight.ALL_AT_ONCE -> {
+//                ivType?.setBackgroundResource(R.drawable.ic_reflex_all_at_once)
+//            }
+//            RxlLight.TAP_AT_ALL -> {
+//                ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_return)
+//            }
+//        }
+
+        //ivType?.background?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+
+        if(item.icon.isNullOrEmpty()){
+            image?.setImageResource(R.drawable.ic_rxl_pods_icon_200)
+            image?.scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+        else {
+            image?.scaleType = ImageView.ScaleType.CENTER_CROP
+            image?.load(item.icon) {
+                Logger.e("ReflexHolder ImageLoader.. $this")
+                target {
+                    setGradient(imageBg, it)
+                    image?.setImageDrawable(it)
+                }
+            }
+        }
+
+        likeed?.visibility = View.INVISIBLE
+      //  likeed?.setCurrentlyLiked(item.isFavourite)
+       // likeed?.setOnLikeEventListener {
+      //      listener?.onItemClicked(item, if (it) 1001 else 1002)
+   //     }
 
 //        if (Build.VERSION.SDK_INT >= 21) {
 //            image?.transitionName = item.getTransitionIcon()

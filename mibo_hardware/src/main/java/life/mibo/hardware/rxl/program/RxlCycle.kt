@@ -11,11 +11,19 @@ data class RxlCycle(
     var cycleDuration: Int, var cycleAction: Int, var cyclePause: Int,
     var actionDelay: Int = 0,
     var sequence: String? = "",
-    var lightType: RxlLight = RxlLight.SEQUENCE
+    var lightType: RxlLight = RxlLight.SEQUENCE, var repeat: Int = 0
 ) {
 
     companion object {
         fun empty() = RxlCycle(0, 0, 0, 0)
+    }
+
+    fun getLogicType(): Int {
+        if (lightType == RxlLight.SEQUENCE)
+            return 1
+        else if (lightType == RxlLight.RANDOM)
+            return 2
+        return 1
     }
 
     // Optionals
@@ -63,6 +71,11 @@ data class RxlCycle(
 
         return pos
     }
+
+    override fun toString(): String {
+        return "RxlCycle(cycleDuration=$cycleDuration, cycleAction=$cycleAction, cyclePause=$cyclePause, actionDelay=$actionDelay, sequence=$sequence, lightType=$lightType, id=$id, name=$name, pattern=$pattern, count=$count, devicesSize=$devicesSize)"
+    }
+
 
 //    fun getDuration(): Int = cycleDuration
 //    fun getAction(): Int = cycleAction.times(1000)

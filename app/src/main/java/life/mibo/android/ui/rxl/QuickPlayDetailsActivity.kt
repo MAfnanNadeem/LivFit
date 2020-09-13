@@ -18,6 +18,7 @@ import android.view.View.*
 import android.view.WindowManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.util.size
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
@@ -28,15 +29,22 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_quickplay_detail_play.*
 import life.mibo.android.R
+import life.mibo.android.core.API.Companion.request
+import life.mibo.android.core.Prefs
 import life.mibo.android.core.toIntOrZero
 import life.mibo.android.events.NotifyEvent
+import life.mibo.android.models.base.ResponseStatus
 import life.mibo.android.models.program.Program
+import life.mibo.android.models.workout.RXL
+import life.mibo.android.models.workout.SaveMemberScores
+import life.mibo.android.models.workout.SaveMemberScores.Score
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MessageDialog
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
+import life.mibo.android.ui.rxl.adapter.RxlBlocksAdapter
 import life.mibo.android.ui.rxl.adapter.ScoreAdapter
 import life.mibo.android.ui.rxl.impl.CourseCreateImpl
 import life.mibo.android.ui.rxl.impl.ReflexDialog
@@ -55,18 +63,25 @@ import life.mibo.hardware.models.Device
 import life.mibo.hardware.models.DeviceTypes
 import life.mibo.hardware.rxl.RXLManager
 import life.mibo.hardware.rxl.RxlListener
-import life.mibo.hardware.rxl.program.RxlLight
+import life.mibo.hardware.rxl.program.RxlCycle
 import life.mibo.hardware.rxl.program.RxlPlayer
 import life.mibo.hardware.rxl.program.RxlProgram
 import life.mibo.views.anim.AnimateView
 import org.greenrobot.eventbus.EventBus
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 
 class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.Listener {
 
     private lateinit var delegate: CourseCreateImpl
-    private var program: life.mibo.android.models.rxl.RxlProgram? = null
+
+    // private var program: life.mibo.android.models.rxl.RxlProgram? = null
+    private var rxlProgramNew: RXL? = null
     private var isUser = false
 
     //private val rxlPlayers = ArrayList<RxlPlayer>()
@@ -88,16 +103,17 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //        }
 
 
-        program =
-            intent?.getSerializableExtra(Constants.BUNDLE_DATA) as life.mibo.android.models.rxl.RxlProgram?
-        if (program == null) {
+        //program = intent?.getSerializableExtra(Constants.BUNDLE_DATA) as life.mibo.android.models.rxl.RxlProgram?
+        rxlProgramNew = intent?.getSerializableExtra(Constants.BUNDLE_DATA) as RXL?
+        if (rxlProgramNew == null) {
             finish()
             return
         }
-        isUser = !program?.memberId.isNullOrEmpty()
+        //isUser = !program?.memberId.isNullOrEmpty()
+        isUser = false
         updateToolbar()
         createView()
-        log("program >> $program")
+        log("program >> $rxlProgramNew")
         //iv_icon.setFreezesAnimation()
 
         val i = intent?.getIntExtra("from_user_int", 5) ?: 1
@@ -148,7 +164,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 lp.height = heightDp.toInt()
                 // iv_icon_giff?.setImageResource(R.drawable.rxl_agility_test_1)
                 try {
-                    loadGlide(program?.tutorial)
+                    //loadGlide(program?.tutorial)
+                    loadGlide(rxlProgramNew?.getLinks())
                 } catch (e: java.lang.Exception) {
                 }
             }
@@ -161,10 +178,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        if (program?.lightLogic() == life.mibo.android.pods.rxl.program.RxlLight.SEQUENCE) {
-            checkSequenceIndicators()
-
-        }
+        //if (rxlProgramNew?.lightLogic() == life.mibo.android.pods.rxl.program.RxlLight.SEQUENCE) {
+        //   checkSequenceIndicators()
+        //   }
     }
 
     private fun loadGlide(url: List<String>?) {
@@ -243,30 +259,30 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             setResult(3)
             finish()
         }
-        setPickers()
+        //setPickers()
         //getPods()
 
-        if ("proximity" == program?.tapProximity?.toLowerCase()) {
-            val i = getInt(program?.proximityValue)
+        if ("proximity" == rxlProgramNew?.tapProximity?.toLowerCase()) {
+            val i = getInt(rxlProgramNew?.proximityValue)
             log("changeSensor proximity $i")
             //if (i < 30)
             //changeSensor(i.times(10))
             //else
             changeSensor(i)
         } else {
-            log("changeSensor tap " + program?.proximityValue)
+            log("changeSensor tap " + rxlProgramNew?.proximityValue)
             changeSensor(0)
         }
         //setSlider()
 
         if (MiboApplication.DEBUG) {
-            tv_select_action?.setOnClickListener {
-                delegate.showDialog(CourseCreateImpl.Type.ACTION)
-            }
-
-            tv_select_pause?.setOnClickListener {
-                delegate.showDialog(CourseCreateImpl.Type.DELAY)
-            }
+//            tv_select_action?.setOnClickListener {
+//                delegate.showDialog(CourseCreateImpl.Type.ACTION)
+//            }
+//
+//            tv_select_pause?.setOnClickListener {
+//                delegate.showDialog(CourseCreateImpl.Type.DELAY)
+//            }
 //
 //            tv_customize?.setOnClickListener {
 //                changeSensor(100)
@@ -285,7 +301,6 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
     private fun startNowClicked() {
 
-        log("isRandom " + isRandom())
         //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
         //if (checkPlayersPods())
         checkStartCondition {
@@ -297,46 +312,45 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     //Todo TEST
     private fun startNowTest() {
 
-        log("isRandom " + isRandom())
-        //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
-        //if (checkPlayersPods())
-        checkStartCondition {
-            RXLManager.getInstance().with(
-                RxlProgram.getExercise(
-                    getDuration(),
-                    getAction(),
-                    getPause(),
-                    getCycles(),
-                    0,
-                    getSequence(),
-                    rxlPlayers,
-                    getLightLogic()
-                )
-            ).withListener(this).start(false)
-        }
+//        //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
+//        //if (checkPlayersPods())
+//        checkStartCondition {
+//            RXLManager.getInstance().with(
+//                RxlProgram.getExercise(
+//                    getDuration(),
+//                    getAction(),
+//                    getPause(),
+//                    getCycles(),
+//                    0,
+//                    getSequence(),
+//                    rxlPlayers,
+//                    getLightLogic()
+//                )
+//            ).withListener(this).start(false)
+//        }
 
     }
 
     private fun startNowLongTest() {
 
         //changeSensor(100)
-        log("isRandom " + isRandom())
-        //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
-        //if (checkPlayersPods())
-        checkStartCondition {
-            RXLManager.getInstance().with(
-                RxlProgram.getExercise(
-                    getDuration(),
-                    getAction(),
-                    getPause(),
-                    getCycles(),
-                    0,
-                    getSequence(),
-                    rxlPlayers,
-                    getLightLogic()
-                )
-            ).withListener(this).start(false)
-        }
+//        log("isRandom " + isRandom())
+//        //log("isRandom2 " + tv_select_lights.text?.toString()?.toLowerCase()?.contains("random"))
+//        //if (checkPlayersPods())
+//        checkStartCondition {
+//            RXLManager.getInstance().with(
+//                RxlProgram.getExercise(
+//                    getDuration(),
+//                    getAction(),
+//                    getPause(),
+//                    getCycles(),
+//                    0,
+//                    getSequence(),
+//                    rxlPlayers,
+//                    getLightLogic()
+//                )
+//            ).withListener(this).start(false)
+//        }
 
     }
 
@@ -360,16 +374,18 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //        }
 
 
-        currentProgram = RxlProgram.getExercise(
-            getDuration(),
-            getAction(),
-            getPause(),
-            getCycles(),
-            0,
-            getSequence(),
-            rxlPlayers,
-            getLightLogic()
-        )
+//        currentProgram = RxlProgram.getExercise(
+//            getDuration(),
+//            getAction(),
+//            getPause(),
+//            getCycles(),
+//            0,
+//            getSequence(),
+//            rxlPlayers,
+//            getLightLogic()
+//        )
+        currentProgram = getExercise()
+
         try {
             currentProgram?.let {
                 RXLManager.getInstance().with(it).withListener(this).start(tap)
@@ -406,6 +422,30 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //   Toasty.info(context!!, "Tap Reaction Light to start").show()
     }
 
+    fun getExercise(): RxlProgram {
+        val program = RxlProgram()
+        if (rxlProgramNew != null) {
+            program.totalDuration = rxlProgramNew!!.duration()
+            val blocks = rxlProgramNew!!.blocks
+            if (blocks != null)
+                for (b in blocks) {
+                    if (b != null) {
+                        program.addCycle(
+                            RxlCycle(
+                                b.getDuration(),
+                                b.getAction(),
+                                0,
+                                b.getDelay(),
+                                b.pattern,
+                                RxlUtils.getLogicType(b.getLogicType()), b.getRounds()
+                            )
+                        )
+                    }
+                }
+        }
+        program.addPlayers(rxlPlayers)
+        return program
+    }
 
     private fun turnOffAll() {
         Observable.fromIterable(userPods).subscribeOn(Schedulers.io()).doOnNext {
@@ -447,30 +487,50 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private fun setProgram() {
-        toolbar?.title = program?.name
-        collapsingToolbar?.title = program?.name
+        toolbar?.title = rxlProgramNew?.name
+        collapsingToolbar?.title = rxlProgramNew?.name
         if (isUser) {
-            toolbar_collapsed_title?.text = program?.name
+            toolbar_collapsed_title?.text = rxlProgramNew?.name
             toolbar_collapsed_title?.visibility = VISIBLE
             collapsingToolbar?.invalidate()
             toolbar_collapsed_title?.invalidate()
         }
-        program?.let {
-            //tv_select_stations?.text = "${it.workingStations}"
-            tv_select_cycles?.text = "${it.cycle}"
-            tv_select_duration?.text = "${it.totalDuration} sec"
-            tv_select_pause?.text = "${it.pause} sec"
-            //tv_select_delay?.text = "0 sec"
-            //tv_select_lights?.text = "${it.lightsLogic}"
-            tv_select_action.text = "${it.action} sec"
-            //tv_select_pause?.text = "${it.actionDuration} sec"
-            //tv_select_players?.text = "${it.numberOfPlayers}"
-            //tv_desc?.text = "${it.description}"
-            //val images = it.image!!.split(",")
-            //images[0].replace("[", "")
-            //images[images.size - 1].replace("]", "")
+//        program?.let {
+//            //tv_select_stations?.text = "${it.workingStations}"
+//            tv_select_cycles?.text = "${it.cycle}"
+//            tv_select_duration?.text = "${it.totalDuration} sec"
+//            tv_select_pause?.text = "${it.pause} sec"
+//            //tv_select_delay?.text = "0 sec"
+//            //tv_select_lights?.text = "${it.lightsLogic}"
+//            tv_select_action.text = "${it.action} sec"
+//            //tv_select_pause?.text = "${it.actionDuration} sec"
+//            //tv_select_players?.text = "${it.numberOfPlayers}"
+//            //tv_desc?.text = "${it.description}"
+//            //val images = it.image!!.split(",")
+//            //images[0].replace("[", "")
+//            //images[images.size - 1].replace("]", "")
+//
+//        }
+
+        rxlProgramNew?.let {
+//            tv_select_cycles?.text = "0"
+//            tv_select_duration?.text = "0 sec"
+//            tv_select_pause?.text = "0 sec"
+//            tv_select_action.text = "0 sec"
+            tv_cycle_timer
+            setAdapters(it.blocks)
 
         }
+
+
+    }
+
+    fun setAdapters(blocks: List<RXL.RXLBlock?>?) {
+        if(blocks == null)
+            return
+
+        recyclerView?.layoutManager = LinearLayoutManager(this)
+        recyclerView?.adapter = RxlBlocksAdapter(ArrayList(blocks))
     }
 
 
@@ -494,7 +554,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         log("setPlayers playerSize $playerSize")
 
         if (playerSize == 1) {
-            if (program?.pods == list.size) {
+            if (rxlProgramNew?.pods() == list.size) {
                 log("setPlayers pods match with program")
                 list.forEachIndexed { i, it ->
                     if (it.isPod) {
@@ -504,8 +564,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 }
             } else {
                 log("setPlayers pods NOT match with program")
-                if (list.size > program?.pods!!) {
-                    for (i in 0 until program?.pods!!) {
+                if (list.size > rxlProgramNew?.pods()!!) {
+                    for (i in 0 until rxlProgramNew?.pods()!!) {
                         list[i].let {
                             if (it.isPod) {
                                 it.colorPalet = colors[i].id!!
@@ -536,7 +596,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             }
         }
 
-       // log("setPlayers > user?.pods ${userPods?.size}")
+        // log("setPlayers > user?.pods ${userPods?.size}")
 //        if (list.size > 0) {
 //            list.forEachIndexed { i, it ->
 //                if (it.isPod) {
@@ -1170,17 +1230,17 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private fun setPickers() {
-        tv_select_cycles?.setOnClickListener {
-            if (isSessionActive)
-                return@setOnClickListener
-            delegate.showDialog(CourseCreateImpl.Type.CYCLES)
-        }
-
-        tv_select_duration?.setOnClickListener {
-            if (isSessionActive)
-                return@setOnClickListener
-            delegate.showDialog(CourseCreateImpl.Type.DURATION)
-        }
+//        tv_select_cycles?.setOnClickListener {
+//            if (isSessionActive)
+//                return@setOnClickListener
+//            delegate.showDialog(CourseCreateImpl.Type.CYCLES)
+//        }
+//
+//        tv_select_duration?.setOnClickListener {
+//            if (isSessionActive)
+//                return@setOnClickListener
+//            delegate.showDialog(CourseCreateImpl.Type.DURATION)
+//        }
 
     }
 
@@ -1414,26 +1474,27 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private fun isValidLogic(): Boolean {
-        return when (program?.type) {
-            1 -> {
-                true
-            }
-            2 -> {
-                true
-            }
-            3 -> {
-                true
-            }
-            4 -> {
-                true
-            }
-            5 -> {
-                true
-            }
-            else -> {
-                false
-            }
-        }
+        return true
+//        return when (rxlProgramNew?.type) {
+//            1 -> {
+//                true
+//            }
+//            2 -> {
+//                true
+//            }
+//            3 -> {
+//                true
+//            }
+//            4 -> {
+//                true
+//            }
+//            5 -> {
+//                true
+//            }
+//            else -> {
+//                false
+//            }
+//        }
         //    getLightLogic() == RxlLight.SEQUENCE || getLightLogic() == RxlLight.RANDOM || getLightLogic() == RxlLight.FOCUS || getLightLogic() == RxlLight.ALL_AT_ONCE
     }
 
@@ -1444,24 +1505,24 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 // tv_select_stations?.text = item.title
             }
             CourseCreateImpl.Type.CYCLES.type -> {
-                tv_select_cycles?.text = "${item.title}"
+                //tv_select_cycles?.text = "${item.title}"
             }
             CourseCreateImpl.Type.PODS.type -> {
                 // tv_select_pods?.text = item.title
             }
             CourseCreateImpl.Type.ACTION.type -> {
                 // tv_select_pods?.text = item.title
-                tv_select_action?.text = item.title
+               // tv_select_action?.text = item.title
             }
 
             CourseCreateImpl.Type.DELAY.type -> {
-                tv_select_pause?.text = item.title
+               // tv_select_pause?.text = item.title
 //                if (item.title?.startsWith("No Delay"))
 //                    tv_select_delay?.text = "0 sec"
 //                else tv_select_delay?.text = item.title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.DURATION.type -> {
-                tv_select_duration?.text = item.title?.replace("seconds", "sec")
+               // tv_select_duration?.text = item.title?.replace("seconds", "sec")
             }
 
 
@@ -1484,42 +1545,6 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         }
     }
 
-    private fun isRandom(): Boolean =
-        program?.logicType()?.toLowerCase()?.contains("random") ?: false
-
-    private fun getLightLogic(): RxlLight {
-        program?.let {
-            return it.lightLogic2()
-        }
-        return RxlLight.UNKNOWN
-    }
-
-
-    private fun getProgramPods(): Int {
-        //return getInt(tv_select_pods?.text)
-        return program?.pods ?: 0
-    }
-
-    private fun getCycles(): Int {
-        return getInt(tv_select_cycles?.text)
-    }
-
-    private fun getDuration(): Int {
-        return getInt(tv_select_duration?.text)
-    }
-
-    private fun getSequence(): String? {
-        return program?.sequence
-    }
-
-    private fun getPause(): Int {
-        //return getInt(tv_select_delay?.text)
-        return getInt(tv_select_pause?.text)
-    }
-
-    private fun getAction(): Int {
-        return getInt(tv_select_action?.text)
-    }
 
     fun getInt(string: CharSequence?): Int {
         return try {
@@ -1653,6 +1678,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 list.add(it)
             }
             showScoreDialog(list)
+            saveScore(list)
 //            MessageDialog.info(
 //                this,
 //                "Completed",
@@ -1684,8 +1710,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             AnimateView.addAnimTo(btn_pause).setScaleForPopOutAnim(0f, 0f)
             btn_pause?.isEnabled = true
             isPaused = false
-            tv_cycle_heading?.visibility = VISIBLE
-            tv_cycle_count?.text = "$cycle"
+            //tv_cycle_heading?.visibility = VISIBLE
+            //tv_cycle_count?.text = "$cycle"
             btn_pause?.setText(R.string.pause)
             btn_pause?.background = null
             btn_pause?.setBackgroundResource(R.drawable.bg_button_reflex_red)
@@ -1757,6 +1783,19 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             //animator?.cancel()
             pauseTimer(remaining)
         }
+    }
+
+    override fun onBlockStart(block: Int, cycle: Int) {
+        runOnUiThread {
+            tv_cycle_heading?.visibility = VISIBLE
+            tv_cycle_heading?.text = "Block ${block.plus(1)} - Cycle $cycle"
+            //tv_cycle_count?.text = "Cycle $cycle"
+
+        }
+    }
+
+    override fun onBlockEnd(block: Int, cycle: Int) {
+
     }
 
     private var isTimer = true;
@@ -1964,7 +2003,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         }
 
         if (list.size > 1) {
-            val dialog = ScoreDialog(this, program?.name, list)
+            val dialog = ScoreDialog(this, rxlProgramNew?.name, list)
             dialog.show()
             // val height = resources.displayMetrics.heightPixels * 0.8;
             // log("showScoreDialog ${dialog.window?.attributes?.height} == $height")
@@ -1972,5 +2011,78 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             //if (dialog.window?.attributes?.height ?: 0 > height)
             //  dialog.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, height.toInt())
         }
+    }
+
+
+    fun saveScore(players: ArrayList<RxlPlayer>?) {
+        if (players == null)
+            return
+        val trainer = Prefs.get(this).member ?: return
+        //getDialog().show();
+        var loc = trainer.locationID
+        if (loc == null) loc = "0"
+        // list = ArrayList<ScoreItem>()
+        val scores: MutableList<Score?> = java.util.ArrayList()
+        val date =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .format(LocalDateTime.now())
+
+        for (i in players) {
+            var hits = 0
+            var missed = 0
+            i.events.forEach { ev ->
+                if (ev.tapTime > 1)
+                    hits++
+                else
+                    missed++
+            }
+            //list.add(ScoreItem(i.id, i.name, "$hits", "$missed", 0, hits.plus(missed)))
+            scores.add(
+                Score(
+                    date,
+                    "rxl",
+                    "" + hits,
+                    loc,
+                    "" + trainer.id(),
+                    "" + missed,
+                    "" + hits.plus(missed),
+                    "" + trainer.id(),
+                    "0",
+                    "-",
+                    "" + rxlProgramNew?.id
+                )
+            )
+        }
+
+        //ateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now());
+
+
+        if (scores.isEmpty()) return
+        val post = SaveMemberScores(
+            SaveMemberScores.Data(scores),
+            trainer.accessToken
+        )
+        request.getApi().saveScore(post)
+            .enqueue(object : Callback<ResponseStatus?> {
+                override fun onResponse(
+                    call: Call<ResponseStatus?>,
+                    response: Response<ResponseStatus?>
+                ) {
+                    getDialog()!!.dismiss()
+                    //Toasty.info(getContext(), "Response " + response.body()).show();
+                    val body = response.body()
+                    if (body != null && body.isSuccess()) {
+                        Toasty.info(this@QuickPlayDetailsActivity, "Session Saved!").show()
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ResponseStatus?>,
+                    t: Throwable
+                ) {
+                    getDialog()!!.dismiss()
+                    Toasty.info(this@QuickPlayDetailsActivity, "Error " + t.message).show()
+                }
+            })
     }
 }

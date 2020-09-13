@@ -27,14 +27,14 @@ class MiboApplication : Application() {
     companion object {
         var context: Context? = null
 
-        val DEBUG = life.mibo.android.BuildConfig.DEBUG
+        //val DEBUG = life.mibo.android.BuildConfig.DEBUG
 
-        //val DEBUG = false
+        val DEBUG = true
         val DEV_SERVER = true
 
         //val DEBUG = false
         val RELEASE = false
-        val TEST = true
+        val TEST = false
         val SCAN_TIME: Long = 15000L
 
         fun isRelease() = true
@@ -81,7 +81,7 @@ class MiboApplication : Application() {
         Fitbit.setup(this)
         //Fresco.initialize(this);
 
-        test()
+        //test()
     }
 
 

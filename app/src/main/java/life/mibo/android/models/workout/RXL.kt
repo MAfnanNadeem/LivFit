@@ -3,8 +3,6 @@ package life.mibo.android.models.workout
 import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
-import life.mibo.hardware.rxl.core.RxlBlock
-import life.mibo.hardware.rxl.core.RxlProgram
 import java.io.Serializable
 
 data class RXL(
@@ -68,45 +66,19 @@ data class RXL(
         return list
     }
 
-    companion object {
-        fun from(rxt: RXL): RxlProgram {
-            val list = ArrayList<RxlBlock>()
-            val blocks = rxt.blocks
-            if (blocks != null && blocks.isNotEmpty()) {
-                for (i in blocks) {
-                    if (i != null) {
-                        //i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
-                        //i.rXTAction = 2
-                        val b = RxlBlock(
-                            i.getAction(),
-                            i.getDuration(),
-                            i.getLogicType(),
-                            0,
-                            i.pattern ?: ""
-                        )
-                        b.delay = i.getDelay()
-                        b.round = i.getRounds()
-                        list.add(b)
-                    }
-                }
-            }
-            return RxlProgram("Rxl ${rxt.category}", 0, 0, list)
-        }
-    }
-
 
     var isFavourite: Boolean = false
 
-    @Ignore
+    @Transient
     var selectedPlayers: ArrayList<PlayersAdapter.PlayerItem>? = null
 
     data class RXLBlock(
         @SerializedName("ActivityOn")
         var activityOn: String?,
         @SerializedName("AssignedColors")
-        var assignedColors: Any?,
+        @Transient var assignedColors: String?,
         @SerializedName("DistractingColors")
-        var distractingColors: Any?,
+        @Transient var distractingColors: String?,
         @SerializedName("Pattern")
         var pattern: String?,
         @SerializedName("RXLAction")
@@ -123,7 +95,7 @@ data class RXL(
         var rXLType: String?,
         @SerializedName("VideoLink")
         var videoLink: String?
-    ) {
+    ) : Serializable {
         fun isRandom() = rXLType?.toLowerCase()?.contains("random")
         fun isSequence() = rXLType?.toLowerCase()?.contains("sequence")
 
@@ -133,6 +105,9 @@ data class RXL(
 
         fun getAction(): Int {
             return rXLAction?.times(1000) ?: 1000
+        }
+        fun getActionSec(): Int {
+            return rXLAction ?: 1
         }
 
         fun getDuration(): Int {

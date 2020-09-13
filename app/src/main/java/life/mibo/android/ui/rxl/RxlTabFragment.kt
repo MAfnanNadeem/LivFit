@@ -55,7 +55,7 @@ class RxlTabFragment : BaseFragment() {
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                    val frg = RxlQuickPlayFragment2()
+                    val frg = RxlQuickPlayFragment()
                     frg?.arguments = bundle
                     return frg
                 }
@@ -91,7 +91,7 @@ class RxlTabFragment : BaseFragment() {
         fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                    val frg = RxlQuickPlayFragment()
+                    val frg = RxlQuickPlayFragmentOld()
                     frg?.arguments = bundle
                     return frg
                 }

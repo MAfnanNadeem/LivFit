@@ -73,13 +73,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity
-            android:name="life.mibo.android.ui.rxl.QuickPlayDetailsActivity2"
-            android:keepScreenOn="true"
-            android:label="@string/title_activity_quick_play_details"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-
 
         <activity
             android:name="life.mibo.android.ui.login.RegisterActivity"
@@ -119,11 +112,7 @@
             android:name="life.mibo.android.ui.trainer.ProfessionalDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Material.TransparentFull" />
-        <activity
-            android:name="life.mibo.android.ui.workout.WorkoutDetailsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="sensor"
-            android:theme="@style/Material.TransparentFull" />
+
         <activity
             android:name="life.mibo.android.ui.body_measure.MeasureBodyActivity"
             android:screenOrientation="portrait"

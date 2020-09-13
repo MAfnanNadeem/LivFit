@@ -1,0 +1,19 @@
+<!--
+  ~  Created by Sumeet Kumar on 8/16/20 11:50 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 8/16/20 11:50 AM
+  ~  Mibo Hexa - app
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="life.mibo.android.react">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" />
+
+</manifest>

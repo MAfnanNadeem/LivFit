@@ -32,7 +32,7 @@ import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.Listener
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.ReflexFilterModel
 import life.mibo.android.ui.rxl.impl.ReactionListener
 import life.mibo.android.ui.rxl.impl.ReactionObserver
-import life.mibo.android.ui.rxl.impl.ReactionObserver2
+import life.mibo.android.ui.rxl.impl.RXLObserver
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.core.Logger
 import retrofit2.Call
@@ -327,7 +327,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
                 }
             }
         }
-        if (observer is ReactionObserver2) {
+        if (observer is RXLObserver) {
             observer?.onDataReceived2(list)
         }
 

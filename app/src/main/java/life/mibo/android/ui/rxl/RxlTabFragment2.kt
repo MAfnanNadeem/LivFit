@@ -96,7 +96,7 @@ class RxlTabFragment2 : BaseFragment() {
             when (position) {
                 0 -> {
                     //current = 1
-                    return RxlQuickPlayFragment()
+                    return RxlQuickPlayFragmentOld()
                 }
                 1 -> {
                     //current = 2

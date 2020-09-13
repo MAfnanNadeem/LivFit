@@ -1,0 +1,10 @@
+<!--
+  ~  Created by Sumeet Kumar on 8/16/20 11:50 AM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 8/16/20 11:50 AM
+  ~  Mibo Hexa - app
+  -->
+
+<resources>
+    <string name="app_name">React Lights</string>
+</resources>

@@ -50,7 +50,8 @@ class ConfigureIslandActivity : BaseActivity() {
             id: Int,
             width: Int,
             height: Int,
-            total: Int
+            total: Int,
+            update: Int
         ) {
             val intent = Intent(context.context, ConfigureIslandActivity::class.java)
             intent.putExtra("island_name", name)
@@ -58,6 +59,7 @@ class ConfigureIslandActivity : BaseActivity() {
             intent.putExtra("island_x", height)
             intent.putExtra("island_y", width)
             intent.putExtra("island_total", total)
+            intent.putExtra("island_update_mode", update)
             context.startActivityForResult(intent, REQUEST_CODE)
         }
     }

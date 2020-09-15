@@ -150,18 +150,27 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             return;
         if (speed < 3.0) {
             speed += interval;
-            tvSpeed.setText(String.format("%.01f sec", ((actionTime * speed) / 1000)));
+            //tvSpeed.setText(String.format(getString(R.string.rxt_action_speed), ((actionTime * speed) / 1000)));
+            setSpeedText();
         }
     }
 
     void minusClicked() {
         if (isProgramStarted)
             return;
-        if (speed > 0.1) {
+        if (speed > 0.2) {
             speed -= interval;
-            //tvSpeed.setText(String.format("%.01f", speed));
-            tvSpeed.setText(String.format("%.01f", ((actionTime * speed) / 1000)));
+            if (speed > 0.2)
+                setSpeedText();
+            //else {
+            //  Toasty.info(getContext(), "Invalid action time").show();
+            //}
         }
+    }
+
+    void setSpeedText() {
+        //tvSpeed.setText(String.format(getString(R.string.rxt_action_speed), ((actionTime * speed) / 1000)));
+        tvSpeed.setText(getString(R.string.rxt_action_speed, ((actionTime * speed) / 1000)));
     }
 
     private boolean isVoicePrompt = false;
@@ -194,6 +203,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
                 if (blocks != null && !blocks.isEmpty()) {
                     actionTime = blocks.get(0).getAction();
+                    setSpeedText();
                     for (RXT.RXTBlock b : blocks) {
                         Chip chip = new Chip(chipGroup.getContext());
                         chip.setText(b.getRXTType() + " x " + b.getRounds() + " - " + b.getRXTTotalDuration() + " sec");
@@ -274,6 +284,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
     private int selectedColor = Color.RED;
     private boolean isProgramStarted = false;
+    private String tempTileIds = "";
 
     private boolean onStartRxt(String tiles) {
         log("onStartRxt $tiles " + tiles);
@@ -295,6 +306,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 RXTManager.Companion.getInstance().with(islands, listener).startNow(totalTime, speed);
                 isProgramStarted = true;
                 playButton.setPlay(true);
+                tempTileIds = tiles;
                 return true;
             }
         }
@@ -337,6 +349,10 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             Toasty.info(getContext(), "Invalid RXT Island").show();
             return;
         }
+        if (!Utils.isEmpty(tempTileIds)) {
+            if (onStartRxt(tempTileIds))
+                return;
+        }
         Member trainer = Prefs.get(getContext()).getMember();
         if (trainer == null)
             return;
@@ -362,7 +378,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
                 //log("total " + island.getTotal());
                 playButton.setPlay(false);
-                ConfigureIslandActivity.Companion.launch(RXTStartSingleSessionFragment.this, island.getName(), island.getID(), island.getX(), island.getY(), island.getTotal());
+                ConfigureIslandActivity.Companion.launch(RXTStartSingleSessionFragment.this, island.getName(), island.getID(), island.getX(), island.getY(), island.getTotal(), 0);
             }
 
             @Override
@@ -606,7 +622,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     private void nextClicked() {
-       // getCompositionRoot().getScreensNavigator().toRxtHome();
+        // getCompositionRoot().getScreensNavigator().toRxtHome();
     }
 
 

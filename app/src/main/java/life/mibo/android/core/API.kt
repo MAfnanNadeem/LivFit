@@ -15,6 +15,7 @@ import life.mibo.android.models.create_session.SaveSessionPost
 import life.mibo.android.models.login.LoginResponse
 import life.mibo.android.models.login.LoginUser
 import life.mibo.android.models.login.SocialLoginUser
+import life.mibo.android.models.login.UpdateNumber
 import life.mibo.android.models.member.*
 import life.mibo.android.models.muscle.GetSuitPost
 import life.mibo.android.models.muscle.GetSuits

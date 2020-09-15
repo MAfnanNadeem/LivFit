@@ -49,7 +49,7 @@
         <item
             android:id="@+id/nav_test4"
             android:icon="@drawable/ic_settings_black"
-            android:title="React Light" />
+            android:title="React Tiles" />
 
 
     </group>

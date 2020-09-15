@@ -21,13 +21,16 @@ import kotlinx.android.synthetic.main.fragment_recycler.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
-import life.mibo.android.core.toIntOrZero
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.calories.CaloriesData
-import life.mibo.android.models.rxt.*
+import life.mibo.android.models.rxt.GetAllIslandPost
+import life.mibo.android.models.rxt.GetAllIslandsByLocation
+import life.mibo.android.models.rxt.GetMemberScores
+import life.mibo.android.models.rxt.GetMemberScoresReport
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.rxt.ConfigureIslandActivity.Companion.launch
 import life.mibo.android.ui.rxt.RXTUtils.playSequence
 import life.mibo.android.ui.rxt.model.Tile
 import life.mibo.hardware.core.Logger
@@ -97,7 +100,7 @@ class ViewSessionsFragment : BaseFragment() {
 
     fun getApis() {
         if (type_ == 2) {
-            getReactSession()
+            getReactSession(false)
         } else if (type_ == 5) {
             getAllIslands()
         } else {
@@ -263,6 +266,16 @@ class ViewSessionsFragment : BaseFragment() {
                                     list.add(Tile(sp[0], sp[1].toIntOrNull() ?: 0))
                                 }
                                 playSequence(list)
+//                                launch(
+//                                    this@ViewSessionsFragment,
+//                                    item.name,
+//                                    item.id ?: 0,
+//                                    item.getX(),
+//                                    item.getY(),
+//                                    item.getTotal(),
+//                                    7
+//                                )
+
                             }
                         } catch (e: Exception) {
 
@@ -378,7 +391,7 @@ class ViewSessionsFragment : BaseFragment() {
             if (item == null)
                 return
 
-            minutes?.text = "----"
+            minutes?.text = "cal"
             time?.text = "0"
             calories?.text = "${item.exerciseType?.toUpperCase()}"
             service_header?.text = "Hits: "

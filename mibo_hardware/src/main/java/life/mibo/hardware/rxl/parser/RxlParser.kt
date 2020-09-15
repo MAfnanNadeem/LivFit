@@ -340,6 +340,7 @@ abstract class RxlParser(
     open fun stop() {
         isTap = false
         isInternalStarted = false
+        isStarted = false
     }
 
     fun paused(pause: Boolean) {

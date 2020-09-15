@@ -435,12 +435,15 @@ class MyAccountFragment : BaseFragment() {
             }
             TYPE.VIEW_SESSION -> {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(1))
+                activity?.title = getString(R.string.view_sessions)
             }
             TYPE.REACT_SESSION -> {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(2))
+                activity?.title = getString(R.string.rxt_sessions)
             }
             TYPE.REACT_TILE_CONFIG -> {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(5))
+                activity?.title = getString(R.string.rxt_tile_config)
             }
             TYPE.GOOGLE_FIT -> {
                 checkPermission()

@@ -294,7 +294,8 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
 
     private fun onDelayEnd() {
         log("$islandId onDelayEnd")
-        startNextBlock(null)
+        if (isStarted)
+            startNextBlock(null)
     }
 
     private fun startNextBlock(player: RxlPlayer?) {

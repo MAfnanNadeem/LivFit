@@ -17,7 +17,7 @@ import android.view.ViewGroup
 import coil.api.load
 import kotlinx.android.synthetic.main.fragment_quickplay_detail.*
 import life.mibo.android.R
-import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.Navigator
@@ -31,7 +31,9 @@ class RxlProgramDetailsFragment : BaseFragment() {
 
     private lateinit var controller: ReactionLightController
     private var code = 23456
-    private var program: RxlProgram? = null
+
+    //private var program: RxlProgram? = null
+    private var program: RXL? = null
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
 //        val transition =
@@ -73,25 +75,22 @@ class RxlProgramDetailsFragment : BaseFragment() {
 
         val arg = arguments
         if (arg != null) {
-            program = arg.getSerializable(Constants.BUNDLE_DATA) as RxlProgram?
+            program = arg.getSerializable(Constants.BUNDLE_DATA) as RXL?
         }
         log("program >> $program")
 
         tv_title?.text = program?.name
         // activity?.title = program?.name
         activity?.title = getString(R.string.program_detail)
-        tv_desc?.text = program?.description
+        tv_desc?.text = program?.desc
         // iv_icon?.load(program?.urlIcon)
 
-        if (program?.avatarBase64.isNullOrEmpty()) {
+        if (program?.icon.isNullOrEmpty()) {
             iv_icon_giff?.setImageResource(R.drawable.ic_rxl_pods_icon)
             // image?.setColorFilter(Constants.PRIMARY)
             // setGradient(imageBg, image?.drawable)
         } else {
-            val bitmap =
-                life.mibo.android.utils.Utils.convertStringImagetoBitmap(program?.avatarBase64)
-            iv_icon_giff?.load(bitmap)
-
+            iv_icon_giff?.load(program?.icon)
         }
 
         tv_select_stations?.text = "${program?.workStation}"
@@ -115,21 +114,23 @@ class RxlProgramDetailsFragment : BaseFragment() {
             tv_select_pods?.text = "0"
         }
 
-        btn_next?.isEnabled = pods.size >= program?.pods ?: 0
+        btn_next?.isEnabled = pods.size >= program?.pods() ?: 0
         if(MiboApplication.DEBUG)
             btn_next?.isEnabled = true
 
-        if (program?.pods == pods.size) {
+        if (program?.pods() == pods.size) {
             tv_required_pods.visibility = View.GONE
         } else {
             tv_required_pods.visibility = View.VISIBLE
-            tv_required_pods?.text = Html.fromHtml(String.format(getString(R.string.required_pods), program?.pods))
+            tv_required_pods?.text =
+                Html.fromHtml(String.format(getString(R.string.required_pods), program?.pods()))
         }
     }
 
     private fun nextClicked() {
         program?.let {
             val intent = Intent(context, QuickPlayDetailsActivity::class.java)
+            //val intent = Intent(context, QuickPlayDetailsActivity2::class.java)
             intent.putExtra(Constants.BUNDLE_DATA, it)
             intent.putExtra("from_user_int", 10)
             startActivityForResult(intent, code)

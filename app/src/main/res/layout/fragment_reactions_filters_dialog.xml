@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/grid_2x"
         android:text="Select Filters"
-        android:textColor="@color/textColor"
+        android:textColor="@color/textColorApp"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:text="Cancel"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="@string/cancel"
             android:textColor="@color/colorPrimary" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -110,7 +111,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:text="Apply"
+            android:fontFamily="@string/font_roboto_medium"
+            android:text="@string/apply"
             android:textColor="@color/colorPrimary" />
 
     </LinearLayout>

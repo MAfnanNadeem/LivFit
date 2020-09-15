@@ -504,6 +504,7 @@ class MyAccountFragment : BaseFragment() {
         REACT_SESSION(R.string.rxt_sessions),
         REACT_TILE_CONFIG(R.string.rxt_tile_config),
         REACT_ID_CONFIG(R.string.rxt_id_config),
+        //REACT_SESSION2(R.string.rxl_sessions),
         //SESSION(R.string.view_sessions),
     }
 

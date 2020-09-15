@@ -29,8 +29,8 @@ class MiboApplication : Application() {
 
         //val DEBUG = life.mibo.android.BuildConfig.DEBUG
 
-        val DEBUG = false
-        val DEV_SERVER = false
+        val DEBUG = true
+        val DEV_SERVER = true
 
         //val DEBUG = false
         val RELEASE = false
@@ -81,7 +81,7 @@ class MiboApplication : Application() {
         Fitbit.setup(this)
         //Fresco.initialize(this);
 
-        test()
+        //test()
     }
 
 

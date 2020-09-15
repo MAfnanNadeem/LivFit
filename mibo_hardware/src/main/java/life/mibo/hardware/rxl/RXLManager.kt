@@ -26,14 +26,14 @@ import life.mibo.hardware.events.ChangeColorEvent
 import life.mibo.hardware.events.DelayColorEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
-import life.mibo.hardware.rxl.parser.*
+import life.mibo.hardware.rxl.parser.GeneralPodParser
+import life.mibo.hardware.rxl.parser.RxlParser
 import life.mibo.hardware.rxl.program.RxlPlayer
 import life.mibo.hardware.rxl.program.RxlProgram
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.ArrayList
 
 
 class RXLManager private constructor() {
@@ -97,6 +97,14 @@ class RXLManager private constructor() {
         override fun endProgram(cycle: Int, duration: Int) {
             log("BaseTestParser.Listener : endProgram $duration")
             completeExercise(cycle, duration)
+        }
+
+        override fun onBlockStart(block: Int, cycle: Int) {
+            rxlListener?.onBlockStart(block, cycle)
+        }
+
+        override fun onBlockEnd(block: Int, cycle: Int) {
+            rxlListener?.onBlockEnd(block, cycle)
         }
     }
 
@@ -215,24 +223,26 @@ class RXLManager private constructor() {
     }
 
     private fun createProgram() {
-        programParser = when (program?.lightLogic()) {
-            1 -> {
-                SequenceParser(program!!, programListener)
-            }
-            2 -> {
-                RandomParser(program!!, programListener)
-            }
-            3 -> {
-                FocusParser(program!!, programListener)
-            }
-            4 -> {
-                AllAtOnceParser(program!!, programListener)
-            }
-            //5 -> { TapAtAllParser(program!!, programListener) }
-            else -> {
-                SequenceParser(program!!, programListener)
-            }
-        }
+        programParser = GeneralPodParser(program!!, programListener)
+        log("createProgram $program")
+//        programParser = when (program?.lightLogic()) {
+//            1 -> {
+//                SequenceParser(program!!, programListener)
+//            }
+//            2 -> {
+//                RandomParser(program!!, programListener)
+//            }
+//            3 -> {
+//                FocusParser(program!!, programListener)
+//            }
+//            4 -> {
+//                AllAtOnceParser(program!!, programListener)
+//            }
+//            //5 -> { TapAtAllParser(program!!, programListener) }
+//            else -> {
+//                SequenceParser(program!!, programListener)
+//            }
+//        }
     }
 
     fun start(tap: Boolean) {
@@ -452,8 +462,7 @@ class RXLManager private constructor() {
             //colorSent = false
 
             log(
-                "startTapInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
-                        "action ${program?.getAction()} pause ${program?.getPause()}"
+                "startTapInternal.......... duration ${program}"
             )
 
             if (observers == null || observers?.isDisposed == true)
@@ -479,8 +488,7 @@ class RXLManager private constructor() {
         //colorSent = false
         log("startInternal..........")
         log(
-            "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
-                    "action ${program?.getAction()} pause ${program?.getPause()}"
+            "startInternal.......... duration ${program}"
         )
         if (isRunning) {
             log("exercise is already running")
@@ -599,9 +607,11 @@ class RXLManager private constructor() {
         logi(".......... startCycle .......... " + getTime())
         if (isPaused) {
             rxlListener?.onExerciseResumed(cycle, programParser?.duration ?: 0, time)
+            programParser?.onResumeCycle()
         } else {
             rxlListener?.onCycleStart(cycle, time)
             remainDuration = program!!.getDuration()
+            programParser?.onCycleStart()
         }
         isPaused = false
         //colorSent = false
@@ -613,7 +623,7 @@ class RXLManager private constructor() {
 //            programParser?.onCycleTapStart(0)
 //        else programParser?.onCycleStart()
 
-        programParser?.onCycleStart()
+
         //publisher.onNext("startCycle")
     }
 

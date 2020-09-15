@@ -84,18 +84,22 @@ abstract class RxlParser(
         )
 
         fun endProgram(cycle: Int, duration: Int)
+        fun onBlockStart(block: Int, cycle: Int)
+        fun onBlockEnd(block: Int, cycle: Int)
+
     }
 
     var unitTest = false
     var MIN_DELAY = 100
     var THREAD_SLEEP: Long = 20L
     var MIN_TAP_DELAY = 100
-    var cycles = 0L
-    var currentCycle = 1
-    var actionTime = 0
+
+    // var cycles = 0L
+    var duration = 0
     var pauseTime = 0
     var delayTime = 0
-    var duration = 0
+    var actionTime = 0
+    var currentCycle = 1
     var lightLogic = 0
     var isStarted = false
     var isInternalStarted = false
@@ -206,8 +210,7 @@ abstract class RxlParser(
         onProgramStart()
         //log("startInternal..........")
         log(
-            "startInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
-                    "action ${program?.getAction()} pause ${program?.getPause()}"
+            "startInternal.......... duration ${program} "
         )
         if (isRunning) {
             log("exercise is already running")
@@ -221,18 +224,19 @@ abstract class RxlParser(
         lightLogic = program.lightLogic()
         //activeColor = program.color()
         //colorPosition = program.colorPosition()
-        cycles = program.cycles().toLong()
-        duration = program.duration()
-        actionTime = program.action().times(1000)
-        pauseTime = program.pause().times(1000)
-        delayTime = program.delay().times(1000)
+        //cycles = program.cycles().toLong()
+        duration = program.getDuration()
+//        actionTime = program.action().times(1000)
+//        //actionTime = 300
+//        pauseTime = program.pause().times(1000)
+//        delayTime = program.delay().times(1000)
         currentCycle = 1
         if (players.size > 1)
             isMulti = true
 
         // listener?.startExercise(0, 0)pass
-        listener?.startProgram(currentCycle, program!!.getDuration())
-        log("startInternal >>> actionTime $actionTime : duration $duration : cycles $cycles : pauseTime $pauseTime lightLogic $lightLogic")
+        listener?.startProgram(currentCycle, duration)
+        log("startInternal >>> actionTime  lightLogic $lightLogic")
     }
 
     private fun startTapInternal(player: RxlPlayer) {
@@ -248,8 +252,7 @@ abstract class RxlParser(
         onProgramStart()
         //log("startInternal..........")
         log(
-            "startTapInternal.......... duration ${program?.getDuration()} cycle ${program?.getCyclesCount()} " +
-                    "action ${program?.getAction()} pause ${program?.getPause()}"
+            "startTapInternal.......... duration ${program} "
         )
         if (isRunning) {
             log("exercise is already running")
@@ -263,24 +266,28 @@ abstract class RxlParser(
         lightLogic = program.lightLogic()
         //activeColor = program.color()
         //colorPosition = program.colorPosition()
-        cycles = program.cycles().toLong()
-        duration = program.duration()
-        actionTime = program.action().times(1000)
-        pauseTime = program.pause().times(1000)
-        delayTime = program.delay().times(1000)
+        //cycles = program.cycles().toLong()
+        duration = program.getDuration()
+//        actionTime = program.action().times(1000)
+//        pauseTime = program.pause().times(1000)
+//        delayTime = program.delay().times(1000)
         currentCycle = 1
         if (players.size > 1)
             isMulti = true
 
         // listener?.startExercise(0, 0)
-        listener?.startProgram(currentCycle, program!!.getDuration())
-        log("startTapProgram >>>>>>>>>> actionTime $actionTime : duration $duration : cycles $cycles : pauseTime $pauseTime lightLogic $lightLogic")
+        listener?.startProgram(currentCycle, duration)
+        log("startTapProgram >>>>>>>>>> actionTime $lightLogic")
     }
 
     // abstract
 
     abstract fun onCycleStart(player: RxlPlayer)
     abstract fun onCycleStart()
+
+    open fun onResumeCycle() {
+
+    }
 
     //abstract fun onCycleTapStart()
     //abstract fun onCycleTapStart(playerId: Int)
@@ -289,23 +296,26 @@ abstract class RxlParser(
     //abstract fun nextLightEvent()
     //abstract fun completeCycle()
     open fun completeCycle() {
-        log("completeCycle")
-        if (cycles > currentCycle) {
-            currentCycle++
-            if (isTap) {
-                for (p in players) {
-                    p.isStarted = false
-                }
-            }
-            //pauseCycle(0, getPause())
-            log("completeCycle start new cycle")
-            listener.nextCycle(currentCycle, pauseTime, duration)
-            //resumeObserver(currentCycle, getPause(), duration)
-        } else {
-            log("completeCycle end program...")
-            listener.endProgram(0, 0)
-            isInternalStarted = false
-        }
+//        log("completeCycle")
+//        if (cycles > currentCycle) {
+//            currentCycle++
+//            if (isTap) {
+//                for (p in players) {
+//                    p.isStarted = false
+//                }
+//            }
+//            //pauseCycle(0, getPause())
+//            log("completeCycle start new cycle")
+//            listener.nextCycle(currentCycle, pauseTime, duration)
+//            //resumeObserver(currentCycle, getPause(), duration)
+//        } else {
+//            log("completeCycle end program...")
+//            listener.endProgram(0, 0)
+//            isInternalStarted = false
+//        }
+
+        listener.endProgram(0, 0)
+        isInternalStarted = false
     }
 
     // for focus all, will handle players when program start
@@ -327,7 +337,7 @@ abstract class RxlParser(
         // turnOff(players)
     }
 
-    fun stop() {
+    open fun stop() {
         isTap = false
         isInternalStarted = false
     }

@@ -606,7 +606,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     private void nextClicked() {
-        // getCompositionRoot().getScreensNavigator().toRxtHome();
+       // getCompositionRoot().getScreensNavigator().toRxtHome();
     }
 
 

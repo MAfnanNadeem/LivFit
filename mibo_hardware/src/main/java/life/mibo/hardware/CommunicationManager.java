@@ -629,6 +629,11 @@ public class CommunicationManager {
     }
 
     private void bleBoosterDiscoverConsumer(String uid, String serial) {
+        if (serial.equals("MIBO-3437510A4744")) {
+            add(new Device("", uid, serial.replace("MIBO-", ""), RXL_BLE));
+            SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
+            return;
+        }
         add(new Device("", uid, serial.replace("MIBO-", ""), BLE_STIMULATOR));
         SessionManager.getInstance().getUserSession().setDeviceStatus(uid, DEVICE_WARNING);
         // if (listener != null)
@@ -701,6 +706,7 @@ public class CommunicationManager {
                 return;
             }
         }
+
         add(new Device("", DataParser.getUID(command), ip, WIFI_STIMULATOR));
     }
 
@@ -1154,6 +1160,7 @@ public class CommunicationManager {
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
             // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
             RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             return;
         }
 
@@ -1288,6 +1295,38 @@ public class CommunicationManager {
 
     }
 
+
+    public synchronized void onChangeColorEventRxl(ChangeColorEvent event) {
+        log("onChangeColorEvent " + event);
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData(), t.getType()), "onChangeColorEvent");
+            }
+        }
+        if (bluetoothManager != null) {
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData(), DataParser.RXL), "ChangeColorEvent", DataParser.RXL);
+        }
+        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        log("onChangeColorEvent color changed..................... " + event.getUid());
+
+    }
+
+    public void onChangeColorEventRxl2(ChangeColorEvent event) {
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(event.getUid())) {
+                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
+            }
+        }
+        if (bluetoothManager != null)
+            bluetoothManager.sendMessage(event.getUid(),
+                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()), "ChangeColorEvent");
+        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
+        log("Color EVENT");
+
+    }
+
     public synchronized void onDelayColorEvent(DelayColorEvent event) {
         log("onDelayColorEvent " + event);
         //EventBus.getDefault().removeStickyEvent(event);
@@ -1333,21 +1372,6 @@ public class CommunicationManager {
         log("ProximityEvent");
     }
 
-
-    public void onChangeColorEventRxl(ChangeColorEvent event) {
-        //EventBus.getDefault().removeStickyEvent(event);
-        for (TCPClient t : tcpClients) {
-            if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()));
-            }
-        }
-        if (bluetoothManager != null)
-            bluetoothManager.sendMessage(event.getUid(),
-                    DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet()), event.getDevice().type()), "ChangeColorEvent");
-        // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
-        log("Color EVENT");
-
-    }
 
     // @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDeviceSearchEvent(DeviceSearchEvent event) {

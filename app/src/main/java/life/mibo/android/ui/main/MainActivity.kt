@@ -69,6 +69,7 @@ import life.mibo.android.models.base.FirebaseTokenPost
 import life.mibo.android.models.base.ResponseData
 import life.mibo.android.models.login.Member
 import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
 import life.mibo.android.ui.base.*
 import life.mibo.android.ui.body_measure.MeasurementFragment
 import life.mibo.android.ui.body_measure.MeasurementFragmentDialog
@@ -1395,7 +1396,15 @@ class MainActivity : BaseActivity(), Navigator {
             }
             RXL_QUICKPLAY_DETAILS -> {
                 val args = Bundle()
-                if (data is RxlProgram) {
+                if (data is RXL) {
+                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
+                    navigate(
+                        0,
+                        R.id.navigation_quickplay_details,
+                        args,
+                        getNavOptions()
+                    )
+                } else if (data is RxlProgram) {
                     args.putSerializable(ReflexCourseCreateFragment.DATA, data)
                     navigate(
                         0,

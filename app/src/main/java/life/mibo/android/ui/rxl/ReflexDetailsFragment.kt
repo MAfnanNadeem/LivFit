@@ -566,15 +566,23 @@ class ReflexDetailsFragment : BaseFragment(), CourseCreateImpl.Listener, RxlList
     }
 
     override fun onTapColorSent(id: Int) {
-        Toasty.info(context!!, getString(R.string.hit_to_start_rxl)).show()
+        Toasty.info(requireContext(), getString(R.string.hit_to_start_rxl)).show()
     }
 
     override fun onExerciseResumed(cycle: Int, totalTime: Int, remaining: Int) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onExercisePaused(cycle: Int, totalTime: Int, remaining: Int) {
-        TODO("Not yet implemented")
+
+    }
+
+    override fun onBlockStart(block: Int, cycle: Int) {
+
+    }
+
+    override fun onBlockEnd(block: Int, cycle: Int) {
+
     }
 
     var lastFrom = -1

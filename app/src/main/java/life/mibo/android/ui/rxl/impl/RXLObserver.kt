@@ -1,0 +1,15 @@
+/*
+ *  Created by Sumeet Kumar on 2/11/20 10:06 AM
+ *  Copyright (c) 2020 . MI.BO All rights reserved.
+ *  Last modified 2/11/20 10:06 AM
+ *  Mibo Hexa - app
+ */
+
+package life.mibo.android.ui.rxl.impl
+
+import life.mibo.android.models.workout.RXL
+
+interface RXLObserver : ReactionObserver {
+    fun onDataReceived2(programs: ArrayList<RXL>)
+    fun onUpdateList2(programs: ArrayList<RXL>)
+}

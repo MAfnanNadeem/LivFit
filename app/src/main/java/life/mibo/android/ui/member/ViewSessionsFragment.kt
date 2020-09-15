@@ -105,7 +105,7 @@ class ViewSessionsFragment : BaseFragment() {
         }
     }
 
-    private fun getReactSession() {
+    private fun getReactSession(isRxl: Boolean) {
         val member = Prefs.get(context).member ?: return
         showProgress()
 
@@ -408,7 +408,6 @@ class ViewSessionsFragment : BaseFragment() {
             return time
         }
     }
-
 
     class ViewIslandAdapters(
         val list: ArrayList<GetAllIslandsByLocation.Island>,

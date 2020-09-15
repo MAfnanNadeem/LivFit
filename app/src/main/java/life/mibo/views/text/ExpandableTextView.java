@@ -282,7 +282,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         mAnimationDuration = DEFAULT_ANIM_DURATION;
         mContentTextSize = DEFAULT_CONTENT_TEXT_SIZE;
         mContentLineSpacingMultiplier = DEFAULT_CONTENT_TEXT_LINE_SPACING_MULTIPLIER;
-        mContentTextColor = Color.WHITE;
+        mContentTextColor = Color.DKGRAY;
 
         mExpandDrawable = getDrawable(context, R.drawable.ic_arrow_drop_down_black_24dp);
         mCollapseDrawable = getDrawable(context, R.drawable.ic_arrow_drop_down_black_24dp);

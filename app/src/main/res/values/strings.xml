@@ -3,7 +3,7 @@
     <!--  DON NOT TRANSLATE START -->
     <string name="app_name">MI.BO. LivFit</string>
     <string name="mibo_world">MI.BO. World</string>
-    <string name="app_name_version"><small>MI.BO. &#032; LivFit \u0020 &#160; v0.1.28</small></string>
+    <string name="app_name_version"><small>MI.BO. &#032; LivFit \u0020 &#160; v0.1.30</small></string>
     <string name="app_version">0.1.28</string>
     <string name="lorem_spem">"Lorem ipsum dolor sit amet, alii vero habeo sed et. Quas iriure pertinax his ex. Aperiam voluptatum sit cu, mel altera quaeque recusabo ei, oblique iuvaret vivendum nec ne. Id eius scaevola salutatus mea, ea noluisse dissentiet vituperatoribus eos. Ne eam quaestio perpetua senserit, sint voluptua consequat mea ea, dicat labore appareat ius ut. Enim melius elaboraret id sed. "</string>
     <string name="alphabets_only">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
@@ -276,6 +276,7 @@
     <string name="confirm_password_error">Password does not match the confirm password</string>
     <string name="change_password">Change Password</string>
     <string name="reset_password">Reset Password</string>
+    <string name="rxl_sessions">RXL Sessions</string>
     <string name="rxt_sessions">React Sessions</string>
     <string name="rxt_id_config">ID Configuration</string>
     <string name="rxt_tile_config">Tile Configuration</string>
@@ -704,6 +705,7 @@
     <string name="update_number">Update Number</string>
     <string name="unable_update_number">Unable to update mobile number</string>
     <string name="invalid_locationid">Invalid LocationId</string>
+    <string name="apply">Apply</string>
 
 
     <!-- customer reviews -->

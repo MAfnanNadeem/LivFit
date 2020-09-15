@@ -10,27 +10,35 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.functions.Action
-import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
 import life.mibo.android.core.toIntOrZero
 import life.mibo.android.database.Database
-import life.mibo.android.models.base.MemberPost
 import life.mibo.android.models.base.ResponseData
-import life.mibo.android.models.rxl.*
+import life.mibo.android.models.rxl.DeleteRXLProgram
+import life.mibo.android.models.rxl.DeleteRxlExercise
+import life.mibo.android.models.rxl.RXLPrograms
+import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
+import life.mibo.android.models.workout.SearchWorkout
+import life.mibo.android.models.workout.SearchWorkoutPost
 import life.mibo.android.ui.base.BaseController
 import life.mibo.android.ui.base.BaseFragment
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.Listener
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.ReflexFilterModel
 import life.mibo.android.ui.rxl.impl.ReactionListener
 import life.mibo.android.ui.rxl.impl.ReactionObserver
+import life.mibo.android.ui.rxl.impl.RXLObserver
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.core.Logger
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.random.Random
 
 class ReactionLightController(val fragment: BaseFragment, val observer: ReactionObserver? = null) :
     BaseController(fragment.requireActivity()), ReactionListener {
@@ -138,46 +146,102 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
             if (memberId.isEmpty())
                 fragment.getDialog()?.show()
         }
+        //String island = Prefs.get(getContext()).get("rxt_island");
+        //log("okhttp Trainer "+trainer);
+        val data = SearchWorkoutPost(
+            SearchWorkoutPost.Data(
+                "rxl",
+                "" + member.id,
+                "1",
+                "150",
+                if (member.isMember()) "member" else "trainer",
+                member.locationID ?: "",
+                "",
+                ""
+            ), member.accessToken
+        )
 
-        API.request.getApi().getRXLExerciseProgram(MemberPost(memberId, member.accessToken!!, "GetRXLExerciseProgram"))
-            .enqueue(object : Callback<RxlExercises> {
+        API.request.getApi().searchWorkout(data).enqueue(object : Callback<SearchWorkout> {
+            override fun onFailure(call: Call<SearchWorkout>, t: Throwable) {
+                fragment?.activity?.runOnUiThread {
+                    fragment.getDialog()?.dismiss()
+                }
+                t.printStackTrace()
+                Toasty.error(fragment.requireContext(), R.string.unable_to_connect).show()
+                MiboEvent.log(t)
+                t.printStackTrace()
+            }
 
-                override fun onFailure(call: Call<RxlExercises>, t: Throwable) {
-                    fragment?.activity?.runOnUiThread {
-                        fragment.getDialog()?.dismiss()
-                    }
-                    t.printStackTrace()
-                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
-                    MiboEvent.log(t)
-                    t.printStackTrace()
+            override fun onResponse(call: Call<SearchWorkout>, response: Response<SearchWorkout>) {
+                fragment?.activity?.runOnUiThread {
+                    fragment.getDialog()?.dismiss()
                 }
 
-                override fun onResponse(
-                    call: Call<RxlExercises>,
-                    response: Response<RxlExercises>
-                ) {
-                    fragment?.activity?.runOnUiThread {
-                        fragment.getDialog()?.dismiss()
+                val workout = response.body()
+                if (workout != null) {
+                    if (workout.status.equals("success", true)) {
+
+                        parsePrograms2(workout.data)
+                        //savePrograms(data.data)
+
+                    } else if (workout.status.equals("error", true)) {
+                        parsePrograms2(null)
+                        //checkError(data)
                     }
+                } else {
 
-                    val data = response.body()
-                    if (data != null) {
-                        if (data.status.equals("success", true)) {
-
-                            parsePrograms(data.data)
-                           savePrograms(data.data)
-
-                        } else if (data.status.equals("error", true)) {
-                            parsePrograms(ArrayList())
-                            //checkError(data)
-                        }
-                    } else {
-
-                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
-                        fragment.log("getPrograms : " + response?.errorBody()?.toString())
-                    }
+                    Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+                    fragment.log("getPrograms : " + response?.errorBody()?.toString())
                 }
-            })
+            }
+
+        })
+
+//        API.request.getApi().getRXLExerciseProgram(
+//            MemberPost(
+//                memberId,
+//                member.accessToken!!,
+//                "GetRXLExerciseProgram"
+//            )
+//        )
+//            .enqueue(object : Callback<RxlExercises> {
+//
+//                override fun onFailure(call: Call<RxlExercises>, t: Throwable) {
+//                    fragment?.activity?.runOnUiThread {
+//                        fragment.getDialog()?.dismiss()
+//                    }
+//                    t.printStackTrace()
+//                    Toasty.error(fragment.context!!, R.string.unable_to_connect).show()
+//                    MiboEvent.log(t)
+//                    t.printStackTrace()
+//                }
+//
+//                override fun onResponse(
+//                    call: Call<RxlExercises>,
+//                    response: Response<RxlExercises>
+//                ) {
+//                    fragment?.activity?.runOnUiThread {
+//                        fragment.getDialog()?.dismiss()
+//                    }
+//
+//                    val data = response.body()
+//                    if (data != null) {
+//                        if (data.status.equals("success", true)) {
+//
+//                            parsePrograms(data.data)
+//                           savePrograms(data.data)
+//
+//                        } else if (data.status.equals("error", true)) {
+//                            parsePrograms(ArrayList())
+//                            //checkError(data)
+//                        }
+//                    } else {
+//
+//                        Toasty.error(fragment.requireContext(), R.string.error_occurred).show()
+//                        fragment.log("getPrograms : " + response?.errorBody()?.toString())
+//                    }
+//                }
+//            })
     }
 
     fun updateProgram(program: RxlProgram?, like: Boolean) {
@@ -209,6 +273,7 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
     }
 
     private val programList = ArrayList<RxlProgram>()
+    private val programListNew = ArrayList<RXL>()
 
     private fun parsePrograms(programs: List<RxlProgram?>?) {
         programList.clear()
@@ -217,13 +282,55 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
             return
         }
         val list = ArrayList<RxlProgram>()
+        val debug = MiboApplication.DEBUG
         programs.forEach {
             it?.let { item ->
+                if (debug && it.players == null) {
+                    if (Random.nextBoolean())
+                        it.players = 3
+                    else it.players = 1
+                }
                 list.add(item)
+
                 programList.add(item)
             }
         }
         observer?.onDataReceived(list)
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun parsePrograms2(data: SearchWorkout.Data?) {
+        if (data == null) {
+            observer?.onDataReceived(ArrayList())
+            return
+        }
+        val programs = data.workout
+        if (programs == null || programs.isEmpty()) {
+            observer?.onDataReceived(ArrayList())
+            return
+        }
+        programListNew.clear()
+        val list = ArrayList<RXL>()
+        programs.forEach {
+            it?.rxl.let { item ->
+                if (item != null) {
+                    item.id = it?.id ?: 1
+                    item.name = it?.name ?: ""
+                    item.desc = it?.description ?: ""
+                    item.borg = it?.borgRating ?: 1
+                    item.icon = it?.icon ?: ""
+                    item.total = it?.durationValue ?: "0"
+                    item.unit = it?.durationUnit ?: ""
+                    item.videoLink = it?.videoLink ?: ""
+                    list.add(item)
+                    programListNew.add(item)
+                }
+            }
+        }
+        if (observer is RXLObserver) {
+            observer?.onDataReceived2(list)
+        }
+
     }
 
     fun deleteProgram(program: RxlProgram?, action: (RxlProgram?) -> Unit) {

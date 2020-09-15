@@ -136,7 +136,7 @@ class UpdateDataFragment : BaseFragment() {
 //            //countryCode = member.countryCode
 //        }
 
-        et_email?.keyListener = null
+        //et_email?.keyListener = null
         et_email?.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 toastNotEditable()
@@ -186,6 +186,7 @@ class UpdateDataFragment : BaseFragment() {
     var isCountry = false
     var isDob = false
     var gender = ""
+
     fun showGender() {
         val genders = arrayOf(
             context?.getString(R.string.gender_male),

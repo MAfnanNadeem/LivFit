@@ -44,6 +44,8 @@ class RxlTabFragment : BaseFragment() {
         if (args != null) {
 
         }
+        log("RxlTabFragment")
+        log("RxlQuickPlayFragment2")
     }
 
 
@@ -89,7 +91,7 @@ class RxlTabFragment : BaseFragment() {
         fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-                    val frg = RxlQuickPlayFragment()
+                    val frg = RxlQuickPlayFragmentOld()
                     frg?.arguments = bundle
                     return frg
                 }

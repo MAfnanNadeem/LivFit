@@ -21,6 +21,7 @@ import life.mibo.android.ui.body_measure.adapter.Calculate
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
+import life.mibo.hardware.encryption.MCrypt
 import java.util.concurrent.TimeUnit
 
 
@@ -178,6 +179,20 @@ class LoginActivity : BaseActivity() {
 //        }.subscribe()
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
         // videoBg()
+        testEnc()
+    }
+
+
+    fun testEnc() {
+        val crypt = MCrypt()
+        log("crypt..................")
+        log("crypt - Mike")
+        log("crypt - " + crypt.encrypt("Mike"))
+        val dec = crypt.decrypt(crypt.encrypt("Mike"))
+        log("crypt -- $dec")
+        log("crypt -- " + String(dec))
+        log("crypt -- " + String(crypt.decrypt("e79c9a163df5eaf4de2283a481edb0a89082fb60437b4c5a453c72ba6136f03a")))
+        log("crypt..................")
     }
 
     var isAutologin = false

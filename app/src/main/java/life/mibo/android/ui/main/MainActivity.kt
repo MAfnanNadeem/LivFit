@@ -995,6 +995,25 @@ class MainActivity : BaseActivity(), Navigator {
             }
             COMMAND_FIRMWARE_REVISION_RESPONSE -> {
                 logw("parseCommandsExtra COMMAND_FIRMWARE_REVISION_RESPONSE")
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    if (d.uid == uid) {
+                        d.firmware = DataParser.getFirmwareFromCommand(command)
+//                        if (!d.checkCompatibleFirmwareVersion(
+//                                BuildConfig.MIN_FIRMWARE_VERSION,
+//                                d.getDeviceFirmwareVersion()
+//                            )
+//                        ) {
+//                            CommunicationManager.log("Incompatible FIRMWARE")
+//                            SessionManager.getInstance().session.getRegisteredDevicebyUid(uid)
+//                                .setFirmwareUpdated(false)
+//                            EventBus.getDefault()
+//                                .postSticky(NewFirmwareAlarmEvent(uid))
+//                        } else {
+//                            CommunicationManager.log("Compatible FIRMWARE")
+//                        }
+                    }
+                }
             }
             COMMAND_SET_DEVICE_COLOR_RESPONSE -> {
                 logw("parseCommandsExtra COMMAND_SET_DEVICE_COLOR_RESPONSE")
@@ -1709,14 +1728,14 @@ class MainActivity : BaseActivity(), Navigator {
 //
             R.id.nav_test4 -> {
 
-                val list = ArrayList(SessionManager.getInstance().userSession.devices)
-                if (list.size > 0)
-                    for (d in list) {
-                        if (d.isRxt) {
-                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-                            return
-                        }
-                    }
+//                val list = ArrayList(SessionManager.getInstance().userSession.devices)
+//                if (list.size > 0)
+//                    for (d in list) {
+//                        if (d.isRxt) {
+//                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+//                            return
+//                        }
+//                    }
                 lastId = -1
                 startScanningView(true, DeviceScanFragment.RXT)
                 // SessionManager.getInstance().userSession.createDummy()

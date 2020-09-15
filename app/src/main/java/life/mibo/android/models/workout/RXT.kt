@@ -8,7 +8,7 @@ data class RXT(
     @SerializedName("Blocks")
         var blocks: List<RXTBlock?>?,
     @SerializedName("Category")
-        var category: String?,
+        var category: Any?,
     @SerializedName("RXTIsland")
         var rXTIsland: RXTIsland?,
     @SerializedName("WorkStationHeight")

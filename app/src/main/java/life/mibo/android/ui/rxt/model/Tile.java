@@ -19,6 +19,11 @@ public class Tile implements Serializable {
         isAdded = !isAdded;
     }
 
+    public Tile(String uid, int tileId) {
+        this.uid = uid;
+        this.tileId = tileId;
+    }
+
     public Tile(String uid, int controllerId, int tileId, Boolean selected, Boolean added) {
         //this.device = device;
         this.uid = uid;

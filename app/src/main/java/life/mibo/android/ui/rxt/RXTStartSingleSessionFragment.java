@@ -35,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     private EMS emsProgram;
     ImageView islandImage;
     private float speed = 1.0f;
+    private float actionTime = 1;
     private float interval = 0.1f;
     private int islandId = 0;
 
@@ -148,7 +150,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             return;
         if (speed < 3.0) {
             speed += interval;
-            tvSpeed.setText(String.format("%.01f", speed));
+            tvSpeed.setText(String.format("%.01f sec", ((actionTime * speed) / 1000)));
         }
     }
 
@@ -157,7 +159,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             return;
         if (speed > 0.1) {
             speed -= interval;
-            tvSpeed.setText(String.format("%.01f", speed));
+            //tvSpeed.setText(String.format("%.01f", speed));
+            tvSpeed.setText(String.format("%.01f", ((actionTime * speed) / 1000)));
         }
     }
 
@@ -190,6 +193,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 tvBlocks.setText("Blocks:");
 
                 if (blocks != null && !blocks.isEmpty()) {
+                    actionTime = blocks.get(0).getAction();
                     for (RXT.RXTBlock b : blocks) {
                         Chip chip = new Chip(chipGroup.getContext());
                         chip.setText(b.getRXTType() + " x " + b.getRounds() + " - " + b.getRXTTotalDuration() + " sec");
@@ -272,6 +276,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     private boolean isProgramStarted = false;
 
     private boolean onStartRxt(String tiles) {
+        log("onStartRxt $tiles " + tiles);
         // RXTManager.Companion.getInstance().with(RX)
         if (tiles != null && tiles.length() > 10) {
             String[] array = tiles.split(",");
@@ -377,11 +382,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         if (loc == null)
             loc = "0";
 
-        String date = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(LocalDate.now());
+        //ateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now());
+        String date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
         List<SaveMemberScores.Score> scores = new ArrayList<>();
         if (list != null) {
             for (ScoreItem item : list) {
-                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), ""+item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId()));
+                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), "" + item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId()));
             }
         }
         if (scores.isEmpty())
@@ -600,7 +606,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     private void nextClicked() {
-       // getCompositionRoot().getScreensNavigator().toRxtHome();
+        // getCompositionRoot().getScreensNavigator().toRxtHome();
     }
 
 

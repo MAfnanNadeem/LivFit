@@ -95,7 +95,7 @@ class SelectIslandDialog(c: Context, var listner: ItemClickListener<GetAllIsland
         val member = Prefs.get(context).member ?: return
         progressBar?.visibility = View.VISIBLE
         API.request.getApi().getAllIsland(
-            GetAllIslandPost(GetAllIslandPost.Data(""), member.accessToken!!)
+            GetAllIslandPost(GetAllIslandPost.Data(""), member.accessToken!!, "GetAllIsland")
         ).enqueue(object : Callback<GetAllIslands> {
             override fun onFailure(call: Call<GetAllIslands>, t: Throwable) {
                 progressBar?.visibility = View.GONE

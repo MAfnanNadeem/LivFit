@@ -44,7 +44,14 @@ class ConfigureIslandActivity : BaseActivity() {
     companion object {
 
         const val REQUEST_CODE = 2345
-        fun launch(context: androidx.fragment.app.Fragment, name: String?, id: Int, width: Int, height: Int, total: Int) {
+        fun launch(
+            context: androidx.fragment.app.Fragment,
+            name: String?,
+            id: Int,
+            width: Int,
+            height: Int,
+            total: Int
+        ) {
             val intent = Intent(context.context, ConfigureIslandActivity::class.java)
             intent.putExtra("island_name", name)
             intent.putExtra("island_id", id)
@@ -133,6 +140,7 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
         val list = islandAdapter!!.selectedCopy
+
         if (list == null || list.isEmpty()) {
             Toasty.snackbar(btn_save_island, "Please add tiles to save")
             return
@@ -142,10 +150,18 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
         AlertDialog.Builder(this).setTitle("Save Island?")
-                .setMessage("Make sure you play the sequence, Island will perform the sequence as in order tile was added")
-                .setPositiveButton("SAVE") { dialog: DialogInterface?, which: Int -> saveIsland(list) }
-                .setNeutralButton("PLAY SEQUENCE") { dialog: DialogInterface?, which: Int -> playSequence(list) }
-                .show()
+            .setMessage("Make sure you play the sequence, Island will perform the sequence as in order tile was added")
+            .setPositiveButton("SAVE") { dialog: DialogInterface?, which: Int ->
+                //log("setPositiveButton $list")
+                saveIsland(list)
+                //updateIsland(list)
+            }
+            .setNeutralButton("PLAY SEQUENCE") { dialog: DialogInterface?, which: Int ->
+                playSequence(
+                    list
+                )
+            }
+            .show()
     }
 
     private fun saveIsland(list: List<Tile>) {
@@ -208,6 +224,68 @@ class ConfigureIslandActivity : BaseActivity() {
 
     }
 
+    private fun updateIsland(list: List<Tile>) {
+        // API
+        log("islands : $list")
+        val trainer = Prefs.get(this).member ?: return
+        val locId = trainer.locationID
+        if (locId.isNullOrEmpty()) {
+            Toasty.info(this, getString(R.string.invalid_locationid)).show()
+            return
+        }
+
+        getDialog()?.show()
+        var first = true
+        val builder = StringBuilder()
+        for (tile in list) {
+            if (!first)
+                builder.append(",")
+            builder.append(tile.uid)
+            builder.append("-")
+            builder.append(tile.tileId)
+            first = false
+        }
+        val tiles = builder.toString()
+        log("builder : $builder")
+        log("tiles : $tiles")
+
+        val post = SaveIslandPost(
+            SaveIslandPost.Data(
+                islandId,
+                trainer.id,
+                locId,
+                tiles
+            ), trainer.accessToken, "UpdateIslandTiles"
+        )
+        API.request.getApi().updateIslandTiles(post).enqueue(object : Callback<ResponseStatus> {
+            override fun onFailure(call: Call<ResponseStatus>, t: Throwable) {
+                getDialog()?.dismiss()
+            }
+
+            override fun onResponse(
+                call: Call<ResponseStatus>,
+                response: Response<ResponseStatus>
+            ) {
+                getDialog()?.dismiss()
+                if (response.body()?.isSuccess() == true) {
+                    Toasty.info(this@ConfigureIslandActivity, "Island saved successfully").show()
+                    intent?.putExtra("tiles_config", tiles)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                } else {
+                    Toasty.info(
+                        this@ConfigureIslandActivity,
+                        response.body()?.errors?.get(0)?.message ?: "Error Occurred"
+                    ).show()
+                }
+            }
+
+        })
+
+    }
+
+
+
     private fun setupMainAdapter() {
         val devices = SessionManager.getInstance().userSession.devices
         //ArrayList<String> list = new ArrayList<>();
@@ -223,7 +301,16 @@ class ConfigureIslandActivity : BaseActivity() {
                 //log("setupAdapter UID "+uid);
                 if (tileCount > 0) {
                     for (i in 0 until tileCount) {
-                        tiles.add(Tile(uid, controllerId, i + 1, false, false, R.drawable.bg_tile_generic))
+                        tiles.add(
+                            Tile(
+                                uid,
+                                controllerId,
+                                i + 1,
+                                false,
+                                false,
+                                R.drawable.bg_tile_generic
+                            )
+                        )
                     }
                 }
                 controllers.add(Controller(uid, controllerId, tileCount, tiles))
@@ -248,7 +335,8 @@ class ConfigureIslandActivity : BaseActivity() {
         for (i in 0 until total) {
             list.add(Tile("", i, 0, false, false, true))
         }
-        recyclerViewSelected.layoutManager = StaggeredGridLayoutManager(islandY, StaggeredGridLayoutManager.VERTICAL)
+        recyclerViewSelected.layoutManager =
+            StaggeredGridLayoutManager(islandY, StaggeredGridLayoutManager.VERTICAL)
         //islandRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         islandAdapter = ChildAdapter(list, object : ItemClickListener<Any> {
             override fun onItemClicked(item: Any?, position: Int) {
@@ -289,34 +377,36 @@ class ConfigureIslandActivity : BaseActivity() {
 
     fun refreshSpan() {
         recyclerView.viewTreeObserver.addOnGlobalLayoutListener(
-                object : OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        val viewWidth = recyclerView.measuredWidth
-                        val cardViewWidth = recyclerView.resources.getDimension(R.dimen.rxt_child_item)
-                        val newSpanCount = Math.floor(viewWidth.div(cardViewWidth.toDouble())).toInt()
-                        mainAdapter!!.setSpanCount(newSpanCount)
-                        //manager.requestLayout();
-                        mainAdapter!!.notifyDataSetChanged()
-                    }
-                })
+            object : OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    val viewWidth = recyclerView.measuredWidth
+                    val cardViewWidth = recyclerView.resources.getDimension(R.dimen.rxt_child_item)
+                    val newSpanCount = Math.floor(viewWidth.div(cardViewWidth.toDouble())).toInt()
+                    mainAdapter!!.setSpanCount(newSpanCount)
+                    //manager.requestLayout();
+                    mainAdapter!!.notifyDataSetChanged()
+                }
+            })
     }
 
     fun refreshIslandSpan() {
         recyclerView?.viewTreeObserver?.addOnGlobalLayoutListener(
-                object : OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        recyclerView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                        val viewWidth: Int? = recyclerView?.measuredWidth
-                        val cardViewWidth: Float? = recyclerView?.resources?.getDimension(R.dimen.rxt_child_item)
-                        val newSpanCount = Math.floor(viewWidth!!.div(cardViewWidth!!.toDouble())).toInt()
-                        val manager: RecyclerView.LayoutManager? = recyclerView.layoutManager
-                        if (manager is GridLayoutManager) {
-                            manager.spanCount = newSpanCount
-                            islandAdapter!!.notifyDataSetChanged()
-                        }
+            object : OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    recyclerView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                    val viewWidth: Int? = recyclerView?.measuredWidth
+                    val cardViewWidth: Float? =
+                        recyclerView?.resources?.getDimension(R.dimen.rxt_child_item)
+                    val newSpanCount =
+                        Math.floor(viewWidth!!.div(cardViewWidth!!.toDouble())).toInt()
+                    val manager: RecyclerView.LayoutManager? = recyclerView.layoutManager
+                    if (manager is GridLayoutManager) {
+                        manager.spanCount = newSpanCount
+                        islandAdapter!!.notifyDataSetChanged()
                     }
-                })
+                }
+            })
     }
 
     private var lastUpdateId = -1;
@@ -350,7 +440,7 @@ class ConfigureIslandActivity : BaseActivity() {
         if (playNeedUpdate == empty) return
         playNeedUpdate = empty
         if (empty) {
-           // btn_play?.setColorFilter(Color.GRAY)
+            // btn_play?.setColorFilter(Color.GRAY)
             tv_empty?.visibility = View.VISIBLE
         } else {
             //btn_play?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
@@ -365,7 +455,8 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
         Single.fromCallable {
-            CommunicationManager.getInstance().onChangeRxtColorEvent(ChangeColorEvent(uid, tileId, color, time, 0))
+            CommunicationManager.getInstance()
+                .onChangeRxtColorEvent(ChangeColorEvent(uid, tileId, color, time, 0))
             ""
         }.subscribeOn(Schedulers.io()).doOnError { }.subscribe()
     }
@@ -376,7 +467,8 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
         Single.fromCallable {
-            CommunicationManager.getInstance().onRxtBlinkAll(ChangeColorEvent(uid, "" + cycle, color, timeOn, timeOff))
+            CommunicationManager.getInstance()
+                .onRxtBlinkAll(ChangeColorEvent(uid, "" + cycle, color, timeOn, timeOff))
             ""
         }.subscribeOn(Schedulers.io()).doOnError { }.subscribe()
     }
@@ -388,15 +480,19 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
         log("blinkAll2 $uid")
-        Observable.fromIterable(uid).doOnError { throwable -> log("blinkAll2 adoOnError accept $throwable") }.subscribeOn(Schedulers.io()).doOnComplete { log("blinkAll2 doOnComplete run...") }.doOnNext { s ->
-            log("blinkAll2 doOnNext accept : $s")
-            try {
-                CommunicationManager.getInstance().onRxtBlinkAll(ChangeColorEvent(s, "" + cycle, color, 500, 500))
-                Thread.sleep(200)
-            } catch (e: Exception) {
-                log("blinkAll2 doOnNext error : " + e.message)
-            }
-        }.subscribe()
+        Observable.fromIterable(uid)
+            .doOnError { throwable -> log("blinkAll2 adoOnError accept $throwable") }
+            .subscribeOn(Schedulers.io()).doOnComplete { log("blinkAll2 doOnComplete run...") }
+            .doOnNext { s ->
+                log("blinkAll2 doOnNext accept : $s")
+                try {
+                    CommunicationManager.getInstance()
+                        .onRxtBlinkAll(ChangeColorEvent(s, "" + cycle, color, 500, 500))
+                    Thread.sleep(200)
+                } catch (e: Exception) {
+                    log("blinkAll2 doOnNext error : " + e.message)
+                }
+            }.subscribe()
     }
 
     fun playSequence(tiles: List<Tile>) {
@@ -406,17 +502,25 @@ class ConfigureIslandActivity : BaseActivity() {
         }
         val color = Color.BLUE
         Observable.fromIterable(tiles)
-                .doOnError { throwable: Throwable -> log("playSequence doOnError accept $throwable") }
-                .subscribeOn(Schedulers.io()).doOnComplete { log("playSequence doOnComplete run...") }
-                .doOnNext { tile: Tile ->
-                    log("playSequence doOnNext accept : $tile")
-                    try {
-                        CommunicationManager.getInstance().onChangeRxtColorEvent(ChangeColorEvent(tile.uid, "" + tile.tileId, color, 500, 0))
-                        Thread.sleep(500)
-                    } catch (e: Exception) {
-                        log("playSequence doOnNext error : " + e.message)
-                    }
-                }.subscribe()
+            .doOnError { throwable: Throwable -> log("playSequence doOnError accept $throwable") }
+            .subscribeOn(Schedulers.io()).doOnComplete { log("playSequence doOnComplete run...") }
+            .doOnNext { tile: Tile ->
+                log("playSequence doOnNext accept : $tile")
+                try {
+                    CommunicationManager.getInstance().onChangeRxtColorEvent(
+                        ChangeColorEvent(
+                            tile.uid,
+                            "" + tile.tileId,
+                            color,
+                            500,
+                            0
+                        )
+                    )
+                    Thread.sleep(500)
+                } catch (e: Exception) {
+                    log("playSequence doOnNext error : " + e.message)
+                }
+            }.subscribe()
     }
 
     private fun toast(s: String) {

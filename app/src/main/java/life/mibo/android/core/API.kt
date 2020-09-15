@@ -15,6 +15,7 @@ import life.mibo.android.models.create_session.SaveSessionPost
 import life.mibo.android.models.login.LoginResponse
 import life.mibo.android.models.login.LoginUser
 import life.mibo.android.models.login.SocialLoginUser
+import life.mibo.android.models.login.UpdateNumber
 import life.mibo.android.models.member.*
 import life.mibo.android.models.muscle.GetSuitPost
 import life.mibo.android.models.muscle.GetSuits
@@ -29,10 +30,7 @@ import life.mibo.android.models.program.SearchPrograms
 import life.mibo.android.models.register.RegisterMember
 import life.mibo.android.models.register.RegisterResponse
 import life.mibo.android.models.rxl.*
-import life.mibo.android.models.rxt.GetAllIslands
-import life.mibo.android.models.rxt.GetIslandPost
-import life.mibo.android.models.rxt.GetIslandTiles
-import life.mibo.android.models.rxt.SaveIslandPost
+import life.mibo.android.models.rxt.*
 import life.mibo.android.models.send_otp.SendOTP
 import life.mibo.android.models.send_otp.SendOtpResponse
 import life.mibo.android.models.session.RequestRescheduleMemberSession
@@ -49,10 +47,7 @@ import life.mibo.android.models.weight.CompareMemberWeight
 import life.mibo.android.models.weight.CompareWeightResponse
 import life.mibo.android.models.weight.WeightAll
 import life.mibo.android.models.weight.WeightAllResponse
-import life.mibo.android.models.workout.GetWorkout
-import life.mibo.android.models.workout.SearchWorkout
-import life.mibo.android.models.workout.SearchWorkoutPost
-import life.mibo.android.models.workout.Workouts
+import life.mibo.android.models.workout.*
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.utils.Utils
 import life.mibo.hardware.core.Logger
@@ -88,7 +83,6 @@ class API {
         } else {
             OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).cache(getCache()).build()
         }
-
     }
 
 
@@ -173,6 +167,10 @@ class API {
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("registerUser")
         fun register(@Body data: RegisterMember): Call<RegisterResponse>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("updateNumber")
+        fun updateNumber(@Body data: UpdateNumber): Call<ResponseStatus>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("registerInvitedMember")
@@ -491,6 +489,9 @@ class API {
         @POST("saveIslandTiles")
         fun saveIslandTiles(@Body data: SaveIslandPost): Call<ResponseStatus>
 
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("updateIslandTiles")
+        fun updateIslandTiles(@Body data: SaveIslandPost): Call<ResponseStatus>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getIslandTiles")
@@ -498,7 +499,19 @@ class API {
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getAllIsland")
-        fun getAllIsland(@Body data: MemberPost): Call<GetAllIslands>
+        fun getAllIsland(@Body data: GetAllIslandPost): Call<GetAllIslands>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getIslandTilesByLocation")
+        fun getIslandsByLocation(@Body data: GetAllIslandPost): Call<GetAllIslandsByLocation>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveMemberScores")
+        fun saveScore(@Body data: SaveMemberScores): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMemberScores")
+        fun getScore(@Body data: GetMemberScores): Call<GetMemberScoresReport>
 
 
     }

@@ -28,6 +28,7 @@ import life.mibo.android.core.security.Encrypt
 import life.mibo.android.models.trainer.TrainerCalendarResponse
 import life.mibo.android.models.trainer.TrainerCalendarSession
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.core.Logger
 import org.threeten.bp.Duration
@@ -179,6 +180,7 @@ class TrainerCalendarDialog(var calendarListener: ItemClickListener<TrainerSessi
         if (data?.sessions != null) {
             if (data?.sessions?.size ?: 0 > 0) {
                 tv_empty?.visibility = View.GONE
+
                 val crypt = Encrypt()
                 val dateTimeParser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 val parser = DateTimeFormatter.ofPattern("hh:mm a")
@@ -232,6 +234,28 @@ class TrainerCalendarDialog(var calendarListener: ItemClickListener<TrainerSessi
 
                     }
                 }
+
+                if (MiboApplication.DEBUG) {
+                    dayList.add(
+                        TrainerSession(
+                            100,
+                            100,
+                            formatter.format(LocalDate.now()),
+                            parser.format(LocalDateTime.now()),
+                            parser.format(LocalDateTime.now().plusMinutes(30)),
+                            "Sumeet",
+                            "",
+                            "Test Session",
+                            "28",
+                            "178",
+                            "68",
+                            0,
+                            0,
+                            30
+                        )
+                    )
+                }
+
                 activity?.runOnUiThread {
                     progressBar?.visibility = View.GONE
                     recyclerView?.adapter?.notifyDataSetChanged()
@@ -357,8 +381,13 @@ class TrainerCalendarDialog(var calendarListener: ItemClickListener<TrainerSessi
                 text2?.text = item?.event
                 start?.text = item?.startTime
                 end?.text = item?.endTime
-                if (item.profile != null && item.profile!!.isNotEmpty())
-                    Glide.with(itemView).load(item.profile).centerCrop().into(image!!)
+                if (item.profile != null && item.profile!!.isNotEmpty()) {
+                    Glide.with(itemView).load(item.profile).centerCrop()
+                        .error(R.drawable.ic_user_test).fallback(R.drawable.ic_user_test)
+                        .into(image!!)
+                } else {
+                    Glide.with(itemView).load(R.drawable.ic_user_test).into(image!!)
+                }
                 if (item.started == 1) {
                     viewStarted?.setBackgroundColor(Color.RED)
                     completed?.visibility = View.VISIBLE

@@ -12,7 +12,7 @@ android {
         config {
             keyAlias 'keyMiBo'
             keyPassword 'MiBoR!23'
-            storeFile file('D:/Sumit/KeyMiBo.jks')
+            storeFile file('C:/sumit/android/mibo/KeyMiBo.jks')
             storePassword 'MiBoR!23'
             //20:10:58:76:96:67:98:5A:F3:95:55:AE:1A:C8:06:84:EA:C5:B9:92
         }
@@ -48,17 +48,18 @@ android {
         debug {
             //applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
-           // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
             //signingConfig signingConfigs.config
-           // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-           // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
             buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
             matchingFallbacks = ['debug']
         }
 
     }
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
@@ -184,10 +185,10 @@ dependencies {
 
     implementation 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     //implementation 'org.springframework.android:spring-android-rest-template:2.0.0.M1'
-    implementation ('org.simpleframework:simple-xml:2.7.1',{
-        exclude group:'stax', module:'stax'
-        exclude group:'stax', module:'stax-api'
-        exclude group:'xpp3', module:'xpp3'
+    implementation('org.simpleframework:simple-xml:2.7.1', {
+        exclude group: 'stax', module: 'stax'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
     })
 
 
@@ -215,6 +216,6 @@ dependencies {
     debugImplementation "com.github.ChuckerTeam.Chucker:library:3.0.1"
     releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:3.0.1"
 
-   // implementation files('libs/telrlibrary_3_5.aar')
+    // implementation files('libs/telrlibrary_3_5.aar')
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

@@ -169,9 +169,13 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         }
 
 
-        checkAndScan()
         isRxl = arguments?.getBoolean("is_rxl") ?: false
         searchType = arguments?.getInt("is_search_type", 0) ?: 0
+        if (searchType == RXT) {
+            isWifi = true
+            wifi_switch_?.setChecked(isWifi)
+        }
+        checkAndScan()
         //if (isRxl)
         button_next?.text = getString(R.string.next)
 
@@ -192,6 +196,15 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         //testSignals()
 
         //isBluetoothEnable()
+    }
+
+    fun setDefaultMode(isWifi_: Boolean) {
+        if (isWifi_) {
+            isWifi = true
+            wifi_switch_?.setChecked(isWifi)
+        } else {
+
+        }
     }
 
     private fun onNextClicked() {
@@ -621,8 +634,8 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         EventBus.getDefault().removeStickyEvent(event)
 
         log("DeviceStatusEvent Device ${event.device?.uid}")
-       // if (event.device == null)
-       //     return
+        // if (event.device == null)
+        //     return
         availabeAdapter?.updateDevice(event.device)
         if (!isConnected || button_next?.visibility != View.VISIBLE) {
             isConnected = true
@@ -1103,7 +1116,6 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
 //            bleClient.value?.getBleDevice(mac)?.establishConnection(false)
 //        }
 //    }
-
 
 
 }

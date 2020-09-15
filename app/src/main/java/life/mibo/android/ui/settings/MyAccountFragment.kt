@@ -333,7 +333,7 @@ class MyAccountFragment : BaseFragment() {
         }
     }
 
-    var isRxt = false
+    var isRxt = true
 
     private fun setAdapters(isMember: Boolean) {
         swipeToRefresh?.isEnabled = false
@@ -380,7 +380,9 @@ class MyAccountFragment : BaseFragment() {
 
         if (isRxt) {
             list.add(Item(TYPE.RXT_HEADER, isHeader = true))
-            list.add(Item(TYPE.REACT_SESSION, isSingle = true))
+            list.add(Item(TYPE.REACT_SESSION, isTop = true))
+            list.add(Item(TYPE.REACT_TILE_CONFIG, isMiddle = true))
+            list.add(Item(TYPE.REACT_ID_CONFIG, isBottom = true))
         }
 
         list.add(Item(TYPE.SETTINGS_HEADER, isHeader = true))
@@ -436,6 +438,9 @@ class MyAccountFragment : BaseFragment() {
             }
             TYPE.REACT_SESSION -> {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(2))
+            }
+            TYPE.REACT_TILE_CONFIG -> {
+                navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(5))
             }
             TYPE.GOOGLE_FIT -> {
                 checkPermission()
@@ -497,6 +502,8 @@ class MyAccountFragment : BaseFragment() {
         POLICIES(R.string.policies),
         ABOUT_APP(R.string.app_name_version),
         REACT_SESSION(R.string.rxt_sessions),
+        REACT_TILE_CONFIG(R.string.rxt_tile_config),
+        REACT_ID_CONFIG(R.string.rxt_id_config),
         //SESSION(R.string.view_sessions),
     }
 

@@ -66,7 +66,7 @@ public class ChildAdapter extends RecyclerView.Adapter<ChildHolder> {
             }
         } else {
             for (Tile t : tiles) {
-                if (t.tileId == tile.tileId) {
+                if (t.tileId == tile.tileId && t.uid.equals(tile.uid)) {
                     Logger.e("update remove controllerId matched " + t + " -- " + tile);
                     t.tileId = 0;
                     t.isEmpty = true;

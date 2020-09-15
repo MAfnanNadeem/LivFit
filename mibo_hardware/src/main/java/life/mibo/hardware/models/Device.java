@@ -73,6 +73,7 @@ public class Device implements Serializable, BaseModel {
     private String characteristics = "";
 
     private String comments = "";
+    private String firmware = "";
 
     private int active = 1;
     private int adapterPosition = 0;
@@ -528,6 +529,14 @@ public class Device implements Serializable, BaseModel {
 
 
         }
+    }
+
+    public void setFirmware(String firmware) {
+        this.firmware = firmware;
+    }
+
+    public String getFirmware() {
+        return firmware;
     }
 
     public void setAdapterPosition(int adapterPosition) {

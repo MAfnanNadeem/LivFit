@@ -277,6 +277,8 @@
     <string name="change_password">Change Password</string>
     <string name="reset_password">Reset Password</string>
     <string name="rxt_sessions">React Sessions</string>
+    <string name="rxt_id_config">ID Configuration</string>
+    <string name="rxt_tile_config">Tile Configuration</string>
     <string name="sessions">Sessions</string>
     <string name="sessions2">Sessions:</string>
     <string name="hours">Hours</string>

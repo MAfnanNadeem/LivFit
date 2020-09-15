@@ -11,21 +11,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_recycler.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.models.base.PostData
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.calories.CaloriesData
-import life.mibo.android.models.rxt.GetMemberScores
-import life.mibo.android.models.rxt.GetMemberScoresReport
+import life.mibo.android.models.rxt.*
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.rxt.RXTUtils.playSequence
+import life.mibo.android.ui.rxt.model.Tile
 import life.mibo.hardware.core.Logger
 import org.threeten.bp.LocalTime
 import org.threeten.bp.temporal.ChronoUnit
@@ -94,6 +98,8 @@ class ViewSessionsFragment : BaseFragment() {
     fun getApis() {
         if (type_ == 2) {
             getReactSession()
+        } else if (type_ == 5) {
+            getAllIslands()
         } else {
             getSessions()
         }
@@ -109,15 +115,48 @@ class ViewSessionsFragment : BaseFragment() {
                 hideProgress()
             }
 
-            override fun onResponse(call: Call<GetMemberScoresReport>, response: Response<GetMemberScoresReport>) {
+            override fun onResponse(
+                call: Call<GetMemberScoresReport>,
+                response: Response<GetMemberScoresReport>
+            ) {
                 hideProgress()
                 // fragment.getDialog()?.dismiss()
                 //val data = response.body()
-                //parseData(response?.body()?.data)
+                parseRXTScores(response?.body()?.data)
             }
         })
 
     }
+
+    private fun getAllIslands() {
+        val member = Prefs.get(context).member ?: return
+        showProgress()
+
+        val post =
+            GetAllIslandPost(
+                GetAllIslandPost.Data("${member.locationID}"),
+                member.accessToken,
+                "GetIslandTilesByLocation"
+            )
+        API.request.getApi().getIslandsByLocation(post)
+            .enqueue(object : Callback<GetAllIslandsByLocation> {
+                override fun onFailure(call: Call<GetAllIslandsByLocation>, t: Throwable) {
+                    hideProgress()
+                }
+
+                override fun onResponse(
+                    call: Call<GetAllIslandsByLocation>,
+                    response: Response<GetAllIslandsByLocation>
+                ) {
+                    hideProgress()
+                    // fragment.getDialog()?.dismiss()
+                    val data = response.body()
+                    parseIslands(data?.data)
+                }
+            })
+
+    }
+
 
     private fun getSessions() {
         val member = Prefs.get(context).member ?: return
@@ -137,6 +176,32 @@ class ViewSessionsFragment : BaseFragment() {
             }
         })
 
+    }
+
+
+    private fun parseRXTScores(list: List<GetMemberScoresReport.Data?>?) {
+
+        if (list == null || list.isEmpty()) {
+            tv_empty?.setText(R.string.no_data_found)
+            tv_empty?.visibility = View.VISIBLE
+            return
+        }
+
+        val sessions = ArrayList<GetMemberScoresReport.Data>()
+        for (c in list) {
+            if (c != null)
+                sessions.add(c)
+        }
+
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        val addressAdapters =
+            RxtScoreAdapters(sessions, object : ItemClickListener<GetMemberScoresReport.Data> {
+                override fun onItemClicked(item: GetMemberScoresReport.Data?, position: Int) {
+
+                }
+            })
+
+        recyclerView?.adapter = addressAdapters
     }
 
     private fun parseData(list: List<CaloriesData?>?) {
@@ -165,10 +230,79 @@ class ViewSessionsFragment : BaseFragment() {
     }
 
 
+    private fun parseIslands(list: List<GetAllIslandsByLocation.Island?>?) {
+
+        if (list == null || list.isEmpty()) {
+            tv_empty?.setText(R.string.no_data_found)
+            tv_empty?.visibility = View.VISIBLE
+            return
+        }
+
+        val clients = ArrayList<GetAllIslandsByLocation.Island>()
+        for (c in list) {
+            if (c != null) {
+                clients.add(c)
+            }
+        }
+
+        recyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        val addressAdapters =
+            ViewIslandAdapters(
+                clients,
+                object : ItemClickListener<GetAllIslandsByLocation.Island?> {
+                    override fun onItemClicked(
+                        item: GetAllIslandsByLocation.Island?,
+                        position: Int
+                    ) {
+                        try {
+                            item?.tiles?.let {
+                                val tiles = it.split(",")
+                                val list = ArrayList<Tile>()
+                                for (i in tiles) {
+                                    val sp = i.split("-")
+                                    list.add(Tile(sp[0], sp[1].toIntOrNull() ?: 0))
+                                }
+                                playSequence(list)
+                            }
+                        } catch (e: Exception) {
+
+                        }
+                    }
+                })
+
+        recyclerView?.adapter = addressAdapters
+    }
+
+
     class SessionAdapters(
         val type: Int = 1,
         val list: ArrayList<CaloriesData>,
         val listener: ItemClickListener<CaloriesData>?
+    ) : RecyclerView.Adapter<Holder>() {
+        var grid = false
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+            return Holder(
+                LayoutInflater.from(parent.context)
+                    .inflate(
+                        R.layout.list_item_session_history,
+                        parent,
+                        false
+                    )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return list.size
+        }
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            holder.bind(list[position])
+        }
+    }
+
+    class RxtScoreAdapters(
+        val list: ArrayList<GetMemberScoresReport.Data>,
+        val listener: ItemClickListener<GetMemberScoresReport.Data>?
     ) : RecyclerView.Adapter<Holder>() {
         var grid = false
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -198,6 +332,9 @@ class ViewSessionsFragment : BaseFragment() {
         var minutes: TextView? = itemView.findViewById(R.id.tv_minutes)
         var calories: TextView? = itemView.findViewById(R.id.tv_calories)
         var date: TextView? = itemView.findViewById(R.id.tv_date_name)
+        var service_header: TextView? = itemView.findViewById(R.id.tv_service)
+        var program_header: TextView? = itemView.findViewById(R.id.tv_program)
+        var trainer_header: TextView? = itemView.findViewById(R.id.tv_trainer)
         var service: TextView? = itemView.findViewById(R.id.tv_service_name)
         var program: TextView? = itemView.findViewById(R.id.tv_program_name)
         var trainer: TextView? = itemView.findViewById(R.id.tv_trainer_name)
@@ -236,6 +373,24 @@ class ViewSessionsFragment : BaseFragment() {
 
         }
 
+        fun bind(item: GetMemberScoresReport.Data?) {
+            Logger.e("CaloriesAdapter bind item $item")
+            if (item == null)
+                return
+
+            minutes?.text = "----"
+            time?.text = "0"
+            calories?.text = "${item.exerciseType?.toUpperCase()}"
+            service_header?.text = "Hits: "
+            program_header?.text = "Missed: "
+            trainer_header?.text = "Total: "
+            service?.text = "${item.hits}"
+            program?.text = "${item.missed}"
+            trainer?.text = "${item.total}"
+            date?.text = "${item.exerciseDate}"
+
+        }
+
         fun getDiff(start: String?, end: String?): String? {
             //.e("CaloriesAdapter getDiff call")
             //val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -253,4 +408,66 @@ class ViewSessionsFragment : BaseFragment() {
             return time
         }
     }
+
+
+    class ViewIslandAdapters(
+        val list: ArrayList<GetAllIslandsByLocation.Island>,
+        val listener: ItemClickListener<GetAllIslandsByLocation.Island?>?
+    ) : RecyclerView.Adapter<ViewIslandAdapters.IslandHolder>() {
+        var grid = false
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): ViewIslandAdapters.IslandHolder {
+            return ViewIslandAdapters.IslandHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(
+                        R.layout.list_item_rxt_view_islands,
+                        parent,
+                        false
+                    )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return list.size
+        }
+
+        override fun onBindViewHolder(holder: ViewIslandAdapters.IslandHolder, position: Int) {
+            holder.bind(list[position], listener)
+        }
+
+        class IslandHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            var image: ImageView? = itemView.findViewById(R.id.imageView1)
+            var name: TextView? = itemView.findViewById(R.id.tv_name)
+            var info: TextView? = itemView.findViewById(R.id.tv_tiles)
+            var tiles: TextView? = itemView.findViewById(R.id.tv_tiles_no)
+            var play: View? = itemView.findViewById(R.id.imageViewPlay)
+
+            fun bind(
+                item: GetAllIslandsByLocation.Island?,
+                listener: ItemClickListener<GetAllIslandsByLocation.Island?>?
+            ) {
+                Logger.e("CaloriesAdapter bind item $item")
+                if (item == null)
+                    return
+
+                name?.text = item.name
+                name?.visibility = View.GONE
+                info?.text = "${item.islandWidth} x ${item.islandHeight}"
+                tiles?.text = "Tiles #: ${item.getTileCount()}"
+                item?.islandImage?.let {
+                    Glide.with(image!!).load(it).fitCenter().into(image!!)
+                }
+
+                play?.setOnClickListener {
+                    listener?.onItemClicked(item, 0)
+                }
+
+            }
+        }
+
+    }
+
 }

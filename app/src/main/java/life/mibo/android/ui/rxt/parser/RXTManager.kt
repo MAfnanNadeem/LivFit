@@ -4,11 +4,12 @@ import android.graphics.Color
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import life.mibo.android.ui.rxt.parser.core.IslandListener
 import life.mibo.android.ui.rxt.parser.core.IslandParser
 import life.mibo.android.ui.rxt.parser.core.RxtListener
+import life.mibo.android.ui.rxt.score.ScoreItem
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.RxtStatusEvent
-import life.mibo.android.ui.rxt.score.ScoreItem
 import java.util.concurrent.TimeUnit
 
 class RXTManager {
@@ -24,12 +25,12 @@ class RXTManager {
         //private var receivedFocusAll = false
 
         fun getInstance(): RXTManager =
-                INSTANCE
-                        ?: synchronized(this) {
-                            Logger.e("RXTManager INSTANCE init ")
-                            INSTANCE = RXTManager()
-                            INSTANCE!!
-                        }
+            INSTANCE
+                ?: synchronized(this) {
+                    Logger.e("RXTManager INSTANCE init ")
+                    INSTANCE = RXTManager()
+                    INSTANCE!!
+                }
     }
 
     private var islandsMap = HashMap<Int, RxtIsland>()
@@ -85,7 +86,7 @@ class RXTManager {
     fun with(list: List<RxtIsland>): RXTManager {
         islandParsers.clear()
         for (i in list) {
-            islandParsers.add(IslandParser(i))
+            islandParsers.add(IslandParser(i, islandListener))
         }
         return this
     }
@@ -93,11 +94,31 @@ class RXTManager {
     fun with(list: List<RxtIsland>, listener: RxtListener): RXTManager {
         islandParsers.clear()
         for (i in list) {
-            islandParsers.add(IslandParser(i))
+            islandParsers.add(IslandParser(i, islandListener))
         }
         this.listener = listener
         return this
     }
+
+    private var islandListener = object : IslandListener {
+        override fun onProgramStart(data: Any?) {
+
+        }
+
+        override fun onProgramEnd(data: Any?) {
+
+        }
+
+        override fun onBlockStart(blockId: Int, round: Int) {
+            listener?.onBlockStart(blockId, round)
+        }
+
+        override fun onBlockEnd(blockId: Int, round: Int) {
+
+        }
+
+    };
+
 
     fun startNow(duration: Long) {
         durationSec = duration
@@ -123,8 +144,11 @@ class RXTManager {
                 if (i.lastTile == it.tile || i.secondTile == it.tile)
                     i.onNext(it)
                 return
-            } else {
-                log("onNext ID NOT matched ${i.islandId} == ${it?.data} ${i.lastTile} or ${i.secondTile} == ${it?.tile}")
+            } else if (i.islandId.plus(1) == it?.data) {
+                log("onNext ID matched islandId.plus(1) ${i.islandId}")
+                if (i.lastTile == it.tile || i.secondTile == it.tile)
+                    i.onNext(it)
+                return
             }
         }
     }
@@ -135,15 +159,15 @@ class RXTManager {
             return
         isStarted = true;
         disposable = Observable.interval(0, 1, TimeUnit.SECONDS).take(durationSec)
-                .subscribeOn(Schedulers.io()).doOnNext {
-                    onTick(it)
-                }.doOnComplete {
-                    onExerciseComplete()
-                }.doOnSubscribe {
-                    onExerciseStart()
-                }.doOnError {
-                    onExerciseError(it)
-                }.subscribe()
+            .subscribeOn(Schedulers.io()).doOnNext {
+                onTick(it)
+            }.doOnComplete {
+                onExerciseComplete()
+            }.doOnSubscribe {
+                onExerciseStart()
+            }.doOnError {
+                onExerciseError(it)
+            }.subscribe()
 
     }
 

@@ -388,6 +388,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
         try {
             currentProgram?.let {
+                timeTotalDuration = it.getDuration()
                 RXLManager.getInstance().with(it).withListener(this).start(tap)
             }
         } catch (e: java.lang.Exception) {
@@ -1824,17 +1825,22 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         countTimer?.cancel()
     }
 
+    private var timeTotalDuration = 0
+    private var timeElapsed = 0L
+
     private fun startCountDown(seconds: Int) {
         cancelTimer()
         countTimer = object : CountDownTimer(seconds * 1000L, 1000L) {
             override fun onTick(it: Long) {
                 log("CountDownTimer $it")
                 onTimerUpdate(it)
+                timeElapsed = it
             }
 
             override fun onFinish() {
                 onTimerUpdate(0L)
                 cancelTimer()
+                timeElapsed = timeTotalDuration.toLong()
             }
         }
         countTimer?.start()
@@ -2015,6 +2021,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
 
     fun saveScore(players: ArrayList<RxlPlayer>?) {
+        log("saveScore timeElapsed $timeElapsed : $timeTotalDuration")
+        if(MiboApplication.DEBUG)
+            return
         if (players == null)
             return
         val trainer = Prefs.get(this).member ?: return
@@ -2049,7 +2058,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                     "" + trainer.id(),
                     "0",
                     "-",
-                    "" + rxlProgramNew?.id
+                    "" + rxlProgramNew?.id,
+                    ""+timeElapsed
                 )
             )
         }

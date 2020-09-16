@@ -22,4 +22,5 @@ public interface RxtListener {
 
     fun endProgram(cycle: Int, duration: Int)
     fun onTime(islandId: Int, time: Long)
+    fun onBlockStart(blockId: Int, cycle: Int)
 }

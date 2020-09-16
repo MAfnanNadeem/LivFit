@@ -3,7 +3,12 @@ package life.mibo.android.ui.rxt.parser
 import life.mibo.android.models.workout.RXT
 
 
-data class RxtProgram(var name: String, var color: Int, var delay: Int = 0, var blocks: List<RxtBlock>) {
+data class RxtProgram(
+    var name: String,
+    var color: Int,
+    var delay: Int = 0,
+    var blocks: List<RxtBlock>
+) {
 
     companion object {
         fun from(rxt: RXT): RxtProgram {
@@ -14,9 +19,12 @@ data class RxtProgram(var name: String, var color: Int, var delay: Int = 0, var 
                     if (i != null) {
                         //i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
                         //i.rXTAction = 2
-                        val b = RxtBlock(i.getAction(), i.getDuration(), i.getLogicType(), 0, i.pattern
-                                ?: "")
-                        b.delay = i.getDelay()
+                        val b = RxtBlock(
+                            i.getAction(), i.getDuration(), i.getLogicType(), 0, i.pattern
+                                ?: ""
+                        )
+                        b.delay = i.getActionDelay()
+                        b.pause = i.getBlockPause()
                         b.round = i.getRounds()
                         list.add(b)
                     }

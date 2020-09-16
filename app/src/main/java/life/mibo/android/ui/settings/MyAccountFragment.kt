@@ -443,7 +443,7 @@ class MyAccountFragment : BaseFragment() {
             }
             TYPE.REACT_TILE_CONFIG -> {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(5))
-                activity?.title = getString(R.string.rxt_tile_config)
+                activity?.title = getString(R.string.rxt_island_config)
             }
             TYPE.GOOGLE_FIT -> {
                 checkPermission()
@@ -505,7 +505,7 @@ class MyAccountFragment : BaseFragment() {
         POLICIES(R.string.policies),
         ABOUT_APP(R.string.app_name_version),
         REACT_SESSION(R.string.rxt_sessions),
-        REACT_TILE_CONFIG(R.string.rxt_tile_config),
+        REACT_TILE_CONFIG(R.string.rxt_island_config),
         REACT_ID_CONFIG(R.string.rxt_id_config),
         //REACT_SESSION2(R.string.rxl_sessions),
         //SESSION(R.string.view_sessions),

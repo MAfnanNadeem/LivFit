@@ -84,6 +84,7 @@ class ConfigureIslandActivity : BaseActivity() {
     var islandName = ""
     var islandId = 0
     var totalTiles = 0
+    var isUpdateMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +113,8 @@ class ConfigureIslandActivity : BaseActivity() {
         islandX = intent?.getIntExtra("island_x", 0) ?: 0
         islandY = intent?.getIntExtra("island_y", 0) ?: 0
         totalTiles = intent?.getIntExtra("island_total", 0) ?: 0
+        isUpdateMode = intent?.getIntExtra("island_update_mode", 0) ?: 0 == 7
+
 
         if (islandId == 0 || islandX == 0 || islandY == 0) {
             setResult(Activity.RESULT_CANCELED)
@@ -151,7 +154,8 @@ class ConfigureIslandActivity : BaseActivity() {
             Toasty.snackbar(btn_save_island, "Island Name can not be empty")
             return
         }
-        AlertDialog.Builder(this).setTitle("Save Island?")
+
+        AlertDialog.Builder(this).setTitle(if(isUpdateMode)  "Update Island?" else "Save Island?")
             .setMessage("Make sure you play the sequence, Island will perform the sequence as in order tile was added")
             .setPositiveButton("SAVE") { dialog: DialogInterface?, which: Int ->
                 //log("setPositiveButton $list")
@@ -167,6 +171,10 @@ class ConfigureIslandActivity : BaseActivity() {
     }
 
     private fun saveIsland(list: List<Tile>) {
+        if (isUpdateMode) {
+            updateIsland(list)
+            return
+        }
         // API
         log("islands : $list")
         val trainer = Prefs.get(this).member ?: return
@@ -270,7 +278,7 @@ class ConfigureIslandActivity : BaseActivity() {
             ) {
                 getDialog()?.dismiss()
                 if (response.body()?.isSuccess() == true) {
-                    Toasty.info(this@ConfigureIslandActivity, "Island saved successfully").show()
+                    Toasty.info(this@ConfigureIslandActivity, "Island Updated Successfully").show()
                     intent?.putExtra("tiles_config", tiles)
                     setResult(Activity.RESULT_OK, intent)
                     finish()
@@ -285,7 +293,6 @@ class ConfigureIslandActivity : BaseActivity() {
         })
 
     }
-
 
 
     private fun setupMainAdapter() {

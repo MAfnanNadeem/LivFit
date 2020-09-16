@@ -2,6 +2,7 @@ package life.mibo.android.ui.rxt;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -34,7 +36,6 @@ import com.halilibo.bvpkotlin.VideoProgressCallback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -55,6 +56,7 @@ import life.mibo.android.models.workout.SaveMemberScores;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
+import life.mibo.android.ui.main.MiboApplication;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
 import life.mibo.android.ui.rxt.parser.RXTManager;
@@ -64,12 +66,14 @@ import life.mibo.android.ui.rxt.parser.RxtTile;
 import life.mibo.android.ui.rxt.parser.core.RxtListener;
 import life.mibo.android.ui.rxt.score.ScoreDialog;
 import life.mibo.android.ui.rxt.score.ScoreItem;
+import life.mibo.android.ui.select_program.ProgramDialog;
 import life.mibo.android.utils.Toasty;
 import life.mibo.android.utils.Utils;
 import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.events.RxlStatusEvent;
 import life.mibo.hardware.events.RxlTapEvent;
 import life.mibo.hardware.events.RxtStatusEvent;
+import life.mibo.views.CircleView;
 import life.mibo.views.PlayButton;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,8 +90,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
 
-    TextView timer, islandName, islandTiles, workoutName, workoutDesc, tvSpeed, tvBlocks;
+    TextView timer, islandName, islandTiles, workoutName, workoutDesc, tvSpeed, tvBlocks, tvBlocksInfo;
     ChipGroup chipGroup;
+    CircleView colorPicker;
     int totalTime = 60;
     PlayButton playButton;
     CheckBox checkVoicePrompt;
@@ -115,9 +120,11 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         workoutDesc = view.findViewById(R.id.tv_desc);
         tvSpeed = view.findViewById(R.id.tv_plus_minus);
         tvBlocks = view.findViewById(R.id.tv_blocks);
+        tvBlocksInfo = view.findViewById(R.id.tv_block_info);
         chipGroup = view.findViewById(R.id.chip_group);
         checkVoicePrompt = view.findViewById(R.id.check_voice_prompt);
         mediaPlayerProgress = view.findViewById(R.id.mediaPlayer_progress);
+        colorPicker = view.findViewById(R.id.color_picker);
 
         // View back = view.findViewById(R.id.btn_back);
         playButton = view.findViewById(R.id.btn_play);
@@ -137,12 +144,25 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             workout = (Workout) getArguments().getSerializable("workout_data");
             int color = getArguments().getInt("selected_color", 0);
             if (color != 0)
-                selectedColor = color;
+                updateColorPicker(color);
         }
         if (workout != null) {
             setupWorkout(workout);
         }
         playButton.setPlay(false);
+        if (colorPicker != null)
+            colorPicker.setOnClickListener(v -> {
+                colorPickerDialog();
+            });
+    }
+
+    private void colorPickerDialog() {
+        if (isProgramStarted)
+            return;
+        new ProgramDialog(requireContext(), new ArrayList<>(), (program, position) -> {
+            if (program != null)
+                updateColorPicker(program.getId());
+        }, 2).showColors();
     }
 
     void plusClicked() {
@@ -171,6 +191,21 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     void setSpeedText() {
         //tvSpeed.setText(String.format(getString(R.string.rxt_action_speed), ((actionTime * speed) / 1000)));
         tvSpeed.setText(getString(R.string.rxt_action_speed, ((actionTime * speed) / 1000)));
+    }
+
+    void updateColorPicker(int color) {
+        if (colorPicker != null) {
+            colorPicker.setCircleColor(color);
+            selectedColor = color;
+        }
+    }
+
+    void updateBlockText(String text) {
+        if (tvBlocksInfo != null) {
+            if (tvBlocksInfo.getVisibility() != View.VISIBLE)
+                tvBlocksInfo.setVisibility(View.VISIBLE);
+            tvBlocksInfo.setText(text);
+        }
     }
 
     private boolean isVoicePrompt = false;
@@ -390,6 +425,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     void saveScore(List<ScoreItem> list) {
+        log("saveScore timeElapsed " + timeElapsed);
+        if (MiboApplication.Companion.getDEBUG())
+            return;
         Member trainer = Prefs.get(getContext()).getMember();
         if (trainer == null)
             return;
@@ -403,7 +441,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         List<SaveMemberScores.Score> scores = new ArrayList<>();
         if (list != null) {
             for (ScoreItem item : list) {
-                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), "" + item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId()));
+                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), "" + item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId(), "" + timeElapsed));
             }
         }
         if (scores.isEmpty())
@@ -459,7 +497,35 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         return 0;
     }
 
+    private int timeElapsed;
+    private int lastBlock = -1;
     RxtListener listener = new RxtListener() {
+
+        @Override
+        public void onBlockStart(int block, int cycle) {
+            updateBlockText("Block " + (block + 1) + " - Cycle " + cycle);
+            try {
+                if (block == lastBlock)
+                    return;
+                //log("onBlockStart " + block);
+                Chip chip = (Chip) chipGroup.getChildAt(block);
+                //log("chip setBackgroundColor " + chip);
+                chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.colorPrimary)));
+                // chip.setCheckedIconVisible(true);
+                //chip.setChecked(true);
+
+                //log("chip setBackgroundColor lastBlock " + lastBlock);
+                if (lastBlock >= 0) {
+                    Chip chip2 = (Chip) chipGroup.getChildAt(lastBlock);
+                    chip2.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.white_eee)));
+                    //log("chip setBackgroundColor chip2 " + chip2);
+                }
+                lastBlock = block;
+            } catch (Exception ee) {
+                //log("chip error " + ee);
+                //ee.printStackTrace();
+            }
+        }
 
         @Override
         public void onTime(int id, long t) {
@@ -469,6 +535,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 String txt = String.format("%02d : %02d", ((int) time / 60), ((int) time % 60));
                 log("onTime " + time + " - " + txt);
                 updateTimer(txt);
+                timeElapsed = time;
             } catch (Exception e) {
                 log("onTime eeee " + e);
                 e.printStackTrace();

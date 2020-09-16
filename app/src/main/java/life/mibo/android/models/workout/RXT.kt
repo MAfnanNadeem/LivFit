@@ -6,41 +6,45 @@ import java.io.Serializable
 
 data class RXT(
     @SerializedName("Blocks")
-        var blocks: List<RXTBlock?>?,
+    var blocks: List<RXTBlock?>?,
     @SerializedName("Category")
-        var category: Any?,
+    var category: Any?,
     @SerializedName("RXTIsland")
-        var rXTIsland: RXTIsland?,
+    var rXTIsland: RXTIsland?,
     @SerializedName("WorkStationHeight")
-        var workStationHeight: Int?,
+    var workStationHeight: Int?,
     @SerializedName("WorkStationWidth")
-        var workStationWidth: Int?,
+    var workStationWidth: Int?,
     @SerializedName("VoicePrompt")
-        var voicePrompt: String?
+    var voicePrompt: String?
 ) : Serializable {
     data class RXTBlock(
-            @SerializedName("RXTAction")
-            var rXTAction: Int?,
-            @SerializedName("RXTDelay")
-            var rXTDelay: Int?,
-            @SerializedName("RXTPause")
-            var rXTPause: Int?,
-            @SerializedName("RXTRound")
-            var rXTRound: Int?,
-            @SerializedName("RXTTotalDuration")
-            var rXTTotalDuration: Int?,
-            @SerializedName("RXTType")
-            var rXTType: String?,
-            @SerializedName("VideoLink")
-            var videoLink: Any?,
-            @SerializedName("RXTPattern")
-            var pattern: String?
+        @SerializedName("RXTAction")
+        var rXTAction: Int?,
+        @SerializedName("RXTDelay")
+        var rXTDelay: Int?,
+        @SerializedName("RXTPause")
+        var rXTPause: Int?,
+        @SerializedName("RXTRound")
+        var rXTRound: Int?,
+        @SerializedName("RXTTotalDuration")
+        var rXTTotalDuration: Int?,
+        @SerializedName("RXTType")
+        var rXTType: String?,
+        @SerializedName("VideoLink")
+        var videoLink: Any?,
+        @SerializedName("RXTPattern")
+        var pattern: String?
     ) : Serializable {
         fun isRandom() = rXTType?.toLowerCase()?.contains("random")
         fun isSequence() = rXTType?.toLowerCase()?.contains("sequence")
 
-        fun getDelay(): Int {
+        fun getActionDelay(): Int {
             return rXTDelay ?: 0
+        }
+
+        fun getBlockPause(): Int {
+            return rXTPause ?: 0
         }
 
         fun getAction(): Int {
@@ -69,18 +73,18 @@ data class RXT(
     }
 
     data class RXTIsland(
-            @SerializedName("Id")
-            var id: String?,
-            @SerializedName("IslandHeight")
-            var islandHeight: String?,
-            @SerializedName("IslandImage")
-            var islandImage: String?,
-            @SerializedName("IslandWidth")
-            var islandWidth: String?,
-            @SerializedName("Name")
-            var name: String?,
-            @SerializedName("TotalTiles")
-            var totalTiles: String?
+        @SerializedName("Id")
+        var id: String?,
+        @SerializedName("IslandHeight")
+        var islandHeight: String?,
+        @SerializedName("IslandImage")
+        var islandImage: String?,
+        @SerializedName("IslandWidth")
+        var islandWidth: String?,
+        @SerializedName("Name")
+        var name: String?,
+        @SerializedName("TotalTiles")
+        var totalTiles: String?
     ) : Serializable {
         var tiles = ArrayList<RxtTile>()
 

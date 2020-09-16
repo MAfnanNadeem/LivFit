@@ -44,6 +44,8 @@ class SaveMemberScores(data: Data?, token: String?) :
         @SerializedName("PlayerName")
         var playerName: String?,
         @SerializedName("WorkoutID")
-        var workoutID: String?
+        var workoutID: String?,
+        @SerializedName("WorkoutDuration")
+        var duration: String?
     )
 }

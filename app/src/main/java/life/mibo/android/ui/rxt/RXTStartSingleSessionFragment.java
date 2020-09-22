@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +48,7 @@ import life.mibo.android.R;
 import life.mibo.android.core.API;
 import life.mibo.android.core.Prefs;
 import life.mibo.android.models.base.ResponseStatus;
+import life.mibo.android.models.circuits.Circuit;
 import life.mibo.android.models.login.Member;
 import life.mibo.android.models.rxt.GetIslandPost;
 import life.mibo.android.models.rxt.GetIslandTiles;
@@ -56,7 +58,6 @@ import life.mibo.android.models.workout.SaveMemberScores;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
-import life.mibo.android.ui.main.MiboApplication;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
 import life.mibo.android.ui.rxt.parser.RXTManager;
@@ -90,7 +91,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
 
-    TextView timer, islandName, islandTiles, workoutName, workoutDesc, tvSpeed, tvBlocks, tvBlocksInfo;
+    TextView timer, islandName, islandTiles, workoutName, workoutDesc, tvSpeed, tvBlocks, tvBlocksInfo, tvProgramInfo;
     ChipGroup chipGroup;
     CircleView colorPicker;
     int totalTime = 60;
@@ -98,12 +99,15 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     CheckBox checkVoicePrompt;
     BetterVideoPlayer videoPlayer;
     ProgressBar mediaPlayerProgress;
+    RecyclerView recyclerView;
     private Workout workout;
+    private Circuit circuit;
+    private boolean isCircuitMode = false;
     private RXT rxtProgram;
     private EMS emsProgram;
     ImageView islandImage;
     private float speed = 1.0f;
-    private float actionTime = 1;
+    private float actionTime = 0;
     private float interval = 0.1f;
     private int islandId = 0;
 
@@ -121,10 +125,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         tvSpeed = view.findViewById(R.id.tv_plus_minus);
         tvBlocks = view.findViewById(R.id.tv_blocks);
         tvBlocksInfo = view.findViewById(R.id.tv_block_info);
+        tvProgramInfo = view.findViewById(R.id.tv_program_info);
         chipGroup = view.findViewById(R.id.chip_group);
         checkVoicePrompt = view.findViewById(R.id.check_voice_prompt);
         mediaPlayerProgress = view.findViewById(R.id.mediaPlayer_progress);
         colorPicker = view.findViewById(R.id.color_picker);
+        recyclerView = view.findViewById(R.id.recyclerView);
 
         // View back = view.findViewById(R.id.btn_back);
         playButton = view.findViewById(R.id.btn_play);
@@ -141,13 +147,22 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         });
         //stop.setOnClickListener(v -> onStopProgram());
         if (getArguments() != null) {
-            workout = (Workout) getArguments().getSerializable("workout_data");
+            Object data = getArguments().getSerializable("workout_data");
+            if (data instanceof Workout) {
+                workout = (Workout) data;
+                isCircuitMode = false;
+            } else if (data instanceof Circuit) {
+                circuit = (Circuit) data;
+                isCircuitMode = true;
+            }
             int color = getArguments().getInt("selected_color", 0);
             if (color != 0)
                 updateColorPicker(color);
         }
         if (workout != null) {
             setupWorkout(workout);
+        } else if (circuit != null) {
+            setupWorkout(circuit);
         }
         playButton.setPlay(false);
         if (colorPicker != null)
@@ -190,6 +205,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
     void setSpeedText() {
         //tvSpeed.setText(String.format(getString(R.string.rxt_action_speed), ((actionTime * speed) / 1000)));
+        if (actionTime == 0)
+            actionTime = 2000;
         tvSpeed.setText(getString(R.string.rxt_action_speed, ((actionTime * speed) / 1000)));
     }
 
@@ -212,13 +229,15 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     //private boolean isVoiceEnabled = false;
 
     void setupWorkout(Workout workout) {
-        String url = workout.getVideoLink();
-        if (url != null && url.length() > 1)
-            videoPlayer.setSource(Uri.parse(url));
-
+        if (isCircuitMode) {
+            setupWorkout(circuit);
+            return;
+        }
+        setupPlayer(workout.getVideoLink());
         rxtProgram = workout.getRxt();
         timer.setText(workout.getDuration());
         totalTime = workout.getDurationSec();
+        timeElapsed = workout.getDurationSec();
         if (rxtProgram != null) {
             RXT.RXTIsland island = rxtProgram.getRXTIsland();
             if (Utils.isEmpty(rxtProgram.getVoicePrompt())) {
@@ -230,33 +249,107 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             }
 
             if (island != null) {
-                List<RXT.RXTBlock> blocks = rxtProgram.getBlocks();
+                //List<RXT.RXTBlock> blocks = rxtProgram.getBlocks();
                 islandId = island.getID();
                 islandName.setText(island.getName());
                 islandTiles.setText("Tiles " + island.getTotalTiles() + " \n " + island.getIslandWidth() + "x" + island.getIslandHeight());
-                tvBlocks.setText("Blocks:");
-
-                if (blocks != null && !blocks.isEmpty()) {
-                    actionTime = blocks.get(0).getAction();
-                    setSpeedText();
-                    for (RXT.RXTBlock b : blocks) {
-                        Chip chip = new Chip(chipGroup.getContext());
-                        chip.setText(b.getRXTType() + " x " + b.getRounds() + " - " + b.getRXTTotalDuration() + " sec");
-                        chip.setCheckable(false);
-                        chip.setCheckedIconVisible(false);
-                        chip.setCloseIconVisible(false);
-                        chip.setChipIconVisible(false);
-                        chip.setClickable(false);
-                        chipGroup.addView(chip);
-                    }
-                }
+                //tvBlocks.setText("Blocks:");
+                ArrayList<Workout> wkks = new ArrayList<>();
+                wkks.add(workout);
+                setBlocks(wkks);
+//                if (blocks != null && !blocks.isEmpty()) {
+//                    actionTime = blocks.get(0).getAction();
+//                    setSpeedText();
+//                    setBlocks(workout);
+//                    for (RXT.RXTBlock b : blocks) {
+//                        Chip chip = new Chip(chipGroup.getContext());
+//                        chip.setText(b.getRXTType() + " x " + b.getRounds() + " - " + b.getRXTTotalDuration() + " sec");
+//                        chip.setCheckable(false);
+//                        chip.setCheckedIconVisible(false);
+//                        chip.setCloseIconVisible(false);
+//                        chip.setChipIconVisible(false);
+//                        chip.setClickable(false);
+//                        chipGroup.addView(chip);
+//                    }
+//                }
                 log("Image Glide " + island.getIslandImage());
-                Glide.with(getContext()).load(island.getIslandImage()).error(R.drawable.ic_broken_image_black_24dp).fallback(R.drawable.ic_broken_image_black_24dp).into(islandImage);
+                Glide.with(getContext()).load(island.getIslandImage()).error(R.drawable.ic_broken_image).fallback(R.drawable.ic_broken_image).into(islandImage);
             }
             workoutName.setText(workout.getName());
             workoutDesc.setText(workout.getDescription());
 
         }
+    }
+
+    private boolean isValidCircuit = true;
+
+    void setupWorkout(Circuit circuit) {
+        List<Workout> workouts = circuit.getWorkout();
+        if (workouts != null && workouts.size() > 0) {
+
+            timer.setText(circuit.getDuration());
+            timeElapsed = circuit.getDurationSec();
+            workoutName.setText(circuit.getName());
+            workoutDesc.setText(circuit.getDescription());
+            totalTime = workout.getDurationSec();
+            Workout workout = workouts.get(0);
+            //String url = workout.getVideoLink();
+            setupPlayer(workout.getVideoLink());
+            RXT rxtProgram = workout.getRxt();
+
+            if (rxtProgram != null) {
+                RXT.RXTIsland island = rxtProgram.getRXTIsland();
+                if (Utils.isEmpty(rxtProgram.getVoicePrompt())) {
+                    checkVoicePrompt.setVisibility(View.INVISIBLE);
+                    isVoicePrompt = false;
+                } else {
+                    checkVoicePrompt.setVisibility(View.VISIBLE);
+                    isVoicePrompt = true;
+                }
+
+                if (island != null) {
+                    //List<RXT.RXTBlock> blocks = rxtProgram.getBlocks();
+                    islandId = island.getID();
+                    islandName.setText(island.getName());
+                    islandTiles.setText("Tiles " + island.getTotalTiles() + " \n " + island.getIslandWidth() + "x" + island.getIslandHeight());
+                    ///tvBlocks.setText("Blocks:");
+
+                    setBlocks(workouts);
+                    log("Image Glide " + island.getIslandImage());
+                    Glide.with(getContext()).load(island.getIslandImage()).error(R.drawable.ic_broken_image).fallback(R.drawable.ic_broken_image).into(islandImage);
+                }
+
+
+            }
+
+            try {
+                for (Workout www : workouts) {
+                    RXT r = www.getRxt();
+                    if (r != null) {
+                        RXT.RXTIsland s = r.getRXTIsland();
+                        if (s != null) {
+                            if (islandId != s.getID()) {
+                                isValidCircuit = false;
+                                Toasty.error(getContext(), "Circuit contains invalid Workout Or Island").show();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            } catch (Exception ee) {
+
+            }
+
+
+        } else {
+            Toasty.info(getContext(), "Circuit workouts can not be empty").show();
+        }
+    }
+
+    void setupPlayer(String url) {
+        if (url != null && url.length() > 1)
+            videoPlayer.setSource(Uri.parse(url));
 
         videoPlayer.setCallback(new VideoCallback() {
             @Override
@@ -311,6 +404,35 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         videoPlayer.start();
     }
 
+    void setBlocks(List<Workout> workouts) {
+        if (workouts != null) {
+            List<Blocks> blocks = new ArrayList<>();
+
+            for (Workout workout : workouts) {
+                RXT rxt = workout.getRxt();
+                if (rxt == null)
+                    continue;
+                List<RXT.RXTBlock> rxtBlocks = rxt.getBlocks();
+                boolean first = true;
+                for (RXT.RXTBlock b : rxtBlocks) {
+                    if (first)
+                        blocks.add(new Blocks(workout.getName(), b.getRXTType(), "" + b.getDuration(), "" + b.getRXTAction(), "" + b.getRXTRound(), "" + b.getRXTDelay()));
+                    else
+                        blocks.add(new Blocks("", b.getRXTType(), "" + b.getDuration(), "" + b.getRXTAction(), "" + b.getRXTRound(), "" + b.getRXTDelay()));
+                    first = false;
+                }
+            }
+            if (blocks.size() > 0)
+                actionTime = getInt(blocks.get(0).getAction()) * 1000;
+            setSpeedText();
+            WorkoutAdapter adapter = new WorkoutAdapter(blocks, null);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(adapter);
+            recyclerView.setNestedScrollingEnabled(false);
+        }
+    }
+
+
     void updateTimer(String time) {
         if (timer != null) {
             getActivity().runOnUiThread(() -> timer.setText(time));
@@ -337,7 +459,11 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
             if (rxtTiles.size() > 0) {
                 List<RxtIsland> islands = new ArrayList<>();
-                islands.add(new RxtIsland(11, RxtProgram.Companion.from(rxtProgram), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor));
+                if (isCircuitMode && circuit != null) {
+                    islands.add(new RxtIsland(11, RxtProgram.Companion.empty(), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor).circuit(RxtProgram.Companion.from(circuit)));
+                } else {
+                    islands.add(new RxtIsland(11, RxtProgram.Companion.from(rxtProgram), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor));
+                }
                 RXTManager.Companion.getInstance().with(islands, listener).startNow(totalTime, speed);
                 isProgramStarted = true;
                 playButton.setPlay(true);
@@ -425,9 +551,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     void saveScore(List<ScoreItem> list) {
-        log("saveScore timeElapsed " + timeElapsed);
-        if (MiboApplication.Companion.getDEBUG())
-            return;
+        //log("saveScore timeElapsed " + timeElapsed + " totalTime "+totalTime + " -- "+(totalTime - timeElapsed));
+        // if (MiboApplication.Companion.getDEBUG())
+        //      return;
         Member trainer = Prefs.get(getContext()).getMember();
         if (trainer == null)
             return;
@@ -441,7 +567,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         List<SaveMemberScores.Score> scores = new ArrayList<>();
         if (list != null) {
             for (ScoreItem item : list) {
-                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), "" + item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId(), "" + timeElapsed));
+                scores.add(new SaveMemberScores.Score(date, "rxt", "" + item.getHits(), loc, "" + trainer.id(), "" + item.getMissed(), "" + item.getTotal(), "" + trainer.id(), "0", "-", "" + workout.getId(), "" + (totalTime - timeElapsed)));
             }
         }
         if (scores.isEmpty())
@@ -499,7 +625,20 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
     private int timeElapsed;
     private int lastBlock = -1;
+    private String currentProgramName = "";
+    private int currentProgramId = 0;
     RxtListener listener = new RxtListener() {
+
+        @Override
+        public void onCircuitProgramStart(@NotNull String name, int programId, int pause) {
+            currentProgramName = name;
+            currentProgramId = programId;
+            if (tvProgramInfo != null && name != null)
+                getActivity().runOnUiThread(() -> {
+                    tvProgramInfo.setText(name);
+                    tvProgramInfo.setVisibility(View.VISIBLE);
+                });
+        }
 
         @Override
         public void onBlockStart(int block, int cycle) {
@@ -848,4 +987,109 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             return false;
         return super.onBackPressed();
     }
+
+    public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutHolder> {
+
+        public static final int PLAY = 1000;
+        public static final int COLOR = 2000;
+        public static final int PROGRAM = 3000;
+        public static final int CHECK = 4000;
+        public static final int ITEM = 5000;
+
+        List<Blocks> islands = new ArrayList<>();
+        ItemClickListener<Object> listener;
+
+        public WorkoutAdapter(List<Blocks> list, ItemClickListener<Object> listener) {
+            islands.addAll(list);
+            this.listener = listener;
+        }
+
+
+        @NonNull
+        @Override
+        public WorkoutAdapter.WorkoutHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new WorkoutAdapter.WorkoutHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_rxt_circuits_workouts, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull WorkoutAdapter.WorkoutHolder holder, int position) {
+            holder.bind(islands.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return islands.size();
+        }
+
+
+        class WorkoutHolder extends RecyclerView.ViewHolder {
+            TextView title, blocks, dur, action, repeat, delay;
+
+            public WorkoutHolder(View view) {
+                super(view);
+                blocks = view.findViewById(R.id.tv_block_name);
+                title = view.findViewById(R.id.tv_name);
+                dur = view.findViewById(R.id.tv_duration);
+                action = view.findViewById(R.id.tv_action);
+                delay = view.findViewById(R.id.tv_delay);
+                repeat = view.findViewById(R.id.tv_rounds);
+            }
+
+            void bind(Blocks block) {
+                if (block == null)
+                    return;
+                if (Utils.isEmpty(block.getTitle()))
+                    title.setVisibility(View.GONE);
+                else title.setText(block.getTitle());
+
+                blocks.setText(block.getBlock());
+                dur.setText(block.getDur());
+                action.setText(block.getAction());
+                delay.setText(block.getDelay());
+                repeat.setText(block.getRepeat());
+
+            }
+
+        }
+
+    }
+
+    class Blocks {
+        String title, block, dur, action, repeat, delay;
+
+        public Blocks(String title, String block, String dur, String action, String repeat, String delay) {
+            this.title = title;
+            this.block = block;
+            this.dur = dur;
+            this.action = action;
+            this.repeat = repeat;
+            this.delay = delay;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getBlock() {
+            return block;
+        }
+
+        public String getDur() {
+            return dur;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public String getRepeat() {
+            return repeat;
+        }
+
+        public String getDelay() {
+            return delay;
+        }
+    }
+
+
 }

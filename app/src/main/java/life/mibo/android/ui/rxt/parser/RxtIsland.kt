@@ -5,10 +5,19 @@ import kotlin.random.Random
 
 data class RxtIsland(var id: Int, var program: RxtProgram, var tiles: List<RxtTile>, var name: String = "", var playerName: String = "", var color: Int = 0) {
 
-    var isTapReceived: Boolean = false
+    //var isTapReceived: Boolean = false
     var isStarted: Boolean = false
     var events = ArrayList<Event>()
-    var wrongEvents = ArrayList<Event>()
+    var programs = ArrayList<RxtProgram>()
+    var isCircuit = false
+
+    //var wrongEvents = ArrayList<Event>()
+    fun circuit(list: ArrayList<RxtProgram>): RxtIsland {
+        programs.clear()
+        programs.addAll(list)
+        isCircuit = true
+        return this
+    }
 
 
     fun color(): Int {

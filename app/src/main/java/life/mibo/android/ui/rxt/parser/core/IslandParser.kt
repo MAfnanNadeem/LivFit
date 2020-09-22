@@ -7,6 +7,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import life.mibo.android.ui.rxt.parser.RxtBlock
 import life.mibo.android.ui.rxt.parser.RxtIsland
+import life.mibo.android.ui.rxt.parser.RxtProgram
 import life.mibo.android.ui.rxt.parser.RxtTile
 import life.mibo.android.ui.rxt.score.ScoreItem
 import life.mibo.hardware.CommunicationManager
@@ -26,6 +27,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private var events = ArrayList<RxtStatusEvent>()
     //private var wrongEvents = ArrayList<Event>()
 
+    private var currentProgram = -1
     private var currentBlock = -1
     private var currentRxtBlock: RxtBlock? = null
     private var currentRound = -1
@@ -35,12 +37,15 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private var blockAction = 1000
     private var blockActionDelay = 0
     private var blockDelay = -1
+    private var programDelay = 0
     private var blockSize = -1
     private var blockLogic = 1
 
     private var tilesSize = -1
     private var speed: Float = 1.0f
     private var blocks = ArrayList<RxtBlock>()
+    private var programs = ArrayList<RxtProgram>()
+    private var isCircuit = false
     // private var tiles = ArrayList<RxtTile>()
 
     // Public
@@ -48,6 +53,11 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         this.speed = speed;
         islandId = island.id
         log("$islandId onProgramStart")
+        if (island.isCircuit) {
+            isCircuit = true
+            startCircuit()
+            return
+        }
         blocks.clear()
         blocks.addAll(island.program.blocks)
         //tiles.clear()
@@ -58,6 +68,70 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         lastTile = 0;
         //listener?.onProgramStart(null)
         onStartProgramInternal()
+    }
+
+    fun startCircuit() {
+        log("startCircuit..........")
+        programs.addAll(island.programs)
+        tilesSize = island.tiles.size
+        lastTile = 0;
+        if (programs.size > 0) {
+            currentProgram = 0;
+            startProgramObservers(programs[currentProgram])
+        }
+    }
+
+    fun createCircuit(program: RxtProgram) {
+        log("createCircuit..........$program")
+        blocks.clear()
+        blocks.addAll(program.blocks)
+        //tiles.clear()
+        //tiles.addAll(island.tiles)
+        // duration = island.getDuration()
+        blockSize = blocks.size
+
+        lastTile = 0;
+        //listener?.onProgramStart(null)
+        onStartProgramInternal()
+    }
+
+    fun onCircuitProgramStart(rxtProgram: RxtProgram) {
+        log("onCircuitProgramStart..........")
+        createCircuit(rxtProgram)
+        listener?.onCircuitProgramStart(rxtProgram.name, currentProgram, 0)
+    }
+
+    fun onCircuitProgramEnd() {
+        log("onCircuitProgramEnd..........")
+        listener?.onCircuitProgramEnd("", currentProgram, 0)
+        val rxt = programs.get(currentProgram)
+        programDelay = rxt.workoutPause
+        if (programDelay > 0)
+            startProgramPauseObservers(programDelay)
+        else {
+            onCircuitProgramPauseEnd()
+        }
+    }
+
+    fun onCircuitProgramPauseStart() {
+        log("onCircuitProgramPauseStart..........")
+        listener?.onCircuitProgramStart("", currentProgram, programDelay)
+    }
+
+    fun onCircuitProgramPauseEnd() {
+        log("onCircuitProgramPauseEnd..........")
+        listener?.onCircuitProgramEnd("", currentProgram, programDelay)
+        if (currentProgram < programs.size) {
+            currentProgram++
+            if (currentProgram >= programs.size) {
+                log("onCircuitProgram Loop Completed....................")
+                currentProgram = 0
+            }
+            startProgramObservers(programs[currentProgram])
+        } else {
+            log("onCircuitProgram Loop Size exceed?????????????????????? $currentProgram")
+        }
+
     }
 
     fun onProgramEnd() {
@@ -160,6 +234,39 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     // Observers
     var blockDisposable: Disposable? = null
     var delayDisposable: Disposable? = null
+    var programDisposable: Disposable? = null
+    private fun startProgramObservers(rxtProgram: RxtProgram) {
+        log("startProgramObservers rxt $currentProgram : ${rxtProgram.workoutDuration}")
+        programDisposable = Single.timer(rxtProgram.workoutDuration.toLong(), TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+                log("programDisposable doOnSuccess")
+                onCircuitProgramEnd()
+            }.doAfterSuccess {
+                log("programDisposable doAfterSuccess")
+            }.doOnError {
+                log("programDisposable doOnError $it")
+            }.doOnSubscribe {
+                log("programDisposable doOnSubscribe $it")
+                onCircuitProgramStart(rxtProgram)
+            }.subscribe()
+    }
+
+    private fun startProgramPauseObservers(pause: Int) {
+        log("startProgramPauseObservers rxt $currentProgram : ${pause}")
+        programDisposable = Single.timer(pause.toLong(), TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+                log("programDisposable doOnSuccess")
+                onCircuitProgramPauseEnd()
+            }.doAfterSuccess {
+                log("programDisposable doAfterSuccess")
+            }.doOnError {
+                log("programDisposable doOnError $it")
+            }.doOnSubscribe {
+                log("programDisposable doOnSubscribe $it")
+                onCircuitProgramPauseStart()
+            }.subscribe()
+    }
+
     private fun startBlockObservers(block: RxtBlock) {
         log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic")
         if (block.duration == 0) {
@@ -239,6 +346,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     private fun release() {
+        programDisposable?.dispose()
         blockDisposable?.dispose()
         delayDisposable?.dispose()
     }
@@ -307,9 +415,9 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private fun sendColor(d: RxtTile, color: Int, action: Int, id: Int, observe: Boolean = false) {
         log("SendColor $d : action  = $action : island = $id")
         lastTile = d.tileId
+        changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
         if (observe)
             delayObserver(d, action, id)
-        changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
     }
 
     private fun sendSecondColor(
@@ -322,9 +430,9 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         log("sendSecondColor $d : action  = $action : island = $id")
         isTwice = true;
         secondTile = d.tileId
+        changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
         if (observe)
             delayObserver(d, action, id) // TODO remove plus 1 later
-        changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
     }
 
     fun changeColor(event: ChangeColorEvent) {

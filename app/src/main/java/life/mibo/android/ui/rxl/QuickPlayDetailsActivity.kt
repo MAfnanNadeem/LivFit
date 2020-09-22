@@ -544,7 +544,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         userPods.clear()
         selectedPlayers.clear()
 
-        val list = SessionManager.getInstance().userSession.devices
+        val dd = SessionManager.getInstance().userSession.devices
+        val list = ArrayList<Device>()
+        for (d in dd) {
+            if (d.isPod)
+                list.add(d)
+        }
         val colors = Utils.getColors();
         val players = SessionManager.getInstance().userSession.rxlPlayers
         var playerSize = 0
@@ -552,35 +557,29 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             playerSize = players.size
         // log("setPlayers > program?.pods ${program?.pods}  connected ${list.size}")
         // userDevices.addAll(SessionManager.getInstance().userSession.devices)
-        log("setPlayers playerSize $playerSize")
+        log("setPlayers playerSize $playerSize : list.size ${list.size} : pod req ${rxlProgramNew?.rXLPods}")
 
         if (playerSize == 1) {
             if (rxlProgramNew?.pods() == list.size) {
                 log("setPlayers pods match with program")
                 list.forEachIndexed { i, it ->
-                    if (it.isPod) {
-                        it.colorPalet = colors[i].id!!
-                        userPods.add(it)
-                    }
+                    it.colorPalet = colors[i].id!!
+                    userPods.add(it)
                 }
             } else {
                 log("setPlayers pods NOT match with program")
                 if (list.size > rxlProgramNew?.pods()!!) {
                     for (i in 0 until rxlProgramNew?.pods()!!) {
                         list[i].let {
-                            if (it.isPod) {
-                                it.colorPalet = colors[i].id!!
-                                userPods.add(it)
-                            }
+                            it.colorPalet = colors[i].id!!
+                            userPods.add(it)
                         }
                     }
                 } else if (list.size > 0) {
                     log("setPlayers pods NOT match, adding all pods")
                     list.forEachIndexed { i, it ->
-                        if (it.isPod) {
-                            it.colorPalet = colors[i].id!!
-                            userPods.add(it)
-                        }
+                        it.colorPalet = colors[i].id!!
+                        userPods.add(it)
                     }
                 }
 
@@ -589,10 +588,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             log("setPlayers multi players")
             if (list.size > 0) {
                 list.forEachIndexed { i, it ->
-                    if (it.isPod) {
-                        it.colorPalet = colors[i].id!!
-                        userPods.add(it)
-                    }
+                    it.colorPalet = colors[i].id!!
+                    userPods.add(it)
                 }
             }
         }
@@ -632,7 +629,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                 }
             }
             playersCount = selectedPlayers.size
-            log("createView selectedPlayers ${selectedPlayers.size}, rxlPlayers ${players.size}")
+            log("createView selectedPlayers ${selectedPlayers.size}, rxlPlayers ${players.size} : userPods ${userPods.size}")
 
             log("setPlayers >> playersCount $playersCount")
             if (playersCount > 0) {
@@ -1826,7 +1823,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private var timeTotalDuration = 0
-    private var timeElapsed = 0L
+    //private var timeElapsed = 0L
 
     private fun startCountDown(seconds: Int) {
         cancelTimer()
@@ -1834,13 +1831,13 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             override fun onTick(it: Long) {
                 log("CountDownTimer $it")
                 onTimerUpdate(it)
-                timeElapsed = it
+                // timeElapsed = it
             }
 
             override fun onFinish() {
                 onTimerUpdate(0L)
                 cancelTimer()
-                timeElapsed = timeTotalDuration.toLong()
+                //timeElapsed = timeTotalDuration.toLong()
             }
         }
         countTimer?.start()
@@ -1949,7 +1946,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             return
         //val players = RXLHelper.getInstance().getPlayers() ?: return
         val list = ArrayList<ScoreAdapter.ScoreItem>()
-        val time = RXLManager.getInstance().getProgram()?.totalDuration()
+        //val time = RXLManager.getInstance().getProgram()?.totalDuration()
+        val time = RXLManager.getInstance().totalDuration()
         val size = players.size
         //val programName = RXLHelper.getInstance().getProgram()?
 
@@ -2021,9 +2019,9 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
 
     fun saveScore(players: ArrayList<RxlPlayer>?) {
-        log("saveScore timeElapsed $timeElapsed : $timeTotalDuration")
-        if(MiboApplication.DEBUG)
-            return
+        //log("saveScore timeElapsed $timeElapsed : $timeTotalDuration")
+        //if(MiboApplication.DEBUG)
+        //   return
         if (players == null)
             return
         val trainer = Prefs.get(this).member ?: return
@@ -2031,6 +2029,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         var loc = trainer.locationID
         if (loc == null) loc = "0"
         // list = ArrayList<ScoreItem>()
+        val totalTime = RXLManager.getInstance().totalDuration()
         val scores: MutableList<Score?> = java.util.ArrayList()
         val date =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -2059,7 +2058,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                     "0",
                     "-",
                     "" + rxlProgramNew?.id,
-                    ""+timeElapsed
+                    "" + totalTime
                 )
             )
         }

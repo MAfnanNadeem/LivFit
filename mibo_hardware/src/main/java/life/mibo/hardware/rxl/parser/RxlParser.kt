@@ -343,7 +343,8 @@ abstract class RxlParser(
         isStarted = false
     }
 
-    fun paused(pause: Boolean) {
+    open fun paused(pause: Boolean) {
         isPaused = pause
+
     }
 }

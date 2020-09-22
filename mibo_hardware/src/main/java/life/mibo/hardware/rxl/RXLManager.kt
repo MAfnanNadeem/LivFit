@@ -167,8 +167,9 @@ class RXLManager private constructor() {
     var isTap = false
     var isPaused = false
     var isResumed = false
-    var pauseDuration = 0L
-    var remainDuration = 0
+    private var pauseDuration = 0L
+    private var remainDuration = 0
+    private var totalDuration = 0
 
     //var pauseTotalDuration = 0
     var pauseCycle = 0
@@ -213,6 +214,7 @@ class RXLManager private constructor() {
         isRunning = false
         isPaused = false
         remainDuration = 0
+        pauseDuration = 0
         //colorSent = false
         //isFocus = false
         //receivedFocusAll = false
@@ -224,6 +226,7 @@ class RXLManager private constructor() {
 
     private fun createProgram() {
         programParser = GeneralPodParser(program!!, programListener)
+        totalDuration = program!!.getDuration()
         log("createProgram $program")
 //        programParser = when (program?.lightLogic()) {
 //            1 -> {
@@ -280,6 +283,7 @@ class RXLManager private constructor() {
         }
     }
 
+    var userStopped = false
     fun stopProgram() {
         log(".......... stopProgram .......... ")
         isStarted.set(false)
@@ -287,6 +291,7 @@ class RXLManager private constructor() {
 //        colorDisposable?.forEach { key, value ->
 //            value?.dispose()
 //        }
+        userStopped = true
         for (v in 0 until colorDisposable.size()) {
             colorDisposable.valueAt(v)?.dispose()
         }
@@ -552,6 +557,7 @@ class RXLManager private constructor() {
                     pauseDuration = it
                 }.doOnComplete {
                     log("startObserver >> doOnComplete cycle $cycle - duration $duration")
+                    userStopped = false
                     completeCycle(cycle, duration)
                 }.doOnSubscribe {
                     log("startObserver >> doOnSubscribe cycle $cycle - duration $duration")
@@ -705,15 +711,16 @@ class RXLManager private constructor() {
 
     fun sendColor(d: Device?, color: Int, action: Int, playerId: Int, observe: Boolean = false) {
 
-        if (observe)
-            delayObserver(
-                Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId)
-            )
         d?.let {
             it.colorPalet = color
             CommunicationManager.getInstance()
                 .onChangeColorEvent(ChangeColorEvent(it, it.uid, action, playerId))
         }
+
+        if (observe)
+            delayObserver(
+                Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId)
+            )
         //lastPod++
     }
 
@@ -721,13 +728,13 @@ class RXLManager private constructor() {
         d: Device?, color: Int, action: Int,
         playerId: Int, delay: Int, observe: Boolean = false
     ) {
-        if (observe)
-            delayObserver(Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId))
         d?.let {
             it.colorPalet = color
             CommunicationManager.getInstance()
                 .onDelayColorEvent(DelayColorEvent(it, it.uid, action, playerId, delay))
         }
+        if (observe)
+            delayObserver(Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId))
         //lastPod++
     }
 
@@ -763,6 +770,8 @@ class RXLManager private constructor() {
             for (i in 0 until colorDisposable.size()) {
                 colorDisposable.valueAt(i)?.dispose()
             }
+            programParser?.stop()
+            ""
 //            colorDisposable?.forEach { key, value ->
 //                value?.dispose()
 //            }
@@ -920,6 +929,13 @@ class RXLManager private constructor() {
 
         return b.toString()
         // return ""
+    }
+
+    fun totalDuration(): Int {
+        //log("totalDuration pauseDuration $pauseDuration : remainDuration $remainDuration : duration ${programParser?.duration} - $totalDuration")
+        if(remainDuration == totalDuration)
+            return pauseDuration.toInt()
+        return totalDuration.minus(remainDuration.minus(pauseDuration.toInt()))
     }
 
 }

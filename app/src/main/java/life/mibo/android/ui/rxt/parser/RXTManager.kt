@@ -117,6 +117,15 @@ class RXTManager {
 
         }
 
+        override fun onCircuitProgramStart(name: String, program: Int, pause: Int) {
+            log("onCircuitProgramStart ------------")
+            listener?.onCircuitProgramStart(name, program, pause)
+        }
+
+        override fun onCircuitProgramEnd(name: String, program: Int, pause: Int) {
+            log("onCircuitProgramEnd ------------")
+        }
+
     };
 
 

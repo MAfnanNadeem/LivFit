@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatCheckBox;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -31,6 +29,9 @@ import java.util.List;
 import life.mibo.android.R;
 import life.mibo.android.core.API;
 import life.mibo.android.core.Prefs;
+import life.mibo.android.models.circuits.Circuit;
+import life.mibo.android.models.circuits.CircuitResponse;
+import life.mibo.android.models.circuits.SearchCircuitPost;
 import life.mibo.android.models.login.Member;
 import life.mibo.android.models.program.Program;
 import life.mibo.android.models.workout.SearchWorkout;
@@ -59,7 +60,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_rxt_select_island, container, false);
     }
 
-    WorkoutAdapter islandAdapter;
+    WorkoutAdapter workoutAdapter;
     View emptyView, next;
     //SwitchCompat emsSwitch;
     RecyclerView recyclerView;
@@ -116,7 +117,12 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                 if (selectIslandDialog != null)
                     selectIslandDialog.dismiss();
                 getWorkouts(isEmsChecked, isMultiChecked);
-                Prefs.get(getContext()).set("island_id_", islandId);
+                Prefs.get(getContext()).set(Prefs.ISLAND_ID, islandId);
+                Prefs.get(getContext()).set(Prefs.ISLAND_IMAGE, island.getIslandImage());
+                Prefs.get(getContext()).set(Prefs.ISLAND_NAME, island.getName());
+                Prefs.get(getContext()).set(Prefs.ISLAND_WIDTH, "" + island.getIslandWidth());
+                Prefs.get(getContext()).set(Prefs.ISLAND_HEIGHT, "" + island.getIslandHeight());
+
             }
         });
 
@@ -171,6 +177,56 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         });
     }
 
+    private void getCircuits(boolean ems, boolean isMulti) {
+        String type = ems ? "ems,rxt" : "rxt";
+        Member trainer = Prefs.get(getContext()).getMember();
+        if (trainer == null) {
+            Toasty.info(getContext(), "Trainer is Null, please login again").show();
+            return;
+        }
+        //String island = Prefs.get(getContext()).get("rxt_island");
+        //log("okhttp Trainer "+trainer);
+
+        SearchCircuitPost data = new SearchCircuitPost(new SearchCircuitPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "", ""), trainer.getAccessToken());
+        getDialog().show();
+        Call<CircuitResponse> api = API.Companion.getRequest().getApi().getCircuits(data);
+        api.enqueue(new Callback<CircuitResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CircuitResponse> call, @NonNull Response<CircuitResponse> response) {
+                log("getCircuits onResponse " + response.body());
+                isRefreshing = false;
+                updateRefresh();
+                try {
+                    getDialog().dismiss();
+                    CircuitResponse workout = response.body();
+                    if (workout != null && "Success".equals(workout.getStatus())) {
+                        if (workout.getData() != null) {
+                            parseCircuit(workout.getData().getCircuits());
+                            return;
+                        }
+                    }
+
+                    Toasty.info(getContext(), R.string.no_data_found).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (isAdded())
+                        Toasty.info(getContext(), R.string.no_data_found).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CircuitResponse> call, @NonNull Throwable t) {
+                log("getCircuits onFailure " + t);
+                isRefreshing = false;
+                t.printStackTrace();
+                updateRefresh();
+                getDialog().dismiss();
+                Toasty.info(getContext(), R.string.error_occurred).show();
+            }
+        });
+    }
+
     void updateRefresh() {
         if (swipeToRefresh != null)
             swipeToRefresh.setRefreshing(isRefreshing);
@@ -178,7 +234,11 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
     private void nextClicked() {
         try {
-            List<Workout> workouts = islandAdapter.getChecked();
+            if (isCircuitMode) {
+                //List<Workout> workouts = islandAdapter.getChecked();
+                return;
+            }
+            List<Workout> workouts = workoutAdapter.getChecked();
             if (workouts.isEmpty()) {
                 //Snackbar.make(next, "Please select at-least one island", Snackbar.LENGTH_LONG).show();
                 Toasty.snackbar(next, "Please select at-least one island");
@@ -213,9 +273,20 @@ public class RXTSessionConfigureFragment extends BaseFragment {
             return;
         }
 
-        islandAdapter = new WorkoutAdapter(list, this::onItemClick, isEmsChecked, isMultiChecked);
+        workoutAdapter = new WorkoutAdapter(list, this::onItemClick, isEmsChecked, isMultiChecked);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recyclerView.setAdapter(islandAdapter);
+        recyclerView.setAdapter(workoutAdapter);
+    }
+
+    void parseCircuit(List<Circuit> list) {
+        if (list == null || list.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        workoutAdapter = new WorkoutAdapter(list, this::onCircuitItemClick);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setAdapter(workoutAdapter);
     }
 
     void setupViews() {
@@ -264,6 +335,28 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         }
     }
 
+    void onCircuitItemClick(Object object, int position) {
+        if (object instanceof Circuit) {
+            Circuit island = (Circuit) object;
+            if (position == IslandAdapter.PLAY) {
+                //playSequence(island.getTiles());
+            } else if (position == IslandAdapter.COLOR) {
+                showColorDialog(island);
+            } else if (position == IslandAdapter.PROGRAM) {
+                // showProgramDialog(island);
+            } else if (position == IslandAdapter.CHECK) {
+                updateCheck(island);
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("workout_data", island);
+                bundle.putInt("selected_color", island.getColor());
+                navigate(Navigator.RXT_START_WORKOUT, bundle);
+                //getCompositionRoot().getScreensNavigator().toRxtSingleSession(bundle);
+                //deleteIsland(island, position);
+            }
+        }
+    }
+
 
     void deleteIsland(Island island, int position) {
 //        new AlertDialog.Builder(getContext()).setTitle("Delete?")
@@ -307,9 +400,25 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 //        }, 0).showColors();
     }
 
+    void showColorDialog(Circuit island) {
+        new ProgramDialog(requireContext(), new ArrayList<>(), (program, position) -> {
+            if (program != null)
+                updateColor(island, program.getId(), position);
+        }, 2).showColors();
+
+    }
+
     void updateCheck(Workout island) {
         try {
-            islandAdapter.updateCheck(island);
+            workoutAdapter.updateCheck(island);
+        } catch (Exception e) {
+
+        }
+    }
+
+    void updateCheck(Circuit island) {
+        try {
+            workoutAdapter.updateCheck(island);
         } catch (Exception e) {
 
         }
@@ -317,7 +426,15 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
     private void updateColor(Workout island, int color, int alpha) {
         try {
-            islandAdapter.updateColor(island, color, alpha);
+            workoutAdapter.updateColor(island, color, alpha);
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void updateColor(Circuit island, int color, int alpha) {
+        try {
+            workoutAdapter.updateColor(island, color, alpha);
         } catch (Exception e) {
 
         }
@@ -359,15 +476,26 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         public static final int ITEM = 5000;
 
         List<Workout> islands = new ArrayList<>();
-        ItemClickListener<Workout> listener;
+        List<Circuit> circuits = new ArrayList<>();
+        ItemClickListener<Object> listener;
         private boolean isEms = false;
         private boolean isMulti = false;
+        private boolean isCircuit = false;
 
-        public WorkoutAdapter(List<Workout> list, ItemClickListener<Workout> listener, boolean isEms, boolean isMulti) {
+        public WorkoutAdapter(List<Workout> list, ItemClickListener<Object> listener, boolean isEms, boolean isMulti) {
             islands.addAll(list);
             this.listener = listener;
             this.isEms = isEms;
             this.isMulti = isMulti;
+            isCircuit = false;
+        }
+
+        public WorkoutAdapter(List<Circuit> list, ItemClickListener<Object> listener) {
+            circuits.addAll(list);
+            this.listener = listener;
+            this.isEms = isEms;
+            this.isMulti = isMulti;
+            isCircuit = true;
         }
 
         @NonNull
@@ -378,11 +506,14 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(@NonNull WorkoutHolder holder, int position) {
-            holder.bind(islands.get(position), listener, isEms, isMulti);
+            if (isCircuit)
+                holder.bind(circuits.get(position), listener, isEms, isMulti);
+            else holder.bind(islands.get(position), listener, isEms, isMulti);
         }
 
         @Override
         public int getItemCount() {
+            if (isCircuit) return circuits.size();
             return islands.size();
         }
 
@@ -417,12 +548,42 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                 notifyItemChanged(pos);
         }
 
+        public void updateCheck(Circuit island) {
+            int pos = -1;
+            int count = 0;
+            for (Circuit i : circuits) {
+                if (i.getId() == island.getId()) {
+                    i.updateCheck();
+                    pos = count;
+                    break;
+                }
+                count++;
+            }
+            if (pos >= 0)
+                notifyItemChanged(pos);
+        }
+
         public void updateColor(Workout island, int color, int alpha) {
             int pos = -1;
             int count = 0;
             for (Workout i : islands) {
                 if (i.getId() == island.getId()) {
                     i.setColor(color);
+                    pos = count;
+                    break;
+                }
+                count++;
+            }
+            if (pos >= 0)
+                notifyItemChanged(pos);
+        }
+
+        public void updateColor(Circuit island, int color, int alpha) {
+            int pos = -1;
+            int count = 0;
+            for (Circuit c : circuits) {
+                if (c.getId() == island.getId()) {
+                    c.setColor(color);
                     pos = count;
                     break;
                 }
@@ -469,7 +630,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                 checkBox = view.findViewById(R.id.btn_checkbox);
             }
 
-            void bind(Workout island, ItemClickListener<Workout> listener, boolean isEms, boolean isMulti) {
+            void bind(Workout island, ItemClickListener<Object> listener, boolean isEms, boolean isMulti) {
                 if (island == null)
                     return;
                 title.setText(island.getName());
@@ -488,7 +649,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                 }
                 if (island.getIcon() != null) {
                     Glide.with(imageView).load(island.getIcon()).fitCenter()
-                            .error(R.drawable.ic_broken_image_black_24dp).fallback(R.drawable.ic_broken_image_black_24dp).into(imageView);
+                            .error(R.drawable.ic_broken_image).fallback(R.drawable.ic_broken_image).into(imageView);
                 }
 
                 if (island.getColor() != 0)
@@ -535,7 +696,78 @@ public class RXTSessionConfigureFragment extends BaseFragment {
                     }
                 }
             }
+
+            void bind(Circuit island, ItemClickListener<Object> listener, boolean isEms, boolean isMulti) {
+                if (island == null)
+                    return;
+                title.setText(island.getName());
+                tiles.setText(island.getDescription());
+                dur.setText(island.getDuration());
+
+                if (isEms)
+                    program.setVisibility(View.VISIBLE);
+                else program.setVisibility(View.GONE);
+
+                if (isMulti) {
+                    checkBox.setVisibility(View.VISIBLE);
+                    checkBox.setChecked(island.isSelected());
+                } else {
+                    checkBox.setVisibility(View.INVISIBLE);
+                }
+
+
+                if (island.getColor() != 0)
+                    color.setCircleColor(island.getColor());
+                else color.setCircleColor(Color.RED);
+
+
+                play.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onItemClicked(island, IslandAdapter.PLAY);
+                });
+                color.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onItemClicked(island, IslandAdapter.COLOR);
+                });
+
+                if (program != null)
+                    program.setOnClickListener(v -> {
+                        if (listener != null)
+                            listener.onItemClicked(island, IslandAdapter.PROGRAM);
+                    });
+
+                check.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onItemClicked(island, IslandAdapter.CHECK);
+                });
+
+                itemView.setOnClickListener(v -> {
+                    if (listener != null)
+                        listener.onItemClicked(island, getAdapterPosition());
+                });
+
+                List<Workout> list = island.getWorkout();
+                if (list != null && !list.isEmpty()) {
+                    Workout ws = list.get(0);
+                    if (ws.getIcon() != null) {
+                        Glide.with(imageView).load(ws.getIcon()).fitCenter().error(R.drawable.ic_broken_image).fallback(R.drawable.ic_broken_image).into(imageView);
+                    }
+
+                    for (Workout s : list) {
+                        Chip chip = new Chip(chips.getContext());
+                        chip.setText(s.getName());
+                        chip.setCheckable(false);
+                        chip.setCheckedIconVisible(false);
+                        chip.setCloseIconVisible(false);
+                        chip.setChipIconVisible(false);
+                        chip.setClickable(false);
+                        chips.addView(chip);
+                    }
+                }
+            }
+
         }
+
     }
 
     public class IslandAdapter extends RecyclerView.Adapter<IslandHolder> {
@@ -689,28 +921,36 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_rxt_ems, menu);
+        inflater.inflate(R.menu.menu_reactions_fragment, menu);
 
-        try {
-            SwitchCompat mySwitch = menu.findItem(R.id.action_ems).getActionView().findViewById(R.id.switch_ems_menu);
-            mySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                isEmsChecked = isChecked;
-                getWorkouts(isEmsChecked, isMultiChecked);
-            });
-            AppCompatCheckBox checkBox = menu.findItem(R.id.action_ems_check).getActionView().findViewById(R.id.switch_ems_menu);
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                isMultiChecked = isChecked;
-                getWorkouts(isEmsChecked, isMultiChecked);
-            });
-        } catch (Exception ee) {
-            ee.printStackTrace();
-        }
+//        try {
+//            SwitchCompat mySwitch = menu.findItem(R.id.action_ems).getActionView().findViewById(R.id.switch_ems_menu);
+//            mySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                isEmsChecked = isChecked;
+//                getWorkouts(isEmsChecked, isMultiChecked);
+//            });
+//            AppCompatCheckBox checkBox = menu.findItem(R.id.action_ems_check).getActionView().findViewById(R.id.switch_ems_menu);
+//            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                isMultiChecked = isChecked;
+//                getWorkouts(isEmsChecked, isMultiChecked);
+//            });
+//        } catch (Exception ee) {
+//            ee.printStackTrace();
+//        }
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         log("onOptionsItemSelected " + item.getItemId());
+        if (item.getItemId() == R.id.action_filter) {
+            new RXTFilterDialog(getContext(), "0-0", (data, position) -> {
+                onItemClick(position);
+            }).show();
+            return true;
+        }
+
         if (item.getItemId() == R.id.action_ems) {
             log("action ems " + item.isChecked());
 
@@ -725,5 +965,18 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 //            return true;
 //        }
         return super.onOptionsItemSelected(item);
+    }
+
+    boolean isCircuitMode = false;
+
+    void onItemClick(int option) {
+        if (option == 10) {
+            getWorkouts(isEmsChecked, isMultiChecked);
+            isCircuitMode = false;
+        }
+        if (option == 20) {
+            getCircuits(isEmsChecked, isMultiChecked);
+            isCircuitMode = true;
+        }
     }
 }

@@ -17,7 +17,6 @@ import life.mibo.hardware.rxl.program.RxlCycle
 import life.mibo.hardware.rxl.program.RxlPlayer
 import life.mibo.hardware.rxl.program.RxlProgram
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 class GeneralPodParser(program: RxlProgram, listener: Listener) :
     RxlParser(program, listener, "GeneralPodParser") {
@@ -97,7 +96,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
         super.onResumeCycle()
         log("onResumeCycle....")
         isResuming = true
-        onProgramStartMulti(1.0f, null)
+        onProgramStartMulti(speed, null)
         var timer = 0
         //isResuming = false
     }
@@ -237,7 +236,6 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
 
     fun onProgramEndMulti() {
         log("$islandId onProgramEnd")
-        isStarted = false
         release()
     }
 
@@ -247,7 +245,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
 
     // Private
     private fun onBlockStart(block: RxlCycle, player: RxlPlayer?) {
-        log("$islandId onBlockStart $block")
+        log("$islandId onBlockStart $block - $player")
         listener.onBlockStart(currentBlock, currentRound)
         lastSeq = 0
         isStarted = true
@@ -280,7 +278,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
 
     private fun onBlockEnd(block: RxlCycle) {
         log("$islandId onBlockEnd $block")
-        isStarted = false
+        //isStarted = false
         listener.onBlockEnd(currentBlock, currentRound)
         startNextDelay()
         //currentBlock++
@@ -299,6 +297,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
     }
 
     private fun startNextBlock(player: RxlPlayer?) {
+        log("startNextBlock isResuming $isResuming")
         if (isResuming) {
             startBlockObservers(currentRxtBlock!!, player)
             return
@@ -330,6 +329,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
             // reused old variables
         }
         blockSecLeft = 0
+        pauseBlockTimeLeft = 0
         currentRxtBlock = blocks[currentBlock]
         currentRound = 1
         totalRounds = currentRxtBlock!!.repeat
@@ -354,54 +354,34 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
     var blockDisposable: Disposable? = null
     var delayDisposable: Disposable? = null
     private fun startBlockObservers(block: RxlCycle, player: RxlPlayer?) {
-        if (isBlockRunning) {
+        if (isBlockRunning && !isResuming) {
             onBlockStart(block, player)
             return
         }
-        if (isResuming) {
-            isResuming = false
-            log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic")
-            log(
-                "startBlockObservers isResuming.............. $blockSecLeft :: " + block.cycleDuration.toLong()
-                    .minus(blockSecLeft)
-            )
-            blockDisposable =
-                Observable.interval(0, 1, TimeUnit.SECONDS)
-                    .take(block.cycleDuration.toLong().minus(blockSecLeft))
-                    .doOnNext {
-                        blockSecLeft = it
-                    }.doOnComplete {
-                        log("blockDisposable doOnSuccess")
-                        isBlockRunning = false
-                        onBlockEnd(block)
-                    }.doOnError {
-                        isBlockRunning = false
-                        log("blockDisposable doOnError $it")
-                    }.doOnSubscribe {
-                        log("blockDisposable doOnSubscribe $it")
-                        isBlockRunning = true
-                        onBlockStart(block, player)
-                    }.subscribe()
-        } else {
-            log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic")
-            blockDisposable =
-                Observable.interval(0, 1, TimeUnit.SECONDS).take(block.cycleDuration.toLong())
-                    .doOnNext {
-                        blockSecLeft = it
-                    }.doOnComplete {
-                        log("blockDisposable doOnSuccess")
-                        isBlockRunning = false
-                        onBlockEnd(block)
-                    }.doOnError {
-                        isBlockRunning = false
-                        log("blockDisposable doOnError $it")
-                    }.doOnSubscribe {
-                        log("blockDisposable doOnSubscribe $it")
-                        isBlockRunning = true
-                        onBlockStart(block, player)
-                    }.subscribe()
-        }
+        var blockTime_ =
+            if (isResuming) pauseBlockTimeLeft.toLong() else block.cycleDuration.toLong()
+        if (blockTime_ < 0)
+            blockTime_ = -blockTime_
+        log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic -- ${block.cycleDuration} -- blockTime_ $blockTime_ - pauseBlockTimeLeft $pauseBlockTimeLeft")
+        blockDisposable =
+            Observable.interval(0, 1, TimeUnit.SECONDS).take(blockTime_)
+                .doOnNext {
+                    log("startBlockObservers doOnNext $it")
+                    blockSecLeft = it
+                }.doOnComplete {
+                    log("blockDisposable doOnSuccess")
+                    isBlockRunning = false
+                    onBlockEnd(block)
+                }.doOnError {
+                    isBlockRunning = false
+                    log("blockDisposable doOnError $it")
+                }.doOnSubscribe {
+                    log("blockDisposable doOnSubscribe $it")
+                    isBlockRunning = true
+                    onBlockStart(block, player)
+                }.subscribe()
 
+        isResuming = false
 //        blockDisposable = Single.timer(block.cycleDuration.toLong(), TimeUnit.SECONDS)
 //            .subscribeOn(Schedulers.newThread()).doOnSuccess {
 //                log("blockDisposable doOnSuccess")
@@ -437,21 +417,41 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
 
     private fun release() {
         isBlockRunning = false
+        isStarted = false
         blockDisposable?.dispose()
         delayDisposable?.dispose()
     }
 
+    var pauseBlockTimeLeft = 0
+    override fun paused(pause: Boolean) {
+        log("Super pause override $pause ")
+        super.paused(pause)
+        if (pause) {
+            log("Super pause override pauseBlockTimeLeft $pauseBlockTimeLeft ")
+            log("Super pause override cycleDuration ${currentRxtBlock?.cycleDuration} ")
+            log("Super pause override blockSecLeft $blockSecLeft ")
+            pauseBlockTimeLeft = if (pauseBlockTimeLeft > 0) {
+                pauseBlockTimeLeft.minus(blockSecLeft.toInt())
+            } else {
+                currentRxtBlock?.cycleDuration?.minus(blockSecLeft.toInt()) ?: 0
+            }
+            blockSecLeft = 0L
+            blockDisposable?.dispose()
+            delayDisposable?.dispose()
+            log("Super pause override pauseBlockTimeLeft $pauseBlockTimeLeft ")
+        }
+    }
 
     private var pattern = ""
 
     //private var sequence = IntArray(0)
-    private var sequence = Array(0) { "" }
+    // private var sequence = Array(0) { "" }
     private var lastSeq = -1
-    private var isRand: Boolean = false
+    // private var isRand: Boolean = false
 
     //private var isHopscotch: Boolean = false
-    private var isTwice: Boolean = false
-    private var random: Random? = null
+    // private var isTwice: Boolean = false
+    // private var random: Random? = null
 
 
 }

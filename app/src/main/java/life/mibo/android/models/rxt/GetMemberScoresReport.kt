@@ -31,6 +31,8 @@ data class GetMemberScoresReport(
         var missed: Int?,
         @SerializedName("PlayerName")
         var playerName: String?,
+        @SerializedName("WorkoutDuration")
+        var duration: String?,
         @SerializedName("Total")
         var total: Int?,
         @SerializedName("TrainerID")

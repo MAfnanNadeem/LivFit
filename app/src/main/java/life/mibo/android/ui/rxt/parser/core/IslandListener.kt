@@ -5,4 +5,6 @@ public interface IslandListener {
     fun onProgramEnd(data: Any?)
     fun onBlockStart(blockId: Int, round: Int)
     fun onBlockEnd(blockId: Int, round: Int)
+    fun onCircuitProgramStart(name: String, program: Int, pause: Int)
+    fun onCircuitProgramEnd(name: String, program: Int, pause: Int)
 }

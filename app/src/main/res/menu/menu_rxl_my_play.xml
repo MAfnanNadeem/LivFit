@@ -12,6 +12,8 @@
         android:id="@+id/navigation_add"
         android:icon="@drawable/ic_add_circle_24dp"
         android:title="Add"
+        android:iconTint="@color/textColor"
+        app:iconTint="@color/textColor"
         app:showAsAction="always" />
 
 </menu>

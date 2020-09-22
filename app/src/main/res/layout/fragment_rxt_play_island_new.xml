@@ -41,6 +41,19 @@
                 app:layout_constraintTop_toBottomOf="@id/player" />
 
             <TextView
+                android:id="@+id/tv_program_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:fontFamily="@string/font_roboto_medium"
+                android:gravity="center"
+                android:text="Block 1 - Cycle 1"
+                android:textColor="@color/textColor2"
+                android:textSize="18sp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_timer" />
+            <TextView
                 android:id="@+id/tv_block_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,9 +63,9 @@
                 android:text="Block 1 - Cycle 1"
                 android:textColor="@color/textColor2"
                 android:textSize="18sp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_timer" />
+                app:layout_constraintTop_toBottomOf="@id/tv_program_info" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -78,13 +91,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_block"
-                android:layout_width="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_desc">
+                app:layout_constraintTop_toBottomOf="@id/iv_island" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_block"
+                android:layout_width="0dp"
+                android:visibility="invisible"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recyclerView">
 
                 <TextView
                     android:id="@+id/tv_blocks"
@@ -115,7 +137,7 @@
                 android:layout_height="0dp"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/constraint_block"
+                app:layout_constraintTop_toBottomOf="@id/tv_desc"
                 app:layout_constraintWidth_percent="0.25" />
 
             <TextView

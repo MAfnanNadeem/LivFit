@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -119,6 +118,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
     private var isNumberVerified = false
 
     private fun checkIntro() {
+        log("checkIntro $isMember : $isNumberVerified")
         if (isMember && !isNumberVerified) {
 
             Single.just("test").delay(500, TimeUnit.MILLISECONDS)

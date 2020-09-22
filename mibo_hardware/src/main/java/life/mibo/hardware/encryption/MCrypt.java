@@ -1,12 +1,16 @@
 package life.mibo.hardware.encryption;
 
 
+import android.util.Log;
+
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import life.mibo.hardware.core.Logger;
 
 public class MCrypt {
 
@@ -20,19 +24,22 @@ public class MCrypt {
 
     public MCrypt() {
         String iv = "fdsfds85435nfdfs";
-        String SecretKey = "89432hjfsd891787";
+        //String SecretKey = "89432hjfsd891787";
+        String SecretKey = "UkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9";
 
         ivspec = new IvParameterSpec(iv.getBytes());
 
-        keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES");
+        keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES_256");
 
         try {
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            // TODO Auto-generated catch block
+            cipher = Cipher.getInstance("AES_256/CBC/PKCS5Padding");
+            Logger.e("cipher init "+cipher);
+            Logger.e("cipher init "+cipher.getAlgorithm());
+            Logger.e("cipher init "+cipher.getBlockSize());
+            Logger.e("cipher getProvider "+cipher.getProvider());
+            Logger.e("cipher init "+cipher.getProvider().getInfo());
+            Logger.e("cipher keyspec "+keyspec.getAlgorithm());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -63,7 +70,6 @@ public class MCrypt {
 
         try {
             cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
-
             //byte[] enc = cipher.doFinal(padString(text).getBytes());
             byte[] enc = cipher.doFinal(text.getBytes());
             encrypted = bytesToHex(enc);

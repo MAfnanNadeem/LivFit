@@ -155,9 +155,9 @@ class ConfigureIslandActivity : BaseActivity() {
             return
         }
 
-        AlertDialog.Builder(this).setTitle(if(isUpdateMode)  "Update Island?" else "Save Island?")
+        AlertDialog.Builder(this).setTitle(if (isUpdateMode) "Update Island?" else "Save Island?")
             .setMessage("Make sure you play the sequence, Island will perform the sequence as in order tile was added")
-            .setPositiveButton("SAVE") { dialog: DialogInterface?, which: Int ->
+            .setPositiveButton(if (isUpdateMode) "UPDATE" else "SAVE") { dialog: DialogInterface?, which: Int ->
                 //log("setPositiveButton $list")
                 saveIsland(list)
                 //updateIsland(list)

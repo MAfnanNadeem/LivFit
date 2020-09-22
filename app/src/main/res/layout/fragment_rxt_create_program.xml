@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableStart="@drawable/ic_arrow_back_black_24dp"
+            android:drawableTint="@color/textColorGreen"
+            android:padding="@dimen/grid_2x"
+            android:text="@string/back"
+            android:textColor="@color/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Button
+            android:id="@+id/btn_save2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:padding="@dimen/grid_2x"
+            android:text="@string/save"
+            android:textColor="@color/textColor2"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_view">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_1x"
+            android:orientation="vertical"
+            android:padding="@dimen/grid_1x">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_edittext_corner"
+                android:fontFamily="@string/font_roboto_black"
+                android:hint="Program Name"
+                android:inputType="textAutoCorrect|textCapWords"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/textColor2"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="Logic Type"
+                android:textColor="@color/textColor" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:id="@+id/radio_random"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/textColorGreen"
+                    android:text="Random"
+                    android:checked="true"
+                    android:textColor="@color/textColor" />
+
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:id="@+id/radio_seq"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/textColorGreen"
+                    android:text="Sequence"
+                    android:textColor="@color/textColor" />
+            </RadioGroup>
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_sequence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:background="@drawable/bg_edittext_corner"
+                android:hint="Sequence Order e.g 1, 2, 3, 4, 5"
+                android:inputType="textPhonetic"
+                android:digits="0123456789,"
+                android:padding="@dimen/grid_1x"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/textColor2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_2x"
+                        android:text="Action Time (Milliseconds)"
+                        android:textColor="@color/textColor" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_action"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:background="@drawable/bg_edittext_corner"
+                        android:ems="10"
+                        android:hint="Action Milliseconds"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/grid_1x"
+                        android:textColor="@color/textColor"
+                        android:textColorHint="@color/textColor2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_2x"
+                        android:text="Block Duration (Seconds)"
+                        android:textColor="@color/textColor" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:background="@drawable/bg_edittext_corner"
+                        android:ems="10"
+                        android:hint="Duration (Seconds)"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/grid_1x"
+                        android:textColor="@color/textColor"
+                        android:textColorHint="@color/textColor2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_2x"
+                        android:text="No. of Blocks"
+                        android:textColor="@color/textColor" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_blocks"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:background="@drawable/bg_edittext_corner"
+                        android:ems="10"
+                        android:hint="Blocks #"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/grid_1x"
+                        android:textColor="@color/textColor"
+                        android:textColorHint="@color/textColor2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_2x"
+                        android:text="Block Delay (Seconds)"
+                        android:textColor="@color/textColor" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_delay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/grid_1x"
+                        android:background="@drawable/bg_edittext_corner"
+                        android:ems="10"
+                        android:hint="Delay (Seconds)"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/grid_1x"
+                        android:textColor="@color/textColor"
+                        android:textColorHint="@color/textColor2" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/grid_2x"
+                android:background="@drawable/button_primary_selector"
+                android:paddingStart="@dimen/grid_2x"
+                android:paddingEnd="@dimen/grid_2x"
+                android:text="save program"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

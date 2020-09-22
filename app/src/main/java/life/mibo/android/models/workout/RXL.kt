@@ -7,11 +7,11 @@ import java.io.Serializable
 
 data class RXL(
     @SerializedName("Accessories")
-    var accessories: Any?,
+    var accessories:  List<String?>?,
     @SerializedName("Blocks")
     var blocks: List<RXLBlock?>?,
     @SerializedName("Category")
-    var category: Any?,
+    var category: List<String?>?,
     @SerializedName("ProximityValue")
     var proximityValue: String?,
     @SerializedName("RXLPlayers")

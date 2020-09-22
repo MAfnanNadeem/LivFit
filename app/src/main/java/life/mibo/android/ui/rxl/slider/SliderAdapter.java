@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import life.mibo.android.R;
 import life.mibo.hardware.core.Logger;
-import life.mibo.views.TouchImageView;
 
 
 public class SliderAdapter extends PagerAdapter {
@@ -73,7 +72,7 @@ public class SliderAdapter extends PagerAdapter {
         }
         if (type == 1) {
             //Picasso.get().load(URLs.get(position)).into(imageView);
-            Glide.with(imageView).load(URLs.get(position)).fitCenter().fallback(R.drawable.ic_broken_image_black_24dp).error(R.drawable.ic_broken_image_black_24dp).into(imageView);
+            Glide.with(imageView).load(URLs.get(position)).fitCenter().fallback(R.drawable.ic_broken_image).error(R.drawable.ic_broken_image).into(imageView);
         }
 
 

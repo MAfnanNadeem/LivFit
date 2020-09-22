@@ -13,7 +13,6 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.view.View
 import android.widget.ImageView
@@ -25,12 +24,12 @@ import coil.api.load
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import life.mibo.hardware.core.Logger
 import life.mibo.android.R
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.models.workout.RXL
 import life.mibo.android.pods.rxl.program.RxlLight
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.hardware.core.Logger
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
 
@@ -176,8 +175,10 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             image?.load(item.icon) {
                 Logger.e("ReflexHolder ImageLoader.. $this")
                 target {
-                    setGradient(imageBg, it)
+                    Logger.e("ReflexHolder ImageLoader loaded.. $it")
+                    //setGradient(imageBg, it)
                     image?.setImageDrawable(it)
+                    setBg(imageBg, it)
                 }
             }
         }
@@ -210,48 +211,52 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     }
 
-    private fun setBg(view: ImageView?, image: ImageView?) {
-        val gd = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
-            intArrayOf(-0x9e9d9f, -0xececed)
-        )
-        gd.cornerRadius = 0f
-        Palette.from((image?.drawable as BitmapDrawable).bitmap).generate {
+    private fun setBg(view: ImageView?, image: Drawable?) {
+        // val gd = GradientDrawable(
+        //     GradientDrawable.Orientation.TOP_BOTTOM,
+        //      intArrayOf(-0x9e9d9f, -0xececed)
+        //   )
+        //  gd.cornerRadius = 0f
+
+        Palette.from((image as BitmapDrawable).bitmap).generate {
+            Logger.e("ReflexHolder setGradient generating...... - $it")
             it?.let { palette ->
                 val dominantColor = palette.getDominantColor(
-                    ContextCompat.getColor(image.context!!, R.color.grey)
+                    ContextCompat.getColor(view!!.context!!, R.color.grey)
                 )
                 Logger.e("ReflexHolder dominantColor $dominantColor")
-                view?.setBackgroundColor(dominantColor)
+                view.setBackgroundColor(dominantColor)
             }
         }
         //Utils.getColor(view?.drawable)
     }
 
     private fun setGradient(imageBg: ImageView?, drawable: Drawable?) {
-        Logger.e("ReflexHolder setGradient $drawable")
+        Logger.e("ReflexHolder setGradient - $drawable")
         if (drawable == null || imageBg == null)
             return
 
         Single.fromCallable {
-            Logger.e("ReflexHolder setGradient fromCallable")
             var color = Color.GRAY
+            // Logger.e("ReflexHolder setGradient fromCallable - $color")
+
             try {
-                val gd = GradientDrawable(
-                    GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(-0x9e9d9f, -0xececed)
-                )
-                gd.cornerRadius = 0f
+//                val gd = GradientDrawable(
+//                    GradientDrawable.Orientation.TOP_BOTTOM,
+//                    intArrayOf(-0x9e9d9f, -0xececed)
+//                )
+//                gd.cornerRadius = 0f
                 Logger.e("ReflexHolder setGradient generating......")
                 Palette.from(drawableToBitmap(drawable)!!).generate {
-                    Logger.e("ReflexHolder setGradient generated palette")
+                    Logger.e("ReflexHolder setGradient generated palette : $it")
                     it?.let { palette ->
+                        Logger.e("ReflexHolder setGradient it.........")
                         color = palette.getDominantColor(
                             ContextCompat.getColor(imageBg?.context!!, R.color.grey)
                         )
                         Logger.e("ReflexHolder setGradient applied dominantColor $color")
                         imageBg.setBackgroundColor(color)
-                        //return@let color
+                        return@let color
                     }
                 }
                 //Utils.getColor(view?.drawable)
@@ -270,13 +275,15 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     private fun drawableToBitmap(drawable: Drawable): Bitmap? {
-        var bitmap: Bitmap? = null
+        Logger.e("ReflexHolder drawableToBitmap......")
+
         if (drawable is BitmapDrawable) {
             if (drawable.bitmap != null) {
+                Logger.e("ReflexHolder drawableToBitmap BitmapDrawable")
                 return drawable.bitmap
             }
         }
-        bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
+        val bitmap: Bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
             Bitmap.createBitmap(
                 1,
                 1,
@@ -292,6 +299,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
+        // Logger.e("ReflexHolder drawableToBitmap BitmapDrawable2 $bitmap")
         return bitmap
     }
 

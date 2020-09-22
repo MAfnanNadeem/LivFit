@@ -30,7 +30,7 @@ import life.mibo.android.models.rxt.GetMemberScores
 import life.mibo.android.models.rxt.GetMemberScoresReport
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
-import life.mibo.android.ui.rxt.ConfigureIslandActivity.Companion.launch
+import life.mibo.android.ui.rxt.ConfigureIslandActivity
 import life.mibo.android.ui.rxt.RXTUtils.playSequence
 import life.mibo.android.ui.rxt.model.Tile
 import life.mibo.hardware.core.Logger
@@ -259,23 +259,27 @@ class ViewSessionsFragment : BaseFragment() {
                     ) {
                         try {
                             item?.tiles?.let {
-                                val tiles = it.split(",")
-                                val list = ArrayList<Tile>()
-                                for (i in tiles) {
-                                    val sp = i.split("-")
-                                    list.add(Tile(sp[0], sp[1].toIntOrNull() ?: 0))
-                                }
-                                playSequence(list)
-//                                launch(
-//                                    this@ViewSessionsFragment,
-//                                    item.name,
-//                                    item.id ?: 0,
-//                                    item.getX(),
-//                                    item.getY(),
-//                                    item.getTotal(),
-//                                    7
-//                                )
+                                if (position == 0) {
+                                    val tiles = it.split(",")
+                                    val list = ArrayList<Tile>()
+                                    for (i in tiles) {
+                                        val sp = i.split("-")
+                                        list.add(Tile(sp[0], sp[1].toIntOrNull() ?: 0))
+                                    }
+                                    playSequence(list)
 
+                                } else if (position == 1) {
+                                    ConfigureIslandActivity.launch(
+                                        this@ViewSessionsFragment,
+                                        item.name,
+                                        item.id ?: 0,
+                                        item.getX(),
+                                        item.getY(),
+                                        item.getTileCount(),
+                                        7
+                                    )
+
+                                }
                             }
                         } catch (e: Exception) {
 
@@ -391,8 +395,17 @@ class ViewSessionsFragment : BaseFragment() {
             if (item == null)
                 return
 
-            minutes?.text = "cal"
-            time?.text = "0"
+            val dur = getInt(item.duration)
+            if (dur >= 3660) {
+                //minutes?.text = "cal"
+                //time?.text = "0"
+                time?.text = String.format("%02d:%02d", dur.div(3660), dur % 60)
+            } else {
+                //minutes?.text = "sec"
+                time?.text = String.format("%02d:%02d", dur.div(60), dur % 60)
+            }
+            minutes?.text = "---"
+
             calories?.text = "${item.exerciseType?.toUpperCase()}"
             service_header?.text = "Hits: "
             program_header?.text = "Missed: "
@@ -402,6 +415,15 @@ class ViewSessionsFragment : BaseFragment() {
             trainer?.text = "${item.total}"
             date?.text = "${item.exerciseDate}"
 
+        }
+
+        fun getInt(str: String?): Int {
+            try {
+                return str?.toIntOrNull() ?: 0
+            } catch (e: Exception) {
+
+            }
+            return 0
         }
 
         fun getDiff(start: String?, end: String?): String? {
@@ -466,15 +488,20 @@ class ViewSessionsFragment : BaseFragment() {
                     return
 
                 name?.text = item.name
-                name?.visibility = View.GONE
+                //name?.visibility = View.GONE
                 info?.text = "${item.islandWidth} x ${item.islandHeight}"
                 tiles?.text = "Tiles #: ${item.getTileCount()}"
+
                 item?.islandImage?.let {
                     Glide.with(image!!).load(it).fitCenter().into(image!!)
                 }
 
                 play?.setOnClickListener {
                     listener?.onItemClicked(item, 0)
+                }
+
+                itemView?.setOnClickListener {
+                    listener?.onItemClicked(item, 1)
                 }
 
             }

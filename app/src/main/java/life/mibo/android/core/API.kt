@@ -8,7 +8,7 @@ import life.mibo.android.models.biometric.PostBiometric
 import life.mibo.android.models.calories.Calories
 import life.mibo.android.models.catalog.*
 import life.mibo.android.models.circuits.CircuitResponse
-import life.mibo.android.models.circuits.SearchCircuit
+import life.mibo.android.models.circuits.SearchCircuitPost
 import life.mibo.android.models.create_session.BookSession
 import life.mibo.android.models.create_session.BookSessionPost
 import life.mibo.android.models.create_session.SaveSessionPost
@@ -268,7 +268,7 @@ class API {
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("searchCircuit")
-        fun getCircuits(@Body data: SearchCircuit): Call<CircuitResponse>
+        fun getCircuits(@Body data: SearchCircuitPost): Call<CircuitResponse>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("saveRXLProgram")

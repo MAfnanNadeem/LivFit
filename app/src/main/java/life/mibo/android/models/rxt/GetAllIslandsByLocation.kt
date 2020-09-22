@@ -25,7 +25,7 @@ class GetAllIslandsByLocation(data: List<Island?>?) :
         var islandWidth: Int?,
         @SerializedName("LocationId")
         var locationId: Any?,
-        @SerializedName("Name")
+        @SerializedName("IslandName")
         var name: String?,
         @SerializedName("Tiles")
         var tiles: String?,
@@ -33,9 +33,25 @@ class GetAllIslandsByLocation(data: List<Island?>?) :
         var totalTiles: Int?
     ) {
 
+
+        fun getID(): Int {
+            return id ?: 0
+        }
+
+        fun getX(): Int {
+            return islandWidth ?: 0
+        }
+
+        fun getY(): Int {
+            return islandHeight ?: 0
+        }
+
         fun getTileCount(): Int {
-            val s = tiles?.split(",")
-            return s?.size ?: 0
+            if (totalTiles == 0 || totalTiles == null) {
+                val s = tiles?.split(",")
+                totalTiles = s?.size ?: 0
+            }
+            return totalTiles ?: 0
         }
     }
 }

@@ -48,6 +48,11 @@ public class Prefs {
     public static final String CALORIES_HOUR = "calories_session_hours";
     public static final String CALORIES_SESSION = "calories_session";
     public static final String CART_ITEM = "cart_item";
+    public static final String ISLAND_ID = "island_id_";
+    public static final String ISLAND_IMAGE = "island_name_url";
+    public static final String ISLAND_NAME = "island_name_";
+    public static final String ISLAND_WIDTH = "island_name_x";
+    public static final String ISLAND_HEIGHT = "island_name_y";
 
     /**
      * initialize default SharedPreferences

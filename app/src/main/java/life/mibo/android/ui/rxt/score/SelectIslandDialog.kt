@@ -179,8 +179,8 @@ class SelectIslandDialog(c: Context, var listner: ItemClickListener<GetAllIsland
             ) {
                 if (item != null) {
                     Glide.with(imageView!!.context).load(item.islandImage)
-                        .error(R.drawable.ic_broken_image_black_24dp)
-                        .fallback(R.drawable.ic_broken_image_black_24dp).into(imageView!!)
+                        .error(R.drawable.ic_broken_image)
+                        .fallback(R.drawable.ic_broken_image).into(imageView!!)
                     island?.text = item.name
                     tiles?.text = "${item.islandHeight} x ${item.islandWidth}"
                     itemView?.setOnClickListener {

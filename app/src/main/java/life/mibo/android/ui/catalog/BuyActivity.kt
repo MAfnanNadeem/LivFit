@@ -443,7 +443,7 @@ class BuyActivity : BaseActivity() {
             quantity?.text = "${item.quantity}"
             if (item.image != null && item.image!!.isNotEmpty()) {
                 img?.visibility = View.VISIBLE
-                Glide.with(img!!).load(item.image).error(R.drawable.ic_broken_image_black_24dp)
+                Glide.with(img!!).load(item.image).error(R.drawable.ic_broken_image)
                     .fitCenter().into(img)
             } else {
                 img?.visibility = View.GONE

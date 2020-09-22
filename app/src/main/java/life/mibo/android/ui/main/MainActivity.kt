@@ -111,11 +111,8 @@ import life.mibo.hardware.constants.Config.*
 import life.mibo.hardware.core.DataParser
 import life.mibo.hardware.core.Logger
 import life.mibo.hardware.events.*
-import life.mibo.hardware.models.Device
+import life.mibo.hardware.models.*
 import life.mibo.hardware.models.DeviceConstants.*
-import life.mibo.hardware.models.DeviceTypes
-import life.mibo.hardware.models.ScaleData
-import life.mibo.hardware.models.UserSession
 import life.mibo.hardware.network.CommunicationListener
 import life.mibo.views.CircleImageView
 import org.greenrobot.eventbus.EventBus
@@ -195,15 +192,23 @@ class MainActivity : BaseActivity(), Navigator {
         no_internet_close?.setOnClickListener {
             frame_no_internet?.visibility = View.GONE
         }
-        //test()
+        test()
     }
 
     fun test() {
-        val d = Device()
-        d.uid = "123456"
-        d.tiles = 18
-        d.type = DeviceTypes.RXT_WIFI
-        SessionManager.getInstance().userSession.devices.add(d)
+        if (MiboApplication.DEBUG) {
+            val d = Device()
+            d.uid = "123456"
+            d.tiles = 18
+            d.type = DeviceTypes.RXT_WIFI
+            d.statusConnected = DeviceConstants.DEVICE_CONNECTED
+            SessionManager.getInstance().userSession.devices.add(d)
+           // val d2 = d.clone()
+            //d2.type = DeviceTypes.RXL_BLE
+            //SessionManager.getInstance().userSession.devices.add(d2)
+            //CommunicationManager.getInstance().connectedDevices.add(d)
+            //CommunicationManager.getInstance().connectedDevices.add(d2)
+        }
     }
 
 
@@ -1720,6 +1725,16 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.nav_test3 -> {
                 lastId = -1
                 //startScanningView(true, DeviceScanFragment.RXL)
+                if(MiboApplication.DEBUG){
+                    val list = ArrayList(SessionManager.getInstance().userSession.devices)
+                    if (list.size > 0)
+                        for (d in list) {
+                            if (d.isPod) {
+                                navigateTo(Navigator.RXL_HOME, null)
+                                return
+                            }
+                        }
+                }
                 startScanningView(true, DeviceScanFragment.RXL)
                 // SessionManager.getInstance().userSession.createDummy()
                 //startActivity(Intent(this@MainActivity, PaymentActivity::class.java))
@@ -1737,14 +1752,16 @@ class MainActivity : BaseActivity(), Navigator {
 //
             R.id.nav_test4 -> {
 
-//                val list = ArrayList(SessionManager.getInstance().userSession.devices)
-//                if (list.size > 0)
-//                    for (d in list) {
-//                        if (d.isRxt) {
-//                            navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-//                            return
-//                        }
-//                    }
+                if(MiboApplication.DEBUG){
+                    val list = ArrayList(SessionManager.getInstance().userSession.devices)
+                    if (list.size > 0)
+                        for (d in list) {
+                            if (d.isRxt) {
+                                navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+                                return
+                            }
+                        }
+                }
                 lastId = -1
                 startScanningView(true, DeviceScanFragment.RXT)
                 // SessionManager.getInstance().userSession.createDummy()

@@ -5,7 +5,8 @@ data class RxtBlock(var action: Int, var duration: Int, var logicType: Int, var 
     private var sequence: IntArray = IntArray(1)
     var round = 1;
     var delay = 0;
-    var pause = 0;
+    var blockPause = 0;
+    //var workoutPause = 0;
 
     fun sequence(tiles: List<RxtTile>) {
         if (isSequence()) {

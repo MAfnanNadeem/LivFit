@@ -15,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.database.Database
 import life.mibo.android.models.login.LoginResponse
 import life.mibo.android.models.login.LoginUser
@@ -212,7 +213,7 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                 val data = response.body()
                 if (data != null) {
                     if (data.status.equals("success", true)) {
-                        if (data.data?.firstLogin == 1) {
+                        if (data.data?.firstLogin?.toIntOrZero() == 1) {
                             Prefs.get(this@LoginController.context).member = data.data
                             Prefs.get(this@LoginController.context).set("user_email", user)
                             val intent = Intent(context, RegisterActivity::class.java)
@@ -236,8 +237,6 @@ class LoginController(val context: LoginActivity) : LoginActivity.Listener {
                         MiboEvent.loginSuccess(
                             "${data.data?.firstName} - ${data.data?.lastName}", "$user"
                         )
-
-
 
                         loginSucceed()
                     } else if (data.status.equals("error", true)) {

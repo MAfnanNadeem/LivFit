@@ -708,6 +708,8 @@
     <string name="invalid_locationid">Invalid LocationId</string>
     <string name="apply">Apply</string>
     <string name="rxt_action_speed">%.01f Sec</string>
+    <string name="invalid_circuit_text">Circuit contains invalid Workout Or Island</string>
+    <string name="pause_circuit">Pause %d Sec</string>
 
 
     <!-- customer reviews -->

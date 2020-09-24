@@ -425,6 +425,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                 // val date = formatter.parse(d.startDateTime)
                 if (LocalDate.parse(date) == item?.date) {
                     if (session.members != null) {
+                        //if(session.sessionType?.equals("group") == true)
+                          //  session.completed = 1
                         var mmember = session.members?.get(0)
                         list.add(
                             Schedule(
@@ -472,6 +474,8 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                         log("updateDefault found")
                         if (session.members != null) {
                             var mmember = session.members?.get(0)
+                            //if(session.sessionType?.equals("group") == true)
+                             //   session.completed = 1
                             list.add(
                                 Schedule(
                                     session.sessionId,

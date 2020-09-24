@@ -20,7 +20,7 @@ data class Member(
     @SerializedName("dob")
     var dob: String?,
     @SerializedName("expires_in")
-    var expiresIn: Int?,
+    var expiresIn: String?,
     @SerializedName("firstName")
     var firstName: String?,
     @SerializedName("gender")
@@ -34,7 +34,7 @@ data class Member(
     @SerializedName("lastName")
     var lastName: String?,
     @SerializedName("number_verify")
-    var numberVerify: Int?,
+    var numberVerify: String?,
     @SerializedName("province")
     var province: Any?,
     @SerializedName("token_type")
@@ -44,7 +44,7 @@ data class Member(
     @SerializedName("type")
     var type: String?,
     @SerializedName("firstLogin")
-    var firstLogin: Int?,
+    var firstLogin: String?,
     @SerializedName("LocationID")
     var locationID: String?,
     @SerializedName("countryCode")
@@ -62,4 +62,6 @@ data class Member(
     fun isMale(): Boolean {
         return "$gender".trim().toLowerCase() == "male"
     }
+
+
 }

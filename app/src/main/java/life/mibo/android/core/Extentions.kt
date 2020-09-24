@@ -2,7 +2,6 @@ package life.mibo.android.core
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.graphics.Color
@@ -11,11 +10,9 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.IdRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -36,9 +33,15 @@ fun <T> String.to(type: Class<T>): T where T : Serializable? {
     return Gson().fromJson(this, type)
 }
 
-fun String.toIntOrZero(): Int = if (this.isNullOrEmpty()) 0 else this.replace(Regex("\\D+"),"").toInt()
+fun String.toIntOrZero(): Int {
+    return try {
+        if (this.isNullOrEmpty()) 0 else this.replace(Regex("\\D+"), "").toInt()
+    } catch (e: Exception) {
+        0
+    }
+}
 
-fun Color.PRIMARY():Int {
+fun Color.PRIMARY(): Int {
     return Color.parseColor("#09B189")
 }
 
@@ -48,6 +51,7 @@ fun Context.showToast(msg: String) {
 
 class Extentions {
 }
+
 internal fun AttributeSet?.handleArguments(
     context: Context, attrs: IntArray, defStyleAttr: Int, defStyleRes: Int,
     block: TypedArray.() -> Unit
@@ -82,13 +86,14 @@ internal class Debouncer(
 ) {
     private var lastShot = 0L
 
-    operator fun <T> invoke(block: () -> T) = if (System.currentTimeMillis() - lastShot > debounceTime) {
-        block.invoke().also {
-            lastShot = System.currentTimeMillis()
+    operator fun <T> invoke(block: () -> T) =
+        if (System.currentTimeMillis() - lastShot > debounceTime) {
+            block.invoke().also {
+                lastShot = System.currentTimeMillis()
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
 }
 
 fun NavController.navigateSafe(

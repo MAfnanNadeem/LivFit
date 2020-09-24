@@ -192,7 +192,7 @@ class MainActivity : BaseActivity(), Navigator {
         no_internet_close?.setOnClickListener {
             frame_no_internet?.visibility = View.GONE
         }
-        test()
+       // test()
     }
 
     fun test() {
@@ -1970,7 +1970,7 @@ class MainActivity : BaseActivity(), Navigator {
             HomeItem.Type.CALENDAR -> {
                 navigate(
                     R.id.action_navigation_home_to_navigation_calendar,
-                    0
+                    R.id.navigation_calendar
                 )
                 //navigateFragment(R.id.navigation_calendar)
             }

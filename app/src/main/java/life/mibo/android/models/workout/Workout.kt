@@ -1,51 +1,54 @@
 package life.mibo.android.models.workout
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.android.core.toIntOrZero
 import java.io.Serializable
 
 public data class Workout(
     @SerializedName("AccessType")
-        var accessType: String?,
+    var accessType: String?,
     @SerializedName("BorgRating")
-        var borgRating: Int?,
+    var borgRating: Int?,
     @SerializedName("CreatedBy")
-        var createdBy: Int?,
+    var createdBy: Int?,
     @SerializedName("Description")
-        var description: String?,
+    var description: String?,
     @SerializedName("DurationUnit")
-        var durationUnit: String?,
+    var durationUnit: String?,
     @SerializedName("DurationValue")
-        var durationValue: String?,
+    var durationValue: String?,
+    @SerializedName("PauseValue")
+    var pauseValue: String?,
     @SerializedName("EMSId")
-        var eMSId: Int?,
+    var eMSId: Int?,
     @SerializedName("Element")
-        var element: List<String?>?,
+    var element: List<String?>?,
     @SerializedName("FitflixId")
-        var fitflixId: Any?,
+    var fitflixId: Any?,
     @SerializedName("Icon")
-        var icon: String?,
+    var icon: String?,
     @SerializedName("Id")
-        var id: Int?,
+    var id: Int?,
     @SerializedName("MemberID")
-        var memberID: Any?,
+    var memberID: Any?,
     @SerializedName("Name")
-        var name: String?,
+    var name: String?,
     @SerializedName("Program")
-        var program: EMS?,
+    var program: EMS?,
     @SerializedName("RXL")
-        var rxl: RXL?,
+    var rxl: RXL?,
     @SerializedName("RXT")
-        var rxt: RXT?,
+    var rxt: RXT?,
     @SerializedName("RXLId")
-        var rXLId: Any?,
+    var rXLId: Any?,
     @SerializedName("RXTId")
-        var rXTId: Int?,
+    var rXTId: Int?,
     @SerializedName("TENSId")
-        var tENSId: Any?,
+    var tENSId: Any?,
     @SerializedName("Tags")
-        var tags: List<String?>?,
+    var tags: List<String?>?,
     @SerializedName("VideoLink")
-        var videoLink: String?
+    var videoLink: String?
 ) : Serializable {
 
 //        fun getProgram(): SearchWorkout.Program {
@@ -75,6 +78,10 @@ public data class Workout(
 
     fun getDurationSec(): Int {
         return durationValue?.toIntOrNull() ?: 0
+    }
+
+    fun getPause(): Int {
+        return pauseValue?.toIntOrZero() ?: 0
     }
 
     fun updateCheck() {

@@ -15,6 +15,7 @@ package life.mibo.android.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.models.base.BaseModel
 
 @Entity(tableName = "mibo_member")
@@ -30,7 +31,7 @@ data class Member(
     @SerializedName("dob")
     var dob: String?,
     @SerializedName("expires_in")
-    var expiresIn: Int?,
+    var expiresIn: String?,
     @SerializedName("firstName")
     var firstName: String?,
     @SerializedName("gender")
@@ -66,14 +67,14 @@ data class Member(
                 member.contact,
                 member.country,
                 member.dob,
-                member.expiresIn,
+                ""+member.expiresIn,
                 member.firstName,
                 member.gender,
                 member.email,
                 member.id,
                 "",
                 member.lastName,
-                member.numberVerify,
+                member.numberVerify?.toIntOrZero(),
                 "",
                 member.tokenType
             );

@@ -93,7 +93,7 @@ class ProfileUpdateFragment : BaseFragment() {
         log("otpVerified ::: $isOtpSent")
         if (isOtpSent) {
             val member = Prefs.get(context).member
-            member?.numberVerify = 2
+            member?.numberVerify = "2"
 
             Prefs.get(context).member = member
 

@@ -1,6 +1,7 @@
 package life.mibo.android.ui.rxt.parser.core
 
 import android.graphics.Color
+import android.os.Looper
 import android.util.SparseArray
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -40,6 +41,8 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private var programDelay = 0
     private var blockSize = -1
     private var blockLogic = 1
+    private var isAutoBlock = false
+
 
     private var tilesSize = -1
     private var speed: Float = 1.0f
@@ -49,15 +52,18 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     // private var tiles = ArrayList<RxtTile>()
 
     // Public
+    private var isProgramRunning = false
     fun onProgramStart(speed: Float) {
         this.speed = speed;
         islandId = island.id
         log("$islandId onProgramStart")
+        events.clear()
         if (island.isCircuit) {
             isCircuit = true
             startCircuit()
             return
         }
+        isProgramRunning = true
         blocks.clear()
         blocks.addAll(island.program.blocks)
         //tiles.clear()
@@ -70,18 +76,19 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         onStartProgramInternal()
     }
 
-    fun startCircuit() {
+    private fun startCircuit() {
         log("startCircuit..........")
         programs.addAll(island.programs)
         tilesSize = island.tiles.size
         lastTile = 0;
         if (programs.size > 0) {
             currentProgram = 0;
+            isProgramRunning = true
             startProgramObservers(programs[currentProgram])
         }
     }
 
-    fun createCircuit(program: RxtProgram) {
+    private fun createCircuit(program: RxtProgram) {
         log("createCircuit..........$program")
         blocks.clear()
         blocks.addAll(program.blocks)
@@ -89,23 +96,30 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         //tiles.addAll(island.tiles)
         // duration = island.getDuration()
         blockSize = blocks.size
-
+        currentBlock = 0;
+        currentRound = 1;
         lastTile = 0;
         //listener?.onProgramStart(null)
         onStartProgramInternal()
     }
 
-    fun onCircuitProgramStart(rxtProgram: RxtProgram) {
+    private fun onCircuitProgramStart(rxtProgram: RxtProgram) {
         log("onCircuitProgramStart..........")
+        isProgramRunning = true
+        isStarted = true
         createCircuit(rxtProgram)
         listener?.onCircuitProgramStart(rxtProgram.name, currentProgram, 0)
     }
 
-    fun onCircuitProgramEnd() {
-        log("onCircuitProgramEnd..........")
+    private fun onCircuitProgramEnd() {
+        isProgramRunning = false
+        isStarted = false
+        lastTile = -1
         listener?.onCircuitProgramEnd("", currentProgram, 0)
+        blockDisposable?.dispose()
         val rxt = programs.get(currentProgram)
         programDelay = rxt.workoutPause
+        log("onCircuitProgramEnd.......... pause $programDelay")
         if (programDelay > 0)
             startProgramPauseObservers(programDelay)
         else {
@@ -113,12 +127,12 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         }
     }
 
-    fun onCircuitProgramPauseStart() {
+    private fun onCircuitProgramPauseStart() {
         log("onCircuitProgramPauseStart..........")
-        listener?.onCircuitProgramStart("", currentProgram, programDelay)
+        listener?.onCircuitProgramStart("Pause $programDelay sec", currentProgram, programDelay)
     }
 
-    fun onCircuitProgramPauseEnd() {
+    private fun onCircuitProgramPauseEnd() {
         log("onCircuitProgramPauseEnd..........")
         listener?.onCircuitProgramEnd("", currentProgram, programDelay)
         if (currentProgram < programs.size) {
@@ -126,6 +140,9 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             if (currentProgram >= programs.size) {
                 log("onCircuitProgram Loop Completed....................")
                 currentProgram = 0
+                isStarted = false
+                release()
+                return
             }
             startProgramObservers(programs[currentProgram])
         } else {
@@ -142,7 +159,6 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     private fun onStartProgramInternal() {
-        events.clear()
         startNextBlock()
     }
 
@@ -155,7 +171,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         listener?.onBlockStart(currentBlock, currentRound)
     }
 
-    private fun onBlockEnd(block: RxtBlock) {
+    private fun onBlockEnd(block: RxtBlock?) {
         log("$islandId onBlockEnd $block")
         isStarted = false
         //listener?.onBlockEnd(currentBlock, currentRound)
@@ -170,7 +186,8 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
 
     private fun onDelayEnd() {
         log("$islandId onDelayEnd")
-        startNextBlock()
+        if (isProgramRunning)
+            startNextBlock()
     }
 
     private fun startNextBlock() {
@@ -201,10 +218,13 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         currentRound = 1
         totalRounds = currentRxtBlock!!.round
         blockLogic = currentRxtBlock!!.logicType
-        blockDelay = currentRxtBlock!!.pause
+        blockDelay = currentRxtBlock!!.blockPause
         blockActionDelay = currentRxtBlock!!.delay
+        //blockActionDelay = 2
         blockAction = currentRxtBlock!!.action
         pattern = currentRxtBlock!!.pattern
+        isAutoBlock = false
+        //isActionDelay = blockActionDelay > 0
         //createSequence(island.tiles)
         initRandomSeq()
     }
@@ -231,10 +251,11 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     fun isSequence() = blockLogic == 1
     fun isRandom() = blockLogic == 2
 
-    // Observers
+    // TODO Observers
     var blockDisposable: Disposable? = null
     var delayDisposable: Disposable? = null
     var programDisposable: Disposable? = null
+    var programPause: Disposable? = null
     private fun startProgramObservers(rxtProgram: RxtProgram) {
         log("startProgramObservers rxt $currentProgram : ${rxtProgram.workoutDuration}")
         programDisposable = Single.timer(rxtProgram.workoutDuration.toLong(), TimeUnit.SECONDS)
@@ -253,7 +274,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
 
     private fun startProgramPauseObservers(pause: Int) {
         log("startProgramPauseObservers rxt $currentProgram : ${pause}")
-        programDisposable = Single.timer(pause.toLong(), TimeUnit.SECONDS)
+        programPause = Single.timer(pause.toLong(), TimeUnit.SECONDS)
             .subscribeOn(Schedulers.newThread()).doOnSuccess {
                 log("programDisposable doOnSuccess")
                 onCircuitProgramPauseEnd()
@@ -262,14 +283,14 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             }.doOnError {
                 log("programDisposable doOnError $it")
             }.doOnSubscribe {
-                log("programDisposable doOnSubscribe $it")
+                log("programDisposable doOnSubscribe")
                 onCircuitProgramPauseStart()
             }.subscribe()
     }
 
     private fun startBlockObservers(block: RxtBlock) {
         log("startBlockObservers block $currentBlock : round $currentRound : total $totalRounds : blockLogic  $blockLogic")
-        if (block.duration == 0) {
+        if (blockLogic == 1 && block.duration == 0) {
             startAutoBlockObservers(block)
             return
         }
@@ -288,18 +309,16 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     private fun startAutoBlockObservers(block: RxtBlock) {
-        blockDisposable = Single.timer(block.duration.toLong(), TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.newThread()).doOnSuccess {
-                log("blockDisposable doOnSuccess")
-                onBlockEnd(block)
-            }.doAfterSuccess {
-                log("blockDisposable doAfterSuccess")
-            }.doOnError {
-                log("blockDisposable doOnError $it")
-            }.doOnSubscribe {
-                log("blockDisposable doOnSubscribe $it")
-                onBlockStart(block)
-            }.subscribe()
+        log("startAutoBlockObservers............")
+        isAutoBlock = true
+        blockDisposable = Single.fromCallable {
+            onBlockStart(block)
+            log("startAutoBlockObservers............ fromCallable")
+            return@fromCallable ""
+        }.subscribeOn(Schedulers.io()).doOnError {
+        }.doOnDispose {
+            log("startAutoBlockObservers............ fromCallable doOnDispose")
+        }.subscribe()
     }
 
     private fun startDelayObservers(delay: Long) {
@@ -312,7 +331,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             }.doOnSubscribe {
                 log("delayDisposable doOnSubscribe $it")
                 onDelayStart()
-                blinkDelay(delay)
+                //blinkDelay(delay)
             }.subscribe()
     }
 
@@ -336,7 +355,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         try {
             if (delay > 1) {
                 val time = delay.times(1000).toInt()
-                sendColor(island.next(0), 0xAAFF0000.toInt(), time.minus(300), islandId, false)
+                sendColor(island.next(0), 0xAA0000FF.toInt(), time.minus(300), islandId, false)
                 lastTile = -1
             }
         } catch (e: java.lang.Exception) {
@@ -347,6 +366,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
 
     private fun release() {
         programDisposable?.dispose()
+        programPause?.dispose()
         blockDisposable?.dispose()
         delayDisposable?.dispose()
     }
@@ -386,6 +406,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private var sequence = Array(0) { "" }
     private var lastSeq = -1
     private var isRand: Boolean = false
+    private var isActionDelay: Boolean = false
 
     //private var isHopscotch: Boolean = false
     private var isTwice: Boolean = false
@@ -399,6 +420,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         log("OnNext $event")
         // events.add(event)
         if (isStarted) {
+            lastTile = -1
             if (isTwice) {
                 isTwice = false
             } else sendColor(nextTile(), island.color, getAction(), islandId, true)
@@ -412,7 +434,10 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
 
     }
 
-    private fun sendColor(d: RxtTile, color: Int, action: Int, id: Int, observe: Boolean = false) {
+    @Synchronized
+    private fun sendColor(d: RxtTile?, color: Int, action: Int, id: Int, observe: Boolean = false) {
+        if (d == null)
+            return
         log("SendColor $d : action  = $action : island = $id")
         lastTile = d.tileId
         changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
@@ -420,6 +445,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             delayObserver(d, action, id)
     }
 
+    @Synchronized
     private fun sendSecondColor(
         d: RxtTile,
         color: Int,
@@ -436,29 +462,15 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     fun changeColor(event: ChangeColorEvent) {
-        CommunicationManager.getInstance().onChangeRxtColorEvent(event)
-//        Single.fromCallable {
-//            CommunicationManager.getInstance().onChangeRxtColorEvent(event)
-//            return@fromCallable ""
-//        }.subscribeOn(Schedulers.io()).subscribe()
-    }
-
-    fun sendSecond(tile: RxtTile, color: Int, action: Int) {
-        isTwice = true
-        secondTile = tile.tileId
-        delayObserver(tile, action, islandId.plus(1))
-        Single.fromCallable {
-            CommunicationManager.getInstance().onChangeRxtColorEvent(
-                ChangeColorEvent(
-                    tile.uid,
-                    "" + tile.tileId,
-                    color,
-                    action,
-                    islandId
-                )
-            )
-            return@fromCallable ""
-        }.subscribeOn(Schedulers.io()).subscribe()
+        //if(Thread.currentThread() == Looper.getMainLooper().thread)
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Single.fromCallable {
+                CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+                return@fromCallable ""
+            }.subscribeOn(Schedulers.io()).subscribe()
+        } else {
+            CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+        }
     }
 
     private fun createSequence(tiles: List<RxtTile>) {
@@ -526,19 +538,49 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         return random!!
     }
 
-    private fun nextTile(): RxtTile {
+    private fun nextTileDelay(delay: Long, tile: RxtTile?) {
+        log("nextTileDelay............ $delay")
+        delayDisposable = Single.just("").delay(delay, TimeUnit.SECONDS)
+            .doOnSuccess {
+                log("nextTileDelay............ fromCallable ")
+                sendColor(tile, island.color, getAction(), islandId, true)
+                return@doOnSuccess
+            }.doOnError {
+                log("nextTileDelay............ doOnError $it")
+                sendColor(tile, island.color, getAction(), islandId, true)
+            }.subscribe()
+    }
+
+    private fun nextTile(): RxtTile? {
+        if (isActionDelay) {
+            if (isRand) {
+                nextTileDelay(blockActionDelay.toLong(), nextRandom())
+            } else {
+                nextTileDelay(blockActionDelay.toLong(), nextSeq())
+            }
+            return null
+        }
         if (isRand)
             return nextRandom()
         return nextSeq()
     }
 
-    private fun nextSeq(): RxtTile {
+    private fun nextSeq(): RxtTile? {
         try {
-            val id = if (lastSeq < sequence.size) {
-                sequence[lastSeq]
+            var id = "0"
+            if (lastSeq < sequence.size) {
+                id = sequence[lastSeq]
             } else {
+                if (isAutoBlock) {
+                    isAutoBlock = false
+                    //log("------------------------Block sequence end------------------------ $isAutoBlock ")
+                    blockDisposable?.dispose()
+                    blockDisposable = null
+                    onBlockEnd(currentRxtBlock)
+                    return null
+                }
                 lastSeq = 0
-                sequence[lastSeq]
+                id = sequence[lastSeq]
             }
             log("nextTile next $id : lastPosition $lastSeq")
             lastSeq++
@@ -603,6 +645,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         var hit = 0
         var miss = 0
         val total = events.size
+        log("getScore $total")
         val list = ArrayList(events) // ThreadModificationError
         if (total > 0) {
             for (i in list) {

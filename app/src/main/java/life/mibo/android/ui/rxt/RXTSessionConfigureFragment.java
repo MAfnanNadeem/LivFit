@@ -131,6 +131,10 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
 
     private void getWorkouts(boolean ems, boolean isMulti) {
+        if (isCircuitMode) {
+            getCircuits(isEmsChecked, isMultiChecked);
+            return;
+        }
         String type = ems ? "ems,rxt" : "rxt";
         Member trainer = Prefs.get(getContext()).getMember();
         if (trainer == null) {
@@ -140,7 +144,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         //String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
 
-        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "", ""), trainer.getAccessToken());
+        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), ""+islandId, ""), trainer.getAccessToken());
         getDialog().show();
         Call<SearchWorkout> api = API.Companion.getRequest().getApi().searchWorkout(data);
         api.enqueue(new Callback<SearchWorkout>() {
@@ -187,7 +191,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         //String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
 
-        SearchCircuitPost data = new SearchCircuitPost(new SearchCircuitPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "", ""), trainer.getAccessToken());
+        SearchCircuitPost data = new SearchCircuitPost(new SearchCircuitPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), ""+islandId, ""), trainer.getAccessToken());
         getDialog().show();
         Call<CircuitResponse> api = API.Companion.getRequest().getApi().getCircuits(data);
         api.enqueue(new Callback<CircuitResponse>() {
@@ -945,7 +949,9 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         log("onOptionsItemSelected " + item.getItemId());
         if (item.getItemId() == R.id.action_filter) {
-            new RXTFilterDialog(getContext(), "0-0", (data, position) -> {
+            String cr = isCircuitMode ? "1" : "0";
+            String ems = isEmsChecked ? "1" : "0";
+            new RXTFilterDialog(getContext(), cr + "-" + ems, (data, position) -> {
                 onItemClick(position);
             }).show();
             return true;
@@ -953,9 +959,9 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
         if (item.getItemId() == R.id.action_ems) {
             log("action ems " + item.isChecked());
-
             return true;
         }
+
         if (item.getItemId() == R.id.switch_ems_menu) {
             log("action switch ems " + item.isChecked());
             return true;
@@ -971,12 +977,12 @@ public class RXTSessionConfigureFragment extends BaseFragment {
 
     void onItemClick(int option) {
         if (option == 10) {
-            getWorkouts(isEmsChecked, isMultiChecked);
             isCircuitMode = false;
+            getWorkouts(isEmsChecked, isMultiChecked);
         }
         if (option == 20) {
-            getCircuits(isEmsChecked, isMultiChecked);
             isCircuitMode = true;
+            getCircuits(isEmsChecked, isMultiChecked);
         }
     }
 }

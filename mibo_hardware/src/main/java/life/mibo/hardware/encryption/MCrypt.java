@@ -29,10 +29,10 @@ public class MCrypt {
 
         ivspec = new IvParameterSpec(iv.getBytes());
 
-        keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES_256");
+        keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES");
 
         try {
-            cipher = Cipher.getInstance("AES_256/CBC/PKCS5Padding");
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             Logger.e("cipher init "+cipher);
             Logger.e("cipher init "+cipher.getAlgorithm());
             Logger.e("cipher init "+cipher.getBlockSize());

@@ -17,8 +17,21 @@
         android:text="Name "
         android:textColor="@color/textColor"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_name_dur"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_name_dur"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/grid_2x"
+        android:layout_marginTop="@dimen/grid_2x"
+        android:layout_marginEnd="@dimen/grid_1x"
+        android:fontFamily="@string/font_roboto_medium"
+        android:textColor="@color/textColorApp2"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 

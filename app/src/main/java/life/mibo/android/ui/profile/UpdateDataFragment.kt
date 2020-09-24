@@ -16,9 +16,11 @@ import com.rilixtech.widget.countrycodepicker.CountryUtils
 import kotlinx.android.synthetic.main.fragment_update_data.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
+import life.mibo.android.core.security.Encrypt
 import life.mibo.android.libs.datepicker.SpinnerDatePickerDialogBuilder
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.utils.Toasty
+import life.mibo.hardware.encryption.MCrypt
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -107,6 +109,21 @@ class UpdateDataFragment : BaseFragment() {
         et_email?.setText(Prefs.get(context).get("user_email"))
 
         try {
+            val crypt = Encrypt()
+            log("setProfile : name "+member.firstName)
+            log("setProfile : crypt2 "+ String(crypt.decrypt(member.firstName)))
+            log("setProfile : name "+member.lastName)
+            log("setProfile : crypt2 "+ String(crypt.decrypt(member.lastName)))
+            log("setProfile : name "+member.dob)
+            log("setProfile : crypt2 "+ String(crypt.decrypt(member.dob)))
+            log("setProfile : name "+member.numberVerify)
+            log("setProfile : crypt2 "+ String(crypt.decrypt(member.numberVerify)))
+        }
+        catch (e: Exception){
+         e.printStackTrace()
+        }
+
+        try {
             val format = SimpleDateFormat("yyyy-MM-dd")
             val date = Calendar.getInstance()
             date.time = format?.parse(member.dob)
@@ -179,6 +196,12 @@ class UpdateDataFragment : BaseFragment() {
         //isMale = member.isMale()
         profileUrl = member.profileImg ?: ""
         //Utils.loadImage(userImage, member?.profileImg, member.isMale())
+
+    }
+
+    fun decrypt(){
+        var crypt = MCrypt()
+
 
     }
 

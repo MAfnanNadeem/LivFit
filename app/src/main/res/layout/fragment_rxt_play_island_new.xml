@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_island" />
+                app:layout_constraintTop_toBottomOf="@id/check_voice_prompt" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_block"
@@ -190,7 +190,7 @@
                 android:buttonTint="@color/colorPrimary"
                 android:text="@string/voice_prompt"
                 android:textColor="@color/textColor"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_island" />
 

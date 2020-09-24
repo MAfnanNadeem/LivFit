@@ -21,8 +21,9 @@ data class RxtProgram(
             if (blocks != null && blocks.isNotEmpty()) {
                 for (i in blocks) {
                     if (i != null) {
-                        //i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
-                        //i.rXTAction = 2
+                        // i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
+                        //i.pattern = "1,5,9,11,13,17,21,23,19,17,15,11,7,5,3,2,1"
+                        //i.rXTAction = 1
                         val b = RxtBlock(
                             i.getAction(),
                             i.getDuration(),
@@ -31,7 +32,7 @@ data class RxtProgram(
                             i.pattern ?: ""
                         )
                         b.delay = i.getActionDelay()
-                        b.pause = i.getBlockPause()
+                        b.blockPause = i.getBlockPause()
                         b.round = i.getRounds()
                         list.add(b)
                     }
@@ -62,7 +63,8 @@ data class RxtProgram(
                                         i.pattern ?: ""
                                     )
                                     b.delay = i.getActionDelay()
-                                    b.pause = i.getBlockPause()
+                                    b.blockPause = i.getBlockPause()
+                                    //b.workoutPause = w.getPause()
                                     b.round = i.getRounds()
                                     list.add(b)
                                 }
@@ -70,11 +72,11 @@ data class RxtProgram(
                         }
                         val prg = RxtProgram(w.name ?: "RXT", 0, 0, list)
                         prg.workoutDuration = w.getDurationSec()
+                        prg.workoutPause = w.getPause()
                         programs.add(prg)
                     }
                 }
             }
-
 
             return programs;
         }

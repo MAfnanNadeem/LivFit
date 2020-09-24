@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_home_new.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
 import life.mibo.android.core.YahooWeather
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.events.NotifyEvent
 import life.mibo.android.models.login.Member
 import life.mibo.android.ui.base.BaseFragment
@@ -77,7 +78,7 @@ class HomeFragment : BaseFragment(), HomeObserver {
         val member: Member? = Prefs.get(this.context)?.member
         tv_user_name.text = "${member?.firstName}  ${member?.lastName}"
         isMember = member?.isMember() ?: true
-        isNumberVerified = member?.numberVerify ?: 0 > 0
+        isNumberVerified = member?.numberVerify?.toIntOrZero() ?: 0 > 0
 //        iv_user_pic.setImageDrawable(
 //            ContextCompat.getDrawable(
 //                this@HomeFragment.context!!,

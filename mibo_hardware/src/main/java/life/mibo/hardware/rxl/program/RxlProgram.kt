@@ -222,11 +222,6 @@ class RxlProgram() {
         return false
     }
 
-    fun type(): RxlLight {
-        if (currentCycle < cycles.size)
-            return cycles[currentCycle].lightType
-        return RxlLight.UNKNOWN
-    }
 
     fun lightLogic(): Int {
         if (currentCycle < cycles.size) {
@@ -237,9 +232,9 @@ class RxlProgram() {
                     2
                 RxlLight.FOCUS ->
                     3
-                RxlLight.ALL_AT_ONCE ->
+                RxlLight.ALL_AT_ONCE_TAP_ONE ->
                     4
-                RxlLight.TAP_AT_ALL ->
+                RxlLight.ALL_AT_ONCE_TAP_ALL ->
                     5
                 RxlLight.HOME_BASED ->
                     6

@@ -1159,7 +1159,7 @@ public class CommunicationManager {
         log("parseCommandsRxl msg " + Utils.getBytes(command) + " : UID " + uid);
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
             // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
-            RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            RXLManager.Companion.getInstance().  postDirect(new RxlStatusEvent(command, uid));
             //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             return;
         }
@@ -1170,7 +1170,12 @@ public class CommunicationManager {
 
     private void parseCommandsRxt(byte[] command, String uid) {
         log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + uid);
-        log("parseCommandsRXT msg " + Utils.getBytes(command) + " : UID " + uid);
+        if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
+            // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
+          //  RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+           // return;
+        }
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.RXT);
     }
@@ -1487,6 +1492,19 @@ public class CommunicationManager {
         }
         if (bluetoothManager != null)
             bluetoothManager.sendMessage(uid, DataParser.sendGetFirm(), "onFirmwareEvent");
+        //tcpClients.get(0).sendMessage(DataParser.sendStart());
+    }
+
+    public void onRxlFirmwareEvent(String uid) {
+        log("onRxlFirmwareEvent");
+        //EventBus.getDefault().removeStickyEvent(event);
+        for (TCPClient t : tcpClients) {
+            if (t.getUid().equals(uid)) {
+                t.sendMessage(DataParser.sendRxlGetFirm());
+            }
+        }
+        if (bluetoothManager != null)
+            bluetoothManager.sendMessage(uid, DataParser.sendRxlGetFirm(), "onRxlFirmwareEvent");
         //tcpClients.get(0).sendMessage(DataParser.sendStart());
     }
 

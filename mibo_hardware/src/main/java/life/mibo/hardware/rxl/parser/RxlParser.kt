@@ -175,10 +175,6 @@ abstract class RxlParser(
         if (isPaused)
             return
         log("onEvent RxlStatusEvent ${event.data} size: ${players.size} : lightLogic $lightLogic")
-        if (lightLogic == 4) {
-            onAllATOnce(event, event.data)
-            return
-        }
         //log("onEvent RxlStatusEvent2 ${event.data} size: ${players.size}")
         players.forEach {
             if (it.id == event.data) {

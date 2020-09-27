@@ -3,6 +3,8 @@ package life.mibo.hardware.models;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
@@ -34,7 +36,7 @@ import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
  * Modified by Sumeet
  */
 
-public class Device implements Serializable, BaseModel {
+public class Device implements Serializable, BaseModel, Cloneable {
 
     @SerializedName("id")
     private String id = "";
@@ -553,5 +555,11 @@ public class Device implements Serializable, BaseModel {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    @NonNull
+    @Override
+    public Device clone() throws CloneNotSupportedException {
+        return (Device) super.clone();
     }
 }

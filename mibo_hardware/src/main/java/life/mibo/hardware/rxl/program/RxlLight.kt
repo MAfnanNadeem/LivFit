@@ -8,6 +8,9 @@
 package life.mibo.hardware.rxl.program
 
 enum class RxlLight(var type: String) {
-    RANDOM(""), SEQUENCE(""), FOCUS(""), ALL_AT_ONCE(""), TAP_AT_ONCE(""), TAP_AT_ALL(""),
+    RANDOM(""), SEQUENCE(""), FOCUS(""), ALL_AT_ONCE_TAP_ONE(""), ALL_AT_ONCE_TAP_ALL(""), TAP_AT_ONCE(
+        ""
+    ),
+    TAP_AT_ALL(""),
     ALL_AT_ALL(""), HOME_BASED(""), UNKNOWN("")
 }

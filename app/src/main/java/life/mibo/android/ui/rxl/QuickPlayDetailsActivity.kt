@@ -435,7 +435,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
                             RxlCycle(
                                 b.getDuration(),
                                 b.getAction(),
-                                0,
+                                b.getPause(),
                                 b.getDelay(),
                                 b.pattern,
                                 RxlUtils.getLogicType(b.getLogicType()), b.getRounds()

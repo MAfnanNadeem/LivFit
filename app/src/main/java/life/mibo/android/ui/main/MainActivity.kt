@@ -646,6 +646,8 @@ class MainActivity : BaseActivity(), Navigator {
             override fun onCommandReceived(code: Int, command: ByteArray, uid: String?, type: Int) {
                 if (type == 2) {
                     parseRxtCommands(code, command, uid)
+                } else if (type == DataParser.RXL) {
+                    parseRxlCommands(code, command, uid)
                 } else {
                     parseCommands(code, command, uid)
                 }
@@ -981,6 +983,88 @@ class MainActivity : BaseActivity(), Navigator {
                 SessionManager.getInstance().userSession.booster.isStarted = true
                 EventBus.getDefault().postSticky(DevicePlayPauseEvent(uid, 1))
 
+            }
+            else -> {
+                if (DEBUG) {
+                    logw("parseCommandsExtra")
+                    parseCommandsExtra(code, command, uid)
+                }
+            }
+        }
+    }
+
+    private fun parseRxlCommands(code: Int, command: ByteArray, uid: String?) {
+        logw("parseRxlCommands $code : data " + command.contentToString())
+        when (code) {
+
+            COMMAND_DEVICE_STATUS_RESPONSE -> {
+                // code -126
+                logw("parseCommands COMMAND_DEVICE_STATUS_RESPONSE $uid")
+                if (!SessionManager.getInstance().userSession.isScanning)
+                    return
+                //val d = SessionManager.getInstance().userSession.booster
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    log("firmware " + d?.firmware)
+                    if (d != null && d.uid == uid) {
+                        logw(
+                            "COMMAND_DEVICE_STATUS_RESPONSE UID MATCHED battery " + DataParser.getStatusBattery(
+                                command
+                            )
+                        )
+                        d.batteryLevel = DataParser.getStatusBattery(command)
+                        d.signalLevel = DataParser.getStatusSignal(command)
+                        //SessionManager.getInstance().userSession.booster.batteryLevel =
+                        //    DataParser.getStatusBattery(command)
+                        // SessionManager.getInstance().userSession.booster.signalLevel =
+                        //      DataParser.getStatusSignal(command)
+                        // updated device status/line
+                        if (d.firmware == "")
+                            CommunicationManager.getInstance().onRxlFirmwareEvent(d.uid)
+                        EventBus.getDefault().postSticky(DeviceStatusEvent(d))
+                        if (d.statusConnected != DEVICE_WAITING && d.statusConnected != DEVICE_CONNECTED) {
+                            if (d.statusConnected == DEVICE_DISCONNECTED) {
+                                // todo why fernando sending again color to booster?
+                                // EventBus.getDefault().postSticky(ChangeColorEvent(d, d.uid))
+                                logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_DISCONNECTED")
+                            }
+                            d.statusConnected = DEVICE_CONNECTED
+                            logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_CONNECTED_")
+                            //d.statusConnected = DEVICE_CONNECTED
+                            //SessionManager.getInstance().userSession.booster.statusConnected = DEVICE_CONNECTED
+
+                            EventBus.getDefault().postSticky(NewConnectionStatus(uid))
+                        } else {
+                            d.statusConnected = DEVICE_CONNECTED
+                            // SessionManager.getInstance().userSession.booster.statusConnected = DEVICE_CONNECTED
+                            logw("COMMAND_DEVICE_STATUS_RESPONSE statusConnected DEVICE_CONNECTED")
+                        }
+                        break
+                    } else {
+                        logw("COMMAND_DEVICE_STATUS_RESPONSE UID NOT MATCHED ${d.uid} == $uid")
+                    }
+                }
+
+            }
+
+            COMMAND_FIRMWARE_REVISION_RESPONSE -> {
+                log("parseCommandsExtra firmware COMMAND_FIRMWARE_REVISION_RESPONSE")
+                val list = SessionManager.getInstance().userSession.devices
+                for (d in list) {
+                    if (d.uid == uid) {
+                        d.firmware = DataParser.getFirmwareFromCommand(command)
+                        log("parseCommandsExtra firmware "+d.firmware)
+                    }
+                }
+            }
+
+            ASYNC_PROGRAM_STATUS -> {
+                // RXL_TAP_EVENT
+                logw("parseCommands ASYNC_PROGRAM_STATUS ${command.contentToString()}")
+                if (SessionManager.getInstance().userSession.isRxl) {
+                    logw("parseCommands RXL TAP COMMANDS")
+                    EventBus.getDefault().postSticky(RxlStatusEvent(command, uid))
+                }
             }
             else -> {
                 if (DEBUG) {

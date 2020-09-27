@@ -309,7 +309,7 @@ class NotificationsFragment : BaseFragment() {
         ) {
             if (id == null || token == null)
                 return
-            var status = if (accept) "Accepted" else "Declined"
+            val status = if (accept) "Accepted" else "Declined"
             parent?.visibility = View.INVISIBLE
             progress?.visibility = View.VISIBLE
             val data =
@@ -358,7 +358,7 @@ class NotificationsFragment : BaseFragment() {
             if (id == null || token == null)
                 return
 
-            var status = if (confirm) "Confirmed" else "Declined"
+            val status = if (confirm) "Confirmed" else "Declined"
             parent?.visibility = View.INVISIBLE
             progress?.visibility = View.VISIBLE
             val data =

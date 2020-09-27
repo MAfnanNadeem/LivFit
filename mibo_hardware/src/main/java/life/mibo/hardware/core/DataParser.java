@@ -184,6 +184,11 @@ public class DataParser {
         return fullMessage(new byte[]{COMMAND_GET_FIRMWARE_REVISION}, new byte[]{0}, aux, BOOSTER);
     }
 
+    public static byte[] sendRxlGetFirm() {
+        byte[] aux = new byte[0];
+        return fullMessage(new byte[]{COMMAND_GET_FIRMWARE_REVISION}, new byte[]{0}, aux, RXL);
+    }
+
     public static byte[] sendGetStatus(int type) {
         return fullMessage(new byte[]{COMMAND_GET_DEVICE_STATUS}, new byte[]{0}, new byte[0], type);
     }

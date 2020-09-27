@@ -8,22 +8,12 @@
 package life.mibo.hardware.rxl.program
 
 data class RxlCycle(
-    var cycleDuration: Int, var cycleAction: Int, var cyclePause: Int,
-    var actionDelay: Int = 0,
-    var sequence: String? = "",
-    var lightType: RxlLight = RxlLight.SEQUENCE, var repeat: Int = 0
+    var cycleDuration: Int, var cycleAction: Int, var cyclePause: Int, var actionDelay: Int = 0,
+    var sequence: String? = "", var lightType: RxlLight = RxlLight.SEQUENCE, var repeat: Int = 0
 ) {
 
     companion object {
         fun empty() = RxlCycle(0, 0, 0, 0)
-    }
-
-    fun getLogicType(): Int {
-        if (lightType == RxlLight.SEQUENCE)
-            return 1
-        else if (lightType == RxlLight.RANDOM)
-            return 2
-        return 1
     }
 
     // Optionals
@@ -48,7 +38,7 @@ data class RxlCycle(
     }
 
     fun getInt(i: String): Int = try {
-       Integer.parseInt(i)
+        Integer.parseInt(i)
     } catch (e: Exception) {
         0
     }

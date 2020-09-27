@@ -1,6 +1,5 @@
 package life.mibo.android.models.workout
 
-import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
 import java.io.Serializable
@@ -97,15 +96,21 @@ data class RXL(
         var videoLink: String?
     ) : Serializable {
         fun isRandom() = rXLType?.toLowerCase()?.contains("random")
+
         fun isSequence() = rXLType?.toLowerCase()?.contains("sequence")
 
+        fun getPause(): Int {
+            return rXLPause ?: 0
+        }
+
         fun getDelay(): Int {
-            return rXLDelay ?: 0
+            return rXLDelay?.times(1000) ?: 0
         }
 
         fun getAction(): Int {
             return rXLAction?.times(1000) ?: 1000
         }
+
         fun getActionSec(): Int {
             return rXLAction ?: 1
         }
@@ -122,10 +127,11 @@ data class RXL(
             when (rXLType?.toLowerCase()) {
                 "sequence" -> return 1
                 "random" -> return 2
-                "all at once" -> return 3
-                "single sequence" -> return 4
-                "double sequence" -> return 5
+                "focus" -> return 3
+                "all at once - tap one" -> return 4
+                "all at once - tap all" -> return 5
                 "hopscotch" -> return 6
+                "single-double" -> return 7
             }
             return 1
         }

@@ -118,7 +118,7 @@ class RxlExercises(
                     return life.mibo.hardware.rxl.program.RxlLight.FOCUS
                 }
                 4 -> {
-                    return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE
+                    return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE_TAP_ONE
                 }
                 5 -> {
                     return life.mibo.hardware.rxl.program.RxlLight.TAP_AT_ALL

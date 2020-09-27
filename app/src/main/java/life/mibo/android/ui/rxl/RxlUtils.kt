@@ -7,8 +7,6 @@
 
 package life.mibo.android.ui.rxl
 
-import life.mibo.android.models.rxl.RxlProgram
-import life.mibo.android.models.workout.RXL
 //import life.mibo.hardware.rxl.core.RxlBlock
 //import life.mibo.hardware.rxl.core.RxlProgram
 
@@ -49,10 +47,10 @@ object RxlUtils {
                 return life.mibo.hardware.rxl.program.RxlLight.FOCUS
             }
             4 -> {
-                return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE
+                return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE_TAP_ONE
             }
             5 -> {
-                return life.mibo.hardware.rxl.program.RxlLight.TAP_AT_ALL
+                return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ONCE_TAP_ALL
             }
             6 -> {
                 return life.mibo.hardware.rxl.program.RxlLight.ALL_AT_ALL

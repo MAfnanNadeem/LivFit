@@ -27,6 +27,7 @@ data class RxlPlayer(
     var isFocus = false
     var isTapReceived = false
     var isStarted = false
+    var lastFocusUid = ""
 
     //var station = RxlStation().addColor(color, 0, colorId)
     var events = ArrayList<Event>()
@@ -64,6 +65,13 @@ data class RxlPlayer(
         return null
     }
 
+    fun lastPod(): Device? {
+        if (pods.size > 0) {
+            return pods[pods.size - 1]
+        }
+        return null
+    }
+
     fun inc() {
         lastPod += 1
     }
@@ -86,6 +94,24 @@ data class RxlPlayer(
         sequence = IntArray(s.size)
         s.forEachIndexed { index, i ->
             sequence[index] = getSeq(i)
+        }
+        Logger.e("Create Sequence ${sequence.contentToString()}")
+    }
+
+    fun createSeq(seq: String?) {
+        Logger.e("Create Sequence seq $seq ")
+        if (seq == null || seq.isEmpty()) {
+            defaultSeq()
+            return
+        }
+        val s = seq.split(",")
+        if (s.isNotEmpty()) {
+            sequence = IntArray(s.size)
+            s.forEachIndexed { index, i ->
+                sequence[index] = getSeq(i)
+            }
+        } else {
+            defaultSeq()
         }
         Logger.e("Create Sequence ${sequence.contentToString()}")
     }
@@ -129,7 +155,15 @@ data class RxlPlayer(
     }
 
     override fun toString(): String {
-        return "RxlPlayer(id=$id, name='$name', colorId=$colorId, noOfPods=$noOfPods, pods=${podsUids()}, lastPod=$lastPod, lastUid='$lastUid', events=${events.size}, wrongEvents=${wrongEvents.size})"
+        return "RxlPlayer(id=$id, name='$name', colorId=$colorId, noOfPods=$noOfPods, pods=${podsUids()}, lastPod=$lastPod, lastUid='$lastUid', events=${events.size}, wrongEvents=${wrongEvents.size}) isTapReceived $isTapReceived isStarted $isStarted"
+    }
+
+    fun reset() {
+        lastPod = 0
+        lastUid = ""
+        isFocus = false
+        isTapReceived = false
+        isStarted = false
     }
 
     enum class Player {

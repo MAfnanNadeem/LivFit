@@ -27,11 +27,12 @@ import io.reactivex.schedulers.Schedulers
 import life.mibo.android.R
 import life.mibo.android.models.rxl.RxlProgram
 import life.mibo.android.models.workout.RXL
-import life.mibo.android.pods.rxl.program.RxlLight
 import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.rxl.program.RxlLight
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
+import kotlin.math.log
 
 
 class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -68,10 +69,13 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             RxlLight.FOCUS -> {
                 ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_only)
             }
-            RxlLight.ALL_AT_ONCE -> {
+            RxlLight.ALL_AT_ONCE_TAP_ONE -> {
                 ivType?.setBackgroundResource(R.drawable.ic_reflex_all_at_once)
             }
             RxlLight.TAP_AT_ALL -> {
+                ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_return)
+            }
+            RxlLight.ALL_AT_ONCE_TAP_ALL -> {
                 ivType?.setBackgroundResource(R.drawable.ic_reflex_focus_return)
             }
         }
@@ -141,7 +145,9 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         type?.text = ""
         users?.text = "${item.players()}"
         devices?.text = "${item.pods()}"
-        time?.text = "${item.total}"
+        //time?.text = "${item.total}"
+        val t = item.getTotalInt()
+        time?.text = String.format("%02d:%02d", t / 60, t % 60)
         ivType?.background = null
         ivType?.setImageDrawable(null)
         ivType?.visibility = View.INVISIBLE
@@ -217,7 +223,7 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //      intArrayOf(-0x9e9d9f, -0xececed)
         //   )
         //  gd.cornerRadius = 0f
-
+        Logger.e("ReflexHolder setBg...... - ${image?.intrinsicWidth} : ${image?.intrinsicHeight}")
         Palette.from((image as BitmapDrawable).bitmap).generate {
             Logger.e("ReflexHolder setGradient generating...... - $it")
             it?.let { palette ->

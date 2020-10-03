@@ -11,7 +11,9 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.core.gson.AlwaysListTypeAdapterFactory
 import life.mibo.android.models.base.BaseModel
-import life.mibo.android.pods.rxl.program.RxlLight
+import life.mibo.hardware.rxl.program.RxlLight
+
+//import life.mibo.android.pods.rxl.program.RxlLight
 
 class RxlExercises(
     @SerializedName("data")
@@ -93,7 +95,7 @@ class RxlExercises(
                     return RxlLight.FOCUS
                 }
                 4 -> {
-                    return RxlLight.ALL_AT_ONCE
+                    return RxlLight.ALL_AT_ONCE_TAP_ONE
                 }
                 5 -> {
                     return RxlLight.TAP_AT_ALL

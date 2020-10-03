@@ -72,7 +72,7 @@ class RxlTabFragment2 : BaseFragment() {
     private fun dialogClicked() {
         //frg = adapter?.current ?: 1
         if (frg == 1)
-            FilterDialog(requireContext(), null).show()
+            FilterDialog(requireContext(), null, ArrayList()).show()
         else if (frg == 2) {
             navigate(Navigator.RXL_COURSE_SELECT, null)
         }

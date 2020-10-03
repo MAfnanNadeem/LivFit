@@ -1258,12 +1258,12 @@ public class CommunicationManager {
         if (event.isAll()) {
             for (TCPClient t : tcpClients) {
                 if (event.getPod().getType() == RXL_WIFI || event.getPod().getType() == RXL_BLE)
-                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), t.getType()), "onPodEvent");
+                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), 0), "onPodEvent");
             }
         } else {
             for (TCPClient t : tcpClients) {
                 if (t.getUid().equals(event.getUid())) {
-                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), t.getType()), "onPodEvent");
+                    t.sendMessage(DataParser.sendRxlColor(event.getPod().getColorPalet(), event.getTime(), 0), "onPodEvent");
                 }
             }
         }
@@ -1277,23 +1277,22 @@ public class CommunicationManager {
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
                 if (event.getDevice().getType() == RXL_WIFI) {
-                    t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), t.getType()), "onChangeColorEvent");
+                    t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData()), "onChangeColorEvent");
                 } else if (event.getDevice().getType() == RXT_WIFI) {
-                    t.sendMessage(DataParser.sendRxtColor(Integer.parseInt(event.getDevice().getData().toString()), event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onRXTColorChange");
+                    t.sendMessage(DataParser.sendRxtColor(Integer.parseInt(event.getDevice().getData().toString()), event.getDevice().getColorPalet(), event.getTime()), "onRXTColorChange");
                 } else {
                     t.sendMessage(DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), t.getType()), "onChangeColorEvent");
                 }
+                break;
             }
         }
         if (bluetoothManager != null) {
             if (event.getDevice().getType() == RXL_BLE) {
                 //t.sendMessage(DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), t.getType()), "onChangeColorEvent");
-                bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL), "ChangeColorEvent", DataParser.RXL);
+                bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData()), "ChangeColorEvent", DataParser.RXL);
             } else {
                 bluetoothManager.sendMessage(event.getUid(), DataParser.sendColor(DeviceColors.getColor(event.getDevice().getColorPalet()), event.getDevice().type()), "ChangeColorEvent");
             }
-
-
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onChangeColorEvent color changed..................... " + event.getUid());
@@ -1302,15 +1301,16 @@ public class CommunicationManager {
 
 
     public synchronized void onChangeColorEventRxl(ChangeColorEvent event) {
-        log("onChangeColorEvent " + event);
+        log("onChangeColorEventRxl " + event);
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
-                t.sendMessage(DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData(), t.getType()), "onChangeColorEvent");
+                t.sendMessage(DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData()), "onChangeColorEventRxl");
+                break;
             }
         }
         if (bluetoothManager != null) {
-            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData(), DataParser.RXL), "ChangeColorEvent", DataParser.RXL);
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getColor(), event.getTime(), event.getData()), "onChangeColorEventRxl", DataParser.RXL);
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onChangeColorEvent color changed..................... " + event.getUid());
@@ -1341,7 +1341,7 @@ public class CommunicationManager {
             }
         }
         if (bluetoothManager != null) {
-            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), DataParser.RXL), "DelayColorEvent", DataParser.RXL);
+            bluetoothManager.sendMessage(event.getUid(), DataParser.sendRxlDelayColor(event.getDevice().getColorPalet(), event.getTime(), event.getData(), event.getDelay()), "DelayColorEvent", DataParser.RXL);
         }
         // tcpClients.get(0).sendMessage(DataParser.sendColor(DeviceColors.getColorPaleteToByte(event.getDevice().getColorPalet())));
         log("onChangeColorEvent color changed..................... " + event.getUid());

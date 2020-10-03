@@ -37,7 +37,7 @@
             android:layout_marginStart="@dimen/grid_1x"
             android:layout_marginEnd="@dimen/grid_1x"
             android:text="Filter One"
-            android:textColor="@color/white"
+            android:textColor="@color/textColor"
             android:textSize="@dimen/text_size_medium" />
 
         <ImageView

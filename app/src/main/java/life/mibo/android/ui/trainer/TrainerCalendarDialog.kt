@@ -31,6 +31,7 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.encryption.MCrypt
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -181,7 +182,7 @@ class TrainerCalendarDialog(var calendarListener: ItemClickListener<TrainerSessi
             if (data?.sessions?.size ?: 0 > 0) {
                 tv_empty?.visibility = View.GONE
 
-                val crypt = Encrypt()
+                val crypt = MCrypt()
                 val dateTimeParser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 val parser = DateTimeFormatter.ofPattern("hh:mm a")
                 val formatter = DateTimeFormatter.ofPattern("EEEE dd MMM")

@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BaseModel
 import life.mibo.android.models.base.BaseResponse
 import life.mibo.hardware.encryption.MCrypt
+import life.mibo.hardware.encryption.MCrypt2
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -83,7 +84,7 @@ class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data)
 
         companion object {
             fun from(data: Biometric.Data): Decrypted {
-                val crypt = MCrypt()
+                val crypt = MCrypt2()
                 val item = Decrypted()
                 item.memberID = data.memberID
                 item.activityType = getString(data.activityType, crypt)
@@ -135,6 +136,22 @@ class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data)
                     String(crypt.decrypt(value))
                 } catch (e: java.lang.Exception) {
                     ""
+                }
+            }
+
+            fun getString(value: String?, crypt: MCrypt2): String {
+                //return crypt.decrypt(value) ?: ""
+                return value ?: ""
+            }
+
+            fun getDouble(value: String?, crypt: MCrypt2): Double {
+                if (value == null)
+                    return 0.0
+                return try {
+                    BigDecimal(getString(value, crypt).toDouble()).setScale(2, RoundingMode.HALF_UP)
+                        .toDouble()
+                } catch (e: java.lang.Exception) {
+                    0.0
                 }
             }
 

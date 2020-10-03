@@ -37,6 +37,7 @@ import life.mibo.android.ui.base.ItemClickListener
 import life.mibo.android.ui.home.HomeItem
 import life.mibo.android.ui.main.Navigator
 import life.mibo.hardware.core.Logger
+import life.mibo.hardware.encryption.MCrypt
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -412,7 +413,7 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
 
     fun onTrainerCalendarDateClicked(item: CalendarDay?) {
         log("onCalendarDateClicked $item")
-        val crypt = Encrypt()
+        val crypt = MCrypt()
         selectedDate = item?.date
         calendarView?.notifyCalendarChanged()
         val list = ArrayList<Schedule>()

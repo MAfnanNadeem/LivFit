@@ -122,30 +122,6 @@ class RxlQuickPlayFragment : BaseFragment(),
 //        })
 //    }
 
-    private fun setFilters(root: View) {
-        //recyclerViewTypes.requestDisallowInterceptTouchEvent(true);
-
-        controller.setFilters(
-            root.findViewById(R.id.recyclerViewTypes),
-            ReactionLightController.Filter.PROGRAM_TYPE
-        )
-        controller.setFilters(
-            root.findViewById(R.id.recyclerViewPods),
-            ReactionLightController.Filter.NO_OF_PODS
-        )
-//        controller.setFilters(
-//            root.findViewById(R.id.recyclerViewLogic),
-//            ReactionLightController.Filter.LIGHT_LOGIC
-//        )
-//        controller.setFilters(
-//            root.findViewById(R.id.recyclerViewPlayers),
-//            ReactionLightController.Filter.PLAYERS
-//        )
-        controller.setFilters(
-            root.findViewById(R.id.recyclerViewAcces),
-            ReactionLightController.Filter.ACCESSORIES
-        )
-    }
 
     var isRefresh = false
 
@@ -170,7 +146,7 @@ class RxlQuickPlayFragment : BaseFragment(),
         when (item.itemId) {
             R.id.action_filter -> {
                 //backdropBehavior.toggle()
-                //showFilterDialog()
+                showFilterDialog()
             }
             R.id.action_filter_cancel -> {
                 isFilterDone = false
@@ -186,7 +162,11 @@ class RxlQuickPlayFragment : BaseFragment(),
         return super.onOptionsItemSelected(item)
     }
 
-    fun showFilterDialog() {
+
+    var results = ArrayList<ReflexFilterAdapter.ReflexFilterModel>()
+    private fun showFilterDialog() {
+        val copy = ArrayList(results)
+        log("showFilterDialog copy --  $copy")
         FilterDialog(
             requireContext(),
             object : ItemClickListener<ArrayList<ReflexFilterAdapter.ReflexFilterModel>> {
@@ -195,13 +175,59 @@ class RxlQuickPlayFragment : BaseFragment(),
                     position: Int
                 ) {
                     log("FilterDialog items $item")
+                    results.clear()
+                    if (item != null)
+                        results.addAll(item)
+                    applyFilters()
                 }
 
-            }).show()
+            }, copy
+        ).show()
     }
 
-    val list = ArrayList<RXL>()
-    var adapter: RecyclerAdapter? = null
+    private val testPlayers = true
+    private fun applyFilters() {
+        programsList.clear()
+        if (results.isNotEmpty() && backupPrograms.isNotEmpty()) {
+            for (p in backupPrograms) {
+                for (r in results) {
+                    when (r.filterType) {
+                        1 -> {
+                            if (p.isCategory(r.title))
+                                addProgram(p)
+                        }
+                        2 -> {
+                            if (p.isPod(r.title))
+                                addProgram(p)
+                        }
+                        3 -> {
+                            if (p.isAccessories(r.title))
+                                addProgram(p)
+
+                        }
+                    }
+                }
+            }
+        } else {
+            for (p in backupPrograms) {
+                addProgram(p)
+            }
+        }
+
+        activity?.runOnUiThread {
+            adapter?.notifyDataSetChanged()
+        }
+    }
+
+    fun addProgram(prg: RXL) {
+        //if (testPlayers || prg.players() == playersCount)
+        if (prg.players() == playersCount)
+            programsList.add(prg)
+    }
+
+    private val programsList = ArrayList<RXL>()
+    private val backupPrograms = ArrayList<RXL>()
+    private var adapter: RecyclerAdapter? = null
 
     override fun onDataReceived2(programs: ArrayList<RXL>) {
         activity?.runOnUiThread {
@@ -220,21 +246,23 @@ class RxlQuickPlayFragment : BaseFragment(),
                 }
             }
 
-            list.clear()
+            programsList.clear()
+            backupPrograms.clear()
 
             programs.forEach {
-                log("it.players == playersCount ${it.players()} == $playersCount")
-                if (it.players() == playersCount)
-                    list.add(it)
+               // log("it.players == playersCount ${it.players()} == $playersCount")
+                //if (it.players() == playersCount)
+                addProgram(it)
+                backupPrograms.add(it)
             }
 
-            if (list.isEmpty()) {
+            if (programsList.isEmpty()) {
                 empty_view?.visibility = View.VISIBLE
                 tv_empty?.text = """No Exercise found for selected player ($playersCount)"""
             }
             //list.addAll(programs)
 
-            adapter = RecyclerAdapter(list)
+            adapter = RecyclerAdapter(programsList)
             val manager = LinearLayoutManager(this@RxlQuickPlayFragment.activity)
             recycler?.layoutManager = manager
             recycler?.adapter = adapter

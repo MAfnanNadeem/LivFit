@@ -171,6 +171,7 @@ class RXTManager {
             .subscribeOn(Schedulers.io()).doOnNext {
                 onTick(it)
             }.doOnComplete {
+                onTick(0)
                 onExerciseComplete()
             }.doOnSubscribe {
                 onExerciseStart()

@@ -44,12 +44,12 @@
         <!--        &lt;!&ndash;            android:title="@string/action_settings" />&ndash;&gt;-->
         <item
             android:id="@+id/nav_test3"
-            android:icon="@drawable/ic_settings_black"
-            android:title="React Pods" />
+            android:icon="@drawable/ic_menu_react_pods"
+            android:title="@string/react_pods" />
         <item
             android:id="@+id/nav_test4"
-            android:icon="@drawable/ic_settings_black"
-            android:title="React Tiles" />
+            android:icon="@drawable/ic_menu_react_tiles"
+            android:title="@string/react_tiles" />
 
 
     </group>
@@ -64,10 +64,10 @@
                 android:id="@+id/nav_faq"
                 android:icon="@drawable/info_mark"
                 android:title="@string/faq" />
-            <item
-                android:id="@+id/nav_contact"
-                android:icon="@drawable/ic_feedback_black_24dp"
-                android:title="@string/contact_us" />
+<!--            <item-->
+<!--                android:id="@+id/nav_contact"-->
+<!--                android:icon="@drawable/ic_feedback_black_24dp"-->
+<!--                android:title="@string/contact_us" />-->
             <item
                 android:id="@+id/nav_rate"
                 android:icon="@drawable/ic_menu_send"

@@ -256,8 +256,8 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             //navigate(Navigator.RXL_COURSE_CREATE, program)
             if (isSessionActive)
                 return@setOnClickListener
-            setResult(3)
-            finish()
+            //setResult(3)
+            //finish()
         }
         //setPickers()
         //getPods()
@@ -518,8 +518,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //            tv_select_duration?.text = "0 sec"
 //            tv_select_pause?.text = "0 sec"
 //            tv_select_action.text = "0 sec"
-            tv_cycle_timer
+            //tv_cycle_timer
             setAdapters(it.blocks)
+            // onTimerUpdate(it.duration().toLong())
+            tv_cycle_timer?.text =
+                String.format("%02d:%02d", it.duration() / 60, it.duration() % 60)
 
         }
 
@@ -820,10 +823,16 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 
                         override fun onNext(t: Device) {
                             log("blinkPods RxlPlayer sent blink command ${t.uid}")
-                            EventBus.getDefault()
-                                .postSticky(RxlBlinkEvent(t.uid, 200, 200, 3, player.color))
-                            //delay(20)
-                            Thread.sleep(20)
+                            try {
+                                //val color = player.color
+                                val color = Utils.getColorAt(t.id)
+                                EventBus.getDefault()
+                                    .postSticky(RxlBlinkEvent(t.uid, 200, 200, 3, color))
+                                //delay(20)
+                                Thread.sleep(20)
+                            } catch (ignore: Exception) {
+
+                            }
                         }
 
                         override fun onError(e: Throwable) {
@@ -1949,13 +1958,15 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         //val time = RXLManager.getInstance().getProgram()?.totalDuration()
         val time = RXLManager.getInstance().totalDuration()
         val size = players.size
+        //val tt = String.format("%02d:%02d", time / 60000, time / 1000 % 60)
+        val tt = String.format("%02d:%02d", time / 60, time % 60)
         //val programName = RXLHelper.getInstance().getProgram()?
 
         list.add(
             ScoreAdapter.ScoreItem(
                 0,
                 "",
-                "$time",
+                "$tt",
                 R.drawable.rxl_score_pods_time,
                 R.drawable.rxl_score_time,
                 0,

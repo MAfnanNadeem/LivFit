@@ -1,6 +1,7 @@
 package life.mibo.android.models.workout
 
 import com.google.gson.annotations.SerializedName
+import life.mibo.android.core.toIntOrZero
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
 import java.io.Serializable
 
@@ -63,6 +64,38 @@ data class RXL(
         } catch (e: java.lang.Exception) {
         }
         return list
+    }
+
+    fun getTotalInt(): Int {
+        try {
+            return total.toIntOrZero() ?: 0
+        } catch (e: Exception) {
+            return 0
+        }
+    }
+
+    fun isCategory(text: String?): Boolean {
+        if (category != null && category!!.isNotEmpty()) {
+            for (c in category!!) {
+                if (c?.toLowerCase() == text?.toLowerCase())
+                    return true
+            }
+        }
+        return false
+    }
+
+    fun isAccessories(text: String?): Boolean {
+        if (accessories != null && accessories!!.isNotEmpty()) {
+            for (c in accessories!!) {
+                if (c?.toLowerCase() == text?.toLowerCase())
+                    return true
+            }
+        }
+        return false
+    }
+
+    fun isPod(text: String?): Boolean {
+        return "$rXLPods" == text
     }
 
 

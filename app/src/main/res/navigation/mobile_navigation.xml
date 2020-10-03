@@ -147,11 +147,11 @@
         android:label="@string/rxl_create"
         tools:layout="@layout/fragment_rxl_initial" />
 
-    <fragment
-        android:id="@+id/navigation_rxl_details"
-        android:name="life.mibo.android.ui.rxl.ReflexDetailsFragment"
-        android:label="@string/rxl_details"
-        tools:layout="@layout/fragment_rxl_initial" />
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_rxl_details"-->
+<!--        android:name="life.mibo.android.ui.rxl.ReflexDetailsFragment"-->
+<!--        android:label="@string/rxl_details"-->
+<!--        tools:layout="@layout/fragment_rxl_initial" />-->
     <fragment
         android:id="@+id/navigation_profile"
         android:name="life.mibo.android.ui.profile.ProfileFragment"

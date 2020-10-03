@@ -13,6 +13,7 @@ import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.rxl.program.RxlPlayer
 import life.mibo.hardware.rxl.program.RxlProgram
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.random.Random
 
 abstract class RxlParser(
@@ -89,14 +90,15 @@ abstract class RxlParser(
 
     }
 
-    var unitTest = false
+    //var unitTest = false
     var MIN_DELAY = 100
     var THREAD_SLEEP: Long = 20L
-    var MIN_TAP_DELAY = 100
+    //var MIN_TAP_DELAY = 100
 
     // var cycles = 0L
     var duration = 0
-    var pauseTime = 0
+
+    //var pauseTime = 0
     var delayTime = 0
     var actionTime = 0
     var currentCycle = 1
@@ -107,12 +109,13 @@ abstract class RxlParser(
     var isMulti = false
 
     //var colorSent = false
-    var players = ArrayList<RxlPlayer>()
+    //var players = ArrayList<RxlPlayer>()
+    var players = CopyOnWriteArrayList<RxlPlayer>()
     //var mapPlayers = SparseArray<RxlPlayer>(4)
     //var devices = ArrayList<Device>()
 
     //var lastPod = 0
-    var lastRandom = 0
+    // var lastRandom = 0
     //var lastUid = ""
     fun getPlayers(): Iterator<RxlPlayer> = object : Iterator<RxlPlayer> {
         var index = 0
@@ -123,9 +126,6 @@ abstract class RxlParser(
     //private var random: Random? = null
 
 
-    init {
-        // assignPlayers(program)
-    }
 
     constructor(program: RxlProgram, listener: Listener, logicType: Int) : this(
         program, listener, ""
@@ -138,6 +138,7 @@ abstract class RxlParser(
     }
 
     private fun assignPlayers(program: RxlProgram) {
+        log("assignPlayers")
         if (players.size == 0) {
             //players.clear()
             program.players?.forEach {
@@ -148,7 +149,19 @@ abstract class RxlParser(
         }
     }
 
+    private fun updateTapPlayer(player: RxlPlayer) {
+        if (players.isNotEmpty()) {
+            for (i in players) {
+                if (i.id == player.id) {
+                    i.isStarted = player.isStarted
+                    i.isTapReceived = player.isTapReceived
+                }
+            }
+        }
+    }
+
     fun createPlayers() {
+        log("assignPlayers")
         if (players.size == 0) {
             //players.clear()
             program.players.forEach {
@@ -163,18 +176,15 @@ abstract class RxlParser(
         Logger.e("RXLTest $tagName: $msg")
     }
 
-    fun onTapEvent(event: RxlStatusEvent) {
-        players.forEach {
-            if (it.id == event.data) {
-                onNext(it, event)
-            }
-        }
-    }
 
     fun onEvent(event: RxlStatusEvent) {
         if (isPaused)
             return
-        log("onEvent RxlStatusEvent ${event.data} size: ${players.size} : lightLogic $lightLogic")
+        log("onEvent RxlStatusEvent ${event.data} size: ${players.size}")
+        if (lightLogic == 4) {
+            onAllATOnce(event, event.data)
+            return
+        }
         //log("onEvent RxlStatusEvent2 ${event.data} size: ${players.size}")
         players.forEach {
             if (it.id == event.data) {
@@ -217,7 +227,7 @@ abstract class RxlParser(
         //listener?.createCompositeDisposable()
 
         //isRandom = program!!.isRandom()
-        lightLogic = program.lightLogic()
+        //lightLogic = program.lightLogic()
         //activeColor = program.color()
         //colorPosition = program.colorPosition()
         //cycles = program.cycles().toLong()
@@ -232,38 +242,41 @@ abstract class RxlParser(
 
         // listener?.startExercise(0, 0)pass
         listener?.startProgram(currentCycle, duration)
-        log("startInternal >>> actionTime  lightLogic $lightLogic")
+        //("startInternal >>> actionTime  lightLogic $lightLogic")
     }
 
     private fun startTapInternal(player: RxlPlayer) {
-        log("startTapInternal.......... ${player.id}")
+        log("startTapInternal.......... ${player}")
         player.isTapReceived = true
         player.isStarted = false
         if (isInternalStarted) {
             onCycleStart(player)
+            log("startTapInternal.......... isInternalStarted return")
             return
         }
         isPaused = false
         isInternalStarted = true
+        assignPlayers(program)
         onProgramStart()
         //log("startInternal..........")
-        log(
-            "startTapInternal.......... duration ${program} "
-        )
+        //updateTapPlayer(player)
+
         if (isRunning) {
             log("exercise is already running")
             //listener?.onDispose()
             return
         }
-        assignPlayers(program)
+
         //listener?.createCompositeDisposable()
 
         //isRandom = program!!.isRandom()
-        lightLogic = program.lightLogic()
+        //lightLogic = program.lightLogic()
         //activeColor = program.color()
         //colorPosition = program.colorPosition()
         //cycles = program.cycles().toLong()
         duration = program.getDuration()
+
+
 //        actionTime = program.action().times(1000)
 //        pauseTime = program.pause().times(1000)
 //        delayTime = program.delay().times(1000)

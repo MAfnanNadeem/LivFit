@@ -27,8 +27,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 27
-        versionName "0.1.31"
+        versionCode 32
+        versionName "0.1.32"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'
@@ -42,7 +42,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
             // resValue "string", "app_name", "MiBo Hexa"
-            buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
+            buildConfigField "String", "API_URL", "\"https://mibolivfit.club/api/v1\""
             matchingFallbacks = ['release']
 
         }
@@ -55,7 +55,7 @@ android {
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //resValue "string", "app_name", "MiBo Pro App Debug"
-            buildConfigField "String", "API_URL", "\"https://test.mibo.world/api/v1/\""
+            buildConfigField "String", "API_URL", "\"https://dev.mibolivfit.club/api/v1/\""
             matchingFallbacks = ['debug']
         }
 

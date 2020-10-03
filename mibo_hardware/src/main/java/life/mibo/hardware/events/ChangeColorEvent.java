@@ -100,6 +100,8 @@ public class ChangeColorEvent {
 
 
     public int getColor() {
+        if (device != null)
+            return device.getColorPalet();
         return color;
     }
 

@@ -395,6 +395,7 @@ class SummaryDetailsDialog(
     }
 
     fun getFloat(f: String?): Float {
+
         f?.let {
             return it.toFloatOrNull() ?: 0.0f
         }
@@ -410,7 +411,7 @@ class SummaryDetailsDialog(
             .getJsonList(Prefs.BIOMETRIC, Biometric.Data::class.java)
         Logger.e("getChartPrefs $title ${list?.size}")
         //Logger.e("getChartPrefs $list")
-
+        //Logger.e("getChartPrefs list ${list}")
         list?.let {
             val entries = ArrayList<BarEntry>()
             val dates = ArrayList<String>()
@@ -418,14 +419,16 @@ class SummaryDetailsDialog(
             val formater = SimpleDateFormat("dd/mm")
             var count = 1.0f
             for (i in list) {
+
                 if (i == null)
                     break
                 val data = Biometric.Decrypted.from(i)
                 try {
                     dates.add(formater.format(parser.parse(data?.createdAt?.date)))
                 } catch (e: Exception) {
-
+                    e.printStackTrace()
                 }
+                //Logger.e("getChartPrefs foreach $title :: $data ")
                 when {
                     title.contains("bmi") -> {
                         entries.add(BarEntry(count, getFloat(data?.bMI)))
@@ -443,6 +446,7 @@ class SummaryDetailsDialog(
                         entries.add(BarEntry(count, getFloat(data?.weightLoss)))
                     }
                     title.contains("body fat") -> {
+                        Logger.e("getChartPrefs foreach bodyFat : ${data?.bodyFat} -- ${getFloat(data?.bodyFat)} ")
                         entries.add(BarEntry(count, getFloat(data?.bodyFat)))
                     }
                     title.contains("fat free") -> {
@@ -467,7 +471,7 @@ class SummaryDetailsDialog(
                 }
                 count++
             }
-            Logger.e("getChartPrefs $count list.size ${entries.size} ${dates.size}")
+            //Logger.e("getChartPrefs $count list.size ${entries.size} ${dates.size}")
             Single.just("").delay(400, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread()).doOnSuccess {
                     setupChart(chart, entries, dates)

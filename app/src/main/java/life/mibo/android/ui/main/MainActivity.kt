@@ -86,7 +86,7 @@ import life.mibo.android.ui.main.Navigator.Companion.HOME_VIEW
 import life.mibo.android.ui.main.Navigator.Companion.LOGOUT
 import life.mibo.android.ui.main.Navigator.Companion.RXL_COURSE_CREATE
 import life.mibo.android.ui.main.Navigator.Companion.RXL_COURSE_SELECT
-import life.mibo.android.ui.main.Navigator.Companion.RXL_DETAILS
+//import life.mibo.android.ui.main.Navigator.Companion.RXL_DETAILS
 import life.mibo.android.ui.main.Navigator.Companion.RXL_EXERCISE
 import life.mibo.android.ui.main.Navigator.Companion.RXL_HOME
 import life.mibo.android.ui.main.Navigator.Companion.RXL_QUICKPLAY_DETAILS
@@ -1439,23 +1439,6 @@ class MainActivity : BaseActivity(), Navigator {
                     updateBar(true)
                 }
             }
-            RXL_DETAILS -> {
-
-                if (data is RxlProgram) {
-                    val args = Bundle()
-                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
-                    navigate(0, R.id.navigation_rxl_details, args, getNavOptions())
-                    updateBar(true)
-                    return
-                }
-
-                if (data is ReflexModel) {
-                    val args = Bundle()
-                    args.putSerializable(ReflexCourseCreateFragment.DATA, data)
-                    navigate(0, R.id.navigation_rxl_details, args, getNavOptions(), data.extras)
-                    updateBar(true)
-                }
-            }
             SELECT_PROGRAM -> {
                 var bundle: Bundle? = null
                 if (data is Bundle)
@@ -1814,8 +1797,8 @@ class MainActivity : BaseActivity(), Navigator {
                     if (list.size > 0)
                         for (d in list) {
                             if (d.isPod) {
-                                navigateTo(Navigator.RXL_HOME, null)
-                                return
+                              //  navigateTo(Navigator.RXL_HOME, null)
+                              //  return
                             }
                         }
                 }

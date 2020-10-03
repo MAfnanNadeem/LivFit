@@ -179,7 +179,7 @@ class LoginActivity : BaseActivity() {
 //        }.subscribe()
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
         // videoBg()
-        testEnc()
+       // testEnc()
     }
 
 

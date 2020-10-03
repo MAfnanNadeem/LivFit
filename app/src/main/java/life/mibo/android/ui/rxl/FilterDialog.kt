@@ -33,7 +33,8 @@ import life.mibo.hardware.core.Logger
 
 class FilterDialog(
     c: Context,
-    val listener: ItemClickListener<ArrayList<ReflexFilterAdapter.ReflexFilterModel>>?
+    val listener: ItemClickListener<ArrayList<ReflexFilterAdapter.ReflexFilterModel>>?,
+    var selected: List<ReflexFilterAdapter.ReflexFilterModel>
 ) : BottomSheetDialog(c) {
 
     var textView: TextView? = null
@@ -58,12 +59,16 @@ class FilterDialog(
 
         setFilters2(
             findViewById(R.id.recyclerViewTypes),
-            ReactionLightController.Filter.PROGRAM_TYPE
+            ReactionLightController.Filter.PROGRAM_TYPE, selected
         )
-        setFilters2(findViewById(R.id.recyclerViewPods), ReactionLightController.Filter.NO_OF_PODS)
+        setFilters2(
+            findViewById(R.id.recyclerViewPods),
+            ReactionLightController.Filter.NO_OF_PODS,
+            selected
+        )
         setFilters2(
             findViewById(R.id.recyclerViewAcces),
-            ReactionLightController.Filter.ACCESSORIES
+            ReactionLightController.Filter.ACCESSORIES, selected
         )
 
         cancel?.setOnClickListener {
@@ -74,6 +79,16 @@ class FilterDialog(
             dismiss()
         }
         results.clear()
+
+        if (selected.isNotEmpty())
+            results.addAll(selected)
+    }
+
+    fun applyDefaults(list: List<ReflexFilterAdapter.ReflexFilterModel>) {
+
+        for (i in list) {
+
+        }
 
     }
 
@@ -153,7 +168,11 @@ class FilterDialog(
 
 
     @SuppressLint("CheckResult")
-    fun setFilters2(view: RecyclerView?, type: ReactionLightController.Filter) {
+    fun setFilters2(
+        view: RecyclerView?,
+        type: ReactionLightController.Filter,
+        defFilter: List<ReflexFilterAdapter.ReflexFilterModel>
+    ) {
         if (view == null)
             return
         val list = ArrayList<ReflexFilterAdapter.ReflexFilterModel>()
@@ -162,26 +181,41 @@ class FilterDialog(
 
                 ReactionLightController.Filter.PROGRAM_TYPE -> {
 
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(21, "Agility"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(21, "Agility", 1))
                     // list.add(ReflexFilterModel(22, "Balanced"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(23, "Core"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(24, "Cardio"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(23, "Core", 1))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(24, "Cardio", 1))
                     //list.add(ReflexFilterModel(25, "Coordination"))
                     // list.add(ReflexFilterModel(26, "Fitness Test"))
                     // list.add(ReflexFilterModel(27, "Flexibility"))
                     //list.add(ReflexFilterModel(28, "Functional"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(29, "Power"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(30, "Reaction Time"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Speed"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(32, "Stamina"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(33, "Strength"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(29, "Power", 1))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(30, "Reaction Time", 1))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(31, "Speed", 1))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(32, "Stamina", 1))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(33, "Strength", 1))
 
                     //list.add(ReflexFilterModel(34, "Suspension"))
                 }
                 ReactionLightController.Filter.NO_OF_PODS -> {
                     for (i in 1..16) {
-                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i"))
+                        list.add(ReflexFilterAdapter.ReflexFilterModel(i, "$i", 2))
                     }
+                }
+                ReactionLightController.Filter.ACCESSORIES -> {
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(61, "No Accessories", 3))
+                    // list.add(ReflexFilterModel(62, "Battle Rope"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(63, "Laddar", 3))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(64, "Medicine Ball", 3))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(64, "Cones", 3))
+                    //list.add(ReflexFilterModel(65, "Mirror"))
+                    // list.add(ReflexFilterModel(66, "Poll"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(66, "Ball", 3))
+                    //list.add(ReflexFilterModel(67, "Pul Up Bar"))
+                    //list.add(ReflexFilterModel(68, "Rig"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(69, "Suspension Straps", 3))
+                    // list.add(ReflexFilterModel(70, "Tree"))
+                    list.add(ReflexFilterAdapter.ReflexFilterModel(71, "Resistance Band", 3))
                 }
                 ReactionLightController.Filter.LIGHT_LOGIC -> {
                     list.add(ReflexFilterAdapter.ReflexFilterModel(41, "Random"))
@@ -196,23 +230,18 @@ class FilterDialog(
                     list.add(ReflexFilterAdapter.ReflexFilterModel(53, "3"))
                     list.add(ReflexFilterAdapter.ReflexFilterModel(54, "4"))
                 }
-                ReactionLightController.Filter.ACCESSORIES -> {
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(61, "No Accessories"))
-                    // list.add(ReflexFilterModel(62, "Battle Rope"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(63, "Laddar"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(64, "Medicine Ball"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(64, "Cones"))
-                    //list.add(ReflexFilterModel(65, "Mirror"))
-                    // list.add(ReflexFilterModel(66, "Poll"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(66, "Ball"))
-                    //list.add(ReflexFilterModel(67, "Pul Up Bar"))
-                    //list.add(ReflexFilterModel(68, "Rig"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(69, "Suspension Straps"))
-                    // list.add(ReflexFilterModel(70, "Tree"))
-                    list.add(ReflexFilterAdapter.ReflexFilterModel(71, "Resistance Band"))
-                }
             }
         }.subscribe {
+
+            if (defFilter.isNotEmpty()) {
+                for (l in list) {
+                    for (d in defFilter) {
+                        if (d.filterType == l.filterType)
+                            l.setSelected(d.title)
+                    }
+                }
+            }
+
 
             val adapter = ReflexFilterAdapter(list, 3)
             val manager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
@@ -222,7 +251,7 @@ class FilterDialog(
             adapter.setListener(object : ReflexFilterAdapter.Listener {
                 override fun onClick(data: ReflexFilterAdapter.ReflexFilterModel?) {
                     if (data?.isSelected == true) {
-                        results?.add(data)
+                        results.add(data)
                     } else {
                         val itr = results.iterator()
                         while (itr.hasNext()) {

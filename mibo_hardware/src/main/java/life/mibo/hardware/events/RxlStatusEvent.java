@@ -59,7 +59,7 @@ public class RxlStatusEvent {
     private int data = 0;
 
     public int getData() {
-        Logger.e("RxlStatusEvent getData " + Arrays.toString(command));
+        //Logger.e("RxlStatusEvent getData " + Arrays.toString(command));
         if (command.length > 3)
             return command[4] & 0xff;
         return data;

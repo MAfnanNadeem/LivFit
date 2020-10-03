@@ -25,6 +25,7 @@ class RxlProgram() {
     var playerType: PlayerType = PlayerType.SINGLE
     var devices = 0
     private var isDiffCycle = false
+    var isCircuitMode = false
     private var lastCycle = -1
     private var repeat: Int = 0
     private var count: Int = 0

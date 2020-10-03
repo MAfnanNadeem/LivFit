@@ -64,6 +64,13 @@ class SettingsFragment : BaseFragment() {
                 height = 0
             if (weight > 1)
                 weight = 0
+            val heightText =
+                if (height == 0) getString(R.string.centimeters) else getString(R.string.feet_inches)
+            val weightText =
+                if (weight == 0) getString(R.string.kilograms) else getString(R.string.pounds)
+
+            tv_measure_unit?.text = heightText
+            tv_weight_unit?.text = weightText
         } else if (type == 2) {
             view_units?.visibility = View.GONE
             view_policies?.visibility = View.GONE

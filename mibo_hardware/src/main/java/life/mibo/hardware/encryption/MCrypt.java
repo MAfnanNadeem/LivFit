@@ -1,12 +1,9 @@
 package life.mibo.hardware.encryption;
 
 
-import android.util.Log;
-
-import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -25,7 +22,8 @@ public class MCrypt {
     public MCrypt() {
         String iv = "fdsfds85435nfdfs";
         //String SecretKey = "89432hjfsd891787";
-        String SecretKey = "UkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9";
+        String SecretKey = "89432hjfsd891787";
+        //String SecretKey = "UkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9";
 
         ivspec = new IvParameterSpec(iv.getBytes());
 
@@ -33,34 +31,17 @@ public class MCrypt {
 
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            Logger.e("cipher init "+cipher);
-            Logger.e("cipher init "+cipher.getAlgorithm());
-            Logger.e("cipher init "+cipher.getBlockSize());
-            Logger.e("cipher getProvider "+cipher.getProvider());
-            Logger.e("cipher init "+cipher.getProvider().getInfo());
-            Logger.e("cipher keyspec "+keyspec.getAlgorithm());
+//            Logger.e("cipher init " + cipher);
+//            Logger.e("cipher init " + cipher.getAlgorithm());
+//            Logger.e("cipher init " + cipher.getBlockSize());
+//            Logger.e("cipher getProvider " + cipher.getProvider());
+//            Logger.e("cipher init " + cipher.getProvider().getInfo());
+//            Logger.e("cipher keyspec " + keyspec.getAlgorithm());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public byte[] encrypt2(String text) throws Exception {
-        if (text == null || text.length() == 0)
-            throw new Exception("Empty string");
-
-        byte[] encrypted = null;
-
-        try {
-            cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
-
-            encrypted = cipher.doFinal(padString(text).getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("[encrypt] " + e.getMessage());
-        }
-
-        return encrypted;
-    }
 
     public String encrypt(String text) throws Exception {
         if (text == null || text.length() == 0)
@@ -81,7 +62,51 @@ public class MCrypt {
         return encrypted;
     }
 
+    boolean print = true;
+
+    void log(String msg) {
+      //  if (print)
+        //    Logger.e("MCrypt : " + msg);
+    }
+
     public byte[] decrypt(String code) throws Exception {
+        if (code == null || code.length() == 0)
+            return new byte[]{};
+        //log("decrypt - " + code);
+        byte[] decrypted = null;
+
+        try {
+            //cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
+            cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
+            //log("decrypt "+code);
+
+            decrypted = cipher.doFinal(hexToBytes(code));
+
+           // log("decrypt - decrypted " + decrypted);
+            //log("decrypt - decrypted " + Arrays.toString(decrypted));
+            //Remove trailing zeroes
+            if (decrypted.length > 0) {
+                int trim = 0;
+                for (int i = decrypted.length - 1; i >= 0; i--) if (decrypted[i] == 0) trim++;
+
+                if (trim > 0) {
+                    byte[] newArray = new byte[decrypted.length - trim];
+                    System.arraycopy(decrypted, 0, newArray, 0, decrypted.length - trim);
+                    decrypted = newArray;
+                }
+            }
+            //log("decrypt - decrypted - " + Arrays.toString(decrypted));
+            //log("decrypted "+new String(decrypted));
+        } catch (Exception e) {
+            log("decrypt - error - " + e);
+            e.printStackTrace();
+            return new byte[]{};
+            //throw new Exception("[decrypt] " + e.getMessage());
+        }
+        return decrypted;
+    }
+
+    public byte[] decrypt3(String code) throws Exception {
         if (code == null || code.length() == 0)
             return new byte[]{};
 

@@ -33,6 +33,7 @@ import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.encryption.MCrypt
+import life.mibo.hardware.encryption.MCrypt2
 import retrofit2.Call
 import retrofit2.Response
 import java.math.BigDecimal
@@ -646,7 +647,7 @@ class MeasurementFragment : BaseFragment() {
         if (shape.isEmpty())
             shape = Calculate.getShapeType(Calculate.bodyShapePage)
         // Math.round()
-        val crypt = MCrypt()
+        val crypt = MCrypt2()
 //        val post = PostBiometric.Data(
 //            data.bmi, bmr, bsa, bodyFat, "cm", bodyWater, chest,
 //            data.elbow, energy, ffmi, forearm, data.height, "cm",
@@ -734,6 +735,8 @@ class MeasurementFragment : BaseFragment() {
 
         //getBioMetric(memberId, token)
     }
+
+
 
     fun round(value: Double): Double {
         return try {

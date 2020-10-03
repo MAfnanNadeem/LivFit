@@ -14,8 +14,9 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.database.Converters
 import life.mibo.android.models.base.BaseModel
-import life.mibo.android.pods.rxl.program.RxlLight
+//import life.mibo.android.pods.rxl.program.RxlLight
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
+import life.mibo.hardware.rxl.program.RxlLight
 import java.io.Serializable
 
 @Entity(tableName = "rxl_programs")

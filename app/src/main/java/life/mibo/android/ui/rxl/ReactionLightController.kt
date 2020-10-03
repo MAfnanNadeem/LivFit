@@ -30,9 +30,9 @@ import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.Listener
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter.ReflexFilterModel
+import life.mibo.android.ui.rxl.impl.RXLObserver
 import life.mibo.android.ui.rxl.impl.ReactionListener
 import life.mibo.android.ui.rxl.impl.ReactionObserver
-import life.mibo.android.ui.rxl.impl.RXLObserver
 import life.mibo.android.utils.Toasty
 import life.mibo.hardware.core.Logger
 import retrofit2.Call
@@ -466,6 +466,15 @@ class ReactionLightController(val fragment: BaseFragment, val observer: Reaction
         LIGHT_LOGIC(IntRange(41, 45)),
         PLAYERS(51..54),
         ACCESSORIES(61..71)
+    }
+
+    enum class TYPE(val t: Int) {
+        NO_OF_PODS(2),
+        PROGRAM_TYPE(1),
+        CATEGORIES(1),
+        LIGHT_LOGIC(4),
+        PLAYERS(5),
+        ACCESSORIES(3)
     }
 
     //val selectedItems = HashMap<Int, ReflexFilterAdapter.ReflexFilterModel>()

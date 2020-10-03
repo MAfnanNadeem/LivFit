@@ -23,7 +23,6 @@ import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import life.mibo.hardware.CommunicationManager
 import life.mibo.hardware.events.ChangeColorEvent
-import life.mibo.hardware.events.DelayColorEvent
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.models.Device
 import life.mibo.hardware.rxl.parser.GeneralPodParser
@@ -33,7 +32,6 @@ import life.mibo.hardware.rxl.program.RxlProgram
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class RXLManager private constructor() {
@@ -80,7 +78,7 @@ class RXLManager private constructor() {
             observe: Boolean
         ) {
             log("Parser.Listener : sendColorEvent player $playerId action $action")
-            sendColor(device, color, action, playerId, observe)
+           // sendColor(device, color, action, playerId, observe)
         }
 
         override fun sendDelayColorEvent(
@@ -91,7 +89,7 @@ class RXLManager private constructor() {
             delay: Int,
             observe: Boolean
         ) {
-            sendDelayColor(device, color, action, playerId, delay, observe)
+            // sendDelayColor(device, color, action, playerId, delay, observe)
         }
 
         override fun endProgram(cycle: Int, duration: Int) {
@@ -134,7 +132,8 @@ class RXLManager private constructor() {
     private var publisher: PublishProcessor<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
     private var publisherDisposable: Disposable? = null
     private var observers: CompositeDisposable? = null
-    private var delayObservers: DisposableArray? = null
+
+    //private var delayObservers: DisposableArray? = null
     private var disposable: Disposable? = null
     // todo startObserver - start
     // private var publisher: PublishSubject<RxlStatusEvent>? = null//;.create<RxlStatusEvent>()
@@ -154,13 +153,14 @@ class RXLManager private constructor() {
     private var colorDisposable = SparseArray<Disposable?>()
 
     //var isRandom = false
-    private var lightLogic = 1 // 1= Sequence, 2 = Random, 3 = Focus, 4 = Focus at All
+    // private var lightLogic = 1 // 1= Sequence, 2 = Random, 3 = Focus, 4 = Focus at All
 
     //var lightLogic : RxlLight = RxlLight.SEQUENCE // todo enum may be costly for performance, using int
     private var unitTest = false
 
     //private var isStarted = false
-    private var isStarted = AtomicBoolean(false)
+    //private var isStarted = AtomicBoolean(false)
+    private var isStarted = false
     private var isInternalStarted = false
     private var isRunning = false
 
@@ -209,7 +209,8 @@ class RXLManager private constructor() {
 
 
     private fun reset() {
-        isStarted.set(false)
+        //isStarted.set(false)
+        isStarted = false
         isInternalStarted = false
         isRunning = false
         isPaused = false
@@ -286,7 +287,8 @@ class RXLManager private constructor() {
     var userStopped = false
     fun stopProgram() {
         log(".......... stopProgram .......... ")
-        isStarted.set(false)
+        //isStarted.set(false)
+        isStarted = false
         //colorDisposable?.dispose()
 //        colorDisposable?.forEach { key, value ->
 //            value?.dispose()
@@ -297,6 +299,7 @@ class RXLManager private constructor() {
         }
         disposable?.dispose()
         completeExercise(0, 0)
+        programParser?.stop()
         // isStarted = false
         log(".......... stopProgram .......... stopped")
     }
@@ -359,7 +362,7 @@ class RXLManager private constructor() {
                 d?.let {
                     it.colorPalet = player.color
                     player.lastUid = it.uid
-                    CommunicationManager.getInstance().onChangeColorEvent(
+                    CommunicationManager.getInstance().onChangeColorEventRxl(
                         ChangeColorEvent(
                             it, it.uid,
                             TAP_TIME, TAP_CODE.plus(player.id)
@@ -400,25 +403,27 @@ class RXLManager private constructor() {
     }
 
     private fun createTapPublishDirect() {
-
+        log("createTapPublishDirect isInternalStarted $isInternalStarted ")
         if (isInternalStarted)
             return
         programParser?.createPlayers();
 
         tapPlayerCount = programParser!!.players.size
-        log("RxlStatusEvent2 isStarted >> $isStarted : $isInternalStarted $tapPlayerCount")
-
-        for (player in programParser!!.getPlayers()){
-            log("RxlStatusEvent2 send tap to player $player")
+        log("createTapPublishDirect isStarted >> $isStarted : $isInternalStarted $tapPlayerCount")
+        val pll = programParser!!.getPlayers()
+        log("createTapPublishDirect programParser!!.getPlayers() $pll")
+        for (player in programParser!!.getPlayers()) {
+            log("createTapPublishDirect send tap to player $player")
             if (player.pods.size > 0) {
                 val d: Device? = player.pods[0]
-                log("RxlStatusEvent2 send tap to Device $d")
+                log("createTapPublishDirect send tap to Device $d")
                 d?.let {
                     it.colorPalet = player.color
                     player.lastUid = it.uid
-                    CommunicationManager.getInstance().onChangeColorEvent(
+                    CommunicationManager.getInstance().onChangeColorEventRxl(
                         ChangeColorEvent(it, it.uid, TAP_TIME, TAP_CODE.plus(player.id))
                     )
+                    log("createTapPublishDirect color sent-------------- $d")
                     ""
                 }
             }
@@ -432,7 +437,7 @@ class RXLManager private constructor() {
     }
 
     fun onNext(it: RxlStatusEvent) {
-        if (!isStarted.get())
+        if (!isStarted)
             return
         programParser!!.onEvent(it)
     }
@@ -448,11 +453,14 @@ class RXLManager private constructor() {
     }
 
     private fun checkAndStartOnTap(event: RxlStatusEvent) {
+        log("checkAndStartOnTap $event")
         if (event.time > 10) {
             log("checkAndStartOnTap ${event.data}")
             program?.players?.forEach {
+                log("checkAndStartOnTap program?.players? $it")
                 if (event.data == TAP_CODE.plus(it.id)) {
                     startTapInternal(it)
+                    return@forEach
                 }
             }
         }
@@ -505,7 +513,7 @@ class RXLManager private constructor() {
         unitTest = false
 
         //isRandom = program!!.isRandom()
-        lightLogic = program!!.lightLogic()
+        //lightLogic = program!!.lightLogic()
 
 //        if (lightLogic > 2) {
 //            //isFocus = true
@@ -514,7 +522,11 @@ class RXLManager private constructor() {
         //events.clear()
         // baseParser?.startExercise(0, 0)
         //baseParser?.startObserver(1)
-        startExercise(0, 0)
+        //startExercise(0, 0)
+        rxlListener?.onExerciseStart()
+        logi(".......... startExercise .......... ")
+        isRunning = true
+        programParser?.startProgram()
         //startObserver(1, 0)
         //log("startInternal >>> actionTime $actionTime : duration ${getDuration()} : cycles $cycles : pauseTime $pauseTime lightLogic $lightLogic")
     }
@@ -558,6 +570,7 @@ class RXLManager private constructor() {
                 }.doOnComplete {
                     log("startObserver >> doOnComplete cycle $cycle - duration $duration")
                     userStopped = false
+                    pauseDuration = duration.toLong()
                     completeCycle(cycle, duration)
                 }.doOnSubscribe {
                     log("startObserver >> doOnSubscribe cycle $cycle - duration $duration")
@@ -591,23 +604,6 @@ class RXLManager private constructor() {
     }
 
 
-    private fun delayObserver(delay: Delay) {
-        log("delayObserver $delay")
-        //colorDisposable?.dispose()
-        //colorDisposable = null
-        colorDisposable.get(delay.playerId)?.dispose()
-        //colorDisposable.get(playerId) = null
-
-
-        colorDisposable.put(
-            delay.playerId,
-            Single.just(delay).delay(delay.action, TimeUnit.MILLISECONDS).doOnSuccess {
-                postDirect(
-                    RxlStatusEvent(byteArrayOf(0, 3, 0, 0, it.playerId.toByte(), 0, 0, 0), it.uid)
-                )
-            }.subscribe()
-        )
-    }
 
     private fun startCycle(cycle: Int, time: Int = 0) {
         logi(".......... startCycle .......... " + getTime())
@@ -620,9 +616,11 @@ class RXLManager private constructor() {
             programParser?.onCycleStart()
         }
         isPaused = false
+        isTap = false
         //colorSent = false
         // EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle started"))
-        isStarted.set(true)
+        //isStarted.set(true)
+        isStarted = true
         //isPaused = false
         // this will create time sync issue with multiple users and start exercise again
 //        if (isTap)
@@ -637,7 +635,8 @@ class RXLManager private constructor() {
         logi(".......... pauseCycle .......... " + getTime())
         rxlListener?.onCyclePaused(cycle, time)
         //EventBus.getDefault().post(NotifyEvent(REFLEX, getTime() + " Cycle $cycle paused"))
-        isStarted.set(false)
+        //isStarted.set(false)
+        isStarted = false
         //publisher.onNext("pauseCycle")
     }
 
@@ -652,7 +651,8 @@ class RXLManager private constructor() {
 
     private fun completeCycle(cycle: Int, duration: Int = 0) {
         logi(".......... completeCycle .......... " + getTime())
-        isStarted.set(false)
+        //isStarted.set(false)
+        isStarted = false
         rxlListener?.onCycleEnd(cycle)
         //colorDisposable?.dispose()
         for (v in 0 until colorDisposable.size()) {
@@ -670,19 +670,12 @@ class RXLManager private constructor() {
 //        } else {
 //            completeExercise(0, 0)
 //        }
-        isStarted.set(false)
+        //isStarted.set(false)
 
         //publisher.onNext("completeCycle")
 
     }
 
-    private fun startExercise(cycle: Int, time: Int = 0) {
-        rxlListener?.onExerciseStart()
-        logi(".......... startExercise .......... ")
-        isRunning = true
-        programParser?.startProgram()
-        //publisher.onNext("startExercise")
-    }
 
     private fun pauseExercise(cycle: Int, time: Int = 0, remain: Int = 0) {
         rxlListener?.onExercisePaused(cycle, time, remain)
@@ -709,34 +702,52 @@ class RXLManager private constructor() {
         //publisher.onNext("completeExercise")
     }
 
-    fun sendColor(d: Device?, color: Int, action: Int, playerId: Int, observe: Boolean = false) {
-
-        d?.let {
-            it.colorPalet = color
-            CommunicationManager.getInstance()
-                .onChangeColorEvent(ChangeColorEvent(it, it.uid, action, playerId))
-        }
-
-        if (observe)
-            delayObserver(
-                Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId)
-            )
-        //lastPod++
-    }
-
-    fun sendDelayColor(
-        d: Device?, color: Int, action: Int,
-        playerId: Int, delay: Int, observe: Boolean = false
-    ) {
-        d?.let {
-            it.colorPalet = color
-            CommunicationManager.getInstance()
-                .onDelayColorEvent(DelayColorEvent(it, it.uid, action, playerId, delay))
-        }
-        if (observe)
-            delayObserver(Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId))
-        //lastPod++
-    }
+//    fun sendColor(d: Device?, color: Int, action: Int, playerId: Int, observe: Boolean = false) {
+//
+//        d?.let {
+//            it.colorPalet = color
+//            CommunicationManager.getInstance()
+//                .onChangeColorEvent(ChangeColorEvent(it, it.uid, action, playerId))
+//        }
+//
+//        if (observe)
+//            delayObserver(
+//                Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId)
+//            )
+//        //lastPod++
+//    }
+//
+//    fun sendDelayColor(
+//        d: Device?, color: Int, action: Int,
+//        playerId: Int, delay: Int, observe: Boolean = false
+//    ) {
+//        d?.let {
+//            it.colorPalet = color
+//            CommunicationManager.getInstance()
+//                .onDelayColorEvent(DelayColorEvent(it, it.uid, action, playerId, delay))
+//        }
+//        if (observe)
+//            delayObserver(Delay(d?.uid, action.plus(DELAY_OBSERVE).toLong(), playerId))
+//        //lastPod++
+//    }
+//
+//    private fun delayObserver(delay: Delay) {
+//        log("delayObserver $delay")
+//        //colorDisposable?.dispose()
+//        //colorDisposable = null
+//        colorDisposable.get(delay.playerId)?.dispose()
+//        //colorDisposable.get(playerId) = null
+//
+//
+//        colorDisposable.put(
+//            delay.playerId,
+//            Single.just(delay).delay(delay.action, TimeUnit.MILLISECONDS).doOnSuccess {
+//                postDirect(
+//                    RxlStatusEvent(byteArrayOf(0, 3, 0, 0, it.playerId.toByte(), 0, 0, 0), it.uid)
+//                )
+//            }.subscribe()
+//        )
+//    }
 
     fun turnOffAndRelease(players: ArrayList<RxlPlayer>?) {
         try {
@@ -792,7 +803,8 @@ class RXLManager private constructor() {
 
     fun unregister() {
         // EventBus.getDefault().unregister(this)
-        isStarted.set(false)
+        //isStarted.set(false)
+        isStarted = false
         isRunning = false
         dispose()
         observers?.dispose()
@@ -835,16 +847,16 @@ class RXLManager private constructor() {
 
     // TODO Check performance later, this may block thread
     fun postDirect(@NonNull event: RxlStatusEvent) {
-        log("postDirect event $event")
+        log("postDirect event $event isTap $isTap")
         if (isTap) {
             if (event.data > TAP_CODE) {
-                log("RxlStatusEvent2 it.data == TAP_CODE........... >> $isInternalStarted ")
+                log("RxlStatusEvent2 it.data == TAP_CODE........... >> isInternalStarted $isInternalStarted ")
                 checkAndStartOnTap(event)
             }
         }
-        if (!isStarted.get())
-            return
-        programParser?.onEvent(event)
+        log("isStarted.get() $isStarted")
+        if (isStarted)
+            programParser?.onEvent(event)
     }
 
     fun onNextDirect(it: RxlStatusEvent) {
@@ -853,14 +865,14 @@ class RXLManager private constructor() {
             log("RxlStatusEvent2 it.data == TAP_CODE........... >> $isInternalStarted ")
             checkAndStartOnTap(it)
         }
-        if (!isStarted.get())
+        if (!isStarted)
             return
         programParser!!.onEvent(it)
     }
 
     fun getScore(): String {
-        if (lightLogic == 3 || lightLogic == 4)
-            return getHitsFocus()
+        // if (lightLogic == 3 || lightLogic == 4)
+        //    return getHitsFocus()
         val b = StringBuilder()
         b.append("\n")
         for (it in programParser!!.getPlayers()) {
@@ -871,11 +883,13 @@ class RXLManager private constructor() {
             b.append("Total: " + it.events.size)
             var hits = 0
             var missed = 0
-            it.events?.forEach { ev ->
-                if (ev.tapTime > 1)
-                    hits++
-                else
-                    missed++
+            it.events?.forEach {
+                if (it.isFocus) {
+                    if (it.tapTime > 1)
+                        hits++
+                    else
+                        missed++
+                }
             }
             b.append(", Hits: $hits")
             b.append(", Missed: $missed")
@@ -932,7 +946,7 @@ class RXLManager private constructor() {
     }
 
     fun totalDuration(): Int {
-        //log("totalDuration pauseDuration $pauseDuration : remainDuration $remainDuration : duration ${programParser?.duration} - $totalDuration")
+        log("totalDuration pauseDuration $pauseDuration : remainDuration $remainDuration : duration ${programParser?.duration} - $totalDuration")
         if(remainDuration == totalDuration)
             return pauseDuration.toInt()
         return totalDuration.minus(remainDuration.minus(pauseDuration.toInt()))

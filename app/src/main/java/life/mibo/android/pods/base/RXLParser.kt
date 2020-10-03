@@ -9,7 +9,7 @@ package life.mibo.android.pods.base
 
 import life.mibo.hardware.events.RxlStatusEvent
 import life.mibo.hardware.rxl.program.PlayerType
-import life.mibo.android.pods.rxl.program.RxlLight
+import life.mibo.hardware.rxl.program.RxlLight
 
 interface RXLParser {
     fun type(): RxlLight

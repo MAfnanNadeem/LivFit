@@ -218,26 +218,26 @@ public class DataParser {
         return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{3}, aux, type);
     }
 
-    public static byte[] sendRxlColor(int color, int time, int type) {
-        try {
-            int r = (color >> 16) & 0xFF;
-            int g = (color >> 8) & 0xFF;
-            int b = (color) & 0xFF;
-            int t1 = (time >> 8) & 0xFF;
-            int t2 = (time) & 0xFF;
-            log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
-            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{5}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
-        } catch (Exception e) {
-            // Color c = Color.valueOf(color);
-            log("sendRxlColor " + color + " : " + time);
-            Logger.e("sendRxlColor Exception ", e);
-            e.printStackTrace();
-        }
-        return new byte[0];
+//    public static byte[] sendRxlColor(int color, int time, int type) {
+//        try {
+//            int r = (color >> 16) & 0xFF;
+//            int g = (color >> 8) & 0xFF;
+//            int b = (color) & 0xFF;
+//            int t1 = (time >> 8) & 0xFF;
+//            int t2 = (time) & 0xFF;
+//            log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
+//            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{5}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
+//        } catch (Exception e) {
+//            // Color c = Color.valueOf(color);
+//            log("sendRxlColor " + color + " : " + time);
+//            Logger.e("sendRxlColor Exception ", e);
+//            e.printStackTrace();
+//        }
+//        return new byte[0];
+//
+//    }
 
-    }
-
-    public static byte[] sendRxlColor(int color, int time, int data, int type) {
+    public static byte[] sendRxlColor(int color, int time, int data) {
         try {
             int r = (color >> 16) & 0xFF;
             int g = (color >> 8) & 0xFF;
@@ -246,7 +246,7 @@ public class DataParser {
             int t2 = (time) & 0xFF;
             int d = (data) & 0xFF;
             log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
-            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{6}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d}, type);
+            return fullMessage(new byte[]{RXL_COMMAND_COLOR}, new byte[]{6}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d}, RXL);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
             Logger.e("sendRxlColor Exception ", e);
@@ -267,7 +267,7 @@ public class DataParser {
             int d1 = (delay) & 0xFF;
             int d2 = (delay >> 8) & 0xFF;
             log("sendRxlColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
-            return fullMessage(new byte[]{RXL_COMMAND_COLOR_DELAY}, new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d, (byte) d1, (byte) d2}, RXT);
+            return fullMessage(new byte[]{RXL_COMMAND_COLOR_DELAY}, new byte[]{8}, new byte[]{(byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) d, (byte) d1, (byte) d2}, RXL);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
             Logger.e("sendRxlColor Exception ", e);
@@ -308,7 +308,7 @@ public class DataParser {
 
     }
 
-    public static byte[] sendRxtColor(int tileId, int color, int time, int type) {
+    public static byte[] sendRxtColor(int tileId, int color, int time) {
         try {
             int id = (tileId) & 0xFF;
             int r = (color >> 16) & 0xFF;
@@ -317,7 +317,7 @@ public class DataParser {
             int t1 = (time >> 8) & 0xFF;
             int t2 = (time) & 0xFF;
             log("sendRXTColor " + color + " : r" + r + " g" + g + " b " + b + time + " : " + t1 + "  " + t2);
-            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{6}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, type);
+            return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{6}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1}, RXT);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
             Logger.e("sendRxlColor Exception ", e);

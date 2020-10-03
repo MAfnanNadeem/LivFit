@@ -140,7 +140,7 @@ class ProfileFragment : BaseFragment() {
             when {
                 sec > 3600 -> {
                     tv_hour_title?.setText(R.string.hours)
-                    tv_hour?.setText("${sec.div(3600.0)}")
+                    tv_hour?.setText(String.format("%.2f", sec.div(3600.0)))
 
                 }
                 sec > 60 -> {

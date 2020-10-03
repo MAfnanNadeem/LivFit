@@ -108,20 +108,20 @@ class UpdateDataFragment : BaseFragment() {
         et_lname?.setText(member.lastName)
         et_email?.setText(Prefs.get(context).get("user_email"))
 
-        try {
-            val crypt = Encrypt()
-            log("setProfile : name "+member.firstName)
-            log("setProfile : crypt2 "+ String(crypt.decrypt(member.firstName)))
-            log("setProfile : name "+member.lastName)
-            log("setProfile : crypt2 "+ String(crypt.decrypt(member.lastName)))
-            log("setProfile : name "+member.dob)
-            log("setProfile : crypt2 "+ String(crypt.decrypt(member.dob)))
-            log("setProfile : name "+member.numberVerify)
-            log("setProfile : crypt2 "+ String(crypt.decrypt(member.numberVerify)))
-        }
-        catch (e: Exception){
-         e.printStackTrace()
-        }
+//        try {
+//            val crypt = Encrypt()
+//            log("setProfile : name "+member.firstName)
+//            log("setProfile : crypt2 "+ String(crypt.decrypt(member.firstName)))
+//            log("setProfile : name "+member.lastName)
+//            log("setProfile : crypt2 "+ String(crypt.decrypt(member.lastName)))
+//            log("setProfile : name "+member.dob)
+//            log("setProfile : crypt2 "+ String(crypt.decrypt(member.dob)))
+//            log("setProfile : name "+member.numberVerify)
+//            log("setProfile : crypt2 "+ String(crypt.decrypt(member.numberVerify)))
+//        }
+//        catch (e: Exception){
+//         e.printStackTrace()
+//        }
 
         try {
             val format = SimpleDateFormat("yyyy-MM-dd")

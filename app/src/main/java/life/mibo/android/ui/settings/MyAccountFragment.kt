@@ -452,6 +452,11 @@ class MyAccountFragment : BaseFragment() {
                 loginToFitbit()
             }
 
+            TYPE.COUNTRY_LANGUAGE -> {
+                navigate(Navigator.SETTINGS_UNIT, SettingsFragment.create(4))
+                activity?.title = getString(R.string.country_language)
+            }
+
             TYPE.UNITS -> {
                 navigate(Navigator.SETTINGS_UNIT, SettingsFragment.create(1))
             }

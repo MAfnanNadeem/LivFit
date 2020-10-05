@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import com.rilixtech.widget.countrycodepicker.Country
+import com.rilixtech.widget.countrycodepicker.CountryUtils
 import kotlinx.android.synthetic.main.fragment_settings.*
 import life.mibo.android.R
 import life.mibo.android.core.Prefs
@@ -112,13 +114,66 @@ class SettingsFragment : BaseFragment() {
             tv_faq?.setOnClickListener {
                 navigate(
                     Navigator.WEBVIEW,
-                    WebViewFragment.bundle("http://test.mibo.life/faq-mobile-application/",getString(R.string.faq))
+                    WebViewFragment.bundle(
+                        "http://test.mibo.life/faq-mobile-application/",
+                        getString(R.string.faq)
+                    )
                 )
             }
 
+        } else if (type == 4) {
+            view_units?.visibility = View.GONE
+            view_notify?.visibility = View.GONE
+            view_policies?.visibility = View.GONE
+            view_lang?.visibility = View.VISIBLE
+            val prefs = Prefs.get(requireContext()).member
+            tv_country_?.text = "${prefs?.countryCode?.toUpperCase()}"
+
+            try {
+                val id = CountryUtils.getFlagDrawableResId(
+                    Country(
+                        prefs?.countryCode?.toLowerCase(),
+                        "",
+                        ""
+                    )
+                )
+                tv_country_flag?.setImageResource(id)
+            } catch (e: Exception) {
+
+            }
+
+            try {
+                tv_lang_?.setText(R.string.lang_eng)
+                tv_lang_flag?.setImageResource(R.drawable.flag_united_kingdom)
+
+            } catch (e: Exception) {
+
+            }
+
+
+            tv_country?.setOnClickListener {
+
+            }
+
+            tv_lang?.setOnClickListener {
+                showLanguageDialog()
+            }
         }
 
 
+    }
+
+    private fun showLanguageDialog() {
+        val options = arrayOf(getString(R.string.lang_eng))
+        val builder =
+            AlertDialog.Builder(requireContext())
+        builder.setTitle("")
+        builder.setSingleChoiceItems(options, 0) { dialog, which ->
+
+        }.setPositiveButton(R.string.ok_button) { dialog, which ->
+
+        }
+        builder.show()
     }
 
     var prefs: Prefs? = null

@@ -714,7 +714,13 @@
     <string name="accessories">Accessories</string>
     <string name="react_pods">React Pods</string>
     <string name="react_tiles">React Tiles</string>
-
+    <string name="country_loc">Country &amp; Location</string>
+    <string name="country_lang">Language</string>
+    <string name="lang_eng">English</string>
+    <string name="lang_spanish">Spanish</string>
+    <string name="lang_ger">German</string>
+    <string name="lang_port">Portuguese</string>
+    <string name="lang_russian">Russian</string>
 
     <!-- customer reviews -->
     <string-array name="names">

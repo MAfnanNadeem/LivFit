@@ -4,6 +4,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,6 +30,8 @@ import life.mibo.android.R;
 import life.mibo.android.core.Prefs;
 import life.mibo.android.models.login.Member;
 import life.mibo.android.ui.base.BaseFragment;
+import life.mibo.android.ui.devices.DeviceScanFragment;
+import life.mibo.android.ui.main.Navigator;
 import life.mibo.hardware.CommunicationManager;
 import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.events.ChangeColorEvent;
@@ -82,6 +87,7 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
         });
 
 
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -165,4 +171,21 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
         super.onStop();
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_devices, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_filter) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("is_rxl", true);
+            bundle.putInt("is_search_type", DeviceScanFragment.RXT);
+            navigate(Navigator.RXT_SCAN, bundle);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

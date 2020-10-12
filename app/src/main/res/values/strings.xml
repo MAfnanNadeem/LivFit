@@ -725,7 +725,7 @@
     <string name="tile_conf_hint">When you click on <b>"Start ID Configuration"</b> button then all tiles turn <big><b><font color='#E5322D'>RED</font></b></big> in selected controller and you have to tap them <b> one by one </b> in the order you want so set them. When you get to the last one you must tap it <strong> <b> TWICE </b> </strong>to complete the process.</string>
     <string name="tile_config">Start ID Configuration</string>
     <string name="id_config">ID Configuration</string>
-    <string name="id_config_permission">Only Super Trainer can reset ID of selected controller</string>
+    <string name="id_config_permission">Only Super Trainer can reset Tile ID of selected controller</string>
 
     <!-- customer reviews -->
     <string-array name="names">

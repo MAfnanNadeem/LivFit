@@ -1646,6 +1646,12 @@ class MainActivity : BaseActivity(), Navigator {
                     bundle = data
                 navigate(0, R.id.navigation_rxt_play, bundle)
             }
+            Navigator.RXT_CONFIGURE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_rxt_config_id, bundle)
+            }
             else -> {
                 drawerItemClicked(type)
             }
@@ -1824,8 +1830,8 @@ class MainActivity : BaseActivity(), Navigator {
                     if (list.size > 0)
                         for (d in list) {
                             if (d.isRxt) {
-                                navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-                                return
+                              //  navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+                               // return
                             }
                         }
                 }

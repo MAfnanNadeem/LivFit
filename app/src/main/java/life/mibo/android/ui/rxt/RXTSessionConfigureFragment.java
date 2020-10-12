@@ -106,25 +106,31 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     private SelectIslandDialog selectIslandDialog;
 
     void islandDialog() {
-        int id = Prefs.get(getContext()).get("island_id_", 0);
+        int id = Prefs.get(getContext()).get(Prefs.ISLAND_ID, 0);
         if (id > 0) {
             getWorkouts(isEmsChecked, isMultiChecked);
             return;
         }
-        selectIslandDialog = new SelectIslandDialog(getActivity(), (island, position) -> {
-            if (island != null && island.getId() != null) {
-                islandId = island.getId();
-                if (selectIslandDialog != null)
-                    selectIslandDialog.dismiss();
-                getWorkouts(isEmsChecked, isMultiChecked);
-                Prefs.get(getContext()).set(Prefs.ISLAND_ID, islandId);
-                Prefs.get(getContext()).set(Prefs.ISLAND_IMAGE, island.getIslandImage());
-                Prefs.get(getContext()).set(Prefs.ISLAND_NAME, island.getName());
-                Prefs.get(getContext()).set(Prefs.ISLAND_WIDTH, "" + island.getIslandWidth());
-                Prefs.get(getContext()).set(Prefs.ISLAND_HEIGHT, "" + island.getIslandHeight());
+        showIslandDialog();
+    }
 
-            }
-        });
+    private void showIslandDialog() {
+        if (selectIslandDialog == null) {
+            selectIslandDialog = new SelectIslandDialog(getActivity(), (island, position) -> {
+                if (island != null && island.getId() != null) {
+                    islandId = island.getId();
+                    if (selectIslandDialog != null)
+                        selectIslandDialog.dismiss();
+                    getWorkouts(isEmsChecked, isMultiChecked);
+                    Prefs.get(getContext()).set(Prefs.ISLAND_ID, islandId);
+                    Prefs.get(getContext()).set(Prefs.ISLAND_IMAGE, island.getIslandImage());
+                    Prefs.get(getContext()).set(Prefs.ISLAND_NAME, island.getName());
+                    Prefs.get(getContext()).set(Prefs.ISLAND_WIDTH, "" + island.getIslandWidth());
+                    Prefs.get(getContext()).set(Prefs.ISLAND_HEIGHT, "" + island.getIslandHeight());
+
+                }
+            });
+        }
 
         selectIslandDialog.show();
     }
@@ -144,7 +150,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         //String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
 
-        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), ""+islandId, ""), trainer.getAccessToken());
+        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "" + islandId, ""), trainer.getAccessToken());
         getDialog().show();
         Call<SearchWorkout> api = API.Companion.getRequest().getApi().searchWorkout(data);
         api.enqueue(new Callback<SearchWorkout>() {
@@ -191,7 +197,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         //String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
 
-        SearchCircuitPost data = new SearchCircuitPost(new SearchCircuitPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), ""+islandId, ""), trainer.getAccessToken());
+        SearchCircuitPost data = new SearchCircuitPost(new SearchCircuitPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "" + islandId, ""), trainer.getAccessToken());
         getDialog().show();
         Call<CircuitResponse> api = API.Companion.getRequest().getApi().getCircuits(data);
         api.enqueue(new Callback<CircuitResponse>() {
@@ -979,10 +985,11 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         if (option == 10) {
             isCircuitMode = false;
             getWorkouts(isEmsChecked, isMultiChecked);
-        }
-        if (option == 20) {
+        } else if (option == 20) {
             isCircuitMode = true;
             getCircuits(isEmsChecked, isMultiChecked);
+        } else if (option == 30) {
+            showIslandDialog();
         }
     }
 }

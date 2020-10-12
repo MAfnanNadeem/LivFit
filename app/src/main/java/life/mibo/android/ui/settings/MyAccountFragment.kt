@@ -445,6 +445,10 @@ class MyAccountFragment : BaseFragment() {
                 navigate(Navigator.VIEW_SESSIONS, ViewSessionsFragment.create(5))
                 activity?.title = getString(R.string.rxt_island_config)
             }
+            TYPE.REACT_ID_CONFIG -> {
+                navigate(Navigator.RXT_CONFIGURE, null)
+                activity?.title = getString(R.string.rxt_id_config)
+            }
             TYPE.GOOGLE_FIT -> {
                 checkPermission()
             }

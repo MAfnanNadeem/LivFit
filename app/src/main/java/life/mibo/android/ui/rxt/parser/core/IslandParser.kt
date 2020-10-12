@@ -21,6 +21,7 @@ import kotlin.random.Random
 class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) {
 
     var islandId = 0;
+    var islandId2 = 0;
     var lastTile = 0;
     var secondTile = -1
 
@@ -56,6 +57,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     fun onProgramStart(speed: Float) {
         this.speed = speed;
         islandId = island.id
+        islandId2 = island.id.plus(2)
         log("$islandId onProgramStart")
         events.clear()
         if (island.isCircuit) {
@@ -422,16 +424,26 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         if (isStarted) {
             lastTile = -1
             if (isTwice) {
+                colorDisposable.get(islandId)?.dispose()
                 isTwice = false
             } else sendColor(nextTile(), island.color, getAction(), islandId, true)
 
             events.add(event)
-            if (event.tile == secondTile) {
-                secondTile = -1
-                colorDisposable.get(islandId.plus(1))?.dispose()
-            }
         }
+    }
 
+    fun onNext2(event: RxtStatusEvent) {
+        log("OnNext2 $event")
+        if (isStarted) {
+            log("OnNext2 secondTile :: $secondTile event.tile ${event.tile}")
+            secondTile = -1
+            colorDisposable.get(islandId2)?.dispose()
+            if (isTwice) {
+                isTwice = false
+            } else sendColor(nextTile(), island.color, getAction(), islandId, true)
+
+            events.add(event)
+        }
     }
 
     @Synchronized
@@ -518,7 +530,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            "1"
+            "0"
         }
     }
 
@@ -591,16 +603,19 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
                     island.next(getInt(split[0])),
                     island.color,
                     getAction(),
-                    islandId.plus(1),
+                    islandId2,
                     true
                 )
+                log("Thread is waiting islandId2")
                 try {
-                    Thread.sleep(20)
+                    Thread.sleep(30)
                 } catch (e: Exception) {
-
+                    log("sendSecondColor error $e")
                 }
+                log("Thread is waiting finished")
                 return island.next(getInt(split[1]))
             }
+            log("nextTile next is single...")
             return island.next(getInt(id))
         } catch (e: java.lang.Exception) {
             log("nextTile ERROR ... $e")

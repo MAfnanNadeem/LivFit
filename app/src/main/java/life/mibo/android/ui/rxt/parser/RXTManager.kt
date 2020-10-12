@@ -150,13 +150,13 @@ class RXTManager {
         for (i in islandParsers) {
             if (i.islandId == it?.data) {
                 log("onNext ID matched ${i.islandId}")
-                if (i.lastTile == it.tile || i.secondTile == it.tile)
+                if (i.lastTile == it.tile)
                     i.onNext(it)
                 return
-            } else if (i.islandId.plus(1) == it?.data) {
-                log("onNext ID matched islandId.plus(1) ${i.islandId}")
-                if (i.lastTile == it.tile || i.secondTile == it.tile)
-                    i.onNext(it)
+            } else if (it?.data == i.islandId2) {
+                log("onNext ID matched islandId2.plus(1) ${i.islandId2}")
+                if (i.secondTile == it.tile)
+                    i.onNext2(it)
                 return
             }
         }

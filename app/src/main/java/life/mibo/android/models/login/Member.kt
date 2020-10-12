@@ -59,6 +59,10 @@ data class Member(
         return "$type".trim().toLowerCase() == "member"
     }
 
+    fun isSuperTrainer(): Boolean {
+        return "$type".trim().toLowerCase() == "super_trainer"
+    }
+
     fun isMale(): Boolean {
         return "$gender".trim().toLowerCase() == "male"
     }

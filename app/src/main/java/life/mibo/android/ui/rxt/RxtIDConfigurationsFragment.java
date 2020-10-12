@@ -13,18 +13,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatSpinner;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import life.mibo.android.R;
+import life.mibo.android.core.Prefs;
+import life.mibo.android.models.login.Member;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.hardware.CommunicationManager;
 import life.mibo.hardware.SessionManager;
@@ -50,9 +51,8 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
 
         tvStatus = view.findViewById(R.id.tv_status);
         View install = view.findViewById(R.id.btn_sequence);
-        View back = view.findViewById(R.id.btn_back);
+        //View back = view.findViewById(R.id.btn_back);
         controllerSpinner = view.findViewById(R.id.spinner_controller);
-
 
         controllerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -73,37 +73,36 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
             }
         });
 
-        install.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(controllerUid)) {
-                    toast("Please select controller");
-                    return;
-                }
-                Single.fromCallable(new Callable<String>() {
-                    @Override
-                    public String call() throws Exception {
-                        CommunicationManager.getInstance().onRxtIdConfigurations(new ChangeColorEvent(new Device(), controllerUid));
-                        return "";
-                    }
-                }).subscribeOn(Schedulers.io()).doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                    }
-                }).subscribe();
+        install.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(controllerUid)) {
+                toast("Please select controller");
+                return;
             }
-        });
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // getCompositionRoot().getScreensNavigator().toRxtHome();
-            }
+            resetController(controllerUid);
         });
 
 
         return view;
+    }
+
+    private void resetController(String controller) {
+        Member prefs = Prefs.get(getContext()).getMember();
+        if (prefs == null)
+            return;
+        if (prefs.isSuperTrainer()) {
+            Single.fromCallable(() -> {
+                CommunicationManager.getInstance().onRxtIdConfigurations(new ChangeColorEvent(new Device(), controller));
+                return "";
+            }).subscribeOn(Schedulers.io()).doOnError(throwable -> {
+
+            }).subscribe();
+
+        } else {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.permission_denied)
+                    .setMessage(R.string.id_config_permission)
+                    .setPositiveButton(R.string.close, (dialog, which) -> dialog.dismiss()).show();
+        }
     }
 
     @Override
@@ -113,13 +112,15 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
     }
 
     void setControllerAdapters() {
-
-        ArrayList<Device> devices = SessionManager.getInstance().getSession().getConnectedDevices();
+        log("setControllerAdapters........");
+        ArrayList<Device> devices = SessionManager.getInstance().getUserSession().getDevices();
+        log("setControllerAdapters........ " + devices.size());
         ArrayList<String> list = new ArrayList<>();
         for (Device device : devices) {
             if (device.isRxt())
                 list.add(device.getUid());
         }
+        log("setControllerAdapters........ list " + list.size());
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, list);
 
         controllerSpinner.setAdapter(arrayAdapter);
@@ -142,7 +143,7 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                      //  tvStatus.setText(event.getCommandString());
+                        //  tvStatus.setText(event.getCommandString());
                     }
                 });
             }

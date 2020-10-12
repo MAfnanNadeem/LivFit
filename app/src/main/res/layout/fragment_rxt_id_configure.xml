@@ -10,12 +10,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:padding="@dimen/grid_2x"
-        android:text="@string/back"
         android:drawableStart="@drawable/ic_arrow_back_black_24dp"
         android:drawableTint="@color/textColor"
+        android:padding="@dimen/grid_2x"
+        android:text="@string/back"
         android:textColor="@color/textColor"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,9 +24,11 @@
         android:id="@+id/cr_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/grid_1x"
+        android:layout_marginStart="@dimen/grid_1x"
+        android:layout_marginTop="@dimen/grid_3x"
+        android:layout_marginEnd="@dimen/grid_1x"
         android:gravity="center"
-        android:text="tile_conf_hint"
+        android:text="@string/tile_conf_hint"
         android:textColor="@color/textColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,38 +50,39 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:lines="1"
             android:padding="@dimen/grid_1x"
-            android:text="select_controller"
+            android:text="Select Controller"
             android:textColor="@color/textColor"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@id/spinner_controller"
-            app:layout_constraintStart_toStartOf="@id/spinner_controller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spinner_controller"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
             android:background="@drawable/bg_edittext_corner"
             android:textAlignment="center"
-            app:layout_constraintEnd_toStartOf="@+id/btn_sequence"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cr_title"
-            app:layout_constraintWidth_percent="0.2" />
+            app:layout_constraintTop_toBottomOf="@id/cr_title" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_sequence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
             android:background="@drawable/button_primary_selector"
-            android:text="tile_config"
             android:paddingStart="@dimen/grid_2x"
+            android:textColor="@color/white"
             android:paddingEnd="@dimen/grid_2x"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/tile_config"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/spinner_controller"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_controller" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -89,6 +93,7 @@
         android:layout_margin="@dimen/grid_1x"
         android:foregroundGravity="center"
         android:scrollbars="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

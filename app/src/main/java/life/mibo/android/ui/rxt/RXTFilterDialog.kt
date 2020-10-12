@@ -81,6 +81,11 @@ class RXTFilterDialog(c: Context, var options: String, val listener: ItemClickLi
             dismiss()
         }
 
+        image?.setOnClickListener {
+            listener?.onItemClicked(null, 30)
+            dismiss()
+        }
+
         val prefs = Prefs.get(context)
         Glide.with(image!!).load(prefs.get(Prefs.ISLAND_IMAGE)).error(R.drawable.ic_broken_image)
             .fallback(R.drawable.ic_broken_image).into(image)

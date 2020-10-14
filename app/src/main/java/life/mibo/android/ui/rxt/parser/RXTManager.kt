@@ -149,12 +149,12 @@ class RXTManager {
         log("onEvent onNext : $it")
         for (i in islandParsers) {
             if (i.islandId == it?.data) {
-                log("onNext ID matched ${i.islandId}")
+                log("onNext ID matched islandId ${i.islandId}")
                 if (i.lastTile == it.tile)
                     i.onNext(it)
                 return
             } else if (it?.data == i.islandId2) {
-                log("onNext ID matched islandId2.plus(1) ${i.islandId2}")
+                log("onNext2 ID matched islandId2 ${i.islandId2}")
                 if (i.secondTile == it.tile)
                     i.onNext2(it)
                 return
@@ -217,6 +217,7 @@ class RXTManager {
     private fun onExerciseError(e: Throwable?) {
         log("....................onExerciseError..................... $e")
         e?.printStackTrace()
+        isStarted = false
     }
 
 //    private fun createBlock(id: Int, block: RxtBlock): Disposable {
@@ -289,7 +290,6 @@ class RXTManager {
         onExerciseComplete()
         isRunning = false
         isStarted = false;
-
     }
 
 

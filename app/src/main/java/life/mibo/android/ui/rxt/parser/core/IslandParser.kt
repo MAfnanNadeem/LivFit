@@ -277,7 +277,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private fun startProgramPauseObservers(pause: Int) {
         log("startProgramPauseObservers rxt $currentProgram : ${pause}")
         programPause = Single.timer(pause.toLong(), TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+            .subscribeOn(Schedulers.io()).doOnSuccess {
                 log("programDisposable doOnSuccess")
                 onCircuitProgramPauseEnd()
             }.doAfterSuccess {
@@ -297,7 +297,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             return
         }
         blockDisposable = Single.timer(block.duration.toLong(), TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+            .subscribeOn(Schedulers.io()).doOnSuccess {
                 log("blockDisposable doOnSuccess")
                 onBlockEnd(block)
             }.doAfterSuccess {
@@ -377,7 +377,6 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private fun delayObserver(d: RxtTile, action: Int, id: Int) {
         log("delayObserver $d : $id")
         colorDisposable.get(id)?.dispose()
-        //colorDisposable.get(playerId) = null
 
         colorDisposable.put(
             id,
@@ -385,6 +384,32 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
                 .doOnSuccess {
                     log("delayObserver dispatch $id")
                     onNext(
+                        RxtStatusEvent(
+                            byteArrayOf(
+                                -64,
+                                4,
+                                d.tileId.toByte(),
+                                0,
+                                0,
+                                id.toByte(),
+                                0
+                            ), d.uid
+                        )
+                    )
+                }.subscribe()
+        )
+    }
+
+    private fun delayObserver2(d: RxtTile, action: Int, id: Int) {
+        log("delayObserver2 $d : $id")
+        colorDisposable.get(id)?.dispose()
+
+        colorDisposable.put(
+            id,
+            Single.just(action).delay(action.plus(300).toLong(), TimeUnit.MILLISECONDS)
+                .doOnSuccess {
+                    log("delayObserver2 dispatch $id")
+                    onNext2(
                         RxtStatusEvent(
                             byteArrayOf(
                                 -64,
@@ -419,7 +444,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     fun onNext(event: RxtStatusEvent) {
-        log("OnNext $event")
+        log("OnNext $event isTwice $isTwice")
         // events.add(event)
         if (isStarted) {
             lastTile = -1
@@ -433,7 +458,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     }
 
     fun onNext2(event: RxtStatusEvent) {
-        log("OnNext2 $event")
+        log("OnNext2 $event isTwice $isTwice")
         if (isStarted) {
             log("OnNext2 secondTile :: $secondTile event.tile ${event.tile}")
             secondTile = -1
@@ -470,18 +495,23 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         secondTile = d.tileId
         changeColor(ChangeColorEvent(d.uid, "" + d.tileId, color, action, id))
         if (observe)
-            delayObserver(d, action, id) // TODO remove plus 1 later
+            delayObserver2(d, action, id)
     }
 
-    fun changeColor(event: ChangeColorEvent) {
-        //if(Thread.currentThread() == Looper.getMainLooper().thread)
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Single.fromCallable {
-                CommunicationManager.getInstance().onChangeRxtColorEvent(event)
-                return@fromCallable ""
-            }.subscribeOn(Schedulers.io()).subscribe()
-        } else {
+    private fun changeColor(event: ChangeColorEvent) {
+        log("changeColor $event")
+        try {
             CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+        } catch (e: Exception) {
+            log("changeColor error $e")
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                Single.fromCallable {
+                    CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+                    return@fromCallable ""
+                }.subscribeOn(Schedulers.io()).subscribe()
+            } else {
+                CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+            }
         }
     }
 
@@ -599,20 +629,21 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             if (id.contains("-")) {
                 log("nextTile next is double........$id : lastPosition $lastSeq")
                 val split = id.split("-")
-                sendSecondColor(
-                    island.next(getInt(split[0])),
-                    island.color,
-                    getAction(),
-                    islandId2,
-                    true
-                )
-                log("Thread is waiting islandId2")
-                try {
-                    Thread.sleep(30)
-                } catch (e: Exception) {
-                    log("sendSecondColor error $e")
-                }
-                log("Thread is waiting finished")
+                sendDoubleSeq(getInt(split[0]))
+//                sendSecondColor(
+//                    island.next(getInt(split[0])),
+//                    island.color,
+//                    getAction(),
+//                    islandId2,
+//                    true
+//                )
+//                log("Thread is waiting islandId2")
+//                try {
+//                    Thread.sleep(30)
+//                } catch (e: Exception) {
+//                    log("sendSecondColor error $e")
+//                }
+//                log("Thread is waiting finished")
                 return island.next(getInt(split[1]))
             }
             log("nextTile next is single...")
@@ -622,6 +653,22 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             e.printStackTrace()
         }
         return island.next(0)
+    }
+
+    fun sendDoubleSeq(seq: Int) {
+        log("sendDoubleSeq start tile $seq")
+        Single.just(seq).delay(100, TimeUnit.MILLISECONDS).doAfterSuccess {
+            log("sendDoubleSeq end tile $seq : $it")
+            sendSecondColor(
+                island.next(it),
+                island.color,
+                getAction(),
+                islandId2,
+                true
+            )
+        }.doOnError {
+            log("sendDoubleSeq error $it")
+        }.subscribe();
     }
 
     private fun nextRandom(): RxtTile {

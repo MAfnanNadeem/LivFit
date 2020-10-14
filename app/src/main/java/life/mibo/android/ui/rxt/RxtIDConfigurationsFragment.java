@@ -104,11 +104,21 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
             }).subscribe();
 
         } else {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.permission_denied)
-                    .setMessage(R.string.id_config_permission)
-                    .setPositiveButton(R.string.close, (dialog, which) -> dialog.dismiss()).show();
+            resett(controller);
+//            new AlertDialog.Builder(getActivity())
+//                    .setTitle(R.string.permission_denied)
+//                    .setMessage(R.string.id_config_permission)
+//                    .setPositiveButton(R.string.close, (dialog, which) -> dialog.dismiss()).show();
         }
+    }
+
+    private void resett(String controller) {
+        Single.fromCallable(() -> {
+            CommunicationManager.getInstance().onRxtIdConfigurations(new ChangeColorEvent(new Device(), controller));
+            return "";
+        }).subscribeOn(Schedulers.io()).doOnError(throwable -> {
+
+        }).subscribe();
     }
 
     @Override

@@ -341,7 +341,7 @@ public class DataParser {
             return fullMessage(new byte[]{COMMAND_SET_DEVICE_COLOR}, new byte[]{8}, new byte[]{(byte) id, (byte) r, (byte) g, (byte) b, (byte) t2, (byte) t1, (byte) z, (byte) d}, RXT);
         } catch (Exception e) {
             // Color c = Color.valueOf(color);
-            Logger.e("sendRXTColor " + color + " : " + time, e);
+            Logger.e("sendRXTColor Error: " + color + " : " + time, e);
             e.printStackTrace();
         }
         return new byte[0];

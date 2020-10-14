@@ -1618,12 +1618,12 @@ public class CommunicationManager {
             log("onChangeRxtColorEvent execute");
             for (TCPClient t : tcpClients) {
                 if (t.getUid().equals(event.getUid())) {
-                    t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()));
+                    //t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()));
+                    t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()), "RXTTest onChangeRxtColorEvent");
                     return;
                 }
             }
         }
-
 
     }
 

@@ -71,13 +71,13 @@ public class TCPClient {
     }
 
     public void sendMessage(byte[] message, String tag) {
-        log(tag+" char: " + Arrays.toString(new String(message).toCharArray()));
+        log(tag+" sendMessage start: " + Arrays.toString(new String(message).toCharArray()));
         sendMessage(message);
-        log( tag+" byte: " + Arrays.toString(message));
+        log( tag+" sendMessage end: " + Arrays.toString(message));
     }
 
     public void sendMessage(byte[] message) {
-        log(" sendMessage char: " + Arrays.toString(new String(message).toCharArray()));
+        //log(" sendMessage char: " + Arrays.toString(new String(message).toCharArray()));
 
         Encryption.mbp_encrypt(message, message.length);
 

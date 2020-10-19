@@ -12,8 +12,8 @@ android {
         config {
             keyAlias 'keyMiBo'
             keyPassword 'MiBoR!23'
-            storeFile file('C:/sumit/android/mibo/KeyMiBo.jks')
-            //storeFile file('D:/sumit/KeyMiBo.jks')
+            //storeFile file('C:/sumit/android/mibo/KeyMiBo.jks')
+            storeFile file('D:/sumit/KeyMiBo.jks')
             storePassword 'MiBoR!23'
             //20:10:58:76:96:67:98:5A:F3:95:55:AE:1A:C8:06:84:EA:C5:B9:92
         }
@@ -27,8 +27,8 @@ android {
         applicationId "life.mibo.android"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 32
-        versionName "0.1.32"
+        versionCode 33
+        versionName "0.1.33"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // useLibrary 'org.apache.http.legacy'

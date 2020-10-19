@@ -609,7 +609,10 @@ class CalendarFragment : BaseFragment(), CalendarObserver {
                 containerView.tv_session.text = schedule.session
                 containerView.event1.setBackgroundColor(schedule.color)
                 if (member) {
-                    containerView.iv_edit?.visibility = View.INVISIBLE
+                    //containerView.iv_edit?.visibility = View.INVISIBLE
+                    if (schedule.isCompleted)
+                        containerView.iv_edit?.visibility = View.INVISIBLE
+                    else containerView.iv_edit?.visibility = View.VISIBLE
                 } else {
                     if (schedule.isCompleted)
                         containerView.iv_edit?.visibility = View.INVISIBLE

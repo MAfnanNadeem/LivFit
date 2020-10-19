@@ -301,6 +301,10 @@ class API {
         fun uploadAvatar(@PartMap params: HashMap<String, RequestBody?>): Call<SaveMemberAvatar>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("deleteAvatar")
+        fun deleteAvatar(@Body data: MemberAvatar): Call<MemberAvatarDelete>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("getRXLExerciseProgram")
         fun getRXLExerciseProgram(@Body data: MemberPost): Call<RxlExercises>
 

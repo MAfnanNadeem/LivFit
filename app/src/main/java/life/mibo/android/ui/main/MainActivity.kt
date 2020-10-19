@@ -192,22 +192,24 @@ class MainActivity : BaseActivity(), Navigator {
         no_internet_close?.setOnClickListener {
             frame_no_internet?.visibility = View.GONE
         }
-       // test()
+        //test()
     }
 
     fun test() {
-        if (MiboApplication.DEBUG) {
+        if (MiboApplication.TEST) {
             val d = Device()
             d.uid = "123456"
             d.tiles = 18
             d.type = DeviceTypes.RXT_WIFI
             d.statusConnected = DeviceConstants.DEVICE_CONNECTED
             SessionManager.getInstance().userSession.devices.add(d)
-           // val d2 = d.clone()
-            //d2.type = DeviceTypes.RXL_BLE
-            //SessionManager.getInstance().userSession.devices.add(d2)
-            //CommunicationManager.getInstance().connectedDevices.add(d)
-            //CommunicationManager.getInstance().connectedDevices.add(d2)
+            CommunicationManager.getInstance().connectedDevices.add(d)
+
+            val d2 = d.clone()
+            d2.type = DeviceTypes.RXL_BLE
+            SessionManager.getInstance().userSession.devices.add(d2)
+            CommunicationManager.getInstance().connectedDevices.add(d2)
+
         }
     }
 
@@ -619,7 +621,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             override fun onConnect(name: String?, status: Int) {
-               // Toasty.warning(this@MainActivity, "Device Connected! $name : $status").show()
+                // Toasty.warning(this@MainActivity, "Device Connected! $name : $status").show()
                 boosterAlarm(200, name)
             }
 
@@ -772,7 +774,7 @@ class MainActivity : BaseActivity(), Navigator {
             }
 
             if (frg is MeasurementFragment) {
-               EventBus.getDefault().postSticky(NewConnectionStatus(""))
+                EventBus.getDefault().postSticky(NewConnectionStatus(""))
             }
         } catch (e: java.lang.Exception) {
             runOnUiThread {
@@ -1053,7 +1055,7 @@ class MainActivity : BaseActivity(), Navigator {
                 for (d in list) {
                     if (d.uid == uid) {
                         d.firmware = DataParser.getFirmwareFromCommand(command)
-                        log("parseCommandsExtra firmware "+d.firmware)
+                        log("parseCommandsExtra firmware " + d.firmware)
                     }
                 }
             }
@@ -1652,6 +1654,10 @@ class MainActivity : BaseActivity(), Navigator {
                     bundle = data
                 navigate(0, R.id.navigation_rxt_config_id, bundle)
             }
+
+            Navigator.RXT_SCAN -> {
+                startScanningView(true, DeviceScanFragment.RXT)
+            }
             else -> {
                 drawerItemClicked(type)
             }
@@ -1798,13 +1804,13 @@ class MainActivity : BaseActivity(), Navigator {
             R.id.nav_test3 -> {
                 lastId = -1
                 //startScanningView(true, DeviceScanFragment.RXL)
-                if(MiboApplication.DEBUG){
+                if (MiboApplication.TEST) {
                     val list = ArrayList(SessionManager.getInstance().userSession.devices)
                     if (list.size > 0)
                         for (d in list) {
                             if (d.isPod) {
-                              //  navigateTo(Navigator.RXL_HOME, null)
-                              //  return
+                                navigateTo(Navigator.RXL_HOME, null)
+                                return
                             }
                         }
                 }
@@ -1825,13 +1831,13 @@ class MainActivity : BaseActivity(), Navigator {
 //
             R.id.nav_test4 -> {
 
-                if(MiboApplication.DEBUG){
+                if (MiboApplication.TEST) {
                     val list = ArrayList(SessionManager.getInstance().userSession.devices)
                     if (list.size > 0)
                         for (d in list) {
                             if (d.isRxt) {
-                              //  navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
-                               // return
+                                navigateTo(Navigator.RXT_SELECT_WORKOUT, null)
+                                return
                             }
                         }
                 }

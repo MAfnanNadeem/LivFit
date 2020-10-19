@@ -120,7 +120,7 @@ class CatalogPackagesFragment : BaseFragment() {
 
 
     private fun getProducts() {
-       // Toasty.info(requireContext(), "Loading Packages... ").show()
+        // Toasty.info(requireContext(), "Loading Packages... ").show()
         log("getProducts packages ")
         val member = Prefs.get(context).member ?: return
         showProgress()

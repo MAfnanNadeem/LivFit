@@ -239,9 +239,19 @@ class NotificationsFragment : BaseFragment() {
             desc?.text = item.desc
             time?.text = item.daysAgo
             if (item.image != null)
-                Glide.with(itemView).load(item.image).fitCenter().error(R.drawable.ic_user_test).into(img!!)
+                Glide.with(itemView).load(item.image).fitCenter().error(R.drawable.ic_user_test)
+                    .into(img!!)
             if (item.isMember) {
-                trainer?.visibility = View.GONE
+                //val dsc = item?.desc?.toLowerCase() ?: ""
+                val dsc = ""
+                if (dsc.startsWith("you have invitation from")) {
+                    trainer?.visibility = View.VISIBLE
+                    accept?.text = itemView?.context?.getString(R.string.accept)
+                    reject?.text = itemView?.context?.getString(R.string.reject)
+                } else {
+                    trainer?.visibility = View.GONE
+                }
+
             } else {
                 //Logger.e("Notifications bind ${item.isButtonVisible()}")
                 // Logger.e("Notifications bind ${item.type}")
@@ -276,19 +286,22 @@ class NotificationsFragment : BaseFragment() {
 
             accept?.setOnClickListener {
                 listener?.onItemClicked(item, 1001)
-                if (item.isMember)
-                    return@setOnClickListener
+              //  if (item.isMember)
+              //      return@setOnClickListener
                 if (item.type?.toLowerCase() == "invite") {
                     val member = Prefs.get(this.itemView.context).member
                     acceptInvite(trainer, progress, item.id, true, member?.accessToken)
                 } else if (item.type?.toLowerCase() == "reschedule") {
                     val member = Prefs.get(this.itemView.context).member
                     acceptRescheduleRequest(trainer, progress, item.id, true, member?.accessToken)
+                } else if (item.type?.toLowerCase() == "info") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptInvite(trainer, progress, item.id, true, member?.accessToken)
                 }
             }
             reject?.setOnClickListener {
-                if (item.isMember)
-                    return@setOnClickListener
+                //if (item.isMember)
+              //      return@setOnClickListener
                 listener?.onItemClicked(item, 1002)
                 if (item.type?.toLowerCase() == "invite") {
                     val member = Prefs.get(this.itemView.context).member
@@ -296,6 +309,9 @@ class NotificationsFragment : BaseFragment() {
                 } else if (item.type?.toLowerCase() == "reschedule") {
                     val member = Prefs.get(this.itemView.context).member
                     acceptRescheduleRequest(trainer, progress, item.id, false, member?.accessToken)
+                } else if (item.type?.toLowerCase() == "info") {
+                    val member = Prefs.get(this.itemView.context).member
+                    acceptInvite(trainer, progress, item.id, false, member?.accessToken)
                 }
             }
         }

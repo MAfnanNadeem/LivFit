@@ -28,6 +28,8 @@ import life.mibo.android.core.Prefs
 import life.mibo.android.libs.datepicker.SpinnerDatePickerDialogBuilder
 import life.mibo.android.libs.image.ImagePicker
 import life.mibo.android.models.base.ResponseData
+import life.mibo.android.models.member.MemberAvatar
+import life.mibo.android.models.member.MemberAvatarDelete
 import life.mibo.android.models.member.SaveMemberAvatar
 import life.mibo.android.models.user_details.UpdateMemberDetails
 import life.mibo.android.ui.base.BaseFragment
@@ -48,6 +50,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -245,11 +248,59 @@ class ProfileEditFragment : BaseFragment() {
         builder.setTitle(R.string.remove_photo)
         builder.setMessage(R.string.remove_photo_hint)
         builder.setPositiveButton(R.string.yes_text) { dialog, which ->
-            Toasty.snackbar(userImage, getString(R.string.remove_photo_success))
+            deleteAvatar()
         }
         builder.setNegativeButton(R.string.no_text) { dialog, which -> }
 
         builder.show()
+    }
+
+    private fun deleteAvatar() {
+        val member = Prefs.get(context).member ?: return
+        val data: MemberAvatar = if (member.isMember()) {
+            MemberAvatar(
+                MemberAvatar.AvatarData(null, member.id(), null),
+                "DeleteAvatar",
+                member.accessToken
+            )
+        } else {
+            MemberAvatar(
+                MemberAvatar.AvatarData(null, null, member.id()),
+                "DeleteAvatar",
+                member.accessToken
+            )
+        }
+        log("deleteAvatar data $data")
+        API.request.getApi().deleteAvatar(data)
+            .enqueue(object : Callback<MemberAvatarDelete> {
+                override fun onFailure(call: Call<MemberAvatarDelete>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    Toasty.error(requireContext(), R.string.unable_to_connect).show()
+                    log("deleteAvatar onFailure $t")
+                }
+
+                override fun onResponse(
+                    call: Call<MemberAvatarDelete>,
+                    response: Response<MemberAvatarDelete>
+                ) {
+                    getDialog()?.dismiss()
+                    log("deleteAvatar onResponse " + response.body())
+                    try {
+                        log("deleteAvatar onResponse " + response.body())
+                        val memberr = Prefs.get(context).member
+                        memberr?.profileImg = ""
+                        memberr?.imageThumbnail = ""
+                        Prefs.get(context).member = memberr
+                        val msg = response?.body()?.data?.get(0)?.message
+                            ?: getString(R.string.remove_photo_success)
+                        Toasty.snackbar(userImage, msg)
+                    } catch (e: Exception) {
+                        Toasty.snackbar(userImage, getString(R.string.remove_photo_success))
+
+                    }
+                }
+
+            })
     }
 
     private val permissions = arrayOf(

@@ -642,7 +642,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         return island.next(0)
     }
 
-    fun sendDoubleSeq(seq: Int) {
+    private fun sendDoubleSeq(seq: Int) {
         log("sendDoubleSeq start tile $seq")
         Single.just(seq).delay(100, TimeUnit.MILLISECONDS).doAfterSuccess {
             log("sendDoubleSeq end tile $seq : $it")

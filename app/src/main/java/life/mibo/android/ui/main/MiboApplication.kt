@@ -29,12 +29,12 @@ class MiboApplication : Application() {
 
         //val DEBUG = life.mibo.android.BuildConfig.DEBUG
 
-        val DEBUG = false
+        val DEBUG = true
         val DEV_SERVER = true
 
         //val DEBUG = false
         val RELEASE = false
-        val TEST = true
+        val TEST = false
         val SCAN_TIME: Long = 15000L
 
         fun isRelease() = true
@@ -66,7 +66,7 @@ class MiboApplication : Application() {
 
     }
 
-   // private var mFirebaseAnalytics: FirebaseAnalytics? = null
+    // private var mFirebaseAnalytics: FirebaseAnalytics? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -114,7 +114,7 @@ class MiboApplication : Application() {
 //        Logger.e("decrypt :: ${temp2?.contentToString()}")
 //        Logger.e("decrypt :: " + String(temp2))
 
-       // val dec = "f60cbba5479ca4ffdec34dc504cab62c"
+        // val dec = "f60cbba5479ca4ffdec34dc504cab62c"
         val dec = "7824605c2f4f4a2838ee9210b48895be"
         val n = String(crypt.decrypt(dec))
         Logger.e("decrypt1 :: $dec")
@@ -146,7 +146,7 @@ class MiboApplication : Application() {
 //        mFirebaseAnalytics?.logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
 //    }
 
-    fun extractLogToFile() : String {
+    fun extractLogToFile(): String {
 
 //        val manager = packageManager;
 //        var info : PackageInfo = null;

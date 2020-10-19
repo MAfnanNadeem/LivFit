@@ -14,16 +14,14 @@ import life.mibo.android.models.base.BasePost
 class MemberAvatar(
     avatarData: AvatarData,
     requestType: String = "MemberAvatar",
-    token: String
+    token: String?
 ) : BasePost<MemberAvatar.AvatarData>(avatarData, requestType, token) {
     data class AvatarData(
         @SerializedName("Avatar")
         var avatar: String?,
         @SerializedName("MemberID")
-        var memberID: String?
-    )
-
-    constructor(memberID: String, base64: String, token: String) : this(
-        AvatarData(base64, memberID), "MemberAvatar", token
+        var memberID: String?,
+        @SerializedName("TrainerID")
+        var trainerID: String?
     )
 }

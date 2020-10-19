@@ -495,7 +495,7 @@ class MyAccountFragment : BaseFragment() {
         CONNECT_HEADER(R.string.connect),
         SETTINGS_HEADER(R.string.settings),
         ABOUT_HEADER(R.string.about_us),
-        RXT_HEADER(R.string.rxt_sessions),
+        RXT_HEADER(R.string.react_tiles),
         MY_SALES(R.string.my_sales),
         MY_SERVICES(R.string.my_services),
         MY_CLIENTS(R.string.my_customers),

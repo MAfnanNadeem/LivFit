@@ -704,6 +704,7 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
     private fun nextAllATOnce(player: RxlPlayer) {
         log("nextAllATOnce nextLight")
         if (blockActionDelay > MIN_DELAY) {
+            turnOffAllATOnce(player)
             Single.timer(blockActionDelay.toLong(), TimeUnit.MILLISECONDS).doOnSuccess {
                 lightOnAllAtOnce(player)
             }.doOnError {
@@ -713,6 +714,20 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
         } else {
             lightOnAllAtOnce(player)
         }
+    }
+
+    private fun turnOffAllATOnce(player: RxlPlayer) {
+        log("turnOffAllATOnce")
+        Observable.fromIterable(player.pods).subscribeOn(Schedulers.io()).doOnNext { device ->
+            sendColor(device, player.color, 0, 0, false)
+            Thread.sleep(10)
+            //log("nextFocusEvent onChangeColorEvent Observable ON = ${device.uid}")
+        }.doOnError {
+            log("turnOffAllATOnce doOnError $it")
+            it?.printStackTrace()
+        }.doOnComplete {
+            log("turnOffAllATOnce doOnComplete")
+        }.subscribe()
     }
 
     private fun getPlayerId(player: RxlPlayer): Int {

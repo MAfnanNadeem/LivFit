@@ -96,13 +96,7 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
         if (prefs == null)
             return;
         if (prefs.isSuperTrainer()) {
-            Single.fromCallable(() -> {
-                CommunicationManager.getInstance().onRxtIdConfigurations(new ChangeColorEvent(new Device(), controller));
-                return "";
-            }).subscribeOn(Schedulers.io()).doOnError(throwable -> {
-
-            }).subscribe();
-
+            resett(controller);
         } else {
             resett(controller);
 //            new AlertDialog.Builder(getActivity())
@@ -190,10 +184,10 @@ public class RxtIDConfigurationsFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_filter) {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("is_rxl", true);
-            bundle.putInt("is_search_type", DeviceScanFragment.RXT);
-            navigate(Navigator.RXT_SCAN, bundle);
+            //Bundle bundle = new Bundle();
+            //bundle.putBoolean("is_rxl", true);
+            //bundle.putInt("is_search_type", DeviceScanFragment.RXT);
+            navigate(Navigator.RXT_SCAN, null);
             return true;
         }
         return super.onOptionsItemSelected(item);

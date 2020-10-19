@@ -78,7 +78,9 @@ class Biometric(data: List<Data?>?) : BaseResponse<List<Biometric.Data?>?>(data)
         @SerializedName("Wrist")
         var wrist: String?
     ) : BaseModel
+    {
 
+    }
 
     class Decrypted() : BaseModel {
 

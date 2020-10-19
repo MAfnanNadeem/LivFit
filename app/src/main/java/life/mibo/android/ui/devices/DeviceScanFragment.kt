@@ -17,6 +17,7 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -522,7 +523,10 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
         }
 
         override fun onClicked(device: Device?) {
-            blinkDevice(device?.id, device?.uid)
+            if (device?.isRxt == true)
+                blinkRxtDevice(device?.uid)
+            else
+                blinkDevice(device?.id, device?.uid)
         }
 
     }
@@ -536,6 +540,14 @@ class DeviceScanFragment : BaseFragment(), ScanObserver {
                 MiboEvent.log(it)
             }.subscribe()
         }
+    }
+
+    fun blinkRxtDevice(uid: String?) {
+        Single.fromCallable {
+            CommunicationManager.getInstance()
+                .onRxtBlinkAll(ChangeColorEvent(uid, "2", Color.RED, 500, 500))
+            ""
+        }.subscribeOn(Schedulers.io()).doOnError { }.subscribe()
     }
 
     @SuppressLint("CheckResult")

@@ -4,6 +4,7 @@ import android.graphics.Color
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.rxt.parser.core.IslandListener
 import life.mibo.android.ui.rxt.parser.core.IslandParser
 import life.mibo.android.ui.rxt.parser.core.RxtListener
@@ -168,7 +169,7 @@ class RXTManager {
             return
         isStarted = true;
         disposable = Observable.interval(0, 1, TimeUnit.SECONDS).take(durationSec)
-            .subscribeOn(Schedulers.io()).doOnNext {
+            .doOnNext {
                 onTick(it)
             }.doOnComplete {
                 onTick(0)
@@ -177,7 +178,7 @@ class RXTManager {
                 onExerciseStart()
             }.doOnError {
                 onExerciseError(it)
-            }.subscribe()
+            }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
 
     }
 
@@ -293,8 +294,10 @@ class RXTManager {
     }
 
 
+    val debug = MiboApplication.DEBUG
     private fun log(msg: String?) {
-        Logger.e("RXTTest - $msg")
+        if (debug)
+            Logger.e("RXTTest - $msg")
     }
 
     @Synchronized

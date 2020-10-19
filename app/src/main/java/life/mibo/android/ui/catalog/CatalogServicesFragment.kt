@@ -251,7 +251,7 @@ class CatalogServicesFragment : BaseFragment() {
         try {
             val item = menu.findItem(R.id.action_search)
             val searchView: SearchView? =
-                SearchView((activity as AppCompatActivity?)?.supportActionBar?.themedContext)
+                SearchView((activity as AppCompatActivity?)?.supportActionBar?.themedContext!!)
             // MenuItemCompat.setShowAsAction(item, //MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | //MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
             //  MenuItemCompat.setActionView(item, searchView);
             // These lines are deprecated in API 26 use instead

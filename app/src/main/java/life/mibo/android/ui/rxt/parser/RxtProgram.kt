@@ -23,7 +23,9 @@ data class RxtProgram(
                     if (i != null) {
                         // i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
                         //i.pattern = "1,5,9,11,13,17,21,23,19,17,15,11,7,5,3,2,1"
-                        //i.rXTAction = 1
+                        //i.pattern = "1-2,4-5,7-8,10-11,13-14,16-17"
+                        //i.pattern = "1-2"
+                        //i.rXTAction = 2
                         val b = RxtBlock(
                             i.getAction(),
                             i.getDuration(),

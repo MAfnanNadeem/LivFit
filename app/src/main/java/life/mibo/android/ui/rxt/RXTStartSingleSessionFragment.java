@@ -54,6 +54,7 @@ import life.mibo.android.models.workout.SaveMemberScores;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
+import life.mibo.android.ui.main.MiboApplication;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
 import life.mibo.android.ui.rxt.parser.RXTManager;
@@ -168,6 +169,11 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             colorPicker.setOnClickListener(v -> {
                 colorPickerDialog();
             });
+
+        if (MiboApplication.Companion.getTEST()) {
+            actionTime = 2000;
+            setSpeedText();
+        }
     }
 
     private void colorPickerDialog() {
@@ -1114,5 +1120,15 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        RXTManager.Companion.getInstance().unregister();
+    }
 
+    @Override
+    public void onDetach() {
+        RXTManager.Companion.getInstance().unregister();
+        super.onDetach();
+    }
 }

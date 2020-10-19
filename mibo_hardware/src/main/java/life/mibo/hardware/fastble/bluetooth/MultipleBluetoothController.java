@@ -156,6 +156,16 @@ public class MultipleBluetoothController {
         return deviceList;
     }
 
+    public synchronized void getBluetoothDeviceList(String data) {
+        List<life.mibo.hardware.fastble.bluetooth.BleBluetooth> bluetoothList = getBleBluetoothList();
+        for (int i = 0; bluetoothList != null && i < bluetoothList.size(); i++) {
+            BleBluetooth bleBluetooth = bluetoothList.get(i);
+            if (BleManager.getInstance().isConnected(bleBluetooth.getDevice())) {
+
+            }
+        }
+    }
+
     public void refreshConnectedDevice() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             List<life.mibo.hardware.fastble.bluetooth.BleBluetooth> bluetoothList = getBleBluetoothList();

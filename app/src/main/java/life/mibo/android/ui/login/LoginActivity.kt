@@ -18,6 +18,7 @@ import life.mibo.android.database.Database
 import life.mibo.android.social.SocialHelper
 import life.mibo.android.ui.base.BaseActivity
 import life.mibo.android.ui.body_measure.adapter.Calculate
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.utils.Toasty
 import life.mibo.android.utils.Utils
@@ -113,10 +114,10 @@ class LoginActivity : BaseActivity() {
         } else {
             Toasty.snackbar(btn_register, R.string.unable_to_connect)
         }
-        if (DEBUG) {
+        if (MiboApplication.TEST) {
             log("DEBUG MODE")
             btn_login?.setOnLongClickListener {
-               //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")
+                //controller.onLogin("sumeetgehi@gmail.com", "Qwe123@@")
                 //controller.onLogin("sumeet.kumar@mibo.life", "123Qwe@@", false)
                 controller.onLogin("ronny@fitnes.com", "123456", false)
                 //controller.onLogin("alisher@mibo.life", "123456")
@@ -179,7 +180,7 @@ class LoginActivity : BaseActivity() {
 //        }.subscribe()
         //Toasty.info(this, "SDK " + Build.VERSION.SDK_INT).show()
         // videoBg()
-       // testEnc()
+        // testEnc()
     }
 
 
@@ -295,7 +296,7 @@ class LoginActivity : BaseActivity() {
         et_password?.setText("123456")
     }
 
-    fun clear(){
+    fun clear() {
         log("clear db")
         Prefs.get(this).clear()
         Database.getInstance(this).clearAll()

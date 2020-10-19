@@ -6,6 +6,7 @@ import android.util.SparseArray
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import life.mibo.android.ui.main.MiboApplication
 import life.mibo.android.ui.rxt.parser.RxtBlock
 import life.mibo.android.ui.rxt.parser.RxtIsland
 import life.mibo.android.ui.rxt.parser.RxtProgram
@@ -261,7 +262,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private fun startProgramObservers(rxtProgram: RxtProgram) {
         log("startProgramObservers rxt $currentProgram : ${rxtProgram.workoutDuration}")
         programDisposable = Single.timer(rxtProgram.workoutDuration.toLong(), TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.newThread()).doOnSuccess {
+            .subscribeOn(Schedulers.io()).doOnSuccess {
                 log("programDisposable doOnSuccess")
                 onCircuitProgramEnd()
             }.doAfterSuccess {
@@ -325,7 +326,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
 
     private fun startDelayObservers(delay: Long) {
         delayDisposable =
-            Single.timer(delay, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).doOnSuccess {
+            Single.timer(delay, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).doOnSuccess {
                 log("delayDisposable doOnSuccess")
                 onDelayEnd()
             }.doOnError {
@@ -501,7 +502,7 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
     private fun changeColor(event: ChangeColorEvent) {
         log("changeColor $event")
         try {
-            CommunicationManager.getInstance().onChangeRxtColorEvent(event)
+            CommunicationManager.getInstance().onChangeRxtColorEvent(event, "RXTTest ChangeRxtColor ${event.tileId}")
         } catch (e: Exception) {
             log("changeColor error $e")
             if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -629,22 +630,8 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
             if (id.contains("-")) {
                 log("nextTile next is double........$id : lastPosition $lastSeq")
                 val split = id.split("-")
-                sendDoubleSeq(getInt(split[0]))
-//                sendSecondColor(
-//                    island.next(getInt(split[0])),
-//                    island.color,
-//                    getAction(),
-//                    islandId2,
-//                    true
-//                )
-//                log("Thread is waiting islandId2")
-//                try {
-//                    Thread.sleep(30)
-//                } catch (e: Exception) {
-//                    log("sendSecondColor error $e")
-//                }
-//                log("Thread is waiting finished")
-                return island.next(getInt(split[1]))
+                sendDoubleSeq(getInt(split[1]))
+                return island.next(getInt(split[0]))
             }
             log("nextTile next is single...")
             return island.next(getInt(id))
@@ -721,8 +708,10 @@ class IslandParser(val island: RxtIsland, var listener: IslandListener? = null) 
         return ScoreItem(1, island.name, "$hit", "$miss", island.color, total, 60)
     }
 
+    val debug = MiboApplication.DEBUG
     fun log(msg: String) {
-        Logger.e("IslandParser $islandId", "RXTTest - $msg")
+        if (debug)
+            Logger.e("IslandParser $islandId", "RXTTest - $msg")
     }
 
 }

@@ -46,6 +46,10 @@ public class TCPClient {
         return type == DataParser.RXL;
     }
 
+    public boolean isRxt() {
+        return type == DataParser.RXT;
+    }
+
     public int getType() {
         return type;
     }
@@ -71,12 +75,12 @@ public class TCPClient {
     }
 
     public void sendMessage(byte[] message, String tag) {
-        log(tag+" sendMessage start: " + Arrays.toString(new String(message).toCharArray()));
+        log(tag + " sendMessage start: " + Arrays.toString(new String(message).toCharArray()));
         sendMessage(message);
-        log( tag+" sendMessage end: " + Arrays.toString(message));
+        log(tag + " sendMessage end: " + Arrays.toString(message));
     }
 
-    public void sendMessage(byte[] message) {
+    public synchronized void sendMessage(byte[] message) {
         //log(" sendMessage char: " + Arrays.toString(new String(message).toCharArray()));
 
         Encryption.mbp_encrypt(message, message.length);
@@ -87,16 +91,16 @@ public class TCPClient {
                 //Log.e("TCP Client", "send 1");
                 mBufferOut.write(message);
                 mBufferOut.flush();
-                log("sendMessage sent");
+                log("RXTTest TCPClient sendMessage sent...........");
                 //Log.e("TCP Client", "send 2");
             } catch (Exception e) {
-                Logger.e("TCPClient sendMessage IOException", e);
+                Logger.e("RXTTest TCPClient sendMessage IOException", e);
                 stopClient();
                 run();
                 e.printStackTrace();
             }
         } else {
-            log("TCPClient mBufferOut is dead or connection not started");
+            log("RXTTest TCPClient mBufferOut is dead or connection not started");
         }
     }
 
@@ -165,7 +169,7 @@ public class TCPClient {
                         while (isRunning) {
 
                             int bytesNum = mBufferIn.available();
-                           // Logger.e("TCPClient MessageReceived bytesNum " +bytesNum);
+                            // Logger.e("TCPClient MessageReceived bytesNum " +bytesNum);
                             if (bytesNum >= MIN_COMMAND_LENGTH) {
                                 // Log.e("runtcp", "num "+bytesNum);
                                 serverMessage = new byte[bytesNum];
@@ -247,7 +251,8 @@ public class TCPClient {
     }
 
     void log(String msg) {
-        Logger.e("TCPClient", msg);
+        if (Logger.DEBUG)
+            Logger.e("TCPClient", msg);
     }
 }
 

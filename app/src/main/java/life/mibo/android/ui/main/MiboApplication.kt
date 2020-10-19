@@ -29,7 +29,7 @@ class MiboApplication : Application() {
 
         //val DEBUG = life.mibo.android.BuildConfig.DEBUG
 
-        val DEBUG = true
+        val DEBUG = false
         val DEV_SERVER = true
 
         //val DEBUG = false

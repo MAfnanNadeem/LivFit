@@ -530,7 +530,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     fun setAdapters(blocks: List<RXL.RXLBlock?>?) {
-        if(blocks == null)
+        if (blocks == null)
             return
 
         recyclerView?.layoutManager = LinearLayoutManager(this)
@@ -1519,17 +1519,17 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             }
             CourseCreateImpl.Type.ACTION.type -> {
                 // tv_select_pods?.text = item.title
-               // tv_select_action?.text = item.title
+                // tv_select_action?.text = item.title
             }
 
             CourseCreateImpl.Type.DELAY.type -> {
-               // tv_select_pause?.text = item.title
+                // tv_select_pause?.text = item.title
 //                if (item.title?.startsWith("No Delay"))
 //                    tv_select_delay?.text = "0 sec"
 //                else tv_select_delay?.text = item.title?.replace("seconds", "sec")
             }
             CourseCreateImpl.Type.DURATION.type -> {
-               // tv_select_duration?.text = item.title?.replace("seconds", "sec")
+                // tv_select_duration?.text = item.title?.replace("seconds", "sec")
             }
 
 
@@ -1824,7 +1824,7 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
     }
 
     private fun onTimerUpdate(time: Long) {
-        tv_cycle_timer?.text = String.format("%02d:%02d", time / 60000, time/1000 % 60 )
+        tv_cycle_timer?.text = String.format("%02d:%02d", time / 60000, time / 1000 % 60)
     }
 
     internal fun cancelTimer() {
@@ -1851,7 +1851,6 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
         }
         countTimer?.start()
     }
-
 
 
     // var lastFrom = -1
@@ -1977,10 +1976,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             var hits = 0
             var missed = 0
             it.events.forEach { ev ->
-                if (ev.tapTime > 1)
-                    hits++
-                else
-                    missed++
+                if (it.isFocus) {
+                    if (ev.tapTime > 1)
+                        hits++
+                    else
+                        missed++
+                }
             }
 
             log("showScoreDialog player: ${it.id}, ${it.events.size} hit $hits : miss $missed")
@@ -2050,10 +2051,12 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             var hits = 0
             var missed = 0
             i.events.forEach { ev ->
-                if (ev.tapTime > 1)
-                    hits++
-                else
-                    missed++
+                if (ev.isFocus) {
+                    if (ev.tapTime > 1)
+                        hits++
+                    else
+                        missed++
+                }
             }
             //list.add(ScoreItem(i.id, i.name, "$hits", "$missed", 0, hits.plus(missed)))
             scores.add(

@@ -86,7 +86,6 @@ import static life.mibo.hardware.models.DeviceTypes.WIFI_STIMULATOR;
 /**
  * Created by Fer on 18/03/2019.
  * updated by Sumeet Kumar on 17/12/2019.
- *
  */
 
 public class CommunicationManager {
@@ -99,6 +98,7 @@ public class CommunicationManager {
     private HashMap<String, Device> mDiscoveredDevices = new HashMap<String, Device>();
     //private Activity activity;
     private boolean commRunning = true;
+    private int pingTime = 4000;
     private Thread pingThread;
     private boolean isWifi = false;
 
@@ -139,7 +139,7 @@ public class CommunicationManager {
             while (commRunning) {
                 log("PingThread commRunning ");
                 try {
-                    Thread.sleep(4000);
+                    Thread.sleep(pingTime);
                     for (TCPClient t : tcpClients) {
                         t.sendMessage(DataParser.sendGetStatus(t.getType()), "PingThread");
                         //pingSentDevice(t.getUid());
@@ -445,7 +445,8 @@ public class CommunicationManager {
 
 
     public static void log(String s) {
-        Logger.e("CommunicationManager: " + s);
+        if (BuildConfig.DEBUG)
+            Logger.e("CommunicationManager: " + s);
     }
 
     private void logi(String s) {
@@ -500,8 +501,7 @@ public class CommunicationManager {
         if (bluetoothManager != null) {
             try {
                 bluetoothManager.stopScanDevice();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
@@ -828,7 +828,7 @@ public class CommunicationManager {
 
 
     public synchronized void reconnectBleBooster(@Nullable String uid) {
-        if(uid == null)
+        if (uid == null)
             return;
         if (pingThread == null) {
             commRunning = true;
@@ -1159,7 +1159,7 @@ public class CommunicationManager {
         log("parseCommandsRxl msg " + Utils.getBytes(command) + " : UID " + uid);
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
             // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
-            RXLManager.Companion.getInstance().  postDirect(new RxlStatusEvent(command, uid));
+            RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             return;
         }
@@ -1172,9 +1172,9 @@ public class CommunicationManager {
         log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + uid);
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
             // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
-          //  RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
+            //  RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
             //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
-           // return;
+            // return;
         }
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.RXT);
@@ -1254,7 +1254,7 @@ public class CommunicationManager {
 
     // POD
     public void onPodEvent(@NotNull PodEvent event) {
-        log("PodEvent "+event);
+        log("PodEvent " + event);
         if (event.isAll()) {
             for (TCPClient t : tcpClients) {
                 if (event.getPod().getType() == RXL_WIFI || event.getPod().getType() == RXL_BLE)
@@ -1272,7 +1272,7 @@ public class CommunicationManager {
 
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public synchronized void onChangeColorEvent(ChangeColorEvent event) {
-        log("onChangeColorEvent "+event);
+        log("onChangeColorEvent " + event);
         //EventBus.getDefault().removeStickyEvent(event);
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
@@ -1421,7 +1421,7 @@ public class CommunicationManager {
     //@Subscribe(threadMode = ThreadMode.ASYNC)
     public void onChannelsLevelEvent(SendChannelsLevelEvent event) {
         //EventBus.getDefault().removeStickyEvent(event);
-        log("onChannelsLevelEvent "+ Arrays.toString(event.getLevels()));
+        log("onChannelsLevelEvent " + Arrays.toString(event.getLevels()));
         for (TCPClient t : tcpClients) {
             if (t.getUid().equals(event.getUid())) {
                 t.sendMessage(DataParser.sendLevels(event.getLevels()), "onChannelsLevelEvent");
@@ -1612,14 +1612,26 @@ public class CommunicationManager {
     private final ReentrantLock locks = new ReentrantLock();
 
     public void onChangeRxtColorEvent(ChangeColorEvent event) {
-        log("onChangeRxtColorEvent call");
+        //log("onChangeRxtColorEvent call");
         //EventBus.getDefault().removeStickyEvent(event);
         synchronized (lock) {
-            log("onChangeRxtColorEvent execute");
+            //log("onChangeRxtColorEvent execute");
             for (TCPClient t : tcpClients) {
                 if (t.getUid().equals(event.getUid())) {
                     //t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()));
                     t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()), "RXTTest onChangeRxtColorEvent");
+                    return;
+                }
+            }
+        }
+
+    }
+
+    public void onChangeRxtColorEvent(ChangeColorEvent event, String tag) {
+        synchronized (lock) {
+            for (TCPClient t : tcpClients) {
+                if (t.getUid().equals(event.getUid())) {
+                    t.sendMessage(DataParser.sendRxtColor(event.getTileIdInt(), event.getColor(), event.getTime(), event.getData(), event.getLightType()), tag);
                     return;
                 }
             }

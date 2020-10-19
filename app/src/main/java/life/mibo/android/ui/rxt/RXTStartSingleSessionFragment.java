@@ -170,10 +170,10 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 colorPickerDialog();
             });
 
-        if (MiboApplication.Companion.getTEST()) {
-            actionTime = 2000;
-            setSpeedText();
-        }
+//        if (MiboApplication.Companion.getTEST()) {
+//            actionTime = 2000;
+//            setSpeedText();
+//        }
     }
 
     private void colorPickerDialog() {
@@ -576,6 +576,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 wId = workout.getId();
         }
 
+        log("Time >>>>>>>>> " + totalTime);
+        log("Time >>>>>>>>> " + timeElapsed);
+        log("Time >>>>>>>>> " + (totalTime - timeElapsed));
         //ateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now());
         String date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
         List<SaveMemberScores.Score> scores = new ArrayList<>();
@@ -693,6 +696,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 log("onTime " + time + " - " + txt);
                 updateTimer(txt);
                 timeElapsed = time;
+                if(t == 0)
+                    timeElapsed = 0;
             } catch (Exception e) {
                 log("onTime eeee " + e);
                 e.printStackTrace();

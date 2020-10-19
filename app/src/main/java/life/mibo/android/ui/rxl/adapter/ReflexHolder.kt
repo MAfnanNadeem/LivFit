@@ -32,7 +32,6 @@ import life.mibo.hardware.core.Logger
 import life.mibo.hardware.rxl.program.RxlLight
 import life.mibo.views.like.AndroidLikeButton
 import java.util.*
-import kotlin.math.log
 
 
 class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -172,11 +171,10 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         //ivType?.background?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
-        if(item.icon.isNullOrEmpty()){
+        if (item.icon.isNullOrEmpty()) {
             image?.setImageResource(R.drawable.ic_rxl_pods_icon_200)
             image?.scaleType = ImageView.ScaleType.FIT_CENTER
-        }
-        else {
+        } else {
             image?.scaleType = ImageView.ScaleType.CENTER_CROP
             image?.load(item.icon) {
                 Logger.e("ReflexHolder ImageLoader.. $this")
@@ -190,10 +188,10 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         }
 
         likeed?.visibility = View.INVISIBLE
-      //  likeed?.setCurrentlyLiked(item.isFavourite)
-       // likeed?.setOnLikeEventListener {
-      //      listener?.onItemClicked(item, if (it) 1001 else 1002)
-   //     }
+        //  likeed?.setCurrentlyLiked(item.isFavourite)
+        // likeed?.setOnLikeEventListener {
+        //      listener?.onItemClicked(item, if (it) 1001 else 1002)
+        //     }
 
 //        if (Build.VERSION.SDK_INT >= 21) {
 //            image?.transitionName = item.getTransitionIcon()
@@ -223,8 +221,9 @@ class ReflexHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //      intArrayOf(-0x9e9d9f, -0xececed)
         //   )
         //  gd.cornerRadius = 0f
-        Logger.e("ReflexHolder setBg...... - ${image?.intrinsicWidth} : ${image?.intrinsicHeight}")
-        Palette.from((image as BitmapDrawable).bitmap).generate {
+        //Palette.from((image as BitmapDrawable).bitmap)
+        val bitmap = (image as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        Palette.from(bitmap).generate {
             Logger.e("ReflexHolder setGradient generating...... - $it")
             it?.let { palette ->
                 val dominantColor = palette.getDominantColor(

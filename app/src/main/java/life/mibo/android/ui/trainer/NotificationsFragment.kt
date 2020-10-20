@@ -243,15 +243,15 @@ class NotificationsFragment : BaseFragment() {
                     .into(img!!)
             if (item.isMember) {
                 //val dsc = item?.desc?.toLowerCase() ?: ""
-                val dsc = ""
-                if (dsc.startsWith("you have invitation from")) {
-                    trainer?.visibility = View.VISIBLE
-                    accept?.text = itemView?.context?.getString(R.string.accept)
-                    reject?.text = itemView?.context?.getString(R.string.reject)
-                } else {
-                    trainer?.visibility = View.GONE
-                }
-
+//                val dsc = ""
+//                if (dsc.startsWith("you have invitation from")) {
+//                    trainer?.visibility = View.VISIBLE
+//                    accept?.text = itemView?.context?.getString(R.string.accept)
+//                    reject?.text = itemView?.context?.getString(R.string.reject)
+//                } else {
+//                    trainer?.visibility = View.GONE
+//                }
+                trainer?.visibility = View.GONE
             } else {
                 //Logger.e("Notifications bind ${item.isButtonVisible()}")
                 // Logger.e("Notifications bind ${item.type}")

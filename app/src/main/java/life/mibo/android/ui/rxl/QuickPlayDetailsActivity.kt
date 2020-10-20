@@ -1736,12 +1736,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             var hits = 0
             var missed = 0
             it.events.forEach { ev ->
-                if (it.isFocus) {
-                    if (ev.tapTime > 1)
-                        hits++
-                    else
-                        missed++
-                }
+                if (ev.tapTime > 1)
+                    hits++
+                else
+                    missed++
             }
 
             log("showScoreDialog player: ${it.id}, ${it.events.size} hit $hits : miss $missed")
@@ -1811,12 +1809,10 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
             var hits = 0
             var missed = 0
             i.events.forEach { ev ->
-                if (ev.isFocus) {
-                    if (ev.tapTime > 1)
-                        hits++
-                    else
-                        missed++
-                }
+                if (ev.tapTime > 1)
+                    hits++
+                else
+                    missed++
             }
             //list.add(ScoreItem(i.id, i.name, "$hits", "$missed", 0, hits.plus(missed)))
             scores.add(

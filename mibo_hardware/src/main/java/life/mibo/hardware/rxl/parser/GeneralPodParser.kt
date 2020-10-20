@@ -133,14 +133,9 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
                     sendNextLight(player)
                 }
                 if (lightLogic == 3) {
-                    player.events.add(
-                        Event(
-                            player.events.size + 1,
-                            blockAction,
-                            event.time,
-                            player.lastFocusUid == event.uid
-                        )
-                    )
+                    if (player.lastFocusUid == event.uid)
+                        player.events.add(Event(player.events.size + 1, blockAction, event.time))
+                    else player.events.add(Event(player.events.size + 1, blockAction, 0))
                 } else player.events.add(Event(player.events.size + 1, blockAction, event.time))
             }
         }
@@ -355,7 +350,6 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
                     Thread.sleep(THREAD_SLEEP)
                 }
             }
-
         }
     }
 
@@ -678,14 +672,10 @@ class GeneralPodParser(program: RxlProgram, listener: Listener) :
     private fun playerEventAllATOnce(player: RxlPlayer, event: RxlStatusEvent) {
         log("child playerEvent player ${player.id} ${player.lastUid} :: ${player.lastPod}  = ${event.data}")
         if (player.lastPod == event.data) {
-            player.events.add(
-                Event(
-                    player.events.size + 1,
-                    blockAction,
-                    event.time,
-                    player.lastFocusUid == event.uid
-                )
-            )
+            if (player.lastFocusUid == event.uid)
+                player.events.add(Event(player.events.size + 1, blockAction, event.time))
+            else player.events.add(Event(player.events.size + 1, blockAction, 0))
+
             nextAllATOnce(player)
 //            if (player.lastUid == event.uid) {
 //                //colorSent = false

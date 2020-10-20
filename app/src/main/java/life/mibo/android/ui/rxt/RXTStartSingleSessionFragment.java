@@ -480,31 +480,6 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         return false;
     }
 
-    private void onStartProgram(List<RxtTile> tiles) {
-        // RXTManager.Companion.getInstance().with(RX)
-        List<Workout> list = new ArrayList<Workout>((Collection<? extends Workout>) SessionManager.getInstance().getWorkouts());
-
-        List<RxtIsland> islands = new ArrayList<>();
-        // List<RxtBlock> blocks = new ArrayList<>();
-        //blocks.add(new RxtBlock(500, 30, 1, 0, ""));
-        // RxtProgram program = new RxtProgram("Dummy 1", Color.BLUE, 5, blocks);
-        // RxtProgram program2 = new RxtProgram("Dummy 1", Color.MAGENTA, 5, blocks);
-        // RxtProgram program3 = new RxtProgram("Dummy 1", Color.CYAN, 5, blocks);
-        //RxtProgram test = RXTManager.Companion.getInstance().testProgram();
-        log("onStartProgram list : " + list);
-        int count = 11;
-        for (Workout i : list) {
-            //List<RxtBlock> blocks = new ArrayList<>();
-            //blocks.addAll(i.getProgram());
-            //islands.add(new RxtIsland(count, i.getProgram(), i.getRxtTiles(), i.getName(), "Player " + count, i.getColor()));
-            islands.add(new RxtIsland(count, RxtProgram.Companion.from(i.getRxt()), tiles, i.getName(), "Player " + count, i.getColor()));
-            count++;
-            // log("Adding Program " + i.getProgram());
-        }
-        log("onStartProgram islands : " + islands);
-        RXTManager.Companion.getInstance().with(islands, listener).startNow(totalTime);
-    }
-
     void getTilesApi(RXT.RXTIsland island) {
         if (isProgramStarted) {
             onStopProgram();
@@ -576,9 +551,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 wId = workout.getId();
         }
 
-        log("Time >>>>>>>>> " + totalTime);
-        log("Time >>>>>>>>> " + timeElapsed);
-        log("Time >>>>>>>>> " + (totalTime - timeElapsed));
+        // log("Time >>>>>>>>> " + totalTime);
+        // log("Time >>>>>>>>> " + timeElapsed);
+        // log("Time >>>>>>>>> " + (totalTime - timeElapsed));
         //ateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now());
         String date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
         List<SaveMemberScores.Score> scores = new ArrayList<>();
@@ -696,7 +671,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 log("onTime " + time + " - " + txt);
                 updateTimer(txt);
                 timeElapsed = time;
-                if(t == 0)
+                if (t == 0)
                     timeElapsed = 0;
             } catch (Exception e) {
                 log("onTime eeee " + e);

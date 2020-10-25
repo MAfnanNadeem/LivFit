@@ -1,7 +1,6 @@
 package life.mibo.hardware.rxt
 
-//import life.mibo.android.models.circuits.Circuit
-//import life.mibo.android.models.workout.RXT
+
 
 data class RxtProgram(
     var name: String,
@@ -13,7 +12,7 @@ data class RxtProgram(
     var workoutDuration = 0
     var workoutPause = 0
 
-//    companion object {
+    companion object {
 //        fun from(rxt: RXT): RxtProgram {
 //            val list = ArrayList<RxtBlock>()
 //            val blocks = rxt.blocks
@@ -22,7 +21,9 @@ data class RxtProgram(
 //                    if (i != null) {
 //                        // i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
 //                        //i.pattern = "1,5,9,11,13,17,21,23,19,17,15,11,7,5,3,2,1"
-//                        //i.rXTAction = 1
+//                        //i.pattern = "1-2,4-5,7-8,10-11,13-14,16-17"
+//                        //i.pattern = "1-2"
+//                        //i.rXTAction = 2
 //                        val b = RxtBlock(
 //                            i.getAction(),
 //                            i.getDuration(),
@@ -79,9 +80,9 @@ data class RxtProgram(
 //
 //            return programs;
 //        }
-//
-//        fun empty() = RxtProgram("Rxt Empty", 0, 0, ArrayList())
-//    }
+
+        fun empty() = RxtProgram("Rxt Empty", 0, 0, ArrayList())
+    }
 
     var key: String = ""
     fun cycles(): Int {

@@ -37,7 +37,6 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import life.mibo.android.R;
@@ -54,23 +53,28 @@ import life.mibo.android.models.workout.SaveMemberScores;
 import life.mibo.android.models.workout.Workout;
 import life.mibo.android.ui.base.BaseFragment;
 import life.mibo.android.ui.base.ItemClickListener;
-import life.mibo.android.ui.main.MiboApplication;
 import life.mibo.android.ui.rxt.model.Island;
 import life.mibo.android.ui.rxt.model.Tile;
-import life.mibo.android.ui.rxt.parser.RXTManager;
-import life.mibo.android.ui.rxt.parser.RxtIsland;
-import life.mibo.android.ui.rxt.parser.RxtProgram;
-import life.mibo.android.ui.rxt.parser.RxtTile;
-import life.mibo.android.ui.rxt.parser.core.RxtListener;
+//import life.mibo.android.ui.rxt.parser.RXTManager;
+//import life.mibo.android.ui.rxt.parser.RxtIsland;
+//import life.mibo.android.ui.rxt.parser.RxtProgram;
+//import life.mibo.android.ui.rxt.parser.RxtTile;
+//import life.mibo.android.ui.rxt.parser.core.RxtListener;
 import life.mibo.android.ui.rxt.score.ScoreDialog;
-import life.mibo.android.ui.rxt.score.ScoreItem;
+//import life.mibo.android.ui.rxt.score.ScoreItem;
 import life.mibo.android.ui.select_program.ProgramDialog;
 import life.mibo.android.utils.Toasty;
 import life.mibo.android.utils.Utils;
-import life.mibo.hardware.SessionManager;
 import life.mibo.hardware.events.RxlStatusEvent;
 import life.mibo.hardware.events.RxlTapEvent;
 import life.mibo.hardware.events.RxtStatusEvent;
+import life.mibo.hardware.rxl.core.ScoreItem;
+import life.mibo.hardware.rxt.RXTManager;
+import life.mibo.hardware.rxt.RxtBlock;
+import life.mibo.hardware.rxt.RxtIsland;
+import life.mibo.hardware.rxt.RxtProgram;
+import life.mibo.hardware.rxt.RxtTile;
+import life.mibo.hardware.rxt.core.RxtListener;
 import life.mibo.views.CircleView;
 import life.mibo.views.PlayButton;
 import retrofit2.Call;
@@ -86,7 +90,6 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_rxt_play_island_new, container, false);
     }
-
 
     TextView timer, islandName, islandTiles, workoutName, workoutDesc, tvSpeed, tvBlocks, tvBlocksInfo, tvProgramInfo;
     //ChipGroup chipGroup;
@@ -465,11 +468,11 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             if (rxtTiles.size() > 0) {
                 List<RxtIsland> islands = new ArrayList<>();
                 if (isCircuitMode && circuit != null) {
-                    islands.add(new RxtIsland(11, RxtProgram.Companion.empty(), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor).circuit(RxtProgram.Companion.from(circuit)));
+                    islands.add(new RxtIsland(11, RxtProgram.Companion.empty(), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor).circuit(from(circuit)));
                 } else {
-                    islands.add(new RxtIsland(11, RxtProgram.Companion.from(rxtProgram), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor));
+                    islands.add(new RxtIsland(11, from(rxtProgram), rxtTiles, workoutName.getText().toString(), "Player " + 11, selectedColor));
                 }
-                RXTManager.Companion.getInstance().with(islands, listener).startNow(totalTime, speed);
+                RXTManager.Companion.getManager().with(islands, listener).startNow(totalTime, speed);
                 isProgramStarted = true;
                 playButton.setPlay(true);
                 tempTileIds = tiles;
@@ -479,6 +482,145 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
         return false;
     }
+
+
+    public RxtProgram from(RXT rxt) {
+
+        ArrayList<RxtBlock> list = new ArrayList<>();
+        List<RXT.RXTBlock> blocks = rxt.getBlocks();
+        if (blocks != null && blocks.size() > 0) {
+            for (RXT.RXTBlock i : blocks) {
+                if (i != null) {
+                    // i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
+                    //i.pattern = "1,5,9,11,13,17,21,23,19,17,15,11,7,5,3,2,1"
+                    //i.pattern = "1-2,4-5,7-8,10-11,13-14,16-17"
+                    //i.pattern = "1-2"
+                    //i.rXTAction = 2
+                    String pattern = i.getPattern();
+                    if (pattern == null)
+                        pattern = "";
+                    RxtBlock b = new RxtBlock(i.getAction(), i.getDuration(), i.getLogicType(), 0, pattern);
+                    b.setDelay(i.getActionDelay());
+                    b.setBlockPause(i.getBlockPause());
+                    b.setRound(i.getRounds());
+                    list.add(b);
+                }
+            }
+        }
+        return new RxtProgram("Rxt ", 0, 0, list);
+
+    }
+
+    public ArrayList<RxtProgram> from(Circuit circuit) {
+
+        ArrayList<RxtProgram> programs = new ArrayList<>();
+        List<Workout> workouts = circuit.getWorkout();
+        if (workouts != null && workouts.size() > 0) {
+            for (Workout w : workouts) {
+                if (w != null) {
+                    RXT rxt = w.getRxt();
+                    if (rxt != null) {
+                        ArrayList<RxtBlock> list = new ArrayList<>();
+                        List<RXT.RXTBlock> blocks = rxt.getBlocks();
+                        if (blocks != null && blocks.size() > 0) {
+                            for (RXT.RXTBlock i : blocks) {
+                                if (i != null) {
+                                    String pattern = i.getPattern();
+                                    if (pattern == null)
+                                        pattern = "";
+                                    RxtBlock b = new RxtBlock(i.getAction(), i.getDuration(), i.getLogicType(), 0, pattern);
+                                    b.setDelay(i.getActionDelay());
+                                    b.setBlockPause(i.getBlockPause());
+                                    b.setRound(i.getRounds());
+                                    list.add(b);
+                                }
+                            }
+                        }
+
+                        RxtProgram prg = new RxtProgram(w.getName(), 0, 0, list);
+                        prg.setWorkoutDuration(w.getDurationSec());
+                        prg.setWorkoutPause(w.getPause());
+                        programs.add(prg);
+
+                    }
+
+                }
+
+            }
+        }
+
+        return programs;
+
+    }
+
+    //        fun from(rxt: RXT): RxtProgram {
+//            val list = ArrayList<RxtBlock>()
+//            val blocks = rxt.blocks
+//            if (blocks != null && blocks.isNotEmpty()) {
+//                for (i in blocks) {
+//                    if (i != null) {
+//                        // i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
+//                        //i.pattern = "1,5,9,11,13,17,21,23,19,17,15,11,7,5,3,2,1"
+//                        //i.pattern = "1-2,4-5,7-8,10-11,13-14,16-17"
+//                        //i.pattern = "1-2"
+//                        //i.rXTAction = 2
+//                        val b = RxtBlock(
+//                            i.getAction(),
+//                            i.getDuration(),
+//                            i.getLogicType(),
+//                            0,
+//                            i.pattern ?: ""
+//                        )
+//                        b.delay = i.getActionDelay()
+//                        b.blockPause = i.getBlockPause()
+//                        b.round = i.getRounds()
+//                        list.add(b)
+//                    }
+//                }
+//            }
+//            return RxtProgram("Rxt ${rxt.category}", 0, 0, list)
+//        }
+//
+//        fun from(circuit: Circuit): ArrayList<RxtProgram> {
+//            val programs = ArrayList<RxtProgram>()
+//            val workouts = circuit.workout
+//            if (workouts != null && workouts.isNotEmpty()) {
+//                for (w in workouts) {
+//                    val rxt = w?.rxt
+//                    if (rxt != null) {
+//                        val list = ArrayList<RxtBlock>()
+//                        val blocks = rxt.blocks
+//                        if (blocks != null && blocks.isNotEmpty()) {
+//                            for (i in blocks) {
+//                                if (i != null) {
+//                                    //i.pattern = "1,2-3,4,5-6,7,8,9-10,8,7,6-5,4,3-2"
+//                                    //i.rXTAction = 2
+//                                    val b = RxtBlock(
+//                                        i.getAction(),
+//                                        i.getDuration(),
+//                                        i.getLogicType(),
+//                                        0,
+//                                        i.pattern ?: ""
+//                                    )
+//                                    b.delay = i.getActionDelay()
+//                                    b.blockPause = i.getBlockPause()
+//                                    //b.workoutPause = w.getPause()
+//                                    b.round = i.getRounds()
+//                                    list.add(b)
+//                                }
+//                            }
+//                        }
+//                        val prg = RxtProgram(w.name ?: "RXT", 0, 0, list)
+//                        prg.workoutDuration = w.getDurationSec()
+//                        prg.workoutPause = w.getPause()
+//                        programs.add(prg)
+//                    }
+//                }
+//            }
+//
+//            return programs;
+//        }
+
 
     void getTilesApi(RXT.RXTIsland island) {
         if (isProgramStarted) {
@@ -803,7 +945,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
     private void showScoreDialog() {
         try {
-            ArrayList<ScoreItem> list = RXTManager.Companion.getInstance().getScore();
+            ArrayList<ScoreItem> list = RXTManager.Companion.getManager().getScore();
             log("ScoreItem list " + list);
             String name = "Test Program...";
             if (isCircuitMode)
@@ -811,7 +953,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             else if (workout != null)
                 name = workout.getName();
             String finalName = name;
-            requireActivity().runOnUiThread(() -> new ScoreDialog(requireActivity(), finalName, list).show());
+            ArrayList<life.mibo.android.ui.rxt.score.ScoreItem> scoreItems = new ArrayList<>();
+            for (ScoreItem s : list) {
+                scoreItems.add(new life.mibo.android.ui.rxt.score.ScoreItem(s.getId(), s.getName(), s.getHits(), s.getMissed(), s.getColor(), s.getTotal(), s.getTotalInSeconds()));
+            }
+
+            requireActivity().runOnUiThread(() -> new ScoreDialog(requireActivity(), finalName, scoreItems).show());
             saveScore(list);
         } catch (Exception ee) {
             ee.printStackTrace();
@@ -821,7 +968,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     private void onStopProgram() {
-        RXTManager.Companion.getInstance().unregister();
+        RXTManager.Companion.getManager().unregister();
         Toasty.info(getContext(), "Stopped!....").show();
         playButton.setPlay(false);
         isProgramStarted = false;
@@ -947,8 +1094,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     public void onEvent(RxtStatusEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
         log("onEvent RxtStatusEvent " + event);
-        if (event.isTap())
-            RXTManager.Companion.getInstance().postDirect(event);
+        //if (event.isTap())
+        //   RXTManager.Companion.getInstance().postDirect(event);
     }
 
 
@@ -966,7 +1113,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     public void onDestroy() {
         onBoosterScreen(false);
         EventBus.getDefault().unregister(this);
-        RXTManager.Companion.getInstance().unregister();
+        RXTManager.Companion.getManager().unregister();
         super.onDestroy();
     }
 
@@ -1103,12 +1250,12 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
-        RXTManager.Companion.getInstance().unregister();
+        RXTManager.Companion.getManager().unregister();
     }
 
     @Override
     public void onDetach() {
-        RXTManager.Companion.getInstance().unregister();
+        RXTManager.Companion.getManager().unregister();
         super.onDetach();
     }
 }

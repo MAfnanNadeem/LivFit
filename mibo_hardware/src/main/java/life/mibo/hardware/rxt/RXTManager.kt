@@ -14,6 +14,10 @@ import java.util.concurrent.TimeUnit
 
 class RXTManager {
 
+//    object Singleton {
+//        val manager: RXTManager by lazy { RXTManager() }
+//    }
+
     companion object {
         val REFLEX = 10
 
@@ -24,13 +28,16 @@ class RXTManager {
         // @Volatile
         //private var receivedFocusAll = false
 
-        fun getInstance(): RXTManager =
-            INSTANCE
-                ?: synchronized(this) {
-                    Logger.e("RXTManager INSTANCE init ")
-                    INSTANCE = RXTManager()
-                    INSTANCE!!
-                }
+        val manager: RXTManager by lazy { RXTManager() }
+        //val manager2: RXTManager by lazy { Singleton.manager }
+
+//        fun getInstance(): RXTManager =
+//            INSTANCE
+//                ?: synchronized(this) {
+//                    Logger.e("RXTManager INSTANCE init ")
+//                    INSTANCE = RXTManager()
+//                    INSTANCE!!
+//                }
     }
 
     private var islandsMap = HashMap<Int, RxtIsland>()
@@ -149,14 +156,14 @@ class RXTManager {
         log("onEvent onNext : $it")
         for (i in islandParsers) {
             if (i.islandId == it?.data) {
-                log("onNext ID matched ${i.islandId}")
-                if (i.lastTile == it.tile || i.secondTile == it.tile)
+                log("onNext ID matched islandId ${i.islandId}")
+                if (i.lastTile == it.tile)
                     i.onNext(it)
                 return
-            } else if (i.islandId.plus(1) == it?.data) {
-                log("onNext ID matched islandId.plus(1) ${i.islandId}")
-                if (i.lastTile == it.tile || i.secondTile == it.tile)
-                    i.onNext(it)
+            } else if (it?.data == i.islandId2) {
+                log("onNext2 ID matched islandId2 ${i.islandId2}")
+                if (i.secondTile == it.tile)
+                    i.onNext2(it)
                 return
             }
         }
@@ -168,7 +175,7 @@ class RXTManager {
             return
         isStarted = true;
         disposable = Observable.interval(0, 1, TimeUnit.SECONDS).take(durationSec)
-            .subscribeOn(Schedulers.io()).doOnNext {
+            .doOnNext {
                 onTick(it)
             }.doOnComplete {
                 onTick(0)
@@ -177,7 +184,7 @@ class RXTManager {
                 onExerciseStart()
             }.doOnError {
                 onExerciseError(it)
-            }.subscribe()
+            }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
 
     }
 
@@ -217,6 +224,7 @@ class RXTManager {
     private fun onExerciseError(e: Throwable?) {
         log("....................onExerciseError..................... $e")
         e?.printStackTrace()
+        isStarted = false
     }
 
 //    private fun createBlock(id: Int, block: RxtBlock): Disposable {
@@ -289,12 +297,13 @@ class RXTManager {
         onExerciseComplete()
         isRunning = false
         isStarted = false;
-
     }
 
 
+    val debug = Logger.DEBUG
     private fun log(msg: String?) {
-        Logger.e("RXTTest - $msg")
+        if (debug)
+            Logger.e("RXTTest - $msg")
     }
 
     @Synchronized
@@ -302,6 +311,11 @@ class RXTManager {
         log("postDirect onNext $isStarted: $event")
         if (isStarted)
             onNext(event)
+    }
+
+    @Synchronized
+    fun receiveDirect(event: RxtStatusEvent) {
+        log("receiveDirect onNext $isStarted: $event")
     }
 
     fun getScore(): ArrayList<ScoreItem> {

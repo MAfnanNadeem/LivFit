@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import life.mibo.android.ui.rxt.parser.RxtProgram;
-import life.mibo.android.ui.rxt.parser.RxtTile;
+//import life.mibo.android.ui.rxt.parser.RxtProgram;
+//import life.mibo.android.ui.rxt.parser.RxtTile;
+import life.mibo.hardware.rxt.RxtProgram;
+import life.mibo.hardware.rxt.RxtTile;
 
 public class Island implements Serializable {
     //Device device;

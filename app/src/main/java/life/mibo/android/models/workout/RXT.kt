@@ -1,7 +1,8 @@
 package life.mibo.android.models.workout
 
 import com.google.gson.annotations.SerializedName
-import life.mibo.android.ui.rxt.parser.RxtTile
+import life.mibo.hardware.rxt.RxtTile
+//import life.mibo.android.ui.rxt.parser.RxtTile
 import java.io.Serializable
 
 data class RXT(

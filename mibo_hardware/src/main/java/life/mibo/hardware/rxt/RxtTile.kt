@@ -1,6 +1,5 @@
 package life.mibo.hardware.rxt
 
-
 data class RxtTile(var uid: String, var tileId: Int) {
     fun from(tile: String) {
         val tiles = tile.split("-")

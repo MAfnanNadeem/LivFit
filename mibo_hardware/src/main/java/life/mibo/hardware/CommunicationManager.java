@@ -35,6 +35,7 @@ import life.mibo.hardware.events.PodEvent;
 import life.mibo.hardware.events.ProximityEvent;
 import life.mibo.hardware.events.RxlBlinkEvent;
 import life.mibo.hardware.events.RxlStatusEvent;
+import life.mibo.hardware.events.RxtStatusEvent;
 import life.mibo.hardware.events.SendChannelsLevelEvent;
 import life.mibo.hardware.events.SendCircuitEvent;
 import life.mibo.hardware.events.SendDevicePlayEvent;
@@ -53,9 +54,12 @@ import life.mibo.hardware.network.CommunicationListener;
 import life.mibo.hardware.network.TCPClient;
 import life.mibo.hardware.network.UDPServer;
 import life.mibo.hardware.rxl.RXLManager;
+import life.mibo.hardware.rxt.RXTManager;
 
 import static java.lang.Thread.sleep;
+import static life.mibo.hardware.constants.Config.COMMAND_SET_DEVICE_COLOR_RESPONSE;
 import static life.mibo.hardware.constants.Config.MIN_COMMAND_LENGTH;
+import static life.mibo.hardware.constants.Config.RXL_COMMAND_COLOR;
 import static life.mibo.hardware.constants.Config.RXL_TAP_EVENT;
 import static life.mibo.hardware.constants.Config.TCP_PORT;
 import static life.mibo.hardware.models.DeviceConstants.DEVICE_CONNECTED;
@@ -1169,12 +1173,15 @@ public class CommunicationManager {
     }
 
     private void parseCommandsRxt(byte[] command, String uid) {
-        log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + uid);
+        log("parseCommandsRXT msg " + Utils.getChars(command) + " : UID " + command);
         if (DataParser.getCommand(command) == RXL_TAP_EVENT) {
-            // RXLHelper.Companion.getInstance().post(new RxlStatusEvent(command, uid));
-            //  RXLManager.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
-            //RXLHelperNew.Companion.getInstance().postDirect(new RxlStatusEvent(command, uid));
-            // return;
+            RXTManager.Companion.getManager().postDirect(new RxtStatusEvent(2, command, uid));
+            //RXTManager.Singleton.INSTANCE.getManager();
+            return;
+        }
+        if (DataParser.getCommand(command) == COMMAND_SET_DEVICE_COLOR_RESPONSE) {
+            RXTManager.Companion.getManager().receiveDirect(new RxtStatusEvent(1, command, uid));
+            return;
         }
         if (listener != null)
             listener.onCommandReceived(DataParser.getCommand(command), command, uid, DataParser.RXT);

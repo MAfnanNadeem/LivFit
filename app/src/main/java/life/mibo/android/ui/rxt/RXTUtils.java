@@ -16,8 +16,10 @@ import life.mibo.android.ui.rxt.model.Tile;
 import life.mibo.hardware.CommunicationManager;
 import life.mibo.hardware.core.Logger;
 import life.mibo.hardware.events.ChangeColorEvent;
-import life.mibo.android.ui.rxt.parser.RxtBlock;
-import life.mibo.android.ui.rxt.parser.RxtProgram;
+//import life.mibo.android.ui.rxt.parser.RxtBlock;
+//import life.mibo.android.ui.rxt.parser.RxtProgram;
+import life.mibo.hardware.rxt.RxtBlock;
+import life.mibo.hardware.rxt.RxtProgram;
 
 public class RXTUtils {
 
@@ -129,4 +131,5 @@ public class RXTUtils {
     public static void log(String msg) {
         Logger.e("RXTUtils", msg);
     }
+
 }

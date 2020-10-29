@@ -12,7 +12,7 @@ import life.mibo.hardware.rxt.core.IslandParser
 import life.mibo.hardware.rxt.core.RxtListener
 import java.util.concurrent.TimeUnit
 
-class RXTManager {
+class RXTManager() {
 
 //    object Singleton {
 //        val manager: RXTManager by lazy { RXTManager() }

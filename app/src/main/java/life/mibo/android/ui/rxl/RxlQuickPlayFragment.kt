@@ -16,6 +16,7 @@ import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.rxl.adapter.PlayersAdapter
 import life.mibo.android.ui.rxl.adapter.ReflexFilterAdapter
 import life.mibo.android.ui.rxl.adapter.ReflexHolder
+import life.mibo.android.ui.rxl.adapter.RxlWorkoutAdapter
 import life.mibo.android.ui.rxl.impl.RXLObserver
 import life.mibo.android.utils.Constants
 import life.mibo.android.utils.Toasty
@@ -85,14 +86,7 @@ class RxlQuickPlayFragment : BaseFragment(),
             isRefresh = true
             controller.getRxlExercisesServer("")
         }
-        swipeToRefresh?.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorAccent,
-            R.color.colorPrimaryDark,
-            R.color.infoColor2,
-            R.color.successColor
-        )
-
+        setSwipeRefreshColors(swipeToRefresh)
 
     }
 
@@ -227,7 +221,7 @@ class RxlQuickPlayFragment : BaseFragment(),
 
     private val programsList = ArrayList<RXL>()
     private val backupPrograms = ArrayList<RXL>()
-    private var adapter: RecyclerAdapter? = null
+    private var adapter: RxlWorkoutAdapter? = null
 
     override fun onDataReceived2(programs: ArrayList<RXL>) {
         activity?.runOnUiThread {
@@ -262,7 +256,7 @@ class RxlQuickPlayFragment : BaseFragment(),
             }
             //list.addAll(programs)
 
-            adapter = RecyclerAdapter(programsList)
+            adapter = RxlWorkoutAdapter(programsList)
             val manager = LinearLayoutManager(this@RxlQuickPlayFragment.activity)
             recycler?.layoutManager = manager
             recycler?.adapter = adapter
@@ -340,131 +334,6 @@ class RxlQuickPlayFragment : BaseFragment(),
         recycler?.adapter = null
         adapter = null
         super.onDestroy()
-    }
-
-
-    class RecyclerAdapter(var list: java.util.ArrayList<RXL>?) :
-        RecyclerView.Adapter<ReflexHolder>() {
-
-        //var list: ArrayList<Item>? = null
-        private var listener: ItemClickListener<RXL>? = null
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReflexHolder {
-            return ReflexHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.list_item_reflex,
-                    parent,
-                    false
-                )
-            )
-        }
-
-        fun setListener(listener: ItemClickListener<RXL>) {
-            this.listener = listener
-        }
-
-        override fun getItemCount(): Int {
-            if (list != null)
-                return list?.size!!
-            return 0
-        }
-
-        private fun getItem(position: Int): RXL? {
-            return list?.get(position)
-        }
-
-        override fun onBindViewHolder(holder: ReflexHolder, position: Int) {
-            Logger.e("ReflexAdapter: onBindViewHolder $position")
-
-            holder.bind(getItem(position), listener)
-        }
-
-
-        fun notify(id: Int) {
-
-            list?.forEachIndexed { index, item ->
-                if (item.id == id) {
-                    notifyItemChanged(index)
-                    return@forEachIndexed
-                }
-            }
-        }
-
-        fun delete(program: RxlProgram?) {
-            if (program == null)
-                return
-            var pos = -1
-            list?.forEachIndexed { index, item ->
-                if (item.id == program.id) {
-                    pos = index
-                }
-            }
-            if (pos != -1) {
-                list?.removeAt(pos)
-                notifyItemRemoved(pos)
-            }
-        }
-
-
-        fun update(newList: java.util.ArrayList<RXL>) {
-            if (list == null || list?.isEmpty()!!) {
-                list = newList
-                notifyDataSetChanged()
-                return
-            }
-
-            val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-                    return newList[newItem].id == list!![oldItem].id
-                }
-
-                override fun getOldListSize(): Int {
-                    return list!!.size
-                }
-
-                override fun getNewListSize(): Int {
-                    return newList.size
-                }
-
-                override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                    return true
-                }
-
-            })
-            list = newList
-            result.dispatchUpdatesTo(this)
-
-        }
-
-        fun filterUpdate(newList: java.util.ArrayList<RXL>) {
-            if (list == null || list?.isEmpty()!!) {
-                list = newList
-                notifyDataSetChanged()
-                return
-            }
-
-            val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-                    return newList[newItem].id == list!![oldItem].id
-                }
-
-                override fun getOldListSize(): Int {
-                    return list!!.size
-                }
-
-                override fun getNewListSize(): Int {
-                    return newList.size
-                }
-
-                override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                    return true
-                }
-
-            })
-            list = newList
-            result.dispatchUpdatesTo(this)
-
-        }
     }
 
 }

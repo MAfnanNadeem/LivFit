@@ -192,7 +192,7 @@ class MainActivity : BaseActivity(), Navigator {
         no_internet_close?.setOnClickListener {
             frame_no_internet?.visibility = View.GONE
         }
-        //test()
+       // test()
     }
 
     fun test() {
@@ -1657,6 +1657,13 @@ class MainActivity : BaseActivity(), Navigator {
 
             Navigator.RXT_SCAN -> {
                 startScanningView(true, DeviceScanFragment.RXT)
+            }
+
+            Navigator.RXL_CUSTOMIZE -> {
+                var bundle: Bundle? = null
+                if (data is Bundle)
+                    bundle = data
+                navigate(0, R.id.navigation_rxl_customize, bundle)
             }
             else -> {
                 drawerItemClicked(type)

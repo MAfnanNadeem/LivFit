@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  Created by Sumeet Kumar on 1/25/20 2:53 PM
+  ~  Copyright (c) 2020 . MI.BO All rights reserved.
+  ~  Last modified 1/25/20 2:43 PM
+  ~  Mibo Hexa - app
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color_app">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/grid_2x"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/btn_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="Random"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintBottom_toBottomOf="@id/iv_icon_giff"
+                app:layout_constraintStart_toEndOf="@id/iv_icon_giff"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_icon_giff"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:src="@drawable/ic_reflex_random_icon"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.5" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_course_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:background="@drawable/login_edittext"
+                android:hint="@string/course_name"
+                android:padding="@dimen/grid_1x"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_icon_giff" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/et_course_structure"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:hint="Course Structure"
+                android:padding="@dimen/grid_1x"
+                android:singleLine="true"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/et_course_name"
+                app:layout_constraintTop_toBottomOf="@+id/et_course_name" />
+
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_course_desc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:background="@drawable/login_edittext"
+                android:hint="@string/course_description"
+                android:maxLines="10"
+                android:minLines="4"
+                android:nestedScrollingEnabled="true"
+                android:padding="@dimen/grid_1x"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_course_structure" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_general"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/general_settings"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_course_desc"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_stations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/lights_out"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="@+id/iv_stations"
+                app:layout_constraintStart_toStartOf="@+id/iv_stations"
+                app:layout_constraintTop_toBottomOf="@id/tv_general" />
+
+            <ImageView
+                android:id="@+id/iv_stations"
+                style="@style/rxl_create_icon"
+                android:layout_width="100dp"
+                android:src="@drawable/ic_reflex_lights_out"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_stations" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_select_lights"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:minWidth="100dp"
+                android:visibility="gone"
+                android:padding="@dimen/grid_1x"
+                android:singleLine="true"
+                android:text="1"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintBottom_toBottomOf="@id/iv_stations"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_stations" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/recyclerViewSequence_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="drag to re-arrange sequence"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_stations" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewSequence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence_text" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_cycles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:text="@string/working_station"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintEnd_toEndOf="@+id/iv_cycles"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/iv_cycles"
+                app:layout_constraintTop_toBottomOf="@id/recyclerViewSequence" />
+
+            <ImageView
+                android:id="@+id/iv_cycles"
+                style="@style/rxl_create_icon"
+                android:layout_width="100dp"
+                android:src="@drawable/ic_reflex_stations"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cycles" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_select_stations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/login_edittext"
+                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:minWidth="100dp"
+                android:padding="@dimen/grid_1x"
+                android:visibility="gone"
+                android:singleLine="true"
+                android:text="1"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintBottom_toBottomOf="@id/iv_cycles"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_cycles" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_2x"
+                android:text="@string/activity_settings"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_course_desc"
+                app:layout_constraintWidth_percent="1" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/grid_1x"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
+                app:layout_constraintWidth_percent="0.5">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_pods"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/pods"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pods"
+                    app:layout_constraintStart_toStartOf="@+id/iv_pods"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_pods"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_rxl_pods_icon"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_pods"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_pods" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_pods"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_pods"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_pods" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_lights"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/cycles"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_lights"
+                    app:layout_constraintStart_toStartOf="@+id/iv_lights"
+                    app:layout_constraintTop_toBottomOf="@id/iv_pods" />
+
+                <ImageView
+                    android:id="@+id/iv_lights"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_reflex_cycles"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_cycles"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_lights" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_cycles"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_lights"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_lights" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_players"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/players"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_players"
+                    app:layout_constraintStart_toStartOf="@+id/iv_players"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_cycles" />
+
+                <ImageView
+                    android:id="@+id/iv_players"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_reflex_user"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_players"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_players" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_players"
+                    android:layout_width="76dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_players"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_players" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_activity"
+                app:layout_constraintWidth_percent="0.5">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="Action"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pause"
+                    app:layout_constraintStart_toStartOf="@+id/iv_pause"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_pause"
+                    style="@style/rxl_create_icon"
+                    android:layout_marginEnd="1dp"
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_action"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_pause" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:minWidth="76dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_pause"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_pause" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/pause"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_pause"
+                    app:layout_constraintStart_toStartOf="@+id/iv_delay"
+                    app:layout_constraintTop_toBottomOf="@id/iv_pause" />
+
+                <ImageView
+                    android:id="@+id/iv_delay"
+                    style="@style/rxl_create_icon"
+                    android:src="@drawable/ic_reflex_delay"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_delay"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_delay" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:minWidth="76dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_delay"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_delay" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:text="@string/duration"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_action"
+                    app:layout_constraintStart_toStartOf="@+id/iv_action"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_delay" />
+
+                <ImageView
+                    android:id="@+id/iv_action"
+                    style="@style/rxl_create_icon"
+                    android:layout_marginEnd="1dp"
+                    android:src="@drawable/ic_reflex_time"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_select_duration"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_action" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_select_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/login_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:minWidth="100dp"
+                    android:padding="@dimen/grid_1x"
+                    android:singleLine="true"
+                    android:text="30 sec"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_action"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_action" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_1x"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout">
+
+                <!--                <life.mibo.views.FluidSlider-->
+                <!--                    android:id="@+id/fluidSlider"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:visibility="gone"-->
+                <!--                    app:slider_bar_color="@color/colorPrimary"-->
+                <!--                    app:slider_bar_text_color="@color/white"-->
+                <!--                    app:slider_bubble_color="@color/colorAccent"-->
+                <!--                    app:slider_bubble_text_color="@color/white"-->
+                <!--                    app:slider_end_text=""-->
+                <!--                    app:slider_initial_position="0.5"-->
+                <!--                    app:slider_size="small"-->
+                <!--                    app:slider_start_text="inches" />-->
+
+                <life.mibo.views.TextThumbSeekBar
+                    android:id="@+id/fluidSeekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/grid_3x"
+                    android:paddingEnd="@dimen/grid_3x"
+                    android:layout_marginTop="@dimen/grid_1x"
+                    android:max="300"
+                    android:visibility="gone"
+                    android:min="30"
+                    android:progress="50"
+                    android:thumbOffset="0dp" />
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="1">
+
+<!--                    <androidx.appcompat.widget.AppCompatRadioButton-->
+<!--                        android:id="@+id/radio_start_now"-->
+<!--                        style="@style/RadioButton"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/radio_button_selector"-->
+<!--                        android:checked="true"-->
+<!--                        android:text="@string/on_click" />-->
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/radio_start_tap"
+                        style="@style/RadioButton"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector"
+                        android:text="@string/on_tap" />
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/radio_start_sensor"
+                        style="@style/RadioButton"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_selector_right"
+                        android:text="@string/on_sensor" />
+
+                </RadioGroup>
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/grid_2x"
+        android:background="@drawable/bg_button_reflex"
+        android:text="SAVE PROGRAM"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.75" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

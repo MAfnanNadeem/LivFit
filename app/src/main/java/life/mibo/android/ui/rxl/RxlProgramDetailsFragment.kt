@@ -115,7 +115,7 @@ class RxlProgramDetailsFragment : BaseFragment() {
         }
 
         btn_next?.isEnabled = pods.size >= program?.pods() ?: 0
-        if(MiboApplication.DEBUG)
+        if (MiboApplication.TEST)
             btn_next?.isEnabled = true
 
         if (program?.pods() == pods.size) {
@@ -142,7 +142,9 @@ class RxlProgramDetailsFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         log("onActivityResult $requestCode - $resultCode - $data")
         if (requestCode == code && resultCode == 3) {
-            navigate(Navigator.RXL_COURSE_CREATE, program)
+            val bundle = Bundle()
+            bundle.putSerializable(Constants.BUNDLE_DATA, program)
+            navigate(Navigator.RXL_CUSTOMIZE, bundle)
         }
     }
 

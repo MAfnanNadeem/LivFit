@@ -279,6 +279,14 @@ class API {
         fun getRXLProgram(@Body data: GetRXLProgram): Call<RXLPrograms>
 
         @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("saveMyRxlWorkout")
+        fun saveMyRxlWorkout(@Body data: SaveMyWorkout): Call<ResponseStatus>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
+        @POST("getMyRxlWorkout")
+        fun getMyRxlWorkout(@Body data: GetMyWorkout): Call<SearchWorkout>
+
+        @Headers("Accept: application/json", "Content-Type: application/json")
         @POST("deleteRXLProgram")
         fun deleteRXLProgram(@Body data: DeleteRXLProgram): Call<ResponseData>
 

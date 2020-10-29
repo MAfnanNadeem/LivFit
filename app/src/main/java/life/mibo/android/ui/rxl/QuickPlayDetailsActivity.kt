@@ -256,11 +256,11 @@ class QuickPlayDetailsActivity : BaseActivity(), RxlListener, CourseCreateImpl.L
 //            showColors()
 //        }
         tv_customize?.setOnClickListener {
-            //navigate(Navigator.RXL_COURSE_CREATE, program)
             if (isSessionActive)
                 return@setOnClickListener
-            //setResult(3)
-            //finish()
+            //navigate(Navigator.RXL_COURSE_CREATE, program)
+            setResult(3)
+            finish()
         }
         //setPickers()
         //getPods()

@@ -285,6 +285,11 @@
         android:id="@+id/navigation_rxt_play"
         android:name="life.mibo.android.ui.rxt.RXTStartSingleSessionFragment"
         android:label="RXT Workout" />
+
+    <fragment
+        android:id="@+id/navigation_rxl_customize"
+        android:name="life.mibo.android.ui.rxl.CustomizeWorkoutFragment"
+        android:label="Customize Workout" />
     <!--    <fragment-->
     <!--        android:id="@+id/navigation_quickplay_details_play"-->
     <!--        android:name="life.mibo.hexa.ui.rxl.RxlQuickPlayDetailsPlayFragment"-->

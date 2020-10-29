@@ -148,7 +148,6 @@ public class SuccessPaymentActivity extends BaseActivity {
                 logs.append(telrAuth.avs).append("; ");
             } catch (Exception ee) {
                 logs.append(" error=").append(ee.getMessage());
-
             }
         }
 

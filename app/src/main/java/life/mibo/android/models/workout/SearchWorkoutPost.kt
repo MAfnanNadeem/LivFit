@@ -3,8 +3,9 @@ package life.mibo.android.models.workout
 
 import com.google.gson.annotations.SerializedName
 import life.mibo.android.models.base.BasePost
+import java.net.CacheRequest
 
-class SearchWorkoutPost(data: Data?, token: String?) : BasePost<SearchWorkoutPost.Data?>(data, "SearchWorkout", token) {
+class SearchWorkoutPost(data: Data?, token: String?, request: String = "SearchWorkout") : BasePost<SearchWorkoutPost.Data?>(data, request, token) {
 
     data class Data(
             @SerializedName("Element")

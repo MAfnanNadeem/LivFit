@@ -19,7 +19,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.transition.TransitionInflater
 import coil.api.load
-import kotlinx.android.synthetic.main.fragment_rxl_create.*
+import kotlinx.android.synthetic.main.fragment_rxl_create_old.*
 import life.mibo.android.R
 import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
@@ -77,7 +77,7 @@ class ReflexCourseCreateFragment : BaseFragment(), CourseCreateImpl.Listener {
 //            duration = 750
 //        }
         postponeEnterTransition()
-        val root = inflater.inflate(R.layout.fragment_rxl_create, container, false)
+        val root = inflater.inflate(R.layout.fragment_rxl_create_old, container, false)
         if (Build.VERSION.SDK_INT >= 21) {
             val item = arguments?.getSerializable(DATA)
             if (item != null && item is CreateCourseAdapter.Course) {

@@ -59,4 +59,17 @@ object RxlUtils {
 
         return life.mibo.hardware.rxl.program.RxlLight.UNKNOWN
     }
+
+    fun getLogicType(logic: String?): Int {
+        when (logic?.toLowerCase()) {
+            "sequence" -> return 1
+            "random" -> return 2
+            "focus" -> return 3
+            "all at once - tap one" -> return 4
+            "all at once - tap all" -> return 5
+            "hopscotch" -> return 6
+            "single-double" -> return 7
+        }
+        return 1
+    }
 }

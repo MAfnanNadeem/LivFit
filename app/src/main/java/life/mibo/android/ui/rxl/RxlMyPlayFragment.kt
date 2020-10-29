@@ -13,20 +13,30 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_reactions.*
 import life.mibo.android.R
+import life.mibo.android.core.API
 import life.mibo.android.core.Prefs
+import life.mibo.android.models.base.ResponseStatus
+import life.mibo.android.models.rxl.GetMyWorkout
 import life.mibo.android.models.rxl.RxlProgram
+import life.mibo.android.models.workout.RXL
+import life.mibo.android.models.workout.SearchWorkout
+import life.mibo.android.models.workout.SearchWorkoutPost
 import life.mibo.android.ui.base.BaseFragment
 import life.mibo.android.ui.base.ItemClickListener
+import life.mibo.android.ui.main.MiboEvent
 import life.mibo.android.ui.main.Navigator
 import life.mibo.android.ui.rxl.adapter.ReflexAdapter
+import life.mibo.android.ui.rxl.adapter.RxlWorkoutAdapter
 import life.mibo.android.ui.rxl.impl.ReactionObserver
+import life.mibo.android.utils.Constants
+import life.mibo.android.utils.Toasty
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
-class RxlMyPlayFragment : BaseFragment(),
-    ReactionObserver {
+class RxlMyPlayFragment : BaseFragment() {
 
-
-    private lateinit var controller: ReactionLightController
 
     override fun onCreateView(i: LayoutInflater, c: ViewGroup?, s: Bundle?): View? {
         return i.inflate(R.layout.fragment_reactions, c, false)
@@ -34,26 +44,71 @@ class RxlMyPlayFragment : BaseFragment(),
 
     override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
         super.onViewCreated(root, savedInstanceState)
-        controller = ReactionLightController(this, this)
         navigate(Navigator.HOME_VIEW, true)
         setHasOptionsMenu(true)
-        controller.onStart()
-        controller.getPrograms(Prefs.get(context).member?.id()!!)
+        // controller.onStart()
+        /// controller.getPrograms(Prefs.get(context).member?.id()!!)
         //log("NO_OF_PODS ${ReactionLightController.Filter.LIGHT_LOGIC.range.first}")
         swipeToRefresh?.setOnRefreshListener {
             if (isRefresh)
                 return@setOnRefreshListener
             isRefresh = true
-            controller.getRxlExercisesServer(Prefs.get(context).member?.id()!!)
+            getMyPlayWorkouts()
         }
-        swipeToRefresh?.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorAccent,
-            R.color.colorPrimaryDark,
-            R.color.infoColor2,
-            R.color.successColor
-        )
+        setSwipeRefreshColors(swipeToRefresh)
+        getMyPlayWorkouts()
+    }
 
+
+    private fun getMyPlayWorkouts() {
+        val member = Prefs.get(context).member ?: return
+        val data = GetMyWorkout.Data(member.id(), 1, 50, "")
+
+        API.request.getApi()
+            .getMyRxlWorkout(GetMyWorkout(data, member.accessToken))
+            .enqueue(object : Callback<SearchWorkout> {
+
+                override fun onFailure(call: Call<SearchWorkout>, t: Throwable) {
+                    getDialog()?.dismiss()
+                    t.printStackTrace()
+                    Toasty.error(context!!, R.string.unable_to_connect).show()
+                    MiboEvent.log(t)
+                    t.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call<SearchWorkout>,
+                    response: Response<SearchWorkout>
+                ) {
+                    getDialog()?.dismiss()
+
+                    val data = response.body()
+                    log("getMyPlayWorkouts $data")
+                    if (data != null) {
+                        val programs = data?.data?.workout
+                        val list = ArrayList<RXL>()
+                        programs?.forEach {
+                            it?.rxl.let { item ->
+                                if (item != null) {
+                                    item.id = it?.id ?: 1
+                                    item.name = it?.name ?: ""
+                                    item.desc = it?.description ?: ""
+                                    item.borg = it?.borgRating ?: 7
+                                    item.icon = it?.icon ?: ""
+                                    item.total = it?.durationValue ?: "0"
+                                    item.unit = it?.durationUnit ?: ""
+                                    item.videoLink = it?.videoLink ?: ""
+                                    list.add(item)
+                                }
+                            }
+                        }
+                        parseData(list)
+
+                    } else {
+
+                    }
+                }
+            })
     }
 
     var isRefresh = false
@@ -68,83 +123,75 @@ class RxlMyPlayFragment : BaseFragment(),
         when (item.itemId) {
             R.id.navigation_add -> {
                 //backdropBehavior.toggle()
-                navigate(Navigator.RXL_COURSE_SELECT, null)
+                navigate(Navigator.RXL_CUSTOMIZE, null)
+                //navigate(Navigator.RXL_COURSE_SELECT, null)
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     val list = ArrayList<RxlProgram>()
-    var adapter: ReflexAdapter? = null
+    var adapter: RxlWorkoutAdapter? = null
 
-    override fun onDataReceived(programs: ArrayList<RxlProgram>) {
+    val programsList = ArrayList<RXL>()
+
+    fun parseData(programs: ArrayList<RXL>) {
         isRefresh = false
         swipeToRefresh?.isRefreshing = false
-        log("onDataReceived ${programs.size}")
 
-        if (programs.isEmpty()) {
-            // this will not happen in final release, because we have at-least few public programs
-            //Toasty.info(requireContext(), "No programs found").show()
-            empty_view?.visibility = View.VISIBLE
-            // tv_empty?.text = getString(R.string.no_program)
-        } else {
-            empty_view?.visibility = View.GONE
-        }
+        activity?.runOnUiThread {
+            log("onDataReceived ${programs.size}")
 
-        list.clear()
-        list.addAll(programs)
-
-        adapter = ReflexAdapter(list)
-        val manager = LinearLayoutManager(this@RxlMyPlayFragment.activity)
-        recyclerView?.layoutManager = manager
-        recyclerView?.adapter = adapter
-        recyclerView?.isNestedScrollingEnabled = false
-        adapter?.setListener(object : ItemClickListener<RxlProgram> {
-            override fun onItemClicked(item: RxlProgram?, position: Int) {
-                log("onDataReceived onItemClicked ${item?.name}")
-                if (position > 1000) {
-                    when (position) {
-                        2001 -> {
-                            val items =
-                                arrayOf<CharSequence>(
-                                    getString(R.string.delete),
-                                    getString(R.string.cancel)
-                                )
-
-                            AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.delete_option))
-                                .setItems(items) { dialog, i ->
-                                    if (i == 0) {
-                                        log("delete $item")
-                                        controller.deleteProgram(item) {
-                                            activity?.runOnUiThread {
-                                                log("delete2 $it")
-                                                adapter?.delete(it)
-                                            }
-                                        }
-                                    }
-                                }.show()
-                        }
-                        1001 -> {
-                            controller.updateProgram(item, true)
-                        }
-                        1002 -> {
-                            controller.updateProgram(item, false)
-                        }
-                    }
-                    return
+            if (programs.isEmpty()) {
+                // this will not happen in final release, because we have at-least few public programs
+                Toasty.info(requireContext(), getString(R.string.no_program)).show()
+                empty_view?.visibility = View.VISIBLE
+                tv_empty?.text = getString(R.string.no_program)
+            } else {
+                empty_view?.let {
+                    it.visibility = View.GONE
                 }
-                navigate(Navigator.RXL_QUICKPLAY_DETAILS, item)
             }
 
-        })
-        adapter?.notifyDataSetChanged()
-        log("onDataReceived notifyDataSetChanged ${adapter?.list?.size}")
+            programsList.clear()
 
-    }
+            programs.forEach {
+                programsList.add(it)
+            }
 
-    override fun onUpdateList(programs: ArrayList<RxlProgram>) {
-        adapter?.filterUpdate(programs)
+            if (programsList.isEmpty()) {
+                empty_view?.visibility = View.VISIBLE
+                // tv_empty?.text = """No Exercise found for selected player ($playersCount)"""
+            }
+            //list.addAll(programs)
+
+            adapter = RxlWorkoutAdapter(programsList)
+            val manager = LinearLayoutManager(this@RxlMyPlayFragment.activity)
+            recyclerView?.layoutManager = manager
+            recyclerView?.adapter = adapter
+            recyclerView?.isNestedScrollingEnabled = false
+            adapter?.setListener(object : ItemClickListener<RXL> {
+                override fun onItemClicked(item: RXL?, position: Int) {
+                    log("onDataReceived onItemClicked ${item?.name}")
+                    if (position > 1000) {
+                        when (position) {
+                            1001 -> {
+                                // controller.updateProgram(item, true)
+                            }
+                            1002 -> {
+                                // controller.updateProgram(item, false)
+                            }
+                        }
+                        return
+                    }
+                    //item?.selectedPlayers = players
+                    navigate(Navigator.RXL_QUICKPLAY_DETAILS, item)
+                }
+
+            })
+            adapter?.notifyDataSetChanged()
+            log("onDataReceived notifyDataSetChanged ${adapter?.list?.size}")
+        }
     }
 
 

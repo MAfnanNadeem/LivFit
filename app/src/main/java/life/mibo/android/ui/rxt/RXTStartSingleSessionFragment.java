@@ -29,6 +29,10 @@ import com.bumptech.glide.Glide;
 import com.halilibo.bvpkotlin.BetterVideoPlayer;
 import com.halilibo.bvpkotlin.VideoCallback;
 import com.halilibo.bvpkotlin.VideoProgressCallback;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerUtils;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,6 +41,7 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import life.mibo.android.R;
@@ -97,7 +102,9 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     int totalTime = 60;
     PlayButton playButton;
     CheckBox checkVoicePrompt;
+    View noPlayer;
     BetterVideoPlayer videoPlayer;
+    YouTubePlayerView utubePlayer;
     ProgressBar mediaPlayerProgress;
     RecyclerView recyclerView;
     private Workout workout;
@@ -116,6 +123,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         videoPlayer = view.findViewById(R.id.player);
+        utubePlayer = view.findViewById(R.id.utubePlayer);
+        noPlayer = view.findViewById(R.id.tv_no_player);
         timer = view.findViewById(R.id.tv_timer);
         islandImage = view.findViewById(R.id.iv_island);
         islandName = view.findViewById(R.id.tv_island_name);
@@ -173,11 +182,23 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
                 colorPickerDialog();
             });
 
+        // utubePlayer;
+        // getLifecycle().addObserver(utubePlayer);
+
+//        utubePlayer.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+//            @Override
+//            public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+//                String videoId = "P7abvZXogTg";
+//                youTubePlayer.loadVideo(videoId, 0);
+//            }
+//        });
+        // YouTubePlayerUtils.loadOrCueVideo(utubePlayer, getLifecycle(), "", 0);
 //        if (MiboApplication.Companion.getTEST()) {
 //            actionTime = 2000;
 //            setSpeedText();
 //        }
     }
+
 
     private void colorPickerDialog() {
         if (isProgramStarted)
@@ -242,6 +263,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
             return;
         }
         setupPlayer(workout.getVideoLink());
+        //setupPlayer("https://binialbert.yondo.com/video/69613/embed?code=1FiW8zOs");
         rxtProgram = workout.getRxt();
         timer.setText(workout.getDuration());
         totalTime = workout.getDurationSec();
@@ -356,8 +378,48 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
     }
 
     void setupPlayer(String url) {
-        if (url != null && url.length() > 1)
+        //Toasty.info(getContext(), "Video URL " + url).show();
+        if (url == null)
+            return;
+        log("videoPlayer url : " + url);
+        if (url.toLowerCase().contains("youtube.com")) {
+            log("url is youtube");
+            String[] urls = url.split("watch\\?v=", 2);
+            //log("youtube urls " + Arrays.toString(urls));
+            //log("youtube urls " + urls.length);
+            if (urls.length > 1) {
+                utubePlayer.setVisibility(View.VISIBLE);
+                noPlayer.setVisibility(View.GONE);
+                getLifecycle().addObserver(utubePlayer);
+
+                utubePlayer.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                    @Override
+                    public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                        String videoId = urls[1];
+                        try {
+                            if (videoId.contains("&"))
+                                youTubePlayer.loadVideo(videoId.split("&")[0], 0);
+                            else youTubePlayer.loadVideo(videoId, 0);
+                        } catch (Exception e) {
+                            youTubePlayer.loadVideo(videoId, 0);
+                        }
+
+                        //log("youtube videoId " + videoId);
+                    }
+                });
+            }
+            return;
+        } else {
+            log("url is not a youtube");
+        }
+
+        videoPlayer.setVisibility(View.VISIBLE);
+        noPlayer.setVisibility(View.GONE);
+
+        if (url.length() > 1)
             videoPlayer.setSource(Uri.parse(url));
+        // log("videoPlayer url2 : "+videoPlayer.);
+
 
         videoPlayer.setCallback(new VideoCallback() {
             @Override
@@ -382,7 +444,7 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
 
             @Override
             public void onBuffering(int i) {
-                log("videoPlayer onBuffering ");
+                log("videoPlayer onBuffering " + i);
             }
 
             @Override
@@ -1114,6 +1176,8 @@ public class RXTStartSingleSessionFragment extends BaseFragment {
         onBoosterScreen(false);
         EventBus.getDefault().unregister(this);
         RXTManager.Companion.getManager().unregister();
+        if (utubePlayer != null)
+            utubePlayer.release();
         super.onDestroy();
     }
 

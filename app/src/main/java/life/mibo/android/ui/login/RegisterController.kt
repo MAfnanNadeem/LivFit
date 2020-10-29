@@ -606,8 +606,8 @@ class RegisterController(val context: RegisterActivity, val observer: RegisterOb
                 socialKey, areaCode
             )
             data.memberID = memberId
-            context.log("registerInvitedMember memberId $memberId")
-            context.log("registerInvitedMember $data")
+           // context.log("registerInvitedMember memberId $memberId")
+          // context.log("registerInvitedMember $data")
             registerInvitedMember(RegisterMember(data, "RegisterInvitedMember"), memberId)
 
             //Toasty.success(context, "Successfully registered").show()

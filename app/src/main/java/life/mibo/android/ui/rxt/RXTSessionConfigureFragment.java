@@ -107,8 +107,8 @@ public class RXTSessionConfigureFragment extends BaseFragment {
     private SelectIslandDialog selectIslandDialog;
 
     void islandDialog() {
-        int id = Prefs.get(getContext()).get(Prefs.ISLAND_ID, 0);
-        if (id > 0) {
+        islandId = Prefs.get(getContext()).get(Prefs.ISLAND_ID, 0);
+        if (islandId > 0) {
             getWorkouts(isEmsChecked, isMultiChecked);
             return;
         }
@@ -151,7 +151,7 @@ public class RXTSessionConfigureFragment extends BaseFragment {
         //String island = Prefs.get(getContext()).get("rxt_island");
         //log("okhttp Trainer "+trainer);
 
-        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "" + islandId, ""), trainer.getAccessToken());
+        SearchWorkoutPost data = new SearchWorkoutPost(new SearchWorkoutPost.Data(type, "" + trainer.getId(), "1", "50", trainer.isMember() ? "member" : "trainer", trainer.getLocationID(), "" + islandId, ""), trainer.getAccessToken(), "SearchWorkout");
         getDialog().show();
         Call<SearchWorkout> api = API.Companion.getRequest().getApi().searchWorkout(data);
         api.enqueue(new Callback<SearchWorkout>() {

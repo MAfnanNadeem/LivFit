@@ -49,6 +49,7 @@ interface Navigator {
         const val RXT_SELECT_WORKOUT = 145;
         const val RXT_CONFIGURE = 146;
         const val RXT_SCAN = 147;
+        const val RXL_CUSTOMIZE = 148;
 
 
         const val POST = 201;

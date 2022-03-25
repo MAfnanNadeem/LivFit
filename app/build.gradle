@@ -40,7 +40,7 @@ android {
             shrinkResources true
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+//            signingConfig signingConfigs.config
             // resValue "string", "app_name", "MiBo Hexa"
             buildConfigField "String", "API_URL", "\"https://mibolivfit.club/api/v1\""
             matchingFallbacks = ['release']
@@ -50,7 +50,7 @@ android {
             //applicationIdSuffix ".debug"
             versionNameSuffix '-DEBUG'
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+//            signingConfig signingConfigs.config
             //signingConfig signingConfigs.config
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
